@@ -1,0 +1,49 @@
+[
+    {
+        "name":"Bachelor's Degree Certificate",
+        "children":[
+            {
+                "name":"Bachelor of Science Degree",
+                "code":"M"
+            },
+            {
+                "name":"Bachelor of Arts Degree",
+                "code":"BA"
+            }
+        ]
+    },
+    {
+        "name":"Master's Degree Certificate",
+        "children":[
+            {
+                "name":"Master of Science Degree",
+                "code":"MSc"
+            },
+            {
+                "name":"Master of Arts Degree",
+                "code":"MA"
+            }
+        ]
+    },
+    {
+        "name":"Diploma",
+        "children":[
+            {
+                "name":"Higher National Diploma",
+                "code":"HND"
+            }
+        ]
+    },
+    {
+        "name":"Certificate of Training"
+    },
+    {
+        "name":"General Certificate of Education Ordinary Level"
+    },
+    {
+        "name":"General Certificate of Education Advanced Level"
+    },
+    {
+        "name":"National Foundation Certificate"
+    }
+]

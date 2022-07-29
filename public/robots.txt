@@ -1,0 +1,2 @@
+_User-agent: *
+Disallow:

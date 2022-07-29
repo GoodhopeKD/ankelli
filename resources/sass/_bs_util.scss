@@ -1,0 +1,108 @@
+/* Bootstrap Table Reboot */
+.table {
+  margin-bottom: 0px;
+  font-size: 0.7rem;
+}
+.table tr > th,
+.table tr > td {
+  vertical-align: middle;
+}
+@media screen and (min-width: 576px) {
+  .td-fw {
+    width: 100px;
+  }
+}
+.td-fw-sm {
+  width: 50px;
+}
+.table-outline {
+  border: 1px solid #dee2e6;
+}
+.table:not(.table-borderless) > tbody > tr:last-child {
+  border-bottom: 1px solid #dee2e6;
+}
+.table .thead-light th {
+  color: #212529;
+}
+
+.table-primary,
+.table-primary > td,
+.table-primary > th {
+  background-color: rgba(41, 105, 150, 0.15);
+}
+.table-purple,
+.table-purple > td,
+.table-purple > th {
+  background-color: rgba(128, 59, 219, 0.15);
+}
+
+/* Bootstrap Buttons and Forms Reboot */
+
+/* New button btn-purple */
+.btn-purple,
+.btn-outline-purple:hover,
+.btn-outline-purple:focus,
+.btn-outline-purple:active,
+.btn-outline-purple.active {
+  color: #fff;
+  background-color: #803bdb;
+}
+
+.btn-outline-purple {
+  color: #803bdb;
+  border-color: #803bdb;
+}
+
+.btn-purple:hover,
+.btn-purple:focus,
+.btn-purple:active,
+.btn-purple.active {
+  color: #ffffff;
+  background-color: #5c2e99;
+  border-color: #803bdb;
+}
+
+/* btn-primary reboot */
+.btn-primary,
+.btn-primary.disabled,
+.btn-primary:disabled .btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active,
+.btn-outline-primary.active,
+.btn-outline-primary:not(:disabled):not(.disabled).active,
+.btn-outline-primary:not(:disabled):not(.disabled):active,
+.show > .btn-outline-primary.dropdown-toggle {
+  color: #fff;
+  background-color: rgb(41, 105, 150);
+  border-color: rgb(41, 105, 150);
+}
+
+.btn-outline-primary {
+  color: rgb(41, 105, 150);
+  border-color: rgb(41, 105, 150);
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary.active,
+.btn-primary:not(:disabled):not(.disabled).active,
+.btn-primary:not(:disabled):not(.disabled):active,
+.show > .btn-primary.dropdown-toggle {
+  color: #ffffff;
+  background-color: #25597f;
+  border-color: rgb(41, 105, 150);
+}
+.navbar-center {
+  position: absolute;
+  right: 47%;
+  text-align: center;
+}
+
+// .custom-select {
+//   background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e")
+//     no-repeat right 0.4rem center/8px 10px;
+//   padding-right: 1.2rem;
+//   padding-left: 0.1rem;
+//   min-width: 50px;
+// }

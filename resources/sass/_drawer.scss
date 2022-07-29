@@ -1,0 +1,74 @@
+#drawer {
+  z-index: 1030;
+  min-width: 17rem;
+  width: 17rem;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1);
+  margin-left: -17rem;
+  transition: all 0.4s;
+}
+
+#drawer.toggled {
+  margin-left: 0;
+}
+
+#content {
+  width: 100%;
+  margin: 0;
+  min-height: 100vh;
+  transition: all 0.4s;
+}
+
+#content.toggled {
+  width: calc(100% - 17rem);
+  margin-left: 17rem;
+}
+
+@media (max-width: 1200px) {
+  #content.toggled {
+    width: 100%;
+    margin: 0;
+  }
+}
+
+#drawer-handle {
+  position: absolute;
+  right: -12px;
+  top: 95px;
+  z-index: 1300;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  box-shadow: 0px 0px 10px 3px rgba(0, 0, 0, 0.1);
+  clip-path: inset(-15px -15px -15px 0px);
+}
+
+// Drawer menu
+
+#drawer-menus {
+  overflow-y: scroll;
+  height: calc(100vh - 124px);
+  
+}
+
+.drawer-menu > li > a:hover,
+.drawer-menu > li > a.active,
+.drawer-menu > li > a.open {
+  border-left-color: #3c8dbc;
+  background-color: #dae0e5;
+}
+
+.drawer-menu > li > a {
+  border-left: 4px solid transparent;
+  border-left-color: transparent;
+}
+
+// Dropdown menu
+.the-dropdown-menu > li > a.active {
+  background-color: #e4e4e4;
+}
+.the-dropdown-menu > li > a:hover {
+  font-weight: 500;
+}
