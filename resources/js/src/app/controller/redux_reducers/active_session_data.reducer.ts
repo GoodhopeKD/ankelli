@@ -12,8 +12,8 @@ let agent_app_info = {
 }
 
 const initial_state = {
+	token: null,
 	auth_token: null,
-	session_token: null,
 	signin_datetime: null,
 	signout_datetime: null,
 	device_info,

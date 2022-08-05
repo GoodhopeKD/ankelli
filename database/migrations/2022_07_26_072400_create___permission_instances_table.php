@@ -16,14 +16,14 @@ return new class extends Migration
         Schema::create('__permission_instances', function (Blueprint $table) {
             $table->id();
             $table->enum('parent_table', ['__users', '__user_groups']);
-            $table->string('parent_uid', 64);
+            $table->string('parent_pmkey', 64);
             $table->string('permission_slug', 64);
             $table->foreign('permission_slug')
                     ->references('slug')
                     ->on('__permissions')
                     ->onUpdate('cascade')
                     ->onDelete('cascade');
-            $table->unique(['parent_table', 'parent_uid', 'permission_slug'], '__permission_instances_parent_table_uid_permission_slug_unique');
+            $table->unique(['parent_table', 'parent_pmkey', 'permission_slug'], '__permission_instances_parent_table_pmkey_permission_slug_unique');
             $table->enum('status', ['active', 'revoked'])->default('active');
 
             $table->string('creator_username', 64)->nullable();
@@ -40,82 +40,82 @@ return new class extends Migration
             // _UserGroup: platform_administrators
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'platform_administrators',
-                'permission_slug' => 'update_system_configuration_settings',
+                'parent_pmkey' => 'platform_administrators',
+                'permission_slug' => 'update_sysconfig_params',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'platform_administrators',
+                'parent_pmkey' => 'platform_administrators',
                 'permission_slug' => 'handle_feedback_reports',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'platform_administrators',
-                'permission_slug' => 'manage_system_tools',
+                'parent_pmkey' => 'platform_administrators',
+                'permission_slug' => 'manage_systools',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'platform_administrators',
+                'parent_pmkey' => 'platform_administrators',
                 'permission_slug' => 'manage_datalists',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'platform_administrators',
+                'parent_pmkey' => 'platform_administrators',
                 'permission_slug' => 'view_all_logs',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
             // _UserGroup: business_administrators
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'business_administrators',
+                'parent_pmkey' => 'business_administrators',
                 'permission_slug' => 'view_all_transactions',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'business_administrators',
+                'parent_pmkey' => 'business_administrators',
                 'permission_slug' => 'manage_deposit_tokens',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'business_administrators',
+                'parent_pmkey' => 'business_administrators',
                 'permission_slug' => 'handle_withdrawals',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
             // _UserGroup: user_administrators
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'user_administrators',
-                'permission_slug' => 'manage_registration_tokens',
+                'parent_pmkey' => 'user_administrators',
+                'permission_slug' => 'manage_reg_tokens',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'user_administrators',
+                'parent_pmkey' => 'user_administrators',
                 'permission_slug' => 'handle_flagged_users',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
             // _UserGroup: platform_moderators
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'platform_moderators',
+                'parent_pmkey' => 'platform_moderators',
                 'permission_slug' => 'handle_customer_service_chats',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'platform_moderators',
-                'permission_slug' => 'handle_flagged_business_elements',
+                'parent_pmkey' => 'platform_moderators',
+                'permission_slug' => 'handle_flagged_business_elems',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'platform_moderators',
+                'parent_pmkey' => 'platform_moderators',
                 'permission_slug' => 'manage_update_posts',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],

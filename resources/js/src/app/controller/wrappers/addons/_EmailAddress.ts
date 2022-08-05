@@ -9,9 +9,9 @@ import _Wrapper_ from 'app/controller/wrappers/_Wrapper_'
 type casts_t = 'created_datetime' | 'verified_datetime'
 
 /* 
-    ResponseObject Export
+    RespObj Export
 */
-export const _EmailAddressResponseObject = {
+export const _EmailAddressRespObj = {
     id: undefined as undefined | null | number,
     user_username: undefined as undefined | null | string,
     email_address: undefined as undefined | null | string,
@@ -25,7 +25,7 @@ export const _EmailAddressResponseObject = {
 /*
     Exported Default Class
 */
-export default class _EmailAddress extends _Wrapper_ implements Omit<typeof _EmailAddressResponseObject, casts_t> {
+export default class _EmailAddress extends _Wrapper_ implements Omit<typeof _EmailAddressRespObj, casts_t> {
     id: number | null = null
     user_username: string | null = null
     email_address: string | null = null
@@ -37,9 +37,9 @@ export default class _EmailAddress extends _Wrapper_ implements Omit<typeof _Ema
     verified_datetime: _DateTime | null = null
 
     /* Class Constructor */
-    constructor(args: typeof _EmailAddressResponseObject) { super(); this.populate(args) }
+    constructor(args: typeof _EmailAddressRespObj) { super(); this.populate(args) }
 
-    protected populate(args: typeof _EmailAddressResponseObject) {
+    protected populate(args: typeof _EmailAddressRespObj) {
         this._populate(args)
 
         this.created_datetime = args.created_datetime && typeof args.created_datetime === 'string' ? new _DateTime(args.created_datetime) : null
@@ -48,7 +48,7 @@ export default class _EmailAddress extends _Wrapper_ implements Omit<typeof _Ema
 
     /* Creator(s) */
 
-    public static async create(args: typeof _EmailAddressResponseObject) {
+    public static async create(args: typeof _EmailAddressRespObj) {
         return this._mainLaravelDBAPICreate('email_addresses', args)
     }
 

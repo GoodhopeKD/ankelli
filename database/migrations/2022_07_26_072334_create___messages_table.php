@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('__messages', function (Blueprint $table) {
-            $table->id();
+            $table->string('id', 16)->primary();
             $table->enum('parent_table', ['__chats', '__trades']);
             $table->unsignedBigInteger('parent_id');
             $table->mediumText('body');

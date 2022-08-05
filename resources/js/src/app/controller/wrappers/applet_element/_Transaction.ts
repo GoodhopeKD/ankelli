@@ -22,12 +22,11 @@ type transfer_result_t = {
 }[]
 
 /* 
-    ResponseObject Export
+    RespObj Export
 */
-export const _TransactionResponseObject = {
-    id: undefined as undefined | null | number,
-    reference_code: undefined as undefined | null | string,
-    session_id: undefined as undefined | null | number,
+export const _TransactionRespObj = {
+    ref_code: undefined as undefined | null | string,
+    session_token: undefined as undefined | null | string,
     source_user_username: undefined as undefined | null | string,
     destination_user_username: undefined as undefined | null | string,
     asset_name: undefined as undefined | null | string,
@@ -39,10 +38,9 @@ export const _TransactionResponseObject = {
 /*
     Exported Default Class
 */
-export default class _Transaction extends _Wrapper_ implements Omit<typeof _TransactionResponseObject, casts_t> {
-    id: number | null = null
-    reference_code: string | null = null
-    session_id: number | null = null
+export default class _Transaction extends _Wrapper_ implements Omit<typeof _TransactionRespObj, casts_t> {
+    ref_code: string | null = null
+    session_token: string| null = null
     source_user_username: string | null = null
     destination_user_username: string | null = null
     asset_name: string | null = null
@@ -51,9 +49,9 @@ export default class _Transaction extends _Wrapper_ implements Omit<typeof _Tran
     transfer_datetime: _DateTime | null = null
 
     /* Class Constructor */
-    constructor(args: typeof _TransactionResponseObject) { super(); this.populate(args) }
+    constructor(args: typeof _TransactionRespObj) { super(); this.populate(args) }
 
-    protected populate(args: typeof _TransactionResponseObject) {
+    protected populate(args: typeof _TransactionRespObj) {
         this._populate(args)
         this.transfer_datetime = new _DateTime(args.transfer_datetime)
     }

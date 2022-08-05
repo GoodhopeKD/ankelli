@@ -35,9 +35,9 @@ return new class extends Migration
         DB::table('__permissions')->insert([
             // _UserGroups: platform_administrators
             [
-                'name' => 'Update system configuration settings',
-                'slug' => 'update_system_configuration_settings',
-                'description' => 'Permission holder can update system configuration settings.',
+                'name' => 'Update system config params',
+                'slug' => 'update_sysconfig_params',
+                'description' => 'Permission holder can update system config params.',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
             [
@@ -54,7 +54,7 @@ return new class extends Migration
             ],
             [
                 'name' => 'Manage system tools',
-                'slug' => 'manage_system_tools',
+                'slug' => 'manage_systools',
                 'description' => 'Permission holder can manage system tools.',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
@@ -86,7 +86,7 @@ return new class extends Migration
             // _UserGroups: user_administrators
             [
                 'name' => 'Manage Registration Tokens',
-                'slug' => 'manage_registration_tokens',
+                'slug' => 'manage_reg_tokens',
                 'description' => 'Permission holder can create and edit registration tokens.',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
@@ -111,9 +111,9 @@ return new class extends Migration
             ],
             // _UserGroups: platform_moderators, business_administrators
             [
-                'name' => 'Handle flagged business elements',
-                'slug' => 'handle_flagged_business_elements',
-                'description' => 'Permission holder can handle flagged business elements (Offers, Trades, etc).',
+                'name' => 'Handle flagged business elems',
+                'slug' => 'handle_flagged_business_elems',
+                'description' => 'Permission holder can handle flagged business elems (Offers, Trades, etc).',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
         ]);

@@ -16,9 +16,9 @@ type get_collection_params = {
 }
 
 /* 
-    ResponseObject Export
+    RespObj Export
 */
-export const _ProvinceResponseObject = {
+export const _ProvinceRespObj = {
     id: undefined as undefined | null | number,
     name: undefined as undefined | null | string,
     country: undefined as undefined | null | string,
@@ -31,7 +31,7 @@ export const _ProvinceResponseObject = {
 /*
     Exported Default Class
 */
-export default class _Province extends _Wrapper_ implements Omit<typeof _ProvinceResponseObject, casts_t> {
+export default class _Province extends _Wrapper_ implements Omit<typeof _ProvinceRespObj, casts_t> {
     id: number | null = null
     name: string | null = null
     country: string | null = null
@@ -41,9 +41,9 @@ export default class _Province extends _Wrapper_ implements Omit<typeof _Provinc
     updated_datetime: _DateTime | null = null
 
     /* Class Constructor */
-    constructor(args: typeof _ProvinceResponseObject) { super(); this.populate(args) }
+    constructor(args: typeof _ProvinceRespObj) { super(); this.populate(args) }
 
-    protected populate(args: typeof _ProvinceResponseObject) {
+    protected populate(args: typeof _ProvinceRespObj) {
         this._populate(args)
         this.created_datetime = typeof args.created_datetime === 'string' ? new _DateTime(args.created_datetime) : null
         this.updated_datetime = typeof args.updated_datetime === 'string' ? new _DateTime(args.updated_datetime) : null
@@ -51,7 +51,7 @@ export default class _Province extends _Wrapper_ implements Omit<typeof _Provinc
 
     /* Creator(s) */
 
-    public static async create(args: typeof _ProvinceResponseObject) {
+    public static async create(args: typeof _ProvinceRespObj) {
         return this._mainLaravelDBAPICreate('datalists/provinces', args)
     }
 

@@ -3,13 +3,16 @@ import { batch } from 'react-redux'
 export type laravel_api_page_selection_t = 'next' | 'prev' | 'first' | 'last' | { page: number }
 
 export const connectivityBoot = () => {
-    return (dispatch: any) => {
-        dispatch({ type: 'SYSTEM_STATE_SET_CONNECTIVITY', connectivity: null })
-        dispatch({ type: 'MAIN_LARAVEL_DB_REST_API_CALL', method: 'POST', endpoint: '' })
-            .then(() => { dispatch({ type: 'SYSTEM_STATE_SET_CONNECTIVITY', connectivity: true }) })
-            .catch((e: any) => {
-                dispatch({ type: 'SYSTEM_STATE_SET_CONNECTIVITY', connectivity: false })
-            })
+    return (dispatch: (args: any) => Promise<any>) => {
+        dispatch({ type: 'APP_INSTANCE_STATE_RESET_CONNECTIVITY' }).finally(() => {
+
+            dispatch({ type: 'MAIN_LARAVEL_DB_REST_API_CALL', method: 'POST', endpoint: '' })
+                .then(() => { dispatch({ type: 'APP_INSTANCE_STATE_SET_MAIN_LARAVEL_DB_REST_API_CONNECTIVITY', main_laravel_db_rest_api_connectivity: true }) })
+                .catch((e: any) => {
+                    dispatch({ type: 'APP_INSTANCE_STATE_SET_MAIN_LARAVEL_DB_REST_API_CONNECTIVITY', main_laravel_db_rest_api_connectivity: false })
+                })
+
+        })
     }
 }
 
@@ -106,7 +109,7 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
 
             let request_object = {
                 method: action.method,
-                url: action.endpoint === '' ? action.endpoint : active_session_data.session_token + '/' + action.endpoint,
+                url: action.endpoint === '' ? action.endpoint : active_session_data.token + '/' + action.endpoint,
                 data: action.data_has_files ? action.data : { ...action.data, active_session }
             } as any
 
@@ -125,8 +128,8 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
                         if (
                             (action.endpoint === '' &&
                                 active_session_data.auth_token &&
-                                !(resp.data.active_session && resp.data.auth_user)) ||
-                            (action.endpoint === 'users/signout' && !resp.data.auth_user)
+                                !(resp.data.active_session_data && resp.data.auth_user_data)) ||
+                            (action.endpoint === 'users/signout' && !resp.data.auth_user_data)
                         ) {
                             dispatch({ type: 'AUTH_DATA_CLEAR_ALL' })
                         }
@@ -135,14 +138,15 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
                             dispatch({ type: 'ACTIVE_CONNECT_INSTANCE_DATA_SET_AUTH_ACCESS_TOKEN', auth_token: resp.data.auth_token })
                         }
 
-                        if (resp.data.auth_user)
-                            dispatch({ type: 'AUTH_USER_DATA_UPDATE', auth_user_data: resp.data.auth_user })
+                        if (resp.data.auth_user_data)
+                            dispatch({ type: 'AUTH_USER_DATA_UPDATE', auth_user_data: resp.data.auth_user_data })
 
-                        if (resp.data.active_session)
-                            dispatch({ type: 'ACTIVE_CONNECT_INSTANCE_DATA_UPDATE', active_session_data: resp.data.active_session })
+                        if (resp.data.sysconfig_params_data)
+                            dispatch({ type: 'SYSCONFIG_PARAMS_UPDATE', sysconfig_params_data: resp.data.sysconfig_params_data })
 
-                        if (resp.data.home_screen_lists)
-                            dispatch({ type: 'SYSTEM_STATE_SET_HOME_SCREEN_LISTS', home_screen_lists: resp.data.home_screen_lists })
+                        if (resp.data.active_session_data)
+                            dispatch({ type: 'ACTIVE_CONNECT_INSTANCE_DATA_UPDATE', active_session_data: resp.data.active_session_data })
+
                     })
                     return Promise.resolve(resp.data)
                 })
@@ -154,7 +158,7 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
                             status: e.resp.status ? e.resp.status : '',
                             message: e.resp.statusText ? e.resp.statusText : e.resp.data ? e.resp.data.message : '',
                             data: e.resp.data ? e.resp.data : {},
-                            page: e.resp.config ? e.resp.config.url.replace(active_session_data.session_token + '/', '') : ''
+                            page: e.resp.config ? e.resp.config.url.replace(active_session_data.token + '/', '') : ''
                         }
                     } else if (e.response) {
                         // request was sent, but didn't get to server, or server returned an internal error

@@ -14,10 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('__logs', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('session_id')
-                    ->nullable()
-                    ->constrained('__sessions')
+            $table->string('id', 16)->primary();
+            $table->string('session_token', 16)->nullable();
+            $table->foreign('session_token')
+                    ->references('token')
+                    ->on('__sessions')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
             $table->string('action_note', 255)->nullable();
@@ -32,7 +33,7 @@ return new class extends Migration
             $table->string('utc_offset', 8)->nullable();
             $table->string('batch_code', 64)->nullable();
             $table->string('entry_table', 32)->nullable();
-            $table->string('entry_uid', 64)->nullable(); 
+            $table->string('entry_pmkey', 64)->nullable(); 
             $table->text('entry_update_result')->nullable();
             $table->text('request_location')->nullable();
         });

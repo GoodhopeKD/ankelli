@@ -14,27 +14,39 @@ return new class extends Migration
     public function up()
     {
         Schema::create('__trades', function (Blueprint $table) {
-            $table->id();
-            $table->string('asset_name', 64)->nullable();
-            $table->foreign('asset_name')
-                    ->references('name')
+            $table->string('ref_code', 16)->primary();
+            $table->string('country', 32);
+            
+            $table->enum('was_offer_to', ['buy', 'sell']);
+
+            $table->string('asset_code', 64)->nullable();
+            $table->foreign('asset_code')
+                    ->references('code')
                     ->on('__assets')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
+            $table->string('currency_code', 64)->nullable();
+            $table->foreign('currency_code')
+                    ->references('code')
+                    ->on('__currencies')
+                    ->onUpdate('cascade')
+                    ->onDelete('set null');
             $table->unsignedDecimal('asset_value', $precision = 20, $scale = 10);
-            $table->string('purchase_currency', 3);
-            $table->unsignedDecimal('purchase_price', $precision = 3, $scale = 2);
             $table->unsignedBigInteger('purchase_amount');
+
+            $table->unsignedDecimal('asset_sell_price', $precision = 20, $scale = 10)->nullable();
+            $table->unsignedDecimal('asset_purchase_price', $precision = 20, $scale = 10)->nullable();
+
             $table->string('payment_method', 64);
             $table->text('payment_details');
             $table->timestamp('payment_declared_datetime')->nullable();
             $table->timestamp('payment_confirmed_datetime')->nullable();
             $table->boolean('visible_to_creator')->default(true);
-            $table->boolean('visible_to_buyer')->default(true);
+            $table->boolean('visible_to_offer_creator')->default(true);
             $table->enum('status', ['active', 'cancelled', 'flagged', 'completed'])->default('active');
 
-            $table->string('buyer_username', 64)->nullable();
-            $table->foreign('buyer_username')
+            $table->string('offer_creator_username', 64)->nullable();
+            $table->foreign('offer_creator_username')
                     ->references('username')
                     ->on('__users')
                     ->onUpdate('cascade')

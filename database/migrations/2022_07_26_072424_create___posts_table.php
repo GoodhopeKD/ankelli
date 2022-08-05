@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('exerpt', 255);
             $table->text('body');
             $table->enum('status', ['visible', 'hidden'])->default('visible');
+            $table->timestamp('post_datetime')->nullable();
             $table->timestamp('expiry_datetime')->nullable();
 
             $table->string('creator_username', 64)->nullable();

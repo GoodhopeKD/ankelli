@@ -15,7 +15,7 @@ type get_collection_params = {
     status?: status_t,
 }
 
-const HostResponseObject = {
+const HostRespObj = {
     name: undefined as undefined | null | string,
     version: undefined as undefined | null | string,
     extra: undefined as undefined | null | string,
@@ -27,14 +27,13 @@ type last_request_location_t = {
 
 
 /* 
-    ResponseObject Export
+    RespObj Export
 */
-export const _SessionResponseObject = {
-    id: undefined as undefined | null | number,
+export const _SessionRespObj = {
+    token: undefined as undefined | null | string,
     user_username: undefined as undefined | null | string,
-    session_token: undefined as undefined | null | string,
-    device_info: undefined as undefined | null | typeof HostResponseObject,
-    agent_app_info: undefined as undefined | null | typeof HostResponseObject,
+    device_info: undefined as undefined | null | typeof HostRespObj,
+    agent_app_info: undefined as undefined | null | typeof HostRespObj,
     status: undefined as undefined | null | status_t,
     created_datetime: undefined as undefined | null | string,
     updated_datetime: undefined as undefined | null | string,
@@ -47,12 +46,11 @@ export const _SessionResponseObject = {
 /*
     Exported Default Class
 */
-export default class _Session extends _Wrapper_ implements Omit<typeof _SessionResponseObject, casts_t> {
-    id: number | null = null
+export default class _Session extends _Wrapper_ implements Omit<typeof _SessionRespObj, casts_t> {
+    token: string | null = null
     user_username: string | null = null
-    session_token: string | null = null
-    device_info: typeof HostResponseObject | null = null
-    agent_app_info: typeof HostResponseObject | null = null
+    device_info: typeof HostRespObj | null = null
+    agent_app_info: typeof HostRespObj | null = null
     status: status_t | null = null
     created_datetime: _DateTime | null = null
     updated_datetime: _DateTime | null = null
@@ -62,9 +60,9 @@ export default class _Session extends _Wrapper_ implements Omit<typeof _SessionR
     last_request_location: last_request_location_t | null = null
 
     /* Class Constructor */
-    constructor(args: typeof _SessionResponseObject) { super(); this.populate(args) }
+    constructor(args: typeof _SessionRespObj) { super(); this.populate(args) }
 
-    protected populate(args: typeof _SessionResponseObject) {
+    protected populate(args: typeof _SessionRespObj) {
         this._populate(args)
 
         // Load Datetimes

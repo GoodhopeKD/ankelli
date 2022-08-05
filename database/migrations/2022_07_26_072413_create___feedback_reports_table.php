@@ -14,11 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('__feedback_reports', function (Blueprint $table) {
-            $table->id();
-            $table->string('ticket_code', 16)->unique();
-            $table->foreignId('session_id')
-                    ->nullable()
-                    ->constrained('__sessions')
+            $table->string('ticket_code', 16)->primary();
+            $table->string('session_token', 16)->nullable();
+            $table->foreign('session_token')
+                    ->references('token')
+                    ->on('__sessions')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
             $table->enum('type', ['bug_report', 'crash_report', 'vulnerability_report', 'abuse_report', 'appreciation_message', 'contact_form_message']);

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name', 64)->unique();
             $table->string('code', 64)->unique();
+            $table->enum('status', ['active', 'deactivated'])->default('active');
 
             $table->string('creator_username', 64)->nullable();
             $table->foreign('creator_username')

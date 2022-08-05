@@ -17,7 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('name', 32);
             $table->string('province', 32);
-            $table->unique(['name', 'province']);
+            $table->string('country', 32);
+            $table->unique(['name', 'province', 'country']);
 
             $table->string('creator_username', 64)->nullable();
             $table->foreign('creator_username')

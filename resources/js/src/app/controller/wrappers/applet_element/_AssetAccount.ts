@@ -9,18 +9,20 @@ import { laravel_api_page_selection_t } from 'app/controller/actions/main_larave
     Type Definitions
 */
 type casts_t = 'created_datetime' | 'updated_datetime'
+type status_t = 'active' | 'frozen'
 type get_collection_params = {
     get_with_meta?: boolean,
 }
 
 /* 
-    ResponseObject Export
+    RespObj Export
 */
-export const _AssetAccountResponseObject = {
+export const _AssetAccountRespObj = {
     id: undefined as undefined | null | number,
     user_username: undefined as undefined | null | string,
     asset_name: undefined as undefined | null | string,
     asset_value: undefined as undefined | null | number,
+    status: undefined as undefined | null | status_t,
 
     created_datetime: undefined as undefined | null | string,
     updated_datetime: undefined as undefined | null | string,
@@ -29,19 +31,20 @@ export const _AssetAccountResponseObject = {
 /*
     Exported Default Class
 */
-export default class _AssetAccount extends _Wrapper_ implements Omit<typeof _AssetAccountResponseObject, casts_t> {
+export default class _AssetAccount extends _Wrapper_ implements Omit<typeof _AssetAccountRespObj, casts_t> {
     id: number | null = null
     user_username: string | null = null
     asset_name: string | null = null
     asset_value: number | null = null
+    status: status_t | null = null
 
     created_datetime: _DateTime | null = null
     updated_datetime: _DateTime | null = null
 
     /* Class Constructor */
-    constructor(args: typeof _AssetAccountResponseObject) { super(); this.populate(args) }
+    constructor(args: typeof _AssetAccountRespObj) { super(); this.populate(args) }
 
-    protected populate(args: typeof _AssetAccountResponseObject) {
+    protected populate(args: typeof _AssetAccountRespObj) {
         this._populate(args)
         this.created_datetime = typeof args.created_datetime === 'string' ? new _DateTime(args.created_datetime) : null
         this.updated_datetime = typeof args.updated_datetime === 'string' ? new _DateTime(args.updated_datetime) : null
@@ -49,7 +52,7 @@ export default class _AssetAccount extends _Wrapper_ implements Omit<typeof _Ass
 
     /* Creator(s) */
 
-    public static async create(args: typeof _AssetAccountResponseObject) {
+    public static async create(args: typeof _AssetAccountRespObj) {
         return this._mainLaravelDBAPICreate('asset_accounts', args)
     }
 

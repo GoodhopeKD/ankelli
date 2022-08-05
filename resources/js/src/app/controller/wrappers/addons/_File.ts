@@ -26,18 +26,18 @@ type get_collection_params = {
     search_query_string?: string,
     user_username?: string,
     parent_table?: parent_table_t,
-    parent_uid?: string | number,
+    parent_pmkey?: string | number,
     filegroup?: filegroup_t,
     tag?: tag_t,
 }
 
 /* 
-    ResponseObject Export
+    RespObj Export
 */
-export const _FileResponseObject = {
+export const _FileRespObj = {
     id: undefined as undefined | null | number,
     parent_table: undefined as undefined | null | parent_table_t,
-    parent_uid: undefined as undefined | null | string | number,
+    parent_pmkey: undefined as undefined | null | string | number,
 
     upload_id: undefined as undefined | null | string, // Not saved
 
@@ -63,10 +63,10 @@ export const _FileResponseObject = {
 /*
     Exported Default Class
 */
-export default class _File extends _Wrapper_ implements Omit<typeof _FileResponseObject, casts_t | 'upload_id'> {
+export default class _File extends _Wrapper_ implements Omit<typeof _FileRespObj, casts_t | 'upload_id'> {
     id: number | null = null
     parent_table: parent_table_t | null = null
-    parent_uid: string | number | null = null
+    parent_pmkey: string | number | null = null
 
     filegroup: filegroup_t | null = null
     tag: tag_t | null = null
@@ -90,9 +90,9 @@ export default class _File extends _Wrapper_ implements Omit<typeof _FileRespons
     updated_datetime: _DateTime | null = null
 
     /* Class Constructor */
-    constructor(args: typeof _FileResponseObject) { super(); this.populate(args) }
+    constructor(args: typeof _FileRespObj) { super(); this.populate(args) }
 
-    protected populate(args: typeof _FileResponseObject) {
+    protected populate(args: typeof _FileRespObj) {
         this._populate(args)
 
         this.uri = (this.uri as string).replace('https://ankelli-app.com', main_laravel_db_rest_api.config.web_url)
@@ -107,7 +107,7 @@ export default class _File extends _Wrapper_ implements Omit<typeof _FileRespons
 
     /* Creator(s) */
 
-    public static async create(file: typeof _FileResponseObject) {
+    public static async create(file: typeof _FileRespObj) {
         const files = (await this.upload([file], file.filegroup as filegroup_t, file.parent_table as parent_table_t).catch((e: any) => { return Promise.reject(e) }))
         if (!files) {
             return Promise.reject({ message: 'An error occured' })
@@ -115,7 +115,7 @@ export default class _File extends _Wrapper_ implements Omit<typeof _FileRespons
         return this._mainLaravelDBAPICreate('files', files[0])
     }
 
-    static async upload(files: typeof _FileResponseObject[], filegroup: filegroup_t, parent_table: parent_table_t) {
+    static async upload(files: typeof _FileRespObj[], filegroup: filegroup_t, parent_table: parent_table_t) {
         if (!filegroup || !parent_table) {
             return Promise.reject({ message: 'Missing upload arguments' })
         }
@@ -138,7 +138,7 @@ export default class _File extends _Wrapper_ implements Omit<typeof _FileRespons
 
     /* Readers */
 
-    public static async getOneWhere(params: { tag?: tag_t, parent_table?: parent_table_t, parent_uid?: string | number }) {
+    public static async getOneWhere(params: { tag?: tag_t, parent_table?: parent_table_t, parent_pmkey?: string | number }) {
         return this._mainLaravelDBAPIGetOneWhere('files', params)
     }
 

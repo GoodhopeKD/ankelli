@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('__currencies', function (Blueprint $table) {
             $table->id();
             $table->string('name', 64)->unique();
-            $table->string('alpha_three_code', 3)->unique();
+            $table->string('code', 3)->unique();
+            $table->unsignedDecimal('usd_rate', $precision = 10, $scale = 2);
             $table->unsignedDecimal('min_transactable_cash_amount', $precision = 10, $scale = 2);
             $table->unsignedDecimal('smallest_transactable_cash_denomination_amount', $precision = 10, $scale = 2);
 
@@ -33,35 +34,48 @@ return new class extends Migration
         DB::table('__currencies')->insert([
             [
                 'name' => 'US Dollar',
-                'alpha_three_code' => 'USD',
+                'code' => 'USD',
+                'usd_rate' => 1,
                 'min_transactable_cash_amount' => 10,
                 'smallest_transactable_cash_denomination_amount' => 5,
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
             [
                 'name' => 'Euro',
-                'alpha_three_code' => 'EUR',
+                'code' => 'EUR',
+                'usd_rate' => 0.87,
                 'min_transactable_cash_amount' => 10,
                 'smallest_transactable_cash_denomination_amount' => 5,
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
             [
                 'name' => 'Pound Sterling',
-                'alpha_three_code' => 'GBP',
+                'code' => 'GBP',
+                'usd_rate' => 0.77,
                 'min_transactable_cash_amount' => 10,
                 'smallest_transactable_cash_denomination_amount' => 5,
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
             [
                 'name' => 'South African rand',
-                'alpha_three_code' => 'ZAR',
+                'code' => 'ZAR',
+                'usd_rate' => 16,
                 'min_transactable_cash_amount' => 100,
                 'smallest_transactable_cash_denomination_amount' => 100,
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
             [
                 'name' => 'Zambian Kwacha',
-                'alpha_three_code' => 'ZMW',
+                'code' => 'ZMW',
+                'usd_rate' => 15,
+                'min_transactable_cash_amount' => 100,
+                'smallest_transactable_cash_denomination_amount' => 100,
+                'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
+            ],
+            [
+                'name' => 'Algerian Dinar',
+                'code' => 'DZD',
+                'usd_rate' => 180,
                 'min_transactable_cash_amount' => 100,
                 'smallest_transactable_cash_denomination_amount' => 100,
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),

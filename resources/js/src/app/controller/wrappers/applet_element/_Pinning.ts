@@ -13,13 +13,13 @@ type item_table_t = '__offers' | '__users'
 type pinning_type_t = 'favourite' | 'blocking'
 
 /* 
-    ResponseObject Export
+    RespObj Export
 */
-export const _PinningResponseObject = {
+export const _PinningRespObj = {
     id: undefined as undefined | null | number,
     user_username: undefined as undefined | null | string,
     item_table: undefined as undefined | null | item_table_t,
-    item_uid: undefined as undefined | null | string,
+    item_pmkey: undefined as undefined | null | string,
     pinning_type: undefined as undefined | null | pinning_type_t,
 
     creator_username: undefined as undefined | null | string,
@@ -30,11 +30,11 @@ export const _PinningResponseObject = {
 /*
     Exported Default Class
 */
-export default class _Pinning extends _Wrapper_ implements Omit<typeof _PinningResponseObject, casts_t> {
+export default class _Pinning extends _Wrapper_ implements Omit<typeof _PinningRespObj, casts_t> {
     id: number | null = null
     user_username: string | null = null
     item_table: item_table_t | null = null
-    item_uid: string | null = null
+    item_pmkey: string | null = null
     pinning_type: pinning_type_t | null = null
 
     creator_username: string | null = null
@@ -42,9 +42,9 @@ export default class _Pinning extends _Wrapper_ implements Omit<typeof _PinningR
     updated_datetime: _DateTime | null = null
 
     /* Class Constructor */
-    constructor(args: typeof _PinningResponseObject) { super(); this.populate(args) }
+    constructor(args: typeof _PinningRespObj) { super(); this.populate(args) }
 
-    protected populate(args: typeof _PinningResponseObject) {
+    protected populate(args: typeof _PinningRespObj) {
         this._populate(args)
         this.created_datetime = typeof args.created_datetime === 'string' ? new _DateTime(args.created_datetime) : null
         this.updated_datetime = typeof args.updated_datetime === 'string' ? new _DateTime(args.updated_datetime) : null
@@ -52,16 +52,16 @@ export default class _Pinning extends _Wrapper_ implements Omit<typeof _PinningR
 
     /* Creator(s) */
 
-    public static async create(args: typeof _PinningResponseObject) {
+    public static async create(args: typeof _PinningRespObj) {
         return this._mainLaravelDBAPICreate('pinnings', args)
     }
 
     /* Updaters */
 
-    public async update(args: typeof _PinningResponseObject) {
+    public async update(args: typeof _PinningRespObj, update_note: string) {
         const data = {} as typeof args
         if (typeof args.pinning_type === typeof this.pinning_type && args.pinning_type !== this.pinning_type) data.pinning_type = args.pinning_type
-        return this._mainLaravelDBAPIUpdate('pinnings/' + this.id, data)
+        return this._mainLaravelDBAPIUpdate('pinnings/' + this.id, update_note, data)
     }
 
     /* Deleter */

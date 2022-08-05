@@ -1,5 +1,5 @@
 /* Library Imports */
-import storage from 'redux-persist/lib/storage'
+import persistStorage from 'redux-persist/lib/storage'
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
 import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist'
 
@@ -8,11 +8,11 @@ import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, 
 import { main_laravel_db_rest_api } from 'app/controller/config/main_laravel_db_rest_api.config'
 
 /* Reducer Imports */
-import { local_pinnings_collection_reducer } from 'app/controller/redux_reducers/local_pinnings_collection.reducer'
-import { local_preferences_data_reducer } from 'app/controller/redux_reducers/local_preferences_data.reducer'
 import { active_session_data_reducer } from 'app/controller/redux_reducers/active_session_data.reducer'
+import { app_instance_state_data_reducer } from 'app/controller/redux_reducers/app_instance_state_data.reducer'
 import { auth_user_data_reducer } from 'app/controller/redux_reducers/auth_user_data.reducer'
-import { system_state_data_reducer } from 'app/controller/redux_reducers/system_state_data.reducer'
+import { local_pinnings_collection_reducer } from 'app/controller/redux_reducers/local_pinnings_collection.reducer'
+import { sysconfig_params_data_reducer } from 'app/controller/redux_reducers/sysconfig_params_data.reducer'
 
 /* middleware Imports */
 import { mainLaravelDBAPICallMiddleware } from 'app/controller/actions/main_laravel_db_rest_api.actions'
@@ -20,37 +20,39 @@ import { mainLaravelDBAPICallMiddleware } from 'app/controller/actions/main_lara
 
 const root_persist_config = {
     key: 'root',
-    storage,
+    storage: persistStorage,
     whitelist: [
         'active_session_data',
-        'local_preferences_data',
+        'app_instance_state_data',
+        'local_pinnings_collection',
     ]
-}
-
-const local_pinnings_collection_persist_config = {
-    key: 'local_pinnings_collection',
-    storage
-};
-
-const local_preferences_data_persist_config = {
-    key: 'local_preferences_data',
-    storage
 }
 
 const active_session_persist_config = {
     key: 'active_session_data',
-    storage,
-    whitelist: ['auth_token', 'session_token']
+    storage: persistStorage,
+    whitelist: ['token', 'auth_token']
+}
+
+const app_instance_state_data_persist_config = {
+    key: 'app_instance_state_data',
+    storage: persistStorage,
+    whitelist: ['pref_theme', 'pref_lang']
+}
+
+const local_pinnings_collection_persist_config = {
+    key: 'local_pinnings_collection',
+    storage: persistStorage
 }
 
 const root_reducer = persistReducer(root_persist_config, combineReducers({
+    // data sinks
+    active_session_data: persistReducer(active_session_persist_config, active_session_data_reducer),
+    app_instance_state_data: persistReducer(app_instance_state_data_persist_config, app_instance_state_data_reducer),
+    auth_user_data: auth_user_data_reducer,
+    sysconfig_params_data: sysconfig_params_data_reducer,
     // collections
     local_pinnings_collection: persistReducer(local_pinnings_collection_persist_config, local_pinnings_collection_reducer),
-    // data points
-    local_preferences_data: persistReducer(local_preferences_data_persist_config, local_preferences_data_reducer),
-    active_session_data: persistReducer(active_session_persist_config, active_session_data_reducer),
-    auth_user_data: auth_user_data_reducer,
-    system_state_data: system_state_data_reducer,
 }))
 
 const store = configureStore({
@@ -58,7 +60,7 @@ const store = configureStore({
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             serializableCheck: {
-                ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, 'MAIN_LARAVEL_DB_REST_API_CALL_WITH_FILES'],
+                ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, 'MAIN_LARAVEL_DB_REST_API_CALL_WITH_FILES', 'FIREBASE_API_CALL_WITH_FILES'],
                 //ignoredActionPaths: ['file_upload'],
                 //ignoredPaths: ['file_upload']
             },

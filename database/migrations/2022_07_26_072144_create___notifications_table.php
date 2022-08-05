@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('__notifications', function (Blueprint $table) {
-            $table->id();
+            $table->string('id', 16)->primary();
             $table->string('user_username', 64);
             $table->foreign('user_username')
                     ->references('username')

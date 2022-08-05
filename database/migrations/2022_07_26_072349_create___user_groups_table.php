@@ -42,7 +42,7 @@ return new class extends Migration
             [
                 'name' => 'Platform Administrators',
                 'slug' => 'platform_administrators',
-                'description' => 'Admin Group for Platform Administrators. Members can manage platform configuration settings.',
+                'description' => 'Admin Group for Platform Administrators. Members can manage platform config params.',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
             [
@@ -60,7 +60,7 @@ return new class extends Migration
             [
                 'name' => 'Platform moderators',
                 'slug' => 'platform_moderators',
-                'description' => 'Admin Group for Platform moderators. Members can respond in the customer service chat module, handle flagged business elements, manage daily updates.',
+                'description' => 'Admin Group for Platform moderators. Members can respond in the customer service chat module, handle flagged business elems, manage daily updates.',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
             [

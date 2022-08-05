@@ -21,14 +21,15 @@ return new class extends Migration
                     ->on('__users')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->string('asset_name', 64)->nullable();
-            $table->foreign('asset_name')
-                    ->references('name')
+            $table->string('asset_code', 64)->nullable();
+            $table->foreign('asset_code')
+                    ->references('code')
                     ->on('__assets')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
             $table->unsignedDecimal('asset_value', $precision = 20, $scale = 10);
-            $table->unique(['user_username', 'asset_name']);
+            $table->unique(['user_username', 'asset_code']);
+            $table->enum('status', ['active', 'frozen'])->default('active');
 
             $table->timestamp('created_datetime')->useCurrent();
             $table->timestamp('updated_datetime')->nullable()->useCurrentOnUpdate();

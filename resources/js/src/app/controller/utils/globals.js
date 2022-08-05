@@ -15,7 +15,7 @@ window.priceString = (price) => parseFloat(price).toLocaleString('de-DE', {
 	maximumFractionDigits: 2
 }).replace(',00','').replace('DZD','DA')
 
-window.instanceToResponseObject = (obj) => {
+window.instanceToRespObj = (obj) => {
 	if (null === obj || 'object' != typeof obj) return obj
 	if (obj instanceof _Date) {
 		return obj + ''
@@ -24,14 +24,14 @@ window.instanceToResponseObject = (obj) => {
 	if (obj instanceof Array) {
 		copy = []
 		for (var i = 0, len = obj.length; i < len; i++) {
-			copy[i] = window.instanceToResponseObject(obj[i])
+			copy[i] = window.instanceToRespObj(obj[i])
 		}
 		return copy
 	}
 	if (obj instanceof Object) {
 		copy = {}
 		for (var attr in obj) {
-			if (obj.hasOwnProperty(attr)) copy[attr] = window.instanceToResponseObject(obj[attr])
+			if (obj.hasOwnProperty(attr)) copy[attr] = window.instanceToRespObj(obj[attr])
 		}
 		return copy
 	}

@@ -5,8 +5,8 @@ import { mainLaravelDBRestAPICallWrapper } from 'app/controller/actions/rest_api
 /*
 	Type Definitions
 */
-type local_validation_param_type = 'email_address' | 'surname' | 'name_s' | 'name' | 'username' | 'password' | 'datetime' | 'number' | 'url' | 'passport_number' | 'registration_token'
-type remote_validation_param_type = 'registration_token'
+type local_validation_param_type = 'email_address' | 'surname' | 'name_s' | 'name' | 'username' | 'password' | 'datetime' | 'number' | 'url' | 'passport_number' | 'reg_token'
+type remote_validation_param_type = 'reg_token'
 type unique_param_type = 'email_address' | 'username'
 
 export const validation_param_lengths = {
@@ -38,7 +38,7 @@ export const validation_param_lengths = {
 		min_length: 8,
 		max_length: 8,
 	},
-	registration_token: {
+	reg_token: {
 		min_length: 4,
 		max_length: 20,
 	},
@@ -65,7 +65,7 @@ export default class _Input {
 	private _is_valid_name: boolean | null = null
 	private _is_valid_number: boolean | null = null
 
-	private _is_valid_registration_token: boolean | null = null
+	private _is_valid_reg_token: boolean | null = null
 
 	private _is_unique_email_address: boolean | null = null
 	private _is_unique_username: boolean | null = null
@@ -85,7 +85,7 @@ export default class _Input {
 	sanitize(): void { }
 
 	async async_checkIfValid(validation_param: remote_validation_param_type) {
-		if (validation_param === 'registration_token') {
+		if (validation_param === 'reg_token') {
 
 		}
 	}
@@ -246,7 +246,7 @@ export default class _Input {
 		this._has_error = false
 	}
 
-	static generate_registration_token(): string {
+	static generate_reg_token(): string {
 		return ''
 	}
 

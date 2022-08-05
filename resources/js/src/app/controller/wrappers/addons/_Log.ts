@@ -23,40 +23,40 @@ type entry_update_result_t = {
 }[]
 
 /* 
-    ResponseObject Export
+    RespObj Export
 */
-export const _LogResponseObject = {
-    id: undefined as undefined | null | number,
-    session_id: undefined as undefined | null | number,
+export const _LogRespObj = {
+    id: undefined as undefined | null | string,
+    session_token: undefined as undefined | null | string,
     action_note: undefined as undefined | null | string,
     action_type: undefined as undefined | null | logged_action_type_t,
     action_user_username: undefined as undefined | null | string,
     action_datetime: undefined as undefined | null | string,
     batch_code: undefined as undefined | null | string,
     entry_table: undefined as undefined | null | string,
-    entry_uid: undefined as undefined | null | string | number,
+    entry_pmkey: undefined as undefined | null | string | number,
     entry_update_result: undefined as undefined | null | entry_update_result_t
 }
 
 /*
     Exported Default Class
 */
-export default class _Log extends _Wrapper_ implements Omit<typeof _LogResponseObject, casts_t> {
-    id: number | null = null
-    session_id: number | null = null
+export default class _Log extends _Wrapper_ implements Omit<typeof _LogRespObj, casts_t> {
+    id: string | null = null
+    session_token: string| null = null
     action_note: string | null = null
     action_type: logged_action_type_t | null = null
     action_user_username: string | null = null
     action_datetime: _DateTime | null = null
     batch_code: string | null = null
     entry_table: string | null = null
-    entry_uid: string | number | null = null
+    entry_pmkey: string | number | null = null
     entry_update_result: entry_update_result_t | null = null
 
     /* Class Constructor */
-    constructor(args: typeof _LogResponseObject) { super(); this.populate(args) }
+    constructor(args: typeof _LogRespObj) { super(); this.populate(args) }
 
-    protected populate(args: typeof _LogResponseObject) {
+    protected populate(args: typeof _LogRespObj) {
         this._populate(args)
         this.action_datetime = new _DateTime(args.action_datetime)
     }

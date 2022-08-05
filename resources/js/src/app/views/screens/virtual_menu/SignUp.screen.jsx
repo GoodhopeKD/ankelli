@@ -26,8 +26,8 @@ function SignInScreen(props) {
                                 <label htmlFor="floatingInput">Username</label>
                             </div>
                             <div className="form-floating mb-3">
-                                <input type='text' className="form-control rounded-3" id="floating_registration_token" placeholder="Registration Token" />
-                                <label htmlFor="floating_registration_token">Registration Token</label>
+                                <input type='text' className="form-control rounded-3" id="floating_reg_token" placeholder="Registration Token" />
+                                <label htmlFor="floating_reg_token">Registration Token</label>
                             </div>
                             <div className="form-floating mb-3">
                                 <input type='text' className="form-control rounded-3" id="floating_email_address" placeholder="Email Address" />
@@ -53,7 +53,7 @@ function SignInScreen(props) {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        login: () => dispatch({ type: 'SYSTEM_STATE_SET_TEMP_AUTH', temp_auth: true }),
+        login: () => dispatch({ type: 'APP_INSTANCE_STATE_SET_TEMP_AUTH', temp_auth: true }),
     }
 }
 

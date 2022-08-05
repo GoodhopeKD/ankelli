@@ -14,18 +14,32 @@ return new class extends Migration
     public function up()
     {
         Schema::create('__offers', function (Blueprint $table) {
-            $table->id();
+            $table->string('ref_code', 16)->primary();
             $table->string('country', 32);
-            $table->string('asset_name', 64)->nullable();
-            $table->foreign('asset_name')
-                    ->references('name')
+            
+            $table->enum('offer_to', ['buy', 'sell']);
+
+            $table->string('asset_code', 64)->nullable();
+            $table->foreign('asset_code')
+                    ->references('code')
                     ->on('__assets')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->string('purchase_currency', 3);
-            $table->unsignedDecimal('purchase_price', $precision = 3, $scale = 2);
-            $table->unsignedBigInteger('min_purchase_amount');
-            $table->unsignedBigInteger('max_purchase_amount');
+            $table->string('currency_code', 64)->nullable();
+            $table->foreign('currency_code')
+                    ->references('code')
+                    ->on('__currencies')
+                    ->onUpdate('cascade')
+                    ->onDelete('set null');
+
+            $table->unsignedDecimal('asset_sell_price', $precision = 20, $scale = 10)->nullable();
+            $table->unsignedDecimal('min_sell_value', $precision = 20, $scale = 10)->nullable();
+            $table->unsignedDecimal('max_sell_value', $precision = 20, $scale = 10)->nullable();
+
+            $table->unsignedDecimal('asset_purchase_price', $precision = 20, $scale = 10)->nullable();
+            $table->unsignedBigInteger('min_purchase_amount')->nullable();
+            $table->unsignedBigInteger('max_purchase_amount')->nullable();
+
             $table->string('payment_method', 64);
             $table->text('payment_details');
             $table->string('note', 64);

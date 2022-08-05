@@ -14,8 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('__sessions', function (Blueprint $table) {
-            $table->id();
-            $table->string('session_token',16)->unique();
+            $table->string('token',16)->primary();
             $table->string('user_username', 64)->nullable();
             $table->foreign('user_username')
                     ->references('username')

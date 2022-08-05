@@ -9,17 +9,19 @@ import { laravel_api_page_selection_t } from 'app/controller/actions/main_larave
     Type Definitions
 */
 type casts_t = 'created_datetime' | 'updated_datetime'
+type status_t = 'active' | 'deactivated'
 type get_collection_params = {
     get_with_meta?: boolean,
 }
 
 /* 
-    ResponseObject Export
+    RespObj Export
 */
-export const _AssetResponseObject = {
+export const _AssetRespObj = {
     id: undefined as undefined | null | number,
     name: undefined as undefined | null | string,
     code: undefined as undefined | null | string,
+    status: undefined as undefined | null | status_t,
 
     creator_username: undefined as undefined | null | string,
     created_datetime: undefined as undefined | null | string,
@@ -29,19 +31,20 @@ export const _AssetResponseObject = {
 /*
     Exported Default Class
 */
-export default class _Asset extends _Wrapper_ implements Omit<typeof _AssetResponseObject, casts_t> {
+export default class _Asset extends _Wrapper_ implements Omit<typeof _AssetRespObj, casts_t> {
     id: number | null = null
     name: string | null = null
     code: string | null = null
+    status: status_t | null = null
 
     creator_username: string | null = null
     created_datetime: _DateTime | null = null
     updated_datetime: _DateTime | null = null
 
     /* Class Constructor */
-    constructor(args: typeof _AssetResponseObject) { super(); this.populate(args) }
+    constructor(args: typeof _AssetRespObj) { super(); this.populate(args) }
 
-    protected populate(args: typeof _AssetResponseObject) {
+    protected populate(args: typeof _AssetRespObj) {
         this._populate(args)
         this.created_datetime = typeof args.created_datetime === 'string' ? new _DateTime(args.created_datetime) : null
         this.updated_datetime = typeof args.updated_datetime === 'string' ? new _DateTime(args.updated_datetime) : null
@@ -49,7 +52,7 @@ export default class _Asset extends _Wrapper_ implements Omit<typeof _AssetRespo
 
     /* Creator(s) */
 
-    public static async create(args: typeof _AssetResponseObject) {
+    public static async create(args: typeof _AssetRespObj) {
         return this._mainLaravelDBAPICreate('datalists/assets', args)
     }
 

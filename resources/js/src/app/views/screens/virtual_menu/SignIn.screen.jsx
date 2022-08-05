@@ -41,7 +41,7 @@ function SignInScreen(props) {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        login: () => dispatch({ type: 'SYSTEM_STATE_SET_TEMP_AUTH', temp_auth: true }),
+        login: () => dispatch({ type: 'APP_INSTANCE_STATE_SET_TEMP_AUTH', temp_auth: true }),
     }
 }
 

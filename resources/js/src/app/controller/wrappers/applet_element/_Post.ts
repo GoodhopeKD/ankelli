@@ -3,9 +3,9 @@ import _DateTime from 'app/controller/wrappers/auxilliary/_DateTime'
 /* Parent Class import */
 import _Wrapper_ from 'app/controller/wrappers/_Wrapper_'
 /* Element Imports */
-import _File, { _FileResponseObject } from 'app/controller/wrappers/addons/_File'
+import _File, { _FileRespObj } from 'app/controller/wrappers/addons/_File'
 /* Logger Imports */
-import _Log, { _LogResponseObject } from 'app/controller/wrappers/addons/_Log'
+import _Log, { _LogRespObj } from 'app/controller/wrappers/addons/_Log'
 /* Actions, Configs imports */
 import { laravel_api_page_selection_t } from 'app/controller/actions/main_laravel_db_rest_api.actions'
 import { _dataless_resource_collection_wrapper } from 'app/controller/redux_reducers/_resource_collection_wrapper'
@@ -13,7 +13,7 @@ import { _dataless_resource_collection_wrapper } from 'app/controller/redux_redu
 /*
     Type Definitions
 */
-type casts_t = 'files' | 'expiry_datetime' | 'created_datetime' | 'updated_datetime' | 'deleted_datetime'
+type casts_t = 'files' | 'post_datetime' | 'expiry_datetime' | 'created_datetime' | 'updated_datetime' | 'deleted_datetime'
 type status_t = 'visible' | 'hidden'
 type get_collection_params = {
     get_with_meta?: boolean,
@@ -23,16 +23,17 @@ type get_collection_params = {
 }
 
 /* 
-    ResponseObject Export
+    RespObj Export
 */
-export const _PostResponseObject = {
+export const _PostRespObj = {
     id: undefined as undefined | null | number,
     title: undefined as undefined | null | string,
     exerpt: undefined as undefined | null | string,
     body: undefined as undefined | null | string,
-    files: undefined as undefined | null | typeof _FileResponseObject[],
+    files: undefined as undefined | null | typeof _FileRespObj[],
     status: undefined as undefined | null | status_t,
 
+    post_datetime: undefined as undefined | null | string,
     expiry_datetime: undefined as undefined | null | string,
     creator_username: undefined as undefined | null | string,
     created_datetime: undefined as undefined | null | string,
@@ -43,16 +44,16 @@ export const _PostResponseObject = {
 /*
     Gettable AddonProps
 */
-const GettableCollectionAddonPropsResponseObject = {
-    logs: [] as typeof _LogResponseObject[]
+const GettableCollectionAddonPropsRespObj = {
+    logs: [] as typeof _LogRespObj[]
 }
 
-const GettableAddonPropsResponseObject = GettableCollectionAddonPropsResponseObject
+const GettableAddonPropsRespObj = GettableCollectionAddonPropsRespObj
 
 /*
     Exported Default Class
 */
-export default class _Post extends _Wrapper_ implements Omit<typeof _PostResponseObject, casts_t> {
+export default class _Post extends _Wrapper_ implements Omit<typeof _PostRespObj, casts_t> {
     id: number | null = null
     title: string | null = null
     exerpt: string | null = null
@@ -60,24 +61,25 @@ export default class _Post extends _Wrapper_ implements Omit<typeof _PostRespons
     files: _File[] = []
     status: status_t | null = null
 
+    post_datetime: _DateTime | null = null
     expiry_datetime: _DateTime | null = null
     creator_username: string | null = null
     created_datetime: _DateTime | null = null
     updated_datetime: _DateTime | null = null
     deleted_datetime: _DateTime | null = null
 
-    protected collections_pagination_params_data = {} as { [collection_name in keyof typeof GettableCollectionAddonPropsResponseObject]: typeof _dataless_resource_collection_wrapper }
+    protected collections_pagination_params_data = {} as { [collection_name in keyof typeof GettableCollectionAddonPropsRespObj]: typeof _dataless_resource_collection_wrapper }
 
     /* Class Constructor */
-    constructor(args: typeof _PostResponseObject) { super(); this.populate(args) }
+    constructor(args: typeof _PostRespObj) { super(); this.populate(args) }
 
-    protected populate(args: typeof _PostResponseObject) {
+    protected populate(args: typeof _PostRespObj) {
         this._populate(args)
 
         this.files = []
 
         if (args.files && args.files.length) {
-            args.files.forEach((element: typeof _FileResponseObject) => {
+            args.files.forEach((element: typeof _FileRespObj) => {
                 this.files.push(new _File(element))
             })
         }
@@ -90,7 +92,7 @@ export default class _Post extends _Wrapper_ implements Omit<typeof _PostRespons
 
     /* Creator(s) */
 
-    public static async create(args: typeof _PostResponseObject) {
+    public static async create(args: typeof _PostRespObj) {
         return this._mainLaravelDBAPICreate('posts', args)
     }
 
@@ -108,13 +110,13 @@ export default class _Post extends _Wrapper_ implements Omit<typeof _PostRespons
         return this._mainLaravelDBAPIGetCollection('posts', params, page_select, per_page)
     }
 
-    public async getAddonProp(addon_prop_name: keyof typeof GettableAddonPropsResponseObject, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        this.recreateGCAPPPD(GettableCollectionAddonPropsResponseObject);
+    public async getAddonProp(addon_prop_name: keyof typeof GettableAddonPropsRespObj, page_select?: laravel_api_page_selection_t, per_page?: number) {
+        this.recreateGCAPPPD(GettableCollectionAddonPropsRespObj);
         const prop_types = {
             'logs': _Log,
         }
         if (Object.keys(prop_types).includes(addon_prop_name)) {
-            return this._mainLaravelDBAPIGetAddonPropCollection(prop_types[addon_prop_name], { addon_prop_name, addon_prop_parent_table: '__posts', addon_prop_parent_uid: this.id as number }, page_select, per_page)
+            return this._mainLaravelDBAPIGetAddonPropCollection(prop_types[addon_prop_name], { addon_prop_name, addon_prop_parent_table: '__posts', addon_prop_parent_pmkey: this.id as number }, page_select, per_page)
         } else {
             return Promise.reject({ message: 'Addon not recognized' })
         }

@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('__chats', function (Blueprint $table) {
-            $table->id();
+            $table->string('id', 16)->primary();
             $table->string('participant_one_username', 64)->nullable();
             $table->foreign('participant_one_username')
                     ->references('username')

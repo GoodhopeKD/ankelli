@@ -21,7 +21,7 @@ return new class extends Migration
                     ->on('__users')
                     ->onUpdate('cascade')
                     ->onDelete('cascade');
-            $table->string('position_title', 32);
+            $table->string('post_title', 32);
             $table->enum('status', ['active', 'suspended', 'deactivated'])->default('active');
 
             $table->string('creator_username', 64)->nullable();
@@ -38,12 +38,12 @@ return new class extends Migration
         DB::table('__admin_extensions')->insert([
             [
                 'user_username' => 'sysadmin',
-                'position_title' => 'Default System Administrator',
+                'post_title' => 'Default System Administrator',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
             [
                 'user_username' => 'hopekd01',
-                'position_title' => 'Head Backend Developer',
+                'post_title' => 'Head Backend Developer',
                 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
             ],
         ]);

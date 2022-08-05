@@ -12,7 +12,7 @@ import { _resource_collection_wrapper, _dataless_resource_collection_wrapper } f
 */
 type get_collection_params = { [key: string]: unknown }
 
-const Gettable_Wrapper_CollectionAddonPropsResponseObject: { [key: string]: unknown } = {}
+const Gettable_Wrapper_CollectionAddonPropsRespObj: { [key: string]: unknown } = {}
 
 /*
     Exported Default Class
@@ -22,7 +22,7 @@ export default class _Wrapper_ {
     public static collection = _resource_collection_wrapper
     protected gettable_collection_addon_props_page_selects_data = {} as any
 
-    protected recreateGCAPPPD(args: typeof Gettable_Wrapper_CollectionAddonPropsResponseObject) {
+    protected recreateGCAPPPD(args: typeof Gettable_Wrapper_CollectionAddonPropsRespObj) {
         if (!Object.keys(this.gettable_collection_addon_props_page_selects_data).length) {
             // Set stage for collection addons
             Object.keys(args).forEach((collection_name) => {
@@ -68,7 +68,7 @@ export default class _Wrapper_ {
 
     /* Readers */
 
-    protected static instanceToResponseObject = (obj: any): any => {
+    protected static instanceToRespObj = (obj: any): any => {
         if (null === obj || 'object' != typeof obj) return obj
         var copy
         if (obj instanceof _Date) {
@@ -78,22 +78,22 @@ export default class _Wrapper_ {
         if (obj instanceof Array && obj.length) {
             copy = []
             for (var i = 0, len = obj.length; i < len; i++) {
-                copy[i] = _Wrapper_.instanceToResponseObject(obj[i])
+                copy[i] = _Wrapper_.instanceToRespObj(obj[i])
             }
             return copy
         }
         if (obj instanceof Object && Object.keys(obj).length) {
             copy = {}
             for (var attr in obj) {
-                var copy_2 = _Wrapper_.instanceToResponseObject(obj[attr])
+                var copy_2 = _Wrapper_.instanceToRespObj(obj[attr])
                 if (obj.hasOwnProperty(attr) && copy_2) (copy as any)[attr] = copy_2
             }
             return copy
         }
     }
 
-    public toResponseObject(): Object {
-        return _Wrapper_.instanceToResponseObject(this)
+    public toRespObj(): Object {
+        return _Wrapper_.instanceToRespObj(this)
     }
 
     protected async _mainLaravelDBAPIRead(
@@ -173,7 +173,7 @@ export default class _Wrapper_ {
                 if (!link) {
                     return Promise.reject({ message: 'Link not found' })
                 }
-                endpoint = link.split(main_laravel_db_rest_api.config.api_url + '/' + store.getState().active_session_data.session_token + '/')[1]
+                endpoint = link.split(main_laravel_db_rest_api.config.api_url + '/' + store.getState().active_session_data.token + '/')[1]
             } else if (typeof page_select === 'object' && (page_select as object).hasOwnProperty('page')) {
                 if (page_select.page < 1 || (collection.meta.last_page > 0 && page_select.page > collection.meta.last_page)) {
                     return Promise.reject({ message: 'Page out of range' })
@@ -202,7 +202,7 @@ export default class _Wrapper_ {
 
     protected async _mainLaravelDBAPIGetAddonPropCollection(
         _AddonType: any, // Filled by Child class
-        data: { addon_prop_name: string, addon_prop_parent_table: string, addon_prop_parent_uid: string | number, [key: string]: unknown },
+        data: { addon_prop_name: string, addon_prop_parent_table: string, addon_prop_parent_pmkey: string | number, [key: string]: unknown },
         page_select?: laravel_api_page_selection_t,
         per_page?: number,
     ) {
@@ -217,6 +217,7 @@ export default class _Wrapper_ {
 
     protected async _mainLaravelDBAPIUpdate(
         endpoint: string, // Filled by Child class 
+        update_note: string,
         data: any,
         data_has_files: boolean | undefined = undefined
     ) {
@@ -227,7 +228,7 @@ export default class _Wrapper_ {
                 type: 'MAIN_LARAVEL_DB_REST_API_CALL',
                 method: 'PUT',
                 endpoint,
-                data,
+                data: { ...data, update_note },
                 data_has_files,
             })
             .then((resp: any) => { this.populate(resp); return Promise.resolve({ message: 'Update complete' }) })

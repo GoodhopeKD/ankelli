@@ -21,12 +21,12 @@ const rrfProps = {
 }
 */
 
-const stored_theme = store.getState().local_preferences_data.theme
-require('app/assets/styles/themes/' + (['default', 'dark'].includes(stored_theme) ? stored_theme : 'default') + '/colors.css')
+const pref_theme = store.getState().app_instance_state_data.pref_theme
+require('app/assets/styles/themes/' + (['default', 'dark'].includes(pref_theme) ? pref_theme : 'default') + '/colors.css')
 
 window._tr = (string_en) => {
-    const stored_lang = store.getState().local_preferences_data.lang
-    return stored_lang !== 'en' && langs[stored_lang] && langs[stored_lang][string_en] ? langs[stored_lang][string_en] : string_en
+    const pref_lang = store.getState().app_instance_state_data.pref_lang
+    return pref_lang !== 'en' && langs[pref_lang] && langs[pref_lang][string_en] ? langs[pref_lang][string_en] : string_en
 }
 
 export default function AppContainer() {

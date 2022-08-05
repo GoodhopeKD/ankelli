@@ -17,9 +17,9 @@ type get_collection_params = {
 }
 
 /* 
-    ResponseObject Export
+    RespObj Export
 */
-export const _CityResponseObject = {
+export const _CityRespObj = {
     id: undefined as undefined | null | number,
     name: undefined as undefined | null | string,
     province: undefined as undefined | null | string,
@@ -33,7 +33,7 @@ export const _CityResponseObject = {
 /*
     Exported Default Class
 */
-export default class _City extends _Wrapper_ implements Omit<typeof _CityResponseObject, casts_t> {
+export default class _City extends _Wrapper_ implements Omit<typeof _CityRespObj, casts_t> {
     id: number | null = null
     name: string | null = null
     province: string | null = null
@@ -44,9 +44,9 @@ export default class _City extends _Wrapper_ implements Omit<typeof _CityRespons
     updated_datetime: _DateTime | null = null
 
     /* Class Constructor */
-    constructor(args: typeof _CityResponseObject) { super(); this.populate(args) }
+    constructor(args: typeof _CityRespObj) { super(); this.populate(args) }
 
-    protected populate(args: typeof _CityResponseObject) {
+    protected populate(args: typeof _CityRespObj) {
         this._populate(args)
         this.created_datetime = typeof args.created_datetime === 'string' ? new _DateTime(args.created_datetime) : null
         this.updated_datetime = typeof args.updated_datetime === 'string' ? new _DateTime(args.updated_datetime) : null
@@ -54,7 +54,7 @@ export default class _City extends _Wrapper_ implements Omit<typeof _CityRespons
 
     /* Creator(s) */
 
-    public static async create(args: typeof _CityResponseObject) {
+    public static async create(args: typeof _CityRespObj) {
         return this._mainLaravelDBAPICreate('datalists/cities', args)
     }
 

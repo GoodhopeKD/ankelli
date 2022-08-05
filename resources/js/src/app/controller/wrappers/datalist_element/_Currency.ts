@@ -14,9 +14,9 @@ type get_collection_params = {
 }
 
 /* 
-    ResponseObject Export
+    RespObj Export
 */
-export const _CurrencyResponseObject = {
+export const _CurrencyRespObj = {
     id: undefined as undefined | null | number,
     name: undefined as undefined | null | string,
     alpha_three_code: undefined as undefined | null | string,
@@ -31,7 +31,7 @@ export const _CurrencyResponseObject = {
 /*
     Exported Default Class
 */
-export default class _Currency extends _Wrapper_ implements Omit<typeof _CurrencyResponseObject, casts_t> {
+export default class _Currency extends _Wrapper_ implements Omit<typeof _CurrencyRespObj, casts_t> {
     id: number | null = null
     name: string | null = null
     alpha_three_code: string | null = null
@@ -43,9 +43,9 @@ export default class _Currency extends _Wrapper_ implements Omit<typeof _Currenc
     updated_datetime: _DateTime | null = null
 
     /* Class Constructor */
-    constructor(args: typeof _CurrencyResponseObject) { super(); this.populate(args) }
+    constructor(args: typeof _CurrencyRespObj) { super(); this.populate(args) }
 
-    protected populate(args: typeof _CurrencyResponseObject) {
+    protected populate(args: typeof _CurrencyRespObj) {
         this._populate(args)
         this.created_datetime = typeof args.created_datetime === 'string' ? new _DateTime(args.created_datetime) : null
         this.updated_datetime = typeof args.updated_datetime === 'string' ? new _DateTime(args.updated_datetime) : null
@@ -53,7 +53,7 @@ export default class _Currency extends _Wrapper_ implements Omit<typeof _Currenc
 
     /* Creator(s) */
 
-    public static async create(args: typeof _CurrencyResponseObject) {
+    public static async create(args: typeof _CurrencyRespObj) {
         return this._mainLaravelDBAPICreate('datalists/assets', args)
     }
 

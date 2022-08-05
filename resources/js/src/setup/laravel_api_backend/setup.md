@@ -23,12 +23,12 @@ Change User to _User (__User) accross all files,
 ```properties
 php artisan make:model _Session -m
 php artisan make:model _EmailAddress -m
-php artisan make:model _PreferenceItem -m
+php artisan make:model _PrefItem -m
 php artisan make:model _Notification -m
-php artisan make:model _VerificationToken -m
-php artisan make:model _RegistrationToken -m
+php artisan make:model _VerifToken -m
+php artisan make:model _RegToken -m
 
-php artisan make:model _PhoneNumber -m
+php artisan make:model _PhoneNo -m
 php artisan make:model _File -m
 php artisan make:model _Log -m
 php artisan make:model _Message -m
@@ -119,98 +119,112 @@ In the **`app/Providers/RouteServiceProvider`** file
 Create and modify the controllers
 
 ```properties
-php artisan make:controller API/_DiscountInstanceController --api
-php artisan make:controller API/_LogController --api
-php artisan make:controller API/_NotificationController --api
 php artisan make:controller API/_SessionController --api
-php artisan make:controller API/_UserGroupMembershipController --api
-php artisan make:controller API/_VerificationTokenController --api
-
-php artisan make:controller API/_AddressController --api
 php artisan make:controller API/_EmailAddressController --api
+php artisan make:controller API/_PrefItemController --api
+php artisan make:controller API/_NotificationController --api
+php artisan make:controller API/_VerifTokenController --api
+php artisan make:controller API/_RegTokenController --api
+
+php artisan make:controller API/_PhoneNoController --api
 php artisan make:controller API/_FileController --api
-php artisan make:controller API/_LinkController --api
-php artisan make:controller API/_PhoneNumberController --api
-php artisan make:controller API/_PreferenceItemController --api
+php artisan make:controller API/_LogController --api
+php artisan make:controller API/_MessageController --api
 
-php artisan make:controller API/_DiscountCodeController --api
-php artisan make:controller API/_EventController --api
-php artisan make:controller API/_FeedbackReportController --api
-php artisan make:controller API/_ListingController --api
-php artisan make:controller API/_OrderController --api
-php artisan make:controller API/_PinningController --api
-
+php artisan make:controller API/_AssetController --api
+php artisan make:controller API/_CurrencyController --api
+php artisan make:controller API/_PaymentMethodController --api
 php artisan make:controller API/_CityController --api
-php artisan make:controller API/_ListingCategoryController --api
+php artisan make:controller API/_ProvinceController --api
 
 php artisan make:controller API/_UserGroupController --api
+php artisan make:controller API/_UserGroupMembershipController --api
+php artisan make:controller API/_PermissionController --api
+php artisan make:controller API/_PermissionInstanceController --api
+php artisan make:controller API/_ExportableController --api
+
+php artisan make:controller API/_AssetAccountController --api
+php artisan make:controller API/_ChatController --api
+php artisan make:controller API/_DepositTokenController --api
+php artisan make:controller API/_FeedbackReportController --api
+php artisan make:controller API/_OfferController --api
+php artisan make:controller API/_PinningController --api
+php artisan make:controller API/_PostController --api
+php artisan make:controller API/_TradeController --api
+php artisan make:controller API/_TransactionController --api
 
 php artisan make:controller API/_AdminExtensionController --api
-php artisan make:controller API/_ApplicantExtensionController --api
-php artisan make:controller API/_TraderExtensionController --api
-php artisan make:controller API/_StoreController --api
-php artisan make:controller API/_UserController --api
+php artisan make:controller API/_BuyerExtensionController --api
+php artisan make:controller API/_SellerExtensionController --api
 
 ```
 Create and modify the Resources
 
 ```properties
-php artisan make:resource _DiscountInstanceResource
-php artisan make:resource _DiscountInstanceResourceCollection --collection
-php artisan make:resource _LogResource
-php artisan make:resource _NotificationResource
 php artisan make:resource _SessionResource
-php artisan make:resource _UserGroupMembershipResource
-php artisan make:resource _UserGroupMembershipResourceCollection --collection
-php artisan make:resource _VerificationTokenResource
-
-php artisan make:resource _AddressResource
-php artisan make:resource _AddressResourceCollection --collection
 php artisan make:resource _EmailAddressResource
 php artisan make:resource _EmailAddressResourceCollection --collection
+php artisan make:resource _PrefItemResource
+php artisan make:resource _PrefItemResourceCollection --collection
+php artisan make:resource _NotificationResource
+php artisan make:resource _VerifTokenResource
+php artisan make:resource _RegTokenResource
+
+php artisan make:resource _PhoneNoResource
+php artisan make:resource _PhoneNoResourceCollection --collection
 php artisan make:resource _FileResource
 php artisan make:resource _FileResourceCollection --collection
-php artisan make:resource _LinkResource
-php artisan make:resource _LinkResourceCollection --collection
-php artisan make:resource _PhoneNumberResource
-php artisan make:resource _PhoneNumberResourceCollection --collection
-php artisan make:resource _PreferenceItemResource
-php artisan make:resource _PreferenceItemResourceCollection --collection
+php artisan make:resource _LogResource
+php artisan make:resource _MessageResource
+php artisan make:resource _MessageResourceCollection --collection
 
-php artisan make:resource _DiscountCodeResource
-php artisan make:resource _DiscountCodeResourceCollection --collection
-php artisan make:resource _EventResource
-php artisan make:resource _EventResourceCollection --collection
-php artisan make:resource _FeedbackReportResource
-php artisan make:resource _FeedbackReportResourceCollection --collection
-php artisan make:resource _ListingResource
-php artisan make:resource _ListingResourceCollection --collection
-php artisan make:resource _OrderResource
-php artisan make:resource _OrderResourceCollection --collection
-php artisan make:resource _PinningResource
-php artisan make:resource _PinningResourceCollection --collection
-
-php artisan make:resource __UserDisplayCardResource
-php artisan make:resource __VisitViewFollowCountResource
-
+php artisan make:resource _AssetResource
+php artisan make:resource _AssetResourceCollection --collection
+php artisan make:resource _CurrencyResource
+php artisan make:resource _CurrencyResourceCollection --collection
+php artisan make:resource _PaymentMethodResource
+php artisan make:resource _PaymentMethodResourceCollection --collection
 php artisan make:resource _CityResource
 php artisan make:resource _CityResourceCollection --collection
-php artisan make:resource _ListingCategoryResource
-php artisan make:resource _ListingCategoryResourceCollection --collection
+php artisan make:resource _ProvinceResource
+php artisan make:resource _ProvinceResourceCollection --collection
 
 php artisan make:resource _UserGroupResource
 php artisan make:resource _UserGroupResourceCollection --collection
+php artisan make:resource _UserGroupMembershipResource
+php artisan make:resource _UserGroupMembershipResourceCollection --collection
+php artisan make:resource _PermissionResource
+php artisan make:resource _PermissionResourceCollection --collection
+php artisan make:resource _PermissionInstanceResource
+php artisan make:resource _PermissionInstanceResourceCollection --collection
+php artisan make:resource _ExportableResource
+php artisan make:resource _ExportableResourceCollection --collection
+
+php artisan make:resource _AssetAccountResource
+php artisan make:resource _AssetAccountResourceCollection --collection
+php artisan make:resource _ChatResource
+php artisan make:resource _ChatResourceCollection --collection
+php artisan make:resource _DepositTokenResource
+php artisan make:resource _DepositTokenResourceCollection --collection
+php artisan make:resource _FeedbackReportResource
+php artisan make:resource _FeedbackReportResourceCollection --collection
+php artisan make:resource _OfferResource
+php artisan make:resource _OfferResourceCollection --collection
+php artisan make:resource _PinningResource
+php artisan make:resource _PinningResourceCollection --collection
+php artisan make:resource _PostResource
+php artisan make:resource _PostResourceCollection --collection
+php artisan make:resource _TradeResource
+php artisan make:resource _TradeResourceCollection --collection
+php artisan make:resource _TransactionResource
+php artisan make:resource _TransactionResourceCollection --collection
 
 php artisan make:resource _AdminExtensionResource
 php artisan make:resource _AdminExtensionResourceCollection --collection
-php artisan make:resource _ApplicantExtensionResource
-php artisan make:resource _ApplicantExtensionResourceCollection --collection
-php artisan make:resource _TraderExtensionResource
-php artisan make:resource _TraderExtensionResourceCollection --collection
-php artisan make:resource _StoreResource
-php artisan make:resource _StoreResourceCollection --collection
-php artisan make:resource _UserResource
-php artisan make:resource _UserResourceCollection --collection
+php artisan make:resource _BuyerExtensionResource
+php artisan make:resource _BuyerExtensionResourceCollection --collection
+php artisan make:resource _SellerExtensionResource
+php artisan make:resource _SellerExtensionResourceCollection --collection
 
 ```
 

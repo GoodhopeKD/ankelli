@@ -1,34 +1,32 @@
+import UserNotificationsListViewScreen from 'app/views/screens/UserNotificationsListView.screen'
+
 export const top_navbar_user_menu = {
     slug: 'top_navbar_user_menu',
     menu_title: 'Top Navbar User Menu',
-    auth_state_required: true,
-    visible_in_menu: true,
+    show_when_auth_state_is: true,
+    show_in_menu: true,
     menu_items: [
         {
             title: 'Notifications',
             path: '/user_notifications',
-            faicon_class: "fas fa-question-circle",
+            element: (props) => <UserNotificationsListViewScreen />,
         },
         {
-            title: 'Profile Management',
-            path: '/user_profile/dashboard',
-            faicon_class: "fas fa-question-circle",
+            title: 'My Account',
+            path: '/account_operations/dashboard',
         },
         {
-            title: 'Account Settings',
-            path: '/user_account/email_addresses',
-            faicon_class: "fas fa-user-tie",
+            title: 'Settings',
+            path: '/account_settings/email_addresses',
         },
         {
-            title: 'Admin Dashboard',
-            path: '/dashboard/daily_users',
-            faicon_class: "fas fa-user-tie",
+            title: 'Admin Area',
+            path: '/admin_dashboard/daily_users',
             has_divider_below: true,
         },
         {
             title: 'Sign out',
             path: '/#/logout',
-            faicon_class: "fas fa-gavel",
         },
     ]
 }

@@ -14,11 +14,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('__transactions', function (Blueprint $table) {
-            $table->id();
-            $table->string('reference_code', 64)->unique();
-            $table->foreignId('session_id')
-                    ->nullable()
-                    ->constrained('__sessions')
+            $table->string('ref_code', 16)->primary();
+            $table->string('session_token', 16)->nullable();
+            $table->foreign('session_token')
+                    ->references('token')
+                    ->on('__sessions')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
             $table->enum('action_type', ['entry_create', 'entry_read', 'entry_update', 'entry_delete', 'function_call', 'batch_init']);

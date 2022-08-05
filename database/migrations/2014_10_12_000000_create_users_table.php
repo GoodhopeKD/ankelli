@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('password');
             $table->unsignedTinyInteger('avatar_image_id')->nullable();
             
-            $table->enum('account_status', ['active', 'inactive', 'suspended', 'deactivated'])->default('active');
+            $table->enum('status', ['active', 'inactive', 'suspended', 'deactivated'])->default('active');
             $table->timestamp('created_datetime')->useCurrent();
             $table->timestamp('updated_datetime')->nullable()->useCurrentOnUpdate();
             $table->softDeletes('deleted_datetime');
