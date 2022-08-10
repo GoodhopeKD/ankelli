@@ -6,13 +6,13 @@ let device_info = {
 }
 
 let agent_app_info = {
-	//name: pkg.name,
-	//version: pkg.version,
-	extra: 'Ankelli Mobile App'
+	name: 'Ankelli Web App',
+	version: '1.0.0',
+	extra: 'Ankelli Web App'
 }
 
 const initial_state = {
-	token: null,
+	token: undefined,
 	auth_token: null,
 	signin_datetime: null,
 	signout_datetime: null,
@@ -24,13 +24,13 @@ const initial_state = {
 
 export const active_session_data_reducer = (state = initial_state, action: any) => {
 	switch (action.type) {
-		case 'ACTIVE_CONNECT_INSTANCE_DATA_SET_AUTH_ACCESS_TOKEN':
+		case 'ACTIVE_SESSION_DATA_SET_AUTH_TOKEN':
 			return {
 				...state,
 				auth_token: action.auth_token
 			}
 
-		case 'ACTIVE_CONNECT_INSTANCE_DATA_UPDATE':
+		case 'ACTIVE_SESSION_DATA_UPDATE':
 			return {
 				...state,
 				...action.active_session_data,

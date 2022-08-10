@@ -37,6 +37,6 @@ class _Exportable extends Model
      */
     public function logs()
     {
-        return $this->hasMany( _Log::class, 'entry_pmkey' )->where('entry_table', '__exportables');
+        return $this->hasMany( _Log::class, 'entry_uid' )->where('entry_table', '__exportables');
     }
 }

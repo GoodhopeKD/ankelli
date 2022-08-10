@@ -22,7 +22,7 @@ const rrfProps = {
 */
 
 const pref_theme = store.getState().app_instance_state_data.pref_theme
-require('app/assets/styles/themes/' + (['default', 'dark'].includes(pref_theme) ? pref_theme : 'default') + '/colors.css')
+require('app/assets/styles/themes/' + (['light', 'dark'].includes(pref_theme) ? pref_theme : 'light') + '/colors.css')
 
 window._tr = (string_en) => {
     const pref_lang = store.getState().app_instance_state_data.pref_lang

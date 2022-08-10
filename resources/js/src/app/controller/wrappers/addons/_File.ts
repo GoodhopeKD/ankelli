@@ -3,8 +3,8 @@ import _DateTime from 'app/controller/wrappers/auxilliary/_DateTime'
 /* Parent Class import */
 import _Wrapper_ from 'app/controller/wrappers/_Wrapper_'
 /* Actions, Configs imports */
-import { main_laravel_db_rest_api } from 'app/controller/config/main_laravel_db_rest_api.config'
-import { laravel_api_page_selection_t } from 'app/controller/actions/main_laravel_db_rest_api.actions'
+import { app_backend_api } from 'app/controller/config/app_backend_api.config'
+import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend_api.actions'
 
 /*
     Type Definitions
@@ -26,7 +26,7 @@ type get_collection_params = {
     search_query_string?: string,
     user_username?: string,
     parent_table?: parent_table_t,
-    parent_pmkey?: string | number,
+    parent_uid?: string | number,
     filegroup?: filegroup_t,
     tag?: tag_t,
 }
@@ -37,7 +37,7 @@ type get_collection_params = {
 export const _FileRespObj = {
     id: undefined as undefined | null | number,
     parent_table: undefined as undefined | null | parent_table_t,
-    parent_pmkey: undefined as undefined | null | string | number,
+    parent_uid: undefined as undefined | null | string | number,
 
     upload_id: undefined as undefined | null | string, // Not saved
 
@@ -66,7 +66,7 @@ export const _FileRespObj = {
 export default class _File extends _Wrapper_ implements Omit<typeof _FileRespObj, casts_t | 'upload_id'> {
     id: number | null = null
     parent_table: parent_table_t | null = null
-    parent_pmkey: string | number | null = null
+    parent_uid: string | number | null = null
 
     filegroup: filegroup_t | null = null
     tag: tag_t | null = null
@@ -95,7 +95,7 @@ export default class _File extends _Wrapper_ implements Omit<typeof _FileRespObj
     protected populate(args: typeof _FileRespObj) {
         this._populate(args)
 
-        this.uri = (this.uri as string).replace('https://ankelli-app.com', main_laravel_db_rest_api.config.web_url)
+        this.uri = (this.uri as string).replace('https://ankelli.com', app_backend_api.config.web_url)
         /*const uri_elems = this.uri.split('/')
         this.filename = uri_elems[uri_elems.length - 1]
         const filename_elems = this.filename.split('.')
@@ -138,7 +138,7 @@ export default class _File extends _Wrapper_ implements Omit<typeof _FileRespObj
 
     /* Readers */
 
-    public static async getOneWhere(params: { tag?: tag_t, parent_table?: parent_table_t, parent_pmkey?: string | number }) {
+    public static async getOneWhere(params: { tag?: tag_t, parent_table?: parent_table_t, parent_uid?: string | number }) {
         return this._mainLaravelDBAPIGetOneWhere('files', params)
     }
 

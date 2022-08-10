@@ -30,8 +30,8 @@ class _Offer extends Model
         'asset_purchase_price',
         'min_purchase_amount',
         'max_purchase_amount',
-        'payment_method',
-        'payment_details',
+        'payment_method_slug',
+        'payment_method_details',
         'note',
         'status',
         'creator_username',
@@ -46,6 +46,7 @@ class _Offer extends Model
      * @var array
      */
     protected $casts = [
+        'payment_method_details' => 'array',
         //'created_datetime' => 'datetime',
         //'updated_datetime' => 'datetime',
     ];
@@ -55,6 +56,6 @@ class _Offer extends Model
      */
     public function logs()
     {
-        return $this->hasMany( _Log::class, 'entry_pmkey' )->where('entry_table', '__offers');
+        return $this->hasMany( _Log::class, 'entry_uid' )->where('entry_table', '__offers');
     }
 }

@@ -34,6 +34,32 @@ return new class extends Migration
             $table->timestamp('created_datetime')->useCurrent();
             $table->timestamp('updated_datetime')->nullable()->useCurrentOnUpdate();
         });
+
+        DB::table('__asset_accounts')->insert([
+            [
+                'user_username' => 'ankelli',
+                'asset_code' => 'USDT',
+                'asset_value' => 2500,
+            ],
+        ]);
+
+        DB::table('__asset_accounts')->insert([
+            [
+                'user_username' => 'popo',
+                'asset_code' => 'USDT',
+                'asset_value' => 347.3367778,
+            ],
+            [
+                'user_username' => 'momo',
+                'asset_code' => 'USDT',
+                'asset_value' => 22.8658,
+            ],
+            [
+                'user_username' => 'gudo',
+                'asset_code' => 'USDT',
+                'asset_value' => 478.9897,
+            ],
+        ]);
     }
 
     /**

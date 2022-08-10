@@ -29,23 +29,18 @@ return new class extends Migration
         DB::table('__email_addresses')->insert([
             [
                 'user_username' => 'sysadmin',
-                'email_address' => 'sysadmin@ankelli-app.com',
-                'created_datetime' => now()->toDateTimeString(), 'verified_datetime' => now()->toDateTimeString(),
+                'email_address' => 'sysadmin@ankelli.com',
+                'verified_datetime' => now()->toDateTimeString(),
             ],
             [
-                'user_username' => 'deposits-assistant',
-                'email_address' => 'deposits@ankelli-app.com',
-                'created_datetime' => now()->toDateTimeString(), 'verified_datetime' => now()->toDateTimeString(),
-            ],
-            [
-                'user_username' => 'withdrawals-assistant',
-                'email_address' => 'withdrawals@ankelli-app.com',
-                'created_datetime' => now()->toDateTimeString(), 'verified_datetime' => now()->toDateTimeString(),
+                'user_username' => 'ankelli',
+                'email_address' => 'ankelli@ankelli.com',
+                'verified_datetime' => now()->toDateTimeString(),
             ],
             [
                 'user_username' => 'hopekd01',
                 'email_address' => 'goodhopedhliwayo@gmail.com',
-                'created_datetime' => now()->toDateTimeString(), 'verified_datetime' => now()->toDateTimeString(),
+                'verified_datetime' => now()->toDateTimeString(),
             ],
         ]);
     }

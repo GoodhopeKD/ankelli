@@ -17,7 +17,7 @@ type parent_table_t = '__chats' | '__trades'
 export const _MessageRespObj = {
     id: undefined as undefined | null | string,
     parent_table: undefined as undefined | null | parent_table_t,
-    parent_pmkey: undefined as undefined | null | string,
+    parent_uid: undefined as undefined | null | string,
     body: undefined as undefined | null | string,
     file: undefined as undefined | null | typeof _FileRespObj,
 
@@ -32,7 +32,7 @@ export const _MessageRespObj = {
 export default class _Message extends _Wrapper_ implements Omit<typeof _MessageRespObj, casts_t> {
     id: string | null = null
     parent_table: parent_table_t | null = null
-    parent_pmkey: string | null = null
+    parent_uid: string | null = null
     body: string | null = null
     file: _File | null = null
 

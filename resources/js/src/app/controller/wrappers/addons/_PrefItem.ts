@@ -16,9 +16,10 @@ export const _PrefItemRespObj = {
     id: undefined as undefined | null | number,
     key_name: undefined as undefined | null | string,
     key_slug: undefined as undefined | null | string,
-    value: undefined as undefined | null | string | number | boolean,
+    value: undefined as undefined | null | string | number | boolean | object,
+    value_type: undefined as undefined | null | string,
     parent_table: undefined as undefined | null | parent_table_t,
-    parent_pmkey: undefined as undefined | null | string | number,
+    parent_uid: undefined as undefined | null | string | number,
 
     creator_username: undefined as undefined | null | string,
     created_datetime: undefined as undefined | null | string,
@@ -32,9 +33,10 @@ export default class _PrefItem extends _Wrapper_ implements Omit<typeof _PrefIte
     id: number | null = null
     key_name: string | null = null
     key_slug: string | null = null
-    value: string | number | boolean | null = null
+    value: string | number | boolean | object | null = null
+    value_type: string | null = null
     parent_table: parent_table_t | null = null
-    parent_pmkey: string | number | null = null
+    parent_uid: string | number | null = null
 
     creator_username: string | null = null
     created_datetime: _DateTime | null = null

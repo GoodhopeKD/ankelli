@@ -24,7 +24,7 @@ class _Log extends Model
         'utc_offset',
         'batch_code',
         'entry_table',
-        'entry_pmkey',
+        'entry_uid',
         'entry_update_result',
         'request_location',
     ];

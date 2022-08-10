@@ -3,7 +3,7 @@ import _DateTime from 'app/controller/wrappers/auxilliary/_DateTime'
 /* Parent Class import */
 import _Wrapper_ from 'app/controller/wrappers/_Wrapper_'
 /* Actions, Configs imports */
-import { laravel_api_page_selection_t } from 'app/controller/actions/main_laravel_db_rest_api.actions'
+import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend_api.actions'
 
 /*
     Type Definitions

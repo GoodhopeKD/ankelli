@@ -17,6 +17,8 @@ class _Currency extends Model
     protected $fillable = [
         'name',
         'alpha_three_code',
+        'symbol',
+        'symbol_before_amount',
         'usd_rate',
         'min_transactable_cash_amount',
         'smallest_transactable_cash_denomination_amount',
@@ -38,6 +40,6 @@ class _Currency extends Model
      */
     public function logs()
     {
-        return $this->hasMany( _Log::class, 'entry_pmkey' )->where('entry_table', '__currencies');
+        return $this->hasMany( _Log::class, 'entry_uid' )->where('entry_table', '__currencies');
     }
 }

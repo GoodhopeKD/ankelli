@@ -17,23 +17,22 @@ const strictly_auth_clear_endpoints = [
 const auth_clear_endpoints = [
     ...strictly_auth_clear_endpoints,
     '',
-    'users/check/{check_param_name}/{check_param}', // checks username, email_address
+    'availability_check/{check_param_name}/{check_param_value}', // checks username, email_address
 ]
 
 // Endpoints that require auth_token on all other methods except the GET method
 const auth_clear_on_GET_endpoints = [
-    // Listings
-    'listings/home_lists',
-    'listings',
-    'listings/{uid}',
+    // Offers
+    'offers',
+    'offers/{uid}',
     // Events
     'events',
-    'events/{ref_code}',
     'events/{uid}',
     // Sellers
     'stores',
     'stores/{uid}',
     // Datalists
+    'datalists/currencies',
     'datalists/cities',
     'datalists/listing_categories',
 ]
@@ -47,13 +46,13 @@ const config = {
         strictly_auth_clear_endpoints,
         auth_clear_on_GET_endpoints
     },
-    //web_url : 'https://www.ankelli-app.com',
-    //api_url : 'https://api.ankelli-app.com',
+    //web_url : 'https://www.ankelli.com',
+    //api_url : 'https://api.ankelli.com',
     web_url: (window as any)._WEB_URL_,
     api_url: (window as any)._API_URL_,
 }
 
-export const main_laravel_db_rest_api = {
+export const app_backend_api = {
     config,
     handle: axios.create({
         baseURL: config.api_url

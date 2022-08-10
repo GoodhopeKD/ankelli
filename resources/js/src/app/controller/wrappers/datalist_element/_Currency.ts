@@ -3,7 +3,7 @@ import _DateTime from 'app/controller/wrappers/auxilliary/_DateTime'
 /* Parent Class import */
 import _Wrapper_ from 'app/controller/wrappers/_Wrapper_'
 /* Actions, Configs imports */
-import { laravel_api_page_selection_t } from 'app/controller/actions/main_laravel_db_rest_api.actions'
+import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend_api.actions'
 
 /*
     Type Definitions
@@ -54,12 +54,12 @@ export default class _Currency extends _Wrapper_ implements Omit<typeof _Currenc
     /* Creator(s) */
 
     public static async create(args: typeof _CurrencyRespObj) {
-        return this._mainLaravelDBAPICreate('datalists/assets', args)
+        return this._mainLaravelDBAPICreate('datalists/currencies', args)
     }
 
     /* Readers */
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('datalists/assets', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('datalists/currencies', params, page_select, per_page)
     }
 }

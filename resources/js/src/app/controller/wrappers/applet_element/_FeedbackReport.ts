@@ -5,7 +5,7 @@ import _Wrapper_ from 'app/controller/wrappers/_Wrapper_'
 /* Logger Imports */
 import _Log, { _LogRespObj } from 'app/controller/wrappers/addons/_Log'
 /* Actions, Configs imports */
-import { laravel_api_page_selection_t } from 'app/controller/actions/main_laravel_db_rest_api.actions'
+import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend_api.actions'
 import { _dataless_resource_collection_wrapper } from 'app/controller/redux_reducers/_resource_collection_wrapper'
 
 /*
@@ -106,7 +106,7 @@ export default class _FeedbackReport extends _Wrapper_ implements Omit<typeof _F
             'logs': _Log
         }
         if (Object.keys(prop_types).includes(addon_prop_name)) {
-            return this._mainLaravelDBAPIGetAddonPropCollection(prop_types[addon_prop_name], { addon_prop_name, addon_prop_parent_table: '__feedback_reports', addon_prop_parent_pmkey: this.ticket_code as string }, page_select, per_page)
+            return this._mainLaravelDBAPIGetAddonPropCollection(prop_types[addon_prop_name], { addon_prop_name, addon_prop_parent_table: '__feedback_reports', addon_prop_parent_uid: this.ticket_code as string }, page_select, per_page)
 
         } else {
             return Promise.reject({ message: 'Addon not recognized' })

@@ -40,8 +40,13 @@ return new class extends Migration
             $table->unsignedBigInteger('min_purchase_amount')->nullable();
             $table->unsignedBigInteger('max_purchase_amount')->nullable();
 
-            $table->string('payment_method', 64);
-            $table->text('payment_details');
+            $table->string('payment_method_slug', 64)->nullable();
+            $table->foreign('payment_method_slug')
+                    ->references('slug')
+                    ->on('__payment_methods')
+                    ->onUpdate('cascade')
+                    ->onDelete('set null');
+            $table->text('payment_method_details');
             $table->string('note', 64);
             $table->enum('status', ['online', 'offline'])->default('online');
 
@@ -55,6 +60,61 @@ return new class extends Migration
             $table->timestamp('updated_datetime')->nullable()->useCurrentOnUpdate();
             $table->softDeletes('deleted_datetime');
         });
+
+        // Offers to buy
+        DB::table('__offers')->insert([
+            [
+                'ref_code' => '001',
+                'country' => 'Zimbabwe',
+                'offer_to' => 'buy',
+                'asset_code' => 'USDT',
+                'currency_code' => 'USD',
+                'asset_purchase_price' => 0.95,
+                'min_purchase_amount' => 100,
+                'max_purchase_amount' => 500,
+                'payment_method_slug' => 'cash_in_person',
+                'payment_method_details' => json_encode([
+                    'address' => 'Kingstones Book Shop, Cnr First st, R.Mugabe.',
+                    'phone_number' => '+263776543256'
+                ]),
+                'note' => 'Quick deal',
+                'creator_username' => 'popo',
+            ],
+            [
+                'ref_code' => '002',
+                'country' => 'Zimbabwe',
+                'offer_to' => 'buy',
+                'asset_code' => 'USDT',
+                'currency_code' => 'USD',
+                'asset_purchase_price' => 0.94,
+                'min_purchase_amount' => 100,
+                'max_purchase_amount' => 500,
+                'payment_method_slug' => 'cash_in_person',
+                'payment_method_details' => json_encode([
+                    'address' => 'OK Shop, Sam Nujoma.',
+                    'phone_number' => '+263776587536'
+                ]),
+                'note' => 'Quick deal',
+                'creator_username' => 'momo',
+            ],
+            [
+                'ref_code' => '003',
+                'country' => 'Zimbabwe',
+                'offer_to' => 'buy',
+                'asset_code' => 'USDT',
+                'currency_code' => 'USD',
+                'asset_purchase_price' => 0.96,
+                'min_purchase_amount' => 100,
+                'max_purchase_amount' => 500,
+                'payment_method_slug' => 'stanbic_bank_transfer',
+                'payment_method_details' => json_encode([
+                    'account_holder_name' => 'Sekuru Gudo',
+                    'account_number' => '9146898775793'
+                ]),
+                'note' => 'Quick deal',
+                'creator_username' => 'gudo',
+            ],
+        ]);
     }
 
     /**

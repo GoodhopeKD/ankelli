@@ -39,12 +39,12 @@ return new class extends Migration
             [
                 'user_username' => 'sysadmin',
                 'post_title' => 'Default System Administrator',
-                'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
+                'creator_username' => 'system',
             ],
             [
                 'user_username' => 'hopekd01',
                 'post_title' => 'Head Backend Developer',
-                'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
+                'creator_username' => 'system',
             ],
         ]);
     }

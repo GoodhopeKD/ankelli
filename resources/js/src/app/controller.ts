@@ -1,5 +1,5 @@
 /* Actions */
-import { connectivityBoot } from 'app/controller/actions/main_laravel_db_rest_api.actions'
+import { connectivityBoot } from 'app/controller/actions/app_backend_api.actions'
 
 /* Config */
 import { store, persistor } from 'app/controller/config/central_state.config'
@@ -10,11 +10,13 @@ import _Chat, { _ChatRespObj } from 'app/controller/wrappers/applet_element/_Cha
 import _FeedbackReport, { _FeedbackReportRespObj } from 'app/controller/wrappers/applet_element/_FeedbackReport'
 import _Message, { _MessageRespObj } from 'app/controller/wrappers/addons/_Message'
 import _Post, { _PostRespObj } from 'app/controller/wrappers/applet_element/_Post'
+import _Offer, { _OfferRespObj } from 'app/controller/wrappers/applet_element/_Offer'
 // auxilliary
 import _Input from 'app/controller/wrappers/auxilliary/_Input'
 import _Date from 'app/controller/wrappers/auxilliary/_Date'
 import _DateTime from 'app/controller/wrappers/auxilliary/_DateTime'
 // datalist_element
+import _Currency, { _CurrencyRespObj } from 'app/controller/wrappers/datalist_element/_Currency'
 import _City, { _CityRespObj } from 'app/controller/wrappers/datalist_element/_City'
 import _Province, { _ProvinceRespObj } from 'app/controller/wrappers/datalist_element/_Province'
 // addons
@@ -50,9 +52,11 @@ export {
     _FeedbackReport, _FeedbackReportRespObj,
     _Message, _MessageRespObj,
     _Post, _PostRespObj,
+    _Offer, _OfferRespObj,
     // auxilliary
     _Input, _Date, _DateTime,
     // datalist_element
+    _Currency, _CurrencyRespObj,
     _City, _CityRespObj,
     _Province, _ProvinceRespObj,
     // addons

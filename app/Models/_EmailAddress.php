@@ -35,7 +35,7 @@ class _EmailAddress extends Model
      */
     public function pref_items()
     {
-        return $this->hasMany( _PrefItem::class, 'parent_pmkey', 'email_address' )->where('parent_table', '__email_addresses');
+        return $this->hasMany( _PrefItem::class, 'parent_uid', 'email_address' )->where('parent_table', '__email_addresses');
     }
 
     /**
@@ -43,7 +43,7 @@ class _EmailAddress extends Model
      */
     public function logs()
     {
-        return $this->hasMany( _Log::class, 'entry_pmkey', 'email_address' )->where('entry_table', '__email_addresses');
+        return $this->hasMany( _Log::class, 'entry_uid', 'email_address' )->where('entry_table', '__email_addresses');
     }
 
     public function receive_notifications_f()
@@ -51,9 +51,9 @@ class _EmailAddress extends Model
         return !($this->pref_items()->where( 'key', 'receive_notifications' )->exists() && $this->pref_items()->where( 'key', 'receive_notifications' )->first()['value'] === 'no');
     }
     
-    public function receive_promotions_f()
+    public function receive_promos_email_inbox_f()
     {
-        return !($this->pref_items()->where( 'key', 'receive_promotions' )->exists() && $this->pref_items()->where( 'key', 'receive_promotions' )->first()['value'] === 'no');
+        return !($this->pref_items()->where( 'key', 'receive_promos_email_inbox' )->exists() && $this->pref_items()->where( 'key', 'receive_promos_email_inbox' )->first()['value'] === 'no');
     }
 
     public function is_user_primary_f()

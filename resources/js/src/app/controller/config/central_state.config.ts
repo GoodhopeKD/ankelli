@@ -5,7 +5,7 @@ import { persistReducer, persistStore, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, 
 
 /* Thunk argument imports */
 //import { getFirebase } from 'react-redux-firebase'
-import { main_laravel_db_rest_api } from 'app/controller/config/main_laravel_db_rest_api.config'
+import { app_backend_api } from 'app/controller/config/app_backend_api.config'
 
 /* Reducer Imports */
 import { active_session_data_reducer } from 'app/controller/redux_reducers/active_session_data.reducer'
@@ -15,7 +15,7 @@ import { local_pinnings_collection_reducer } from 'app/controller/redux_reducers
 import { sysconfig_params_data_reducer } from 'app/controller/redux_reducers/sysconfig_params_data.reducer'
 
 /* middleware Imports */
-import { mainLaravelDBAPICallMiddleware } from 'app/controller/actions/main_laravel_db_rest_api.actions'
+import { mainLaravelDBAPICallMiddleware } from 'app/controller/actions/app_backend_api.actions'
 //import { firebaseAPICallMiddleware } from 'app/controller/actions/firebase_api.actions'
 
 const root_persist_config = {
@@ -60,14 +60,14 @@ const store = configureStore({
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
             serializableCheck: {
-                ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, 'MAIN_LARAVEL_DB_REST_API_CALL_WITH_FILES', 'FIREBASE_API_CALL_WITH_FILES'],
+                ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, 'APP_BACKEND_API_CALL_WITH_FILES', 'FIREBASE_API_CALL_WITH_FILES'],
                 //ignoredActionPaths: ['file_upload'],
                 //ignoredPaths: ['file_upload']
             },
             thunk: {
                 extraArgument: {
                     //getFirebase,
-                    main_laravel_db_rest_api
+                    app_backend_api
                 },
             },
         })

@@ -7,7 +7,7 @@ import _Message, { _MessageRespObj } from 'app/controller/wrappers/addons/_Messa
 /* Logger Imports */
 import _Log, { _LogRespObj } from 'app/controller/wrappers/addons/_Log'
 /* Actions, Configs imports */
-import { laravel_api_page_selection_t } from 'app/controller/actions/main_laravel_db_rest_api.actions'
+import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend_api.actions'
 import { _dataless_resource_collection_wrapper } from 'app/controller/redux_reducers/_resource_collection_wrapper'
 
 /*
@@ -16,7 +16,7 @@ import { _dataless_resource_collection_wrapper } from 'app/controller/redux_redu
 type casts_t = 'payment_declared_datetime' | 'payment_confirmed_datetime' | 'created_datetime' | 'updated_datetime'
 type was_offer_to_t = 'buy' | 'sell'
 type status_t = 'active' | 'cancelled' | 'flagged' | 'completed'
-type payment_details_t = { key: string, value: string | number }[]
+type payment_method_details_t = { key: string, value: string | number }[]
 type addable_addon_args_t = typeof _MessageRespObj
 type get_collection_params = {
     get_with_meta?: boolean,
@@ -43,8 +43,8 @@ export const _TradeRespObj = {
     // for was_offer_to:buy
     asset_purchase_price: undefined as undefined | null | number,
     
-    payment_method: undefined as undefined | null | string,
-    payment_details: undefined as undefined | null | payment_details_t,
+    payment_method_slug: undefined as undefined | null | string,
+    payment_method_details: undefined as undefined | null | payment_method_details_t,
     payment_declared_datetime: undefined as undefined | null | string,
     payment_confirmed_datetime: undefined as undefined | null | string,
     visible_to_creator: undefined as undefined | null | boolean,
@@ -91,8 +91,8 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
     asset_sell_price: number | null = null
     asset_purchase_price: number | null = null
 
-    payment_method: string | null = null
-    payment_details: payment_details_t | null = null
+    payment_method_slug: string | null = null
+    payment_method_details: payment_method_details_t | null = null
     payment_declared_datetime: _DateTime | null = null
     payment_confirmed_datetime: _DateTime | null = null
     visible_to_creator: boolean | null = null
@@ -147,7 +147,7 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
             'logs': _Log,
         }
         if (Object.keys(prop_types).includes(addon_prop_name)) {
-            return this._mainLaravelDBAPIGetAddonPropCollection(prop_types[addon_prop_name], { addon_prop_name, addon_prop_parent_table: '__trades', addon_prop_parent_pmkey: this.ref_code as string }, page_select, per_page)
+            return this._mainLaravelDBAPIGetAddonPropCollection(prop_types[addon_prop_name], { addon_prop_name, addon_prop_parent_table: '__trades', addon_prop_parent_uid: this.ref_code as string }, page_select, per_page)
         } else {
             return Promise.reject({ message: 'Addon not recognized' })
         }
@@ -159,7 +159,7 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
         const prop_types = {
             'messages': _Message
         }
-        args = { ...args, parent_table: '__trades', parent_pmkey: this.ref_code }
+        args = { ...args, parent_table: '__trades', parent_uid: this.ref_code }
         if (Object.keys(prop_types).includes(prop_name)) {
             return prop_types[prop_name].create(args)
         } else {

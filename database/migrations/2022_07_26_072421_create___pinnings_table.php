@@ -22,8 +22,8 @@ return new class extends Migration
                     ->onUpdate('cascade')
                     ->onDelete('cascade');
             $table->enum('item_table', ['__users', '__offers']);
-            $table->string('item_pmkey', 16)->nullable();
-            $table->unique(['user_username', 'item_table', 'item_pmkey']);
+            $table->string('item_uid', 16)->nullable();
+            $table->unique(['user_username', 'item_table', 'item_uid']);
             $table->enum('pinning_type', ['favourite', 'blocking']);
 
             $table->string('creator_username', 64)->nullable();

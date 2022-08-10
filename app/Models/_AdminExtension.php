@@ -40,6 +40,6 @@ class _AdminExtension extends Model
      */
     public function logs()
     {
-        return $this->hasMany( _Log::class, 'entry_pmkey', 'user_username' )->where('entry_table', '__admin_extensions');
+        return $this->hasMany( _Log::class, 'entry_uid', 'user_username' )->where('entry_table', '__admin_extensions');
     }
 }

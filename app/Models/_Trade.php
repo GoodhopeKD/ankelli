@@ -28,8 +28,8 @@ class _Trade extends Model
         'purchase_amount',
         'asset_sell_price',
         'asset_purchase_price',
-        'payment_method',
-        'payment_details',
+        'payment_method_slug',
+        'payment_method_details',
         'payment_declared_datetime',
         'payment_confirmed_datetime',
         'visible_to_creator',
@@ -57,6 +57,6 @@ class _Trade extends Model
      */
     public function logs()
     {
-        return $this->hasMany( _Log::class, 'entry_pmkey' )->where('entry_table', '__offers');
+        return $this->hasMany( _Log::class, 'entry_uid' )->where('entry_table', '__offers');
     }
 }

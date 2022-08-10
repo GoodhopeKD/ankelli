@@ -7,7 +7,7 @@ import _Permission, { _PermissionRespObj } from 'app/controller/wrappers/systool
 /* Logger Imports */
 import _Log, { _LogRespObj } from 'app/controller/wrappers/addons/_Log'
 /* Actions, Configs imports */
-import { laravel_api_page_selection_t } from 'app/controller/actions/main_laravel_db_rest_api.actions'
+import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend_api.actions'
 import { _dataless_resource_collection_wrapper } from 'app/controller/redux_reducers/_resource_collection_wrapper'
 
 /*
@@ -29,7 +29,7 @@ export const _PermissionInstanceRespObj = {
     id: undefined as undefined | null | number,
     permission_slug: undefined as undefined | null | string,
     parent_table: undefined as undefined | null | parent_table_t,
-    parent_pmkey: undefined as undefined | null | string | number,
+    parent_uid: undefined as undefined | null | string | number,
     status: undefined as undefined | null | status_t,
 
     creator_username: undefined as undefined | null | string,
@@ -58,7 +58,7 @@ export default class _PermissionInstance extends _Wrapper_ implements Omit<typeo
     id: number | null = null
     permission_slug: string | null = null
     parent_table: parent_table_t | null = null
-    parent_pmkey: string | number | null = null
+    parent_uid: string | number | null = null
     status: status_t | null = null
 
     creator_username: string | null = null
@@ -103,7 +103,7 @@ export default class _PermissionInstance extends _Wrapper_ implements Omit<typeo
             'logs': _Log,
         }
         if (Object.keys(prop_types).includes(addon_prop_name)) {
-            return this._mainLaravelDBAPIGetAddonPropCollection(prop_types[addon_prop_name], { addon_prop_name, addon_prop_parent_table: '__permission_instances', addon_prop_parent_pmkey: this.id as number }, page_select, per_page)
+            return this._mainLaravelDBAPIGetAddonPropCollection(prop_types[addon_prop_name], { addon_prop_name, addon_prop_parent_table: '__permission_instances', addon_prop_parent_uid: this.id as number }, page_select, per_page)
         } else {
             return Promise.reject({ message: 'Addon not recognized' })
         }

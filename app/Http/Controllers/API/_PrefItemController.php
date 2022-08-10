@@ -5,6 +5,10 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Models\_PrefItem;
+use App\Http\Resources\_PrefItemResource;
+use App\Http\Resources\_PrefItemResourceCollection;
+
 class _PrefItemController extends Controller
 {
     /**

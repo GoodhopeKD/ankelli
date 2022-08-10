@@ -17,7 +17,7 @@ class _PhoneNo extends Model
     protected $fillable = [
         'country_calling_code',
         'parent_table',
-        'parent_pmkey',
+        'parent_uid',
         'number',
         'tag',
         'creator_username',

@@ -15,8 +15,7 @@ const langs = {
 }
 
 const static_datalists = {
-    provinces: require('app/assets/static_datalists/provinces.json'),
-    countries: require('app/assets/static_datalists/countries.json'),
+    
 }
 
 export {

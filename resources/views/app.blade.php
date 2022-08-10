@@ -25,13 +25,13 @@
     <meta name="msapplication-TileImage"  content="{{ asset('images/logo.jpeg') }}" />
     <meta property="og:type"              content="website" />
     <meta property="og:site_name"         content="Ankelli" />
-    <meta property="og:url"               content="{{ config('app.url', 'https://azsa.stims.ds') }}" />
+    <meta property="og:url"               content="{{ config('app.url', 'https://ankelli.com') }}" />
     <meta property="og:title"             content="Ankelli" />
     <meta property="og:description"       content="Welcome to the Ankelli Platform" />
     <meta property="og:image"             content="{{ asset('images/logo.jpeg') }}" />
     <meta property="og:image:alt"         content="Ankelli logo" />
     <meta name="twitter:card"             content="summary" />
-    <meta name="twitter:url"              content="{{ config('app.url', 'https://azsa.stims.ds') }}" />
+    <meta name="twitter:url"              content="{{ config('app.url', 'https://ankelli.com') }}" />
     <meta name="twitter:title"            content="Ankelli" />
     <meta name="twitter:description"      content="Welcome to the Ankelli Platform" />
     <meta name="twitter:image"            content="{{ asset('images/logo.jpeg') }}" />

@@ -19,7 +19,7 @@ export const _PinningRespObj = {
     id: undefined as undefined | null | number,
     user_username: undefined as undefined | null | string,
     item_table: undefined as undefined | null | item_table_t,
-    item_pmkey: undefined as undefined | null | string,
+    item_uid: undefined as undefined | null | string,
     pinning_type: undefined as undefined | null | pinning_type_t,
 
     creator_username: undefined as undefined | null | string,
@@ -34,7 +34,7 @@ export default class _Pinning extends _Wrapper_ implements Omit<typeof _PinningR
     id: number | null = null
     user_username: string | null = null
     item_table: item_table_t | null = null
-    item_pmkey: string | null = null
+    item_uid: string | null = null
     pinning_type: pinning_type_t | null = null
 
     creator_username: string | null = null

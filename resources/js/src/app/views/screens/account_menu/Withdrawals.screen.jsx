@@ -11,7 +11,7 @@ class WithdrawalsScreen extends React.Component {
         return <div className="container-fluid py-3">
             <div className="row">
                 <div className="col-2">
-                    <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'account_ops_menu')]} />
+                    <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'account_menu')]} />
                 </div>
                 <div className="col-10">
                     Withdrawal Options Appear here
@@ -23,7 +23,6 @@ class WithdrawalsScreen extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        temp_auth: state.app_instance_state_data.temp_auth,
         auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['active_navigation_screens', 'profile_image']) : null,
     }
 }

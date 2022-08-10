@@ -33,7 +33,7 @@ return new class extends Migration
             [
                 'name' => 'Tether USD',
                 'code' => 'USDT',
-                'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
+                'creator_username' => 'system',
             ],
         ]);
     }

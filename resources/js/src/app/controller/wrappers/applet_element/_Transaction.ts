@@ -3,7 +3,7 @@ import _DateTime from 'app/controller/wrappers/auxilliary/_DateTime'
 /* Parent Class import */
 import _Wrapper_ from 'app/controller/wrappers/_Wrapper_'
 /* Actions, Configs imports */
-import { laravel_api_page_selection_t } from 'app/controller/actions/main_laravel_db_rest_api.actions'
+import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend_api.actions'
 
 /*
     Type Definitions
@@ -27,6 +27,7 @@ type transfer_result_t = {
 export const _TransactionRespObj = {
     ref_code: undefined as undefined | null | string,
     session_token: undefined as undefined | null | string,
+    note: undefined as undefined | null | string,
     source_user_username: undefined as undefined | null | string,
     destination_user_username: undefined as undefined | null | string,
     asset_name: undefined as undefined | null | string,
@@ -41,6 +42,7 @@ export const _TransactionRespObj = {
 export default class _Transaction extends _Wrapper_ implements Omit<typeof _TransactionRespObj, casts_t> {
     ref_code: string | null = null
     session_token: string| null = null
+    note: string| null = null
     source_user_username: string | null = null
     destination_user_username: string | null = null
     asset_name: string | null = null

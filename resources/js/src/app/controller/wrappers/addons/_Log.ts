@@ -3,7 +3,7 @@ import _DateTime from 'app/controller/wrappers/auxilliary/_DateTime'
 /* Parent Class import */
 import _Wrapper_ from 'app/controller/wrappers/_Wrapper_'
 /* Actions, Configs imports */
-import { laravel_api_page_selection_t } from 'app/controller/actions/main_laravel_db_rest_api.actions'
+import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend_api.actions'
 
 /*
     Type Definitions
@@ -34,7 +34,7 @@ export const _LogRespObj = {
     action_datetime: undefined as undefined | null | string,
     batch_code: undefined as undefined | null | string,
     entry_table: undefined as undefined | null | string,
-    entry_pmkey: undefined as undefined | null | string | number,
+    entry_uid: undefined as undefined | null | string | number,
     entry_update_result: undefined as undefined | null | entry_update_result_t
 }
 
@@ -50,7 +50,7 @@ export default class _Log extends _Wrapper_ implements Omit<typeof _LogRespObj, 
     action_datetime: _DateTime | null = null
     batch_code: string | null = null
     entry_table: string | null = null
-    entry_pmkey: string | number | null = null
+    entry_uid: string | number | null = null
     entry_update_result: entry_update_result_t | null = null
 
     /* Class Constructor */

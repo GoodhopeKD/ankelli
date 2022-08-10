@@ -17,7 +17,7 @@ class _Transaction extends Model
     protected $fillable = [
         'ref_code',
         'session_token',
-        'action_type',
+        'note',
         'source_user_username',
         'destination_user_username',
         'asset_name',

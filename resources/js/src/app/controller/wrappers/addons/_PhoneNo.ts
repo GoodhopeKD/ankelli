@@ -19,7 +19,7 @@ export const _PhoneNoRespObj = {
     number: undefined as undefined | null | string,
     tag: undefined as undefined | null | tag_t,
     parent_table: undefined as undefined | null | parent_table_t,
-    parent_pmkey: undefined as undefined | null | string | number,
+    parent_uid: undefined as undefined | null | string | number,
     verified_datetime: undefined as undefined | null | string,
 
     creator_username: undefined as undefined | null | string,
@@ -37,7 +37,7 @@ export default class _PhoneNo extends _Wrapper_ implements Omit<typeof _PhoneNoR
     displayable: string | null = null
     tag: tag_t | null = null
     parent_table: parent_table_t | null = null
-    parent_pmkey: string | number | null = null
+    parent_uid: string | number | null = null
     verified_datetime: _DateTime | null = null
 
     creator_username: string | null = null

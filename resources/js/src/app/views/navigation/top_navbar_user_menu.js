@@ -13,7 +13,7 @@ export const top_navbar_user_menu = {
         },
         {
             title: 'My Account',
-            path: '/account_operations/dashboard',
+            path: '/account/dashboard',
         },
         {
             title: 'Settings',

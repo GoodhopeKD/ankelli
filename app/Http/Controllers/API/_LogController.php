@@ -4,6 +4,19 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
+use Stevebauman\Location\Facades\Location;
+
+use App\Models\_Log;
+
+function generate_log_id(){
+    return substr(preg_replace('/[^a-zA-Z0-9\']/', '', Hash::make(Str::random(32)) ),6,16);
+}
 
 class _LogController extends Controller
 {
@@ -25,7 +38,33 @@ class _LogController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        if (!env('LOGGER_DISABLED')){
+            $validated_data = $request->validate([
+                'action_type' => ['required', 'string', Rule::in(['entry_create', 'entry_read', 'entry_update', 'entry_delete', 'function_call', 'batch_init'])],
+                'batch_code' => ['nullable', 'string'],
+                'action_note' => ['nullable', 'string'],
+                'entry_table' => ['sometimes', 'string'],
+                'entry_uid' => ['sometimes', 'required'],
+                'entry_update_result' => ['sometimes', 'required_if:action_type,=,entry_update', 'array'],
+            ]);
+
+            $log_id = generate_log_id();
+            while ( _Log::where( 'id', $log_id )->exists() ){
+                $log_id = generate_log_id();
+            }
+            $validated_data['id'] = $log_id;
+
+            if (!isset($validated_data['batch_code']) || (isset($validated_data['batch_code']) && $validated_data['action_type'] == 'batch_init')){
+                //$encrypt = Crypt::encryptString;
+                $encrypt = function ($in) { return $in; };
+                $validated_data['request_location'] = $encrypt( json_encode( Location::get() ? (array)(Location::get()) : [ 'ip' => request()->ip() ] ));
+                $validated_data['utc_offset'] = Session::get('utc_offset');
+            }
+            $validated_data['session_token'] = Session::get('active_session_token');
+            $validated_data['action_user_username'] = Session::get('api_auth_user_username');
+
+            _Log::create($validated_data);
+        }
     }
 
     /**
@@ -35,29 +74,6 @@ class _LogController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
     {
         //
     }

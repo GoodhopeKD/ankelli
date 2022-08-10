@@ -8,7 +8,7 @@ import _Message, { _MessageRespObj } from 'app/controller/wrappers/addons/_Messa
 /* Logger Imports */
 import _Log, { _LogRespObj } from 'app/controller/wrappers/addons/_Log'
 /* Actions, Configs imports */
-import { laravel_api_page_selection_t } from 'app/controller/actions/main_laravel_db_rest_api.actions'
+import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend_api.actions'
 import { _dataless_resource_collection_wrapper } from 'app/controller/redux_reducers/_resource_collection_wrapper'
 
 /*
@@ -114,7 +114,7 @@ export default class _Chat extends _Wrapper_ implements Omit<typeof _ChatRespObj
             'logs': _Log,
         }
         if (Object.keys(prop_types).includes(addon_prop_name)) {
-            return this._mainLaravelDBAPIGetAddonPropCollection(prop_types[addon_prop_name], { addon_prop_name, addon_prop_parent_table: '__chats', addon_prop_parent_pmkey: this.id as string }, page_select, per_page)
+            return this._mainLaravelDBAPIGetAddonPropCollection(prop_types[addon_prop_name], { addon_prop_name, addon_prop_parent_table: '__chats', addon_prop_parent_uid: this.id as string }, page_select, per_page)
         } else {
             return Promise.reject({ message: 'Addon not recognized' })
         }
@@ -126,7 +126,7 @@ export default class _Chat extends _Wrapper_ implements Omit<typeof _ChatRespObj
         const prop_types = {
             'messages': _Message
         }
-        args = { ...args, parent_table: '__chats', parent_pmkey: this.id }
+        args = { ...args, parent_table: '__chats', parent_uid: this.id }
         if (Object.keys(prop_types).includes(prop_name)) {
             return prop_types[prop_name].create(args)
         } else {

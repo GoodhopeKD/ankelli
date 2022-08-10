@@ -37,15 +37,11 @@ return new class extends Migration
         DB::table('__buyer_extensions')->insert([
             [
                 'user_username' => 'sysadmin',
-                'status' => 'deactivated', 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
+                'status' => 'deactivated', 'creator_username' => 'system',
             ],
             [
-                'user_username' => 'deposits-assistant',
-                'status' => 'deactivated', 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
-            ],
-            [
-                'user_username' => 'withdrawals-assistant',
-                'status' => 'deactivated', 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
+                'user_username' => 'ankelli',
+                'status' => 'deactivated', 'creator_username' => 'system',
             ],
         ]);
     }

@@ -44,12 +44,12 @@ return new class extends Migration
             [
                 'user_username' => 'sysadmin',
                 'user_group_slug' => 'system_administrators',
-                'status' => 'active', 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
+                'creator_username' => 'system',
             ],
             [
                 'user_username' => 'hopekd01',
                 'user_group_slug' => 'system_administrators',
-                'status' => 'active', 'creator_username' => 'system', 'created_datetime' => now()->toDateTimeString(),
+                'creator_username' => 'system',
             ],
         ]);
     }

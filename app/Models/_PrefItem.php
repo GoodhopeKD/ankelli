@@ -16,9 +16,10 @@ class _PrefItem extends Model
      */
     protected $fillable = [
         'parent_table',
-        'parent_pmkey',
+        'parent_uid',
         'key',
         'value',
+        'value_type',
         'creator_username',
     ];
     
@@ -31,4 +32,14 @@ class _PrefItem extends Model
         //'created_datetime' => 'datetime',
         //'updated_datetime' => 'datetime',
     ];
+
+    public function value_f()
+    {
+        $value = $this->value; // string / enum return default
+        if ($this->value_type === 'boolean') $value = (boolean)$value;
+        if ($this->value_type === 'float') $value = (float)$value;
+        if ($this->value_type === 'integer') $value = (integer)$value;
+        if ($this->value_type === 'json') $value = json_decode($value);
+        return $value;
+    }
 }

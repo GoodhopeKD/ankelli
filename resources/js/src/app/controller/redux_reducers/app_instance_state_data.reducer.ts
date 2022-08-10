@@ -1,8 +1,7 @@
 const initial_state = {
-	temp_auth: false,
 	// connectivity
-	main_laravel_db_rest_api_connectivity: null,
-	firebase_api_connectivity: null,
+	app_backend_api_connectivity_indicator: null,
+	firebase_api_connectivity_indicator: null,
 	// flash notification storage
 	flash_notification: {
 		visible: false,
@@ -12,41 +11,35 @@ const initial_state = {
 	},
 	// prefs
 	learn_mode_enabled: false,
-	pref_theme: 'default',
+	pref_theme: 'light',
 	pref_lang: 'en',
 }
 
 export const app_instance_state_data_reducer = (state = initial_state, action: any) => {
 	switch (action.type) {
-		case 'APP_INSTANCE_STATE_RESET_CONNECTIVITY':
+		case 'APP_INSTANCE_STATE_RESET_CONNECTIVITY_INDICATORS':
 			return {
 				...state,
-				main_laravel_db_rest_api_connectivity: null,
-				firebase_api_connectivity: null,
+				app_backend_api_connectivity_indicator: null,
+				firebase_api_connectivity_indicator: null,
 			}
 
-		case 'APP_INSTANCE_STATE_SET_MAIN_LARAVEL_DB_REST_API_CONNECTIVITY':
+		case 'APP_INSTANCE_STATE_SET_APP_BACKEND_API_CONNECTIVITY_INDICATOR':
 			return {
 				...state,
-				main_laravel_db_rest_api_connectivity: action.main_laravel_db_rest_api_connectivity
+				app_backend_api_connectivity_indicator: action.app_backend_api_connectivity_indicator,
 			}
 
-		case 'APP_INSTANCE_STATE_SET_FIREBASE_API_CONNECTIVITY':
+		case 'APP_INSTANCE_STATE_SET_FIREBASE_API_CONNECTIVITY_INDICATOR':
 			return {
 				...state,
-				firebase_api_connectivity: action.firebase_api_connectivity
+				firebase_api_connectivity_indicator: action.firebase_api_connectivity_indicator,
 			}
 
 		case 'APP_INSTANCE_STATE_SET_FLASH_NOTIFICATION_PARAMS':
 			return {
 				...state,
 				flash_notification: { ...state.flash_notification, ...action.flash_notification, title: (action.flash_notification.title) ? action.flash_notification.title : '' }
-			}
-
-		case 'APP_INSTANCE_STATE_SET_TEMP_AUTH':
-			return {
-				...state,
-				temp_auth: action.temp_auth
 			}
 
 		case 'APP_INSTANCE_STATE_SET_PREF_THEME':

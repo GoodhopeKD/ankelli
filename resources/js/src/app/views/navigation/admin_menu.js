@@ -26,6 +26,7 @@ export const admin_menu = {
         {
             title: 'Dashboard',
             path: '/admin_dashboard',
+            required_user_groups: [''],
             required_permissions: ['handle_business_ops', 'manage_deposit_tokens', 'handle_withdrawals', 'handle_flagged_business_elems'],
             children: [
                 {

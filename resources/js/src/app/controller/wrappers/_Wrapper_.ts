@@ -2,9 +2,9 @@
 import _Date from 'app/controller/wrappers/auxilliary/_Date'
 /* Actions, Configs imports */
 import { store } from 'app/controller/config/central_state.config'
-import { main_laravel_db_rest_api } from 'app/controller/config/main_laravel_db_rest_api.config'
+import { app_backend_api } from 'app/controller/config/app_backend_api.config'
 import { mainLaravelDBRestAPICallWrapper } from 'app/controller/actions/rest_api.actions'
-import { laravel_api_page_selection_t } from 'app/controller/actions/main_laravel_db_rest_api.actions'
+import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend_api.actions'
 import { _resource_collection_wrapper, _dataless_resource_collection_wrapper } from 'app/controller/redux_reducers/_resource_collection_wrapper'
 
 /*
@@ -55,7 +55,7 @@ export default class _Wrapper_ {
     ) {
         return await mainLaravelDBRestAPICallWrapper
             .dispatch({
-                type: data_has_files ? 'MAIN_LARAVEL_DB_REST_API_CALL_WITH_FILES' : 'MAIN_LARAVEL_DB_REST_API_CALL',
+                type: data_has_files ? 'APP_BACKEND_API_CALL_WITH_FILES' : 'APP_BACKEND_API_CALL',
                 method: 'POST',
                 endpoint,
                 get_data_to_preserve,
@@ -102,7 +102,7 @@ export default class _Wrapper_ {
     ) {
         return await mainLaravelDBRestAPICallWrapper
             .dispatch({
-                type: 'MAIN_LARAVEL_DB_REST_API_CALL',
+                type: 'APP_BACKEND_API_CALL',
                 method: 'GET',
                 endpoint,
                 data,
@@ -117,7 +117,7 @@ export default class _Wrapper_ {
     ) {
         return await mainLaravelDBRestAPICallWrapper
             .dispatch({
-                type: 'MAIN_LARAVEL_DB_REST_API_CALL',
+                type: 'APP_BACKEND_API_CALL',
                 method: 'GET',
                 endpoint,
                 data,
@@ -135,7 +135,7 @@ export default class _Wrapper_ {
         });
         return await mainLaravelDBRestAPICallWrapper
             .dispatch({
-                type: 'MAIN_LARAVEL_DB_REST_API_CALL',
+                type: 'APP_BACKEND_API_CALL',
                 method: 'GET',
                 endpoint,
                 data,
@@ -173,7 +173,7 @@ export default class _Wrapper_ {
                 if (!link) {
                     return Promise.reject({ message: 'Link not found' })
                 }
-                endpoint = link.split(main_laravel_db_rest_api.config.api_url + '/' + store.getState().active_session_data.token + '/')[1]
+                endpoint = link.split(app_backend_api.config.api_url + '/' + store.getState().active_session_data.token + '/')[1]
             } else if (typeof page_select === 'object' && (page_select as object).hasOwnProperty('page')) {
                 if (page_select.page < 1 || (collection.meta.last_page > 0 && page_select.page > collection.meta.last_page)) {
                     return Promise.reject({ message: 'Page out of range' })
@@ -188,7 +188,7 @@ export default class _Wrapper_ {
         }
         return mainLaravelDBRestAPICallWrapper
             .dispatch({
-                type: 'MAIN_LARAVEL_DB_REST_API_CALL',
+                type: 'APP_BACKEND_API_CALL',
                 method: 'GET',
                 endpoint,
                 data
@@ -202,7 +202,7 @@ export default class _Wrapper_ {
 
     protected async _mainLaravelDBAPIGetAddonPropCollection(
         _AddonType: any, // Filled by Child class
-        data: { addon_prop_name: string, addon_prop_parent_table: string, addon_prop_parent_pmkey: string | number, [key: string]: unknown },
+        data: { addon_prop_name: string, addon_prop_parent_table: string, addon_prop_parent_uid: string | number, [key: string]: unknown },
         page_select?: laravel_api_page_selection_t,
         per_page?: number,
     ) {
@@ -225,7 +225,7 @@ export default class _Wrapper_ {
 
         return await mainLaravelDBRestAPICallWrapper
             .dispatch({
-                type: 'MAIN_LARAVEL_DB_REST_API_CALL',
+                type: 'APP_BACKEND_API_CALL',
                 method: 'PUT',
                 endpoint,
                 data: { ...data, update_note },
@@ -242,7 +242,7 @@ export default class _Wrapper_ {
     ) {
         return await mainLaravelDBRestAPICallWrapper
             .dispatch({
-                type: 'MAIN_LARAVEL_DB_REST_API_CALL',
+                type: 'APP_BACKEND_API_CALL',
                 method: 'DELETE',
                 endpoint
             })

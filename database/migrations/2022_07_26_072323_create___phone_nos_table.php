@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('__phone_nos', function (Blueprint $table) {
             $table->id();
             $table->enum('parent_table', ['__users']);
-            $table->string('parent_pmkey', 64);
+            $table->string('parent_uid', 64);
             $table->string('country_calling_code',4);
             $table->string('number', 16);
             $table->enum('tag', ['whatsapp', 'calls', 'calls_or_whatsapp'])->default('calls_or_whatsapp');

@@ -41,7 +41,7 @@ class _UserGroup extends Model
      */
     public function profile_image()
     {
-        return $this->hasOne( _File::class, 'parent_pmkey', 'slug' )->where('parent_table', '__user_groups');
+        return $this->hasOne( _File::class, 'parent_uid', 'slug' )->where('parent_table', '__user_groups');
     }
 
     public function profile_image_f()

@@ -21,7 +21,7 @@ return new class extends Migration
                     ->on('__sessions')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->enum('action_type', ['entry_create', 'entry_read', 'entry_update', 'entry_delete', 'function_call', 'batch_init']);
+            $table->string('note', 255)->nullable();
             $table->string('source_user_username', 64)->nullable(); 
             $table->foreign('source_user_username')
                     ->references('username')

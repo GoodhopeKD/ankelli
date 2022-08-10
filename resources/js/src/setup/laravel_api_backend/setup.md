@@ -119,6 +119,7 @@ In the **`app/Providers/RouteServiceProvider`** file
 Create and modify the controllers
 
 ```properties
+php artisan make:controller API/_UserController --api
 php artisan make:controller API/_SessionController --api
 php artisan make:controller API/_EmailAddressController --api
 php artisan make:controller API/_PrefItemController --api
@@ -161,6 +162,8 @@ php artisan make:controller API/_SellerExtensionController --api
 Create and modify the Resources
 
 ```properties
+php artisan make:resource _UserResource
+php artisan make:resource _UserResourceCollection --collection
 php artisan make:resource _SessionResource
 php artisan make:resource _EmailAddressResource
 php artisan make:resource _EmailAddressResourceCollection --collection
@@ -374,6 +377,4 @@ php artisan config:cache
 /database
 /resources
 /storage
-
-/resources
 /public

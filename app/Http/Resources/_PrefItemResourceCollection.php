@@ -14,6 +14,25 @@ class _PrefItemResourceCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'data' => $this->collection->transform(function($_this){
+                return array_filter([
+
+                    /* Parent identifiers used to pull entries so no need to send them again */
+
+                    'id' => $_this->id,
+                    //'parent_table' => $_this->parent_table,
+                    //'parent_uid' => $_this->parent_uid,
+                    'key_slug' => $_this->key_slug,
+                    'value' => $_this->value_f(),
+                    'value_type' => $_this->value_type,
+                    
+                    //'creator_username'      => $_this->creator_username,
+                    //'created_datetime'      => $_this->created_datetime,
+                    //'updated_datetime'      => $_this->updated_datetime,
+                ], static function($var){ return $var !== null;} );
+            }),
+        ];
+
     }
 }

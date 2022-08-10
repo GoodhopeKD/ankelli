@@ -4,21 +4,21 @@ export type laravel_api_page_selection_t = 'next' | 'prev' | 'first' | 'last' | 
 
 export const connectivityBoot = () => {
     return (dispatch: (args: any) => Promise<any>) => {
-        dispatch({ type: 'APP_INSTANCE_STATE_RESET_CONNECTIVITY' }).finally(() => {
+        dispatch({ type: 'APP_INSTANCE_STATE_RESET_CONNECTIVITY_INDICATORS' })
 
-            dispatch({ type: 'MAIN_LARAVEL_DB_REST_API_CALL', method: 'POST', endpoint: '' })
-                .then(() => { dispatch({ type: 'APP_INSTANCE_STATE_SET_MAIN_LARAVEL_DB_REST_API_CONNECTIVITY', main_laravel_db_rest_api_connectivity: true }) })
+            dispatch({ type: 'APP_BACKEND_API_CALL', method: 'POST', endpoint: '' })
+                .then(() => { dispatch({ type: 'APP_INSTANCE_STATE_SET_APP_BACKEND_API_CONNECTIVITY_INDICATOR', app_backend_api_connectivity_indicator: true }) })
                 .catch((e: any) => {
-                    dispatch({ type: 'APP_INSTANCE_STATE_SET_MAIN_LARAVEL_DB_REST_API_CONNECTIVITY', main_laravel_db_rest_api_connectivity: false })
+                    dispatch({ type: 'APP_INSTANCE_STATE_SET_APP_BACKEND_API_CONNECTIVITY_INDICATOR', app_backend_api_connectivity_indicator: false })
                 })
 
-        })
+        
     }
 }
 
 export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (action: any) => {
 
-    if (action.type === 'MAIN_LARAVEL_DB_REST_API_CALL_MULTIPLE' && action.requests) {
+    if (action.type === 'APP_BACKEND_API_CALL_MULTIPLE' && action.requests) {
         if (!action.is_boot) {
             let core_state_request_action = {
                 method: 'POST',
@@ -28,17 +28,17 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
         }
 
         const tasks = action.requests.map((request: any) => {
-            request.type = 'MAIN_LARAVEL_DB_REST_API_CALL'
+            request.type = 'APP_BACKEND_API_CALL'
             return store.dispatch(request)
         })
 
         return Promise.allSettled(tasks)
     }
 
-    if (action.type === 'MAIN_LARAVEL_DB_REST_API_CALL' || action.type === 'MAIN_LARAVEL_DB_REST_API_CALL_WITH_FILES') {
-        return store.dispatch((dispatch: any, getState: any, { main_laravel_db_rest_api }: any) => {
+    if (action.type === 'APP_BACKEND_API_CALL' || action.type === 'APP_BACKEND_API_CALL_WITH_FILES') {
+        return store.dispatch((dispatch: any, getState: any, { app_backend_api }: any) => {
 
-            if (!main_laravel_db_rest_api.config.accepted_methods.some((x: string) => x.toLowerCase() === action.method.toLowerCase())) {
+            if (!app_backend_api.config.accepted_methods.some((x: string) => x.toLowerCase() === action.method.toLowerCase())) {
                 return Promise.reject({
                     failed: true,
                     message: 'Method "' + action.method + '" not accepted',
@@ -46,9 +46,9 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
                 })
             }
 
-            let active_session_data = getState().active_session_data
+            const active_session_data = getState().active_session_data
 
-            if (main_laravel_db_rest_api.config.endpoint_filtering.strictly_auth_clear_endpoints.some((x: string) => x.toLowerCase() === action.endpoint.toLowerCase()) && active_session_data.auth_token !== null) {
+            if (app_backend_api.config.endpoint_filtering.strictly_auth_clear_endpoints.some((x: string) => x.toLowerCase() === action.endpoint.toLowerCase()) && active_session_data.auth_token !== null) {
                 return Promise.reject({
                     failed: true,
                     message: 'Action can\'t be performed with while logged in',
@@ -57,10 +57,10 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
             }
 
             // For protected endpoints, active_session should exist
-            const endpoint_without_page_selects = action.endpoint.split('?')[0]
+            const endpoint_without_GET_variables = action.endpoint.split('?')[0]
             if (!active_session_data.auth_token && !(
-                main_laravel_db_rest_api.config.endpoint_filtering.auth_clear_endpoints.some((x: string) => x.toLowerCase() === endpoint_without_page_selects.toLowerCase()) ||
-                (main_laravel_db_rest_api.config.endpoint_filtering.auth_clear_on_GET_endpoints.some((x: string) => x.toLowerCase() === endpoint_without_page_selects.toLowerCase()) && action.method === 'GET')
+                app_backend_api.config.endpoint_filtering.auth_clear_endpoints.some((x: string) => x.toLowerCase() === endpoint_without_GET_variables.toLowerCase()) ||
+                (app_backend_api.config.endpoint_filtering.auth_clear_on_GET_endpoints.some((x: string) => x.toLowerCase() === endpoint_without_GET_variables.toLowerCase()) && action.method === 'GET')
             )) {
                 return Promise.reject({
                     failed: true,
@@ -71,18 +71,16 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
 
             // Use authorization if its there
             if (active_session_data.auth_token) {
-                main_laravel_db_rest_api.handle.defaults.headers.common['Authorization'] = `Bearer ${active_session_data.auth_token}`
+                app_backend_api.handle.defaults.headers.common['Authorization'] = `Bearer ${active_session_data.auth_token}`
             } else {
-                delete main_laravel_db_rest_api.handle.defaults.headers.common['Authorization']
+                delete app_backend_api.handle.defaults.headers.common['Authorization']
             }
 
             // Rewrite endpoint containing parameter(s)
-            var reParamFinder = /\{(.*?)\}/g
-            var params = []
+            const reParamFinder = /\{(.*?)\}/g
+            const params = []
             var found
-            while ((found = reParamFinder.exec(action.endpoint))) {
-                params.push(found[1])
-            }
+            while ((found = reParamFinder.exec(action.endpoint))) { params.push(found[1]) }
 
             if (params.length) {
                 params.forEach((element) => {
@@ -100,58 +98,53 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
                 });
             }
 
-            let active_session = {
-                id: active_session_data.id, // We know what to update or whether to create a new one
+            const sent_active_session_data = {
+                token: active_session_data.token, // We know what to update or whether to create a new one
                 device_info: active_session_data.device_info,
                 agent_app_info: active_session_data.agent_app_info,
                 utc_offset: active_session_data.utc_offset
             }
 
-            let request_object = {
+            const request_object = {
                 method: action.method,
                 url: action.endpoint === '' ? action.endpoint : active_session_data.token + '/' + action.endpoint,
-                data: action.data_has_files ? action.data : { ...action.data, active_session }
+                data: action.data_has_files ? action.data : { ...action.data, active_session_data: sent_active_session_data }
             } as any
 
-            if (action.data_has_files) {
-                request_object.headers = {
-                    'content-Type': 'multipart/form-data'
-                }
-            }
+            if (action.data_has_files) request_object.headers = { 'content-Type': 'multipart/form-data' }
 
-            if (action.method === 'GET')
-                delete request_object.data
+            if (action.method === 'GET') delete request_object.data
 
-            return main_laravel_db_rest_api.handle(request_object)
+            return app_backend_api.handle(request_object)
                 .then((resp: any) => {
                     batch(() => {
-                        if (
-                            (action.endpoint === '' &&
-                                active_session_data.auth_token &&
-                                !(resp.data.active_session_data && resp.data.auth_user_data)) ||
-                            (action.endpoint === 'users/signout' && !resp.data.auth_user_data)
-                        ) {
+                        if ((action.endpoint === '' && active_session_data.auth_token && !(resp.data.active_session_data && resp.data.auth_user_data)) || (action.endpoint === 'users/signout' && !resp.data.auth_user_data))
                             dispatch({ type: 'AUTH_DATA_CLEAR_ALL' })
+
+                        if (app_backend_api.config.endpoint_filtering.auth_token_returning_endpoints.some((x: string) => x.toLowerCase() === action.endpoint.toLowerCase()) && resp.data.auth_token){
+                            dispatch({ type: 'ACTIVE_SESSION_DATA_SET_AUTH_TOKEN', auth_token: resp.data.auth_token })
+                            delete resp.data.auth_token
                         }
 
-                        if (main_laravel_db_rest_api.config.endpoint_filtering.auth_token_returning_endpoints.some((x: string) => x.toLowerCase() === action.endpoint.toLowerCase()) && resp.data.auth_token) {
-                            dispatch({ type: 'ACTIVE_CONNECT_INSTANCE_DATA_SET_AUTH_ACCESS_TOKEN', auth_token: resp.data.auth_token })
-                        }
-
-                        if (resp.data.auth_user_data)
+                        if (resp.data.auth_user_data){
                             dispatch({ type: 'AUTH_USER_DATA_UPDATE', auth_user_data: resp.data.auth_user_data })
+                            delete resp.data.auth_user_data
+                        }
 
-                        if (resp.data.sysconfig_params_data)
-                            dispatch({ type: 'SYSCONFIG_PARAMS_UPDATE', sysconfig_params_data: resp.data.sysconfig_params_data })
+                        if (resp.data.sysconfig_params_data){
+                            dispatch({ type: 'SYSCONFIG_PARAMS_DATA_UPDATE', sysconfig_params_data: resp.data.sysconfig_params_data })
+                            delete resp.data.sysconfig_params_data
+                        }
 
-                        if (resp.data.active_session_data)
-                            dispatch({ type: 'ACTIVE_CONNECT_INSTANCE_DATA_UPDATE', active_session_data: resp.data.active_session_data })
-
+                        if (resp.data.active_session_data){
+                            dispatch({ type: 'ACTIVE_SESSION_DATA_UPDATE', active_session_data: resp.data.active_session_data })
+                            delete resp.data.active_session_data
+                        }
                     })
                     return Promise.resolve(resp.data)
                 })
                 .catch((e: any) => {
-                    let error = {} as any
+                    var error = {} as any
                     if (e.resp) {
                         // client received an error resp (5xx, 4xx)
                         error = {

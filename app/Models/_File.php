@@ -16,7 +16,7 @@ class _File extends Model
      */
     protected $fillable = [
         'parent_table',
-        'parent_pmkey',
+        'parent_uid',
         'filegroup',
         'tag',
         'title',

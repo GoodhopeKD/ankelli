@@ -16,7 +16,7 @@ class _PermissionInstance extends Model
      */
     protected $fillable = [
         'parent_table',
-        'parent_pmkey',
+        'parent_uid',
         'permission_slug',
         'status',
         'creator_username',
@@ -37,6 +37,6 @@ class _PermissionInstance extends Model
      */
     public function logs()
     {
-        return $this->hasMany( _Log::class, 'entry_pmkey' )->where('entry_table', '__cities');
+        return $this->hasMany( _Log::class, 'entry_uid' )->where('entry_table', '__cities');
     }
 }

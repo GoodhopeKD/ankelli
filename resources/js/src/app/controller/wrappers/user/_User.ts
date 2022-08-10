@@ -19,7 +19,7 @@ import _BuyerExtension, { _BuyerExtensionRespObj } from 'app/controller/wrappers
 import _Log, { _LogRespObj } from 'app/controller/wrappers/addons/_Log'
 /* Actions, Configs imports */
 import { mainLaravelDBRestAPICallWrapper } from 'app/controller/actions/rest_api.actions'
-import { laravel_api_page_selection_t } from 'app/controller/actions/main_laravel_db_rest_api.actions'
+import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend_api.actions'
 import { _dataless_resource_collection_wrapper } from 'app/controller/redux_reducers/_resource_collection_wrapper'
 
 /*
@@ -234,7 +234,7 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 	static async signIn(data: typeof signin_data) {
 		return await mainLaravelDBRestAPICallWrapper
 			.dispatch({
-				type: 'MAIN_LARAVEL_DB_REST_API_CALL',
+				type: 'APP_BACKEND_API_CALL',
 				method: 'POST',
 				endpoint: 'users/signin',
 				data
@@ -246,7 +246,7 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 	async signOut() {
 		return await mainLaravelDBRestAPICallWrapper
 			.dispatch({
-				type: 'MAIN_LARAVEL_DB_REST_API_CALL',
+				type: 'APP_BACKEND_API_CALL',
 				method: 'POST',
 				endpoint: 'users/signout'
 			})
@@ -269,7 +269,7 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 		}
 
 		if (Object.keys(prop_types).includes(addon_prop_name)) {
-			return this._mainLaravelDBAPIGetAddonPropCollection(prop_types[addon_prop_name], { addon_prop_name, addon_prop_parent_table: '__users', addon_prop_parent_pmkey: this.username as string }, page_select, per_page)
+			return this._mainLaravelDBAPIGetAddonPropCollection(prop_types[addon_prop_name], { addon_prop_name, addon_prop_parent_table: '__users', addon_prop_parent_uid: this.username as string }, page_select, per_page)
 		} else {
 			return Promise.reject({ message: 'Addon not recognized' })
 		}
@@ -297,7 +297,7 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 				return _PhoneNo.create({
 					...args,
 					parent_table: '__users',
-					parent_pmkey: this.username
+					parent_uid: this.username
 				} as typeof _PhoneNoRespObj)
 
 			case 'user_group_memberships':

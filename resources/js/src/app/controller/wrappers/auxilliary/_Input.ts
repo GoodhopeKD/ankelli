@@ -5,11 +5,18 @@ import { mainLaravelDBRestAPICallWrapper } from 'app/controller/actions/rest_api
 /*
 	Type Definitions
 */
-type local_validation_param_type = 'email_address' | 'surname' | 'name_s' | 'name' | 'username' | 'password' | 'datetime' | 'number' | 'url' | 'passport_number' | 'reg_token'
-type remote_validation_param_type = 'reg_token'
-type unique_param_type = 'email_address' | 'username'
+type local_validation_param_type_t = 'email_address' | 'surname' | 'name_s' | 'name' | 'username' | 'password' | 'datetime' | 'number' | 'url' | 'passport_number' | 'reg_token'
+type usable_param_type_t = 'email_address' | 'username' | 'reg_token'
 
 export const validation_param_lengths = {
+	reg_token: {
+		min_length: 4,
+		max_length: 20,
+	},
+	username: {
+		min_length: 4,
+		max_length: 64,
+	},
 	email_address: {
 		min_length: 2,
 		max_length: 64,
@@ -26,10 +33,6 @@ export const validation_param_lengths = {
 		min_length: 4,
 		max_length: 64,
 	},
-	username: {
-		min_length: 4,
-		max_length: 64,
-	},
 	password: {
 		min_length: 8,
 		max_length: 32,
@@ -37,10 +40,6 @@ export const validation_param_lengths = {
 	passport_number: {
 		min_length: 8,
 		max_length: 8,
-	},
-	reg_token: {
-		min_length: 4,
-		max_length: 20,
 	},
 	item_name: {
 		min_length: 4,
@@ -58,17 +57,17 @@ export const validation_param_lengths = {
 export default class _Input {
 	private _input: any
 
+	private _is_valid_username: boolean | null = null
+	private _is_valid_reg_token: boolean | null = null
 	private _is_valid_email_address: boolean | null = null
 	private _is_valid_surname: boolean | null = null
 	private _is_valid_name_s: boolean | null = null
-	private _is_valid_username: boolean | null = null
 	private _is_valid_name: boolean | null = null
 	private _is_valid_number: boolean | null = null
 
-	private _is_valid_reg_token: boolean | null = null
-
-	private _is_unique_email_address: boolean | null = null
-	private _is_unique_username: boolean | null = null
+	private _is_usable_reg_token: boolean | null = null
+	private _is_usable_username: boolean | null = null
+	private _is_usable_email_address: boolean | null = null
 
 	private _has_error: boolean | null = null
 	private _has_check_error: boolean | null = null
@@ -84,13 +83,26 @@ export default class _Input {
 
 	sanitize(): void { }
 
-	async async_checkIfValid(validation_param: remote_validation_param_type) {
+	isValid(validation_param: local_validation_param_type_t, min_int_val?: number, max_int_val?: number): boolean {
+
 		if (validation_param === 'reg_token') {
-
+			this._is_valid_reg_token =
+				this._is_valid_reg_token !== null
+					? this._is_valid_reg_token
+					: /^[a-zA-Z0-9_À-ÿ\u00f1\u00d1]+$/.test(this._input) && this._input.length >= validation_param_lengths.reg_token.min_length && this._input.length <= validation_param_lengths.reg_token.max_length
+			this._has_error = !this._is_valid_reg_token
+			return this._is_valid_reg_token
 		}
-	}
 
-	isValid(validation_param: local_validation_param_type, min_int_val?: number, max_int_val?: number): boolean {
+		if (validation_param === 'username') {
+			this._is_valid_username =
+				this._is_valid_username !== null
+					? this._is_valid_username
+					: /^[a-zA-Z0-9_À-ÿ\u00f1\u00d1]+$/.test(this._input) && this._input.length >= validation_param_lengths.username.min_length && this._input.length <= validation_param_lengths.username.max_length
+			this._has_error = !this._is_valid_username
+			return this._is_valid_username
+		}
+
 		if (validation_param === 'email_address') {
 			this._is_valid_email_address =
 				this._is_valid_email_address !== null
@@ -116,15 +128,6 @@ export default class _Input {
 				(this._input.length >= validation_param_lengths.name_s.min_length && this._input.length <= validation_param_lengths.name_s.max_length)
 			this._has_error = !this._is_valid_name_s
 			return this._is_valid_name_s
-		}
-
-		if (validation_param === 'username') {
-			this._is_valid_username =
-				this._is_valid_username !== null
-					? this._is_valid_username
-					: /^[a-zA-Z0-9_À-ÿ\u00f1\u00d1]+$/.test(this._input) && this._input.length >= validation_param_lengths.username.min_length && this._input.length <= validation_param_lengths.username.max_length
-			this._has_error = !this._is_valid_username
-			return this._is_valid_username
 		}
 
 		if (validation_param === 'name') {
@@ -165,18 +168,19 @@ export default class _Input {
 		return false
 	}
 
-	async async_checkIfUnique(resource_name: unique_param_type) {
+	async async_checkIfUsable(resource_name: usable_param_type_t) {
 		return await mainLaravelDBRestAPICallWrapper
 			.dispatch({
-				type: 'MAIN_LARAVEL_DB_REST_API_CALL',
+				type: 'APP_BACKEND_API_CALL',
 				method: 'GET',
-				endpoint: 'users/check/{check_param_name}/{check_param}',
-				data: { check_param_name: resource_name, check_param: this._input }
+				endpoint: 'availability_check/{check_param_name}/{check_param_value}',
+				data: { check_param_name: resource_name, check_param_value: this._input }
 			})
 			.then((resp: any) => {
-				if (resource_name === 'email_address') this._is_unique_email_address = resp.found === false
-				if (resource_name === 'username') this._is_unique_username = resp.found === false
-				this._has_error = resp.found !== false
+				if (resource_name === 'reg_token') this._is_usable_reg_token = resp.usable === true
+				if (resource_name === 'username') this._is_usable_username = resp.usable === true
+				if (resource_name === 'email_address') this._is_usable_email_address = resp.usable === true
+				this._has_error = resp.usable !== true
 				return Promise.resolve(resp)
 			})
 			.catch((e: any) => {
@@ -185,9 +189,10 @@ export default class _Input {
 			})
 	}
 
-	isUnique(resource_name: unique_param_type): boolean {
-		if (resource_name === 'email_address') return this._is_unique_email_address !== null ? this._is_unique_email_address : false
-		if (resource_name === 'username') return this._is_unique_username !== null ? this._is_unique_username : false
+	isUsable(resource_name: usable_param_type_t): boolean {
+		if (resource_name === 'reg_token') return this._is_usable_reg_token !== null ? this._is_usable_reg_token : false
+		if (resource_name === 'username') return this._is_usable_username !== null ? this._is_usable_username : false
+		if (resource_name === 'email_address') return this._is_usable_email_address !== null ? this._is_usable_email_address : false
 		return false
 	}
 

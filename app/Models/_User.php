@@ -35,6 +35,7 @@ class _User extends Authenticatable
         'username',
         'email_address',
         'password',
+        'reg_token',
         'avatar_image_id',
         'status',
     ];
@@ -46,6 +47,7 @@ class _User extends Authenticatable
      */
     protected $hidden = [
         'password',
+        'reg_token',
     ];
 
     /**
@@ -71,7 +73,7 @@ class _User extends Authenticatable
      */
     public function phone_nos()
     {
-        return $this->hasMany( _PhoneNo::class, 'parent_pmkey', 'username' )->where(['parent_table' => '__users']);
+        return $this->hasMany( _PhoneNo::class, 'parent_uid', 'username' )->where(['parent_table' => '__users']);
     }
 
     /**
@@ -126,7 +128,7 @@ class _User extends Authenticatable
      */
     public function pref_items()
     {
-        return $this->hasMany( _PrefItem::class , 'parent_pmkey', 'username' )->where('parent_table', '__users');
+        return $this->hasMany( _PrefItem::class , 'parent_uid', 'username' )->where('parent_table', '__users');
     }
 
     /**
@@ -142,7 +144,7 @@ class _User extends Authenticatable
      */
     public function logs()
     {
-        return $this->hasMany( _Log::class, 'entry_pmkey', 'username' )->where('entry_table', '__users');
+        return $this->hasMany( _Log::class, 'entry_uid', 'username' )->where('entry_table', '__users');
     }
     
     /**
@@ -227,48 +229,19 @@ class _User extends Authenticatable
             if ( $user_group_membership->status === 'active' && $user_group_membership->user_group->status==='active' ){ array_push( $active_user_group_memberships, $user_group_membership->user_group_slug ); }
         }
 
-        $store_managed = $this->store_managed;
-
-        if (isset($store_managed) && !(array_search('store_managers', array_column($user_group_memberships, "user_group_slug")) !== false)){
-            $status = $store_managed->status === 'active' && _UserGroup::where('slug', 'store_managers')->first()->status === 'active' ? 'active' : 'revoked';
-            array_push( $user_group_memberships, (object)[ 
-                'id'                    => NULL,
-                'user_username'         => $this->username,
-                'user_group_slug'       => 'store_managers',
-                'status'                => $status,
-                'creator_username'      => $store_managed->creator_username,
-                'created_datetime'      => $store_managed->created_datetime,
-                'updated_datetime'      => $store_managed->updated_datetime,
-            ]);
-            if ( $status === 'active' ){ array_push( $active_user_group_memberships, 'store_managers' ); }
-        }
-
         $admin_extension = $this->admin_extension;
-        if (isset($admin_extension) && !(array_search('business_administrators', array_column($user_group_memberships, "user_group_slug")) !== false)){
-            $status = $admin_extension->status === 'active' && _UserGroup::where('slug', 'business_administrators')->first()->status === 'active' ? 'active' : 'revoked';
+        if (isset($admin_extension) && !(array_search('user_administrators', array_column($user_group_memberships, "user_group_slug")) !== false)){
+            $status = $admin_extension->status === 'active' && _UserGroup::where('slug', 'user_administrators')->first()->status === 'active' ? 'active' : 'revoked';
             array_push( $user_group_memberships, (object)[ 
                 'id'                    => NULL,
                 'user_username'         => $this->username,
-                'user_group_slug'       => 'business_administrators',
+                'user_group_slug'       => 'user_administrators',
                 'status'                => $status,
                 'creator_username'      => $admin_extension->creator_username,
                 'created_datetime'      => $admin_extension->created_datetime,
                 'updated_datetime'      => $admin_extension->updated_datetime,
             ]);
-            if ( $status === 'active' ){ array_push( $active_user_group_memberships, 'business_administrators' ); }
-        }
-        if (isset($admin_extension) && !(array_search('system_administrators', array_column($user_group_memberships, "user_group_slug")) !== false)){
-            $status = $admin_extension->status === 'active' && _UserGroup::where('slug', 'system_administrators')->first()->status === 'active' ? 'active' : 'revoked';
-            array_push( $user_group_memberships, (object)[ 
-                'id'                    => NULL,
-                'user_username'         => $this->username,
-                'user_group_slug'       => 'system_administrators',
-                'status'                => $status,
-                'creator_username'      => $admin_extension->creator_username,
-                'created_datetime'      => $admin_extension->created_datetime,
-                'updated_datetime'      => $admin_extension->updated_datetime,
-            ]);
-            if ( $status === 'active' ){ array_push( $active_user_group_memberships, 'system_administrators' ); }
+            if ( $status === 'active' ){ array_push( $active_user_group_memberships, 'user_administrators' ); }
         }
 
         $seller_extension = $this->seller_extension;
@@ -287,18 +260,18 @@ class _User extends Authenticatable
         }
 
         $buyer_extension = $this->buyer_extension;
-        if ($buyer_extension && !(array_search('customers', array_column($user_group_memberships, "user_group_slug")) !== false)){
-            $status = $buyer_extension->status === 'active' && _UserGroup::where('slug', 'customers')->first()->status === 'active' ? 'active' : 'revoked';
+        if ($buyer_extension && !(array_search('buyers', array_column($user_group_memberships, "user_group_slug")) !== false)){
+            $status = $buyer_extension->status === 'active' && _UserGroup::where('slug', 'buyers')->first()->status === 'active' ? 'active' : 'revoked';
             array_push( $user_group_memberships, (object)[ 
                 'id'                    => NULL,
                 'user_username'         => $this->username,
-                'user_group_slug'       => 'customers',
+                'user_group_slug'       => 'buyers',
                 'status'                => $status,
                 'creator_username'      => $buyer_extension->creator_username,
                 'created_datetime'      => $buyer_extension->created_datetime,
                 'updated_datetime'      => $buyer_extension->updated_datetime,
             ]);
-            if ( $status === 'active' ){ array_push( $active_user_group_memberships, 'customers' ); }
+            if ( $status === 'active' ){ array_push( $active_user_group_memberships, 'buyers' ); }
         }
 
         $this->_set_user_group_memberships_info_done = true;

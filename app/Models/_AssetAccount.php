@@ -25,6 +25,6 @@ class _AssetAccount extends Model
      */
     public function logs()
     {
-        return $this->hasMany( _Log::class, 'entry_pmkey' )->where('entry_table', '__asset_accounts');
+        return $this->hasMany( _Log::class, 'entry_uid' )->where('entry_table', '__asset_accounts');
     }
 }

@@ -44,20 +44,20 @@ class _Session extends Model
      */
     public function logs()
     {
-        return $this->hasMany( _Log::class, 'entry_pmkey' )->where('entry_table', '__sessions');
+        return $this->hasMany( _Log::class, 'entry_uid', 'token' )->where('entry_table', '__sessions');
     }
 
     /**
-     * Get the logs_in_model associated with the session.
+     * Get the logs_in_session associated with the session.
      */
-    public function logs_in_model()
+    public function logs_in_session()
     {
-        return $this->hasMany( _Log::class, 'session_token' );
+        return $this->hasMany( _Log::class, 'session_token', 'token' );
     }
     
     public function last_active_datetime_f()
     {
-        $action = $this->logs_in_model()->orderBy('action_datetime', 'desc')->first();
+        $action = $this->logs_in_session()->orderBy('action_datetime', 'desc')->first();
         return $action ? $action->action_datetime : null;
     }
 }

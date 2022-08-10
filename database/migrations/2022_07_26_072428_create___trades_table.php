@@ -37,8 +37,13 @@ return new class extends Migration
             $table->unsignedDecimal('asset_sell_price', $precision = 20, $scale = 10)->nullable();
             $table->unsignedDecimal('asset_purchase_price', $precision = 20, $scale = 10)->nullable();
 
-            $table->string('payment_method', 64);
-            $table->text('payment_details');
+            $table->string('payment_method_slug', 64)->nullable();
+            $table->foreign('payment_method_slug')
+                    ->references('slug')
+                    ->on('__payment_methods')
+                    ->onUpdate('cascade')
+                    ->onDelete('set null');
+            $table->text('payment_method_details');
             $table->timestamp('payment_declared_datetime')->nullable();
             $table->timestamp('payment_confirmed_datetime')->nullable();
             $table->boolean('visible_to_creator')->default(true);

@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('__reg_tokens', function (Blueprint $table) {
             $table->string('token', 16)->primary();
+            $table->enum('status', ['active', 'deactivated', 'used_up'])->default('active');
             
             $table->string('creator_username', 64);
             $table->foreign('creator_username')
@@ -23,8 +24,14 @@ return new class extends Migration
                     ->onUpdate('cascade')
                     ->onDelete('cascade');
             $table->timestamp('created_datetime')->useCurrent();
-            $table->timestamp('used_datetime')->nullable();
         });
+
+        DB::table('__reg_tokens')->insert([
+            [
+                'token' => '1234567890',
+                'creator_username' => 'hopekd01',
+            ],
+        ]);
     }
 
     /**

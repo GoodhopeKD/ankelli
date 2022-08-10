@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('username', 64)->unique();
             $table->string('email_address', 64)->unique();
             $table->string('password');
+            $table->string('reg_token', 16)->nullable();
             $table->unsignedTinyInteger('avatar_image_id')->nullable();
             
             $table->enum('status', ['active', 'inactive', 'suspended', 'deactivated'])->default('active');
@@ -33,31 +34,20 @@ return new class extends Migration
                 'email_address' => '',
                 'password' => '',
                 'avatar_image_id' => 25,
-                'created_datetime' => now()->toDateTimeString(),
             ],
             // Default System administrator, Cannot buy, sell; can only manage system features
             [
                 'username' => 'sysadmin',
-                'email_address' => 'sysadmin@ankelli-app.com',
-                'password' => bcrypt('PayWy23Adm1n#1'),
+                'email_address' => 'sysadmin@ankelli.com',
+                'password' => bcrypt('Ank3ll1#1'),
                 'avatar_image_id' => 25,
-                'created_datetime' => now()->toDateTimeString(),
             ],
-            // Deposit assistant account
+            // Ankelli finance tracking account
             [
-                'username' => 'deposits-assistant',
-                'email_address' => 'deposits@ankelli-app.com',
-                'password' => bcrypt('PayWy23DP#1'),
+                'username' => 'ankelli',
+                'email_address' => 'ankelli@ankelli.com',
+                'password' => bcrypt('Ank3ll1#1'),
                 'avatar_image_id' => 27,
-                'created_datetime' => now()->toDateTimeString(),
-            ],
-            // Withdrawal assistant account
-            [
-                'username' => 'withdrawals-assistant',
-                'email_address' => 'withdrawals@ankelli-app.com',
-                'password' => bcrypt('PayWy23WD#1'),
-                'avatar_image_id' => 27,
-                'created_datetime' => now()->toDateTimeString(),
             ],
             // Personal Account with access to all features
             [
@@ -65,7 +55,24 @@ return new class extends Migration
                 'email_address' => 'goodhopedhliwayo@gmail.com',
                 'password' => bcrypt('Password#123'),
                 'avatar_image_id' => 25,
-                'created_datetime' => now()->toDateTimeString(),
+            ],
+        ]);
+
+        DB::table('__users')->insert([
+            [
+                'username' => 'popo',
+                'email_address' => 'popo@ankelli.com',
+                'password' => bcrypt('Password#123'),
+            ],
+            [
+                'username' => 'momo',
+                'email_address' => 'momo@ankelli.com',
+                'password' => bcrypt('Password#123'),
+            ],
+            [
+                'username' => 'gudo',
+                'email_address' => 'gudo@ankelli.com',
+                'password' => bcrypt('Password#123'),
             ],
         ]);
     }
