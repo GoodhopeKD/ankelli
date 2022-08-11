@@ -9,7 +9,7 @@ import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend
     Type Definitions
 */
 type casts_t = 'created_datetime' | 'updated_datetime'
-type status_t = 'active' | 'frozen'
+type _status_t = 'active' | 'frozen'
 type get_collection_params = {
     get_with_meta?: boolean,
 }
@@ -22,7 +22,7 @@ export const _AssetAccountRespObj = {
     user_username: undefined as undefined | null | string,
     asset_name: undefined as undefined | null | string,
     asset_value: undefined as undefined | null | number,
-    status: undefined as undefined | null | status_t,
+    _status: undefined as undefined | null | _status_t,
 
     created_datetime: undefined as undefined | null | string,
     updated_datetime: undefined as undefined | null | string,
@@ -36,7 +36,7 @@ export default class _AssetAccount extends _Wrapper_ implements Omit<typeof _Ass
     user_username: string | null = null
     asset_name: string | null = null
     asset_value: number | null = null
-    status: status_t | null = null
+    _status: _status_t | null = null
 
     created_datetime: _DateTime | null = null
     updated_datetime: _DateTime | null = null

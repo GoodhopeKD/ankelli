@@ -22,7 +22,7 @@ return new class extends Migration
                     ->onUpdate('cascade')
                     ->onDelete('cascade');
             $table->string('post_title', 32);
-            $table->enum('status', ['active', 'suspended', 'deactivated'])->default('active');
+            $table->enum('_status', ['active', 'suspended', 'deactivated'])->default('active');
 
             $table->string('creator_username', 64)->nullable();
             $table->foreign('creator_username')

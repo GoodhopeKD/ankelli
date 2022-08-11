@@ -13,10 +13,10 @@ import { _dataless_resource_collection_wrapper } from 'app/controller/redux_redu
 /*
     Type Definitions
 */
-type casts_t = 'payment_declared_datetime' | 'payment_confirmed_datetime' | 'created_datetime' | 'updated_datetime'
+type casts_t = 'pymt_declared_datetime' | 'pymt_confirmed_datetime' | 'created_datetime' | 'updated_datetime'
 type was_offer_to_t = 'buy' | 'sell'
-type status_t = 'active' | 'cancelled' | 'flagged' | 'completed'
-type payment_method_details_t = { key: string, value: string | number }[]
+type _status_t = 'active' | 'cancelled' | 'flagged' | 'completed'
+type pymt_method_details_t = { key: string, value: string | number }[]
 type addable_addon_args_t = typeof _MessageRespObj
 type get_collection_params = {
     get_with_meta?: boolean,
@@ -43,13 +43,13 @@ export const _TradeRespObj = {
     // for was_offer_to:buy
     asset_purchase_price: undefined as undefined | null | number,
     
-    payment_method_slug: undefined as undefined | null | string,
-    payment_method_details: undefined as undefined | null | payment_method_details_t,
-    payment_declared_datetime: undefined as undefined | null | string,
-    payment_confirmed_datetime: undefined as undefined | null | string,
+    pymt_method_slug: undefined as undefined | null | string,
+    pymt_method_details: undefined as undefined | null | pymt_method_details_t,
+    pymt_declared_datetime: undefined as undefined | null | string,
+    pymt_confirmed_datetime: undefined as undefined | null | string,
     visible_to_creator: undefined as undefined | null | boolean,
     visible_to_offer_creator: undefined as undefined | null | boolean,
-    status: undefined as undefined | null | status_t,
+    _status: undefined as undefined | null | _status_t,
 
     offer_creator_username: undefined as undefined | null | string,
     creator_username: undefined as undefined | null | string, // Seller
@@ -91,13 +91,13 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
     asset_sell_price: number | null = null
     asset_purchase_price: number | null = null
 
-    payment_method_slug: string | null = null
-    payment_method_details: payment_method_details_t | null = null
-    payment_declared_datetime: _DateTime | null = null
-    payment_confirmed_datetime: _DateTime | null = null
+    pymt_method_slug: string | null = null
+    pymt_method_details: pymt_method_details_t | null = null
+    pymt_declared_datetime: _DateTime | null = null
+    pymt_confirmed_datetime: _DateTime | null = null
     visible_to_creator: boolean | null = null
     visible_to_offer_creator: boolean | null = null
-    status: status_t | null = null
+    _status: _status_t | null = null
 
     offer_creator_username: string | null = null
     creator_username: string | null = null
@@ -114,8 +114,8 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
 
     protected populate(args: typeof _TradeRespObj) {
         this._populate(args)
-        this.payment_declared_datetime = args.payment_declared_datetime && typeof args.payment_declared_datetime === 'string' ? new _DateTime(args.payment_declared_datetime) : null
-        this.payment_confirmed_datetime = args.payment_confirmed_datetime && typeof args.payment_confirmed_datetime === 'string' ? new _DateTime(args.payment_confirmed_datetime) : null
+        this.pymt_declared_datetime = args.pymt_declared_datetime && typeof args.pymt_declared_datetime === 'string' ? new _DateTime(args.pymt_declared_datetime) : null
+        this.pymt_confirmed_datetime = args.pymt_confirmed_datetime && typeof args.pymt_confirmed_datetime === 'string' ? new _DateTime(args.pymt_confirmed_datetime) : null
         this.created_datetime = args.created_datetime && typeof args.created_datetime === 'string' ? new _DateTime(args.created_datetime) : null
         this.updated_datetime = args.updated_datetime && typeof args.updated_datetime === 'string' ? new _DateTime(args.updated_datetime) : null
     }

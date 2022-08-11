@@ -14,6 +14,28 @@ class _FileResourceCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'data' => $this->collection->transform(function($_this){
+                return array_filter([
+                    'id'                    => $_this->id,
+                    //'parent_table'          => $_this->parent_table,
+                    //'parent_uid'            => $_this->parent_uid,
+                    //'filegroup'             => $_this->filegroup,
+                    //'tag'                   => $_this->tag,
+                    //'title'                 => $_this->title,
+                    'width'                 => $_this->width,
+                    'height'                => $_this->height,
+                    'uri'                   => $_this->uri,
+                    //'type'                  => $_this->type,
+                    //'filesize'              => $_this->filesize,
+                    //'original_filename'     => $_this->original_filename,
+                    //'order_index'           => $_this->order_index,
+
+                    //'creator_username'      => $_this->creator_username,
+                    //'created_datetime'      => $_this->created_datetime,
+                    //'updated_datetime'      => $_this->updated_datetime,
+                ], static function($var){ return $var !== null;} );
+            }),
+        ];
     }
 }

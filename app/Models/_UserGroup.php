@@ -22,7 +22,7 @@ class _UserGroup extends Model
         'name',
         'slug',
         'description',
-        'status',
+        '_status',
         'creator_username',
     ];
     

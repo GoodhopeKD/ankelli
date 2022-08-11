@@ -148,8 +148,8 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
                     if (e.resp) {
                         // client received an error resp (5xx, 4xx)
                         error = {
-                            status: e.resp.status ? e.resp.status : '',
-                            message: e.resp.statusText ? e.resp.statusText : e.resp.data ? e.resp.data.message : '',
+                            _status: e.resp._status ? e.resp._status : '',
+                            message: e.resp._statusText ? e.resp._statusText : e.resp.data ? e.resp.data.message : '',
                             data: e.resp.data ? e.resp.data : {},
                             page: e.resp.config ? e.resp.config.url.replace(active_session_data.token + '/', '') : ''
                         }
@@ -158,7 +158,7 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
                         error = {
                             message: e.message,
                             request: {
-                                status: e.request.status,
+                                _status: e.request._status,
                                 _url: e.request._url,
                                 _response: typeof e.request._response === 'string' && e.request._response.length < 500 ? e.request._response : null,
                                 _method: e.request._method,
@@ -170,7 +170,7 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
                             } : null
                         }
 
-                        if (error.message.includes('Request failed with status code') && error.response) {
+                        if (error.message.includes('Request failed with _status code') && error.response) {
                             error.message = error.response.message
                         }
                     } else {

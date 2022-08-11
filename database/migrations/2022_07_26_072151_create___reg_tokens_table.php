@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('__reg_tokens', function (Blueprint $table) {
             $table->string('token', 16)->primary();
-            $table->enum('status', ['active', 'deactivated', 'used_up'])->default('active');
+            $table->enum('_status', ['active', 'deactivated', 'used_up'])->default('active');
             
             $table->string('creator_username', 64);
             $table->foreign('creator_username')

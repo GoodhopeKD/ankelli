@@ -21,7 +21,7 @@ class _AdminExtension extends Model
     protected $fillable = [
         'user_username',
         'post_title',
-        'status',
+        '_status',
         'creator_username',
     ];
     

@@ -37,18 +37,18 @@ return new class extends Migration
             $table->unsignedDecimal('asset_sell_price', $precision = 20, $scale = 10)->nullable();
             $table->unsignedDecimal('asset_purchase_price', $precision = 20, $scale = 10)->nullable();
 
-            $table->string('payment_method_slug', 64)->nullable();
-            $table->foreign('payment_method_slug')
+            $table->string('pymt_method_slug', 64)->nullable();
+            $table->foreign('pymt_method_slug')
                     ->references('slug')
-                    ->on('__payment_methods')
+                    ->on('__pymt_methods')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->text('payment_method_details');
-            $table->timestamp('payment_declared_datetime')->nullable();
-            $table->timestamp('payment_confirmed_datetime')->nullable();
+            $table->text('pymt_method_details');
+            $table->timestamp('pymt_declared_datetime')->nullable();
+            $table->timestamp('pymt_confirmed_datetime')->nullable();
             $table->boolean('visible_to_creator')->default(true);
             $table->boolean('visible_to_offer_creator')->default(true);
-            $table->enum('status', ['active', 'cancelled', 'flagged', 'completed'])->default('active');
+            $table->enum('_status', ['active', 'cancelled', 'flagged', 'completed'])->default('active');
 
             $table->string('offer_creator_username', 64)->nullable();
             $table->foreign('offer_creator_username')

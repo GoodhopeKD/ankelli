@@ -33,8 +33,10 @@ export default class TopNavbar extends React.Component {
                                     <img src={DisplayPhoto} alt="mdo" width="32" height="32" className="rounded-circle" />
                                 </a>
                                 <ul className="dropdown-menu text-small dropdown-menu-end">
+                                    <li><i className="dropdown-header">@{this.props.auth_user.username}</i></li>
+                                    <li><hr className="dropdown-divider" /></li>
                                     {this.props.top_navbar_user_menu.menu_items.map((item, index) => {
-                                        const linkk = <Link to={item.path} className="dropdown-item" onClick={e => { if (item.path === '/#/logout') { e.preventDefault(); this.props.logout() } }} >{item.title}</Link>
+                                        const linkk = <Link to={item.path} className="dropdown-item" onClick={e => { if (item.path === '/#/logout') { e.preventDefault(); this.props.auth_user.signOut() } }} >{item.title}</Link>
                                         if (item.has_divider_below) {
                                             return <React.Fragment key={index}>
                                                 <li>{linkk}</li>

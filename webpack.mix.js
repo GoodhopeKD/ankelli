@@ -21,8 +21,8 @@ mix.webpackConfig({
 });
 
 mix
-    .setResourceRoot( "/ankelli/public/") // Temp
+    //.setResourceRoot( "/ankelli/public/") // use only in localhost env if not using virtual host
     .sourceMaps() // Remove error: Source map error: Error: request failed with status 404
-    .ts('resources/js/app.js', 'public/js')
+    .ts('resources/js/app.js', 'public/js/app.js')
     .react()
-    .sass('resources/sass/app.scss', 'public/css');
+    .sass('resources/sass/app.scss', 'public/css/app.css');

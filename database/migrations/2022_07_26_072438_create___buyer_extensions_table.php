@@ -21,7 +21,7 @@ return new class extends Migration
                     ->on('__users')
                     ->onUpdate('cascade')
                     ->onDelete('cascade');
-            $table->enum('status', ['active', 'suspended', 'deactivated'])->default('active');
+            $table->enum('_status', ['active', 'suspended', 'deactivated'])->default('active');
 
             $table->string('creator_username', 64)->nullable();
             $table->foreign('creator_username')
@@ -37,11 +37,11 @@ return new class extends Migration
         DB::table('__buyer_extensions')->insert([
             [
                 'user_username' => 'sysadmin',
-                'status' => 'deactivated', 'creator_username' => 'system',
+                '_status' => 'deactivated', 'creator_username' => 'system',
             ],
             [
                 'user_username' => 'ankelli',
-                'status' => 'deactivated', 'creator_username' => 'system',
+                '_status' => 'deactivated', 'creator_username' => 'system',
             ],
         ]);
     }

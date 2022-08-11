@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('reg_token', 16)->nullable();
             $table->unsignedTinyInteger('avatar_image_id')->nullable();
             
-            $table->enum('status', ['active', 'inactive', 'suspended', 'deactivated'])->default('active');
+            $table->enum('_status', ['active', 'inactive', 'suspended', 'deactivated'])->default('active');
             $table->timestamp('created_datetime')->useCurrent();
             $table->timestamp('updated_datetime')->nullable()->useCurrentOnUpdate();
             $table->softDeletes('deleted_datetime');
@@ -72,6 +72,11 @@ return new class extends Migration
             [
                 'username' => 'gudo',
                 'email_address' => 'gudo@ankelli.com',
+                'password' => bcrypt('Password#123'),
+            ],
+            [
+                'username' => 'nassim',
+                'email_address' => 'nassim@ankelli.com',
                 'password' => bcrypt('Password#123'),
             ],
         ]);

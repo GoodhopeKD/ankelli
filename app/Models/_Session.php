@@ -19,7 +19,7 @@ class _Session extends Model
         'user_username',
         'device_info',
         'agent_app_info',
-        'status',
+        '_status',
         'signin_datetime',
         'signout_datetime',
     ];

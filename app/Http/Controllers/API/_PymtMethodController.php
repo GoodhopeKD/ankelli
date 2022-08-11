@@ -5,7 +5,11 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class _PaymentMethodController extends Controller
+use App\Models\_PymtMethod;
+use App\Http\Resources\_PymtMethodResource;
+use App\Http\Resources\_PymtMethodResourceCollection;
+
+class _PymtMethodController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -14,7 +18,20 @@ class _PaymentMethodController extends Controller
      */
     public function index()
     {
-        //
+        $result = null;
+
+        if ( $result === null ){
+            $simple_query_args = [];
+
+            if ( request()->_status && request()->_status !== 'all' ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => request()->_status ]); }
+            if ( !isset(request()->_status) ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => 'active' ]); }
+
+            $eloquent_query = _PymtMethod::where($simple_query_args);
+
+            $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->get(); 
+        }
+
+        return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _PymtMethodResource::collection( $result ) : new _PymtMethodResourceCollection( $result ) ) : null;
     }
 
     /**

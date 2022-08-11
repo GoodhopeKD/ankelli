@@ -5,6 +5,10 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Models\_Asset;
+use App\Http\Resources\_AssetResource;
+use App\Http\Resources\_AssetResourceCollection;
+
 class _AssetController extends Controller
 {
     /**
@@ -14,7 +18,20 @@ class _AssetController extends Controller
      */
     public function index()
     {
-        //
+        $result = null;
+
+        if ( $result === null ){
+            $simple_query_args = [];
+
+            if ( request()->_status && request()->_status !== 'all' ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => request()->_status ]); }
+            if ( !isset(request()->_status) ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => 'active' ]); }
+
+            $eloquent_query = _Asset::where($simple_query_args);
+
+            $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->get(); 
+        }
+
+        return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _AssetResource::collection( $result ) : new _AssetResourceCollection( $result ) ) : null;
     }
 
     /**

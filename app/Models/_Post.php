@@ -22,7 +22,7 @@ class _Post extends Model
         'title',
         'excerpt',
         'body',
-        'status',
+        '_status',
         'post_datetime',
         'expiry_datetime',
         'creator_username',

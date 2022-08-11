@@ -18,7 +18,7 @@ class _VerifToken extends Model
         'token',
         'user_username',
         'charge',
-        'status',
+        '_status',
         'recepient_resource_table',
         'recepient_resource_id',
         'verified_datetime',

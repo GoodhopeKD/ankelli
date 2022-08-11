@@ -30,10 +30,10 @@ class _Offer extends Model
         'asset_purchase_price',
         'min_purchase_amount',
         'max_purchase_amount',
-        'payment_method_slug',
-        'payment_method_details',
+        'pymt_method_slug',
+        'pymt_method_details',
         'note',
-        'status',
+        '_status',
         'creator_username',
     ];
     public $incrementing = false;
@@ -46,7 +46,7 @@ class _Offer extends Model
      * @var array
      */
     protected $casts = [
-        'payment_method_details' => 'array',
+        'pymt_method_details' => 'array',
         //'created_datetime' => 'datetime',
         //'updated_datetime' => 'datetime',
     ];

@@ -20,20 +20,15 @@ class _CurrencyController extends Controller
     {
         $result = null;
 
-        if ( $result === null && request()->get_as_addon_prop && request()->get_as_addon_prop == true ){
-            $result = _Currency::where(['status'=>'active'])
-            ->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->paginate()->withQueryString(); 
-        }
-
         if ( $result === null ){
             $simple_query_args = [];
 
-            if ( request()->status && request()->status !== 'all' ){ $simple_query_args = array_merge( $simple_query_args, [ 'status' => request()->status ]); }
-            if ( !isset(request()->status) ){ $simple_query_args = array_merge( $simple_query_args, [ 'status' => 'active' ]); }
+            if ( request()->_status && request()->_status !== 'all' ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => request()->_status ]); }
+            if ( !isset(request()->_status) ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => 'active' ]); }
 
             $eloquent_query = _Currency::where($simple_query_args);
 
-            $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->paginate(1000)->withQueryString(); 
+            $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->get(); 
         }
 
         return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _CurrencyResource::collection( $result ) : new _CurrencyResourceCollection( $result ) ) : null;

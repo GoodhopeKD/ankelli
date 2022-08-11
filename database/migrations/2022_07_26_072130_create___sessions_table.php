@@ -24,7 +24,7 @@ return new class extends Migration
             $table->text('device_info');
             $table->text('agent_app_info');
             
-            $table->enum('status', ['empty', 'active', 'ended'])->default('empty');
+            $table->enum('_status', ['empty', 'active', 'ended'])->default('empty');
             $table->timestamp('created_datetime')->useCurrent();
             $table->timestamp('updated_datetime')->nullable()->useCurrentOnUpdate();
             $table->timestamp('signin_datetime')->nullable();

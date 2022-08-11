@@ -18,7 +18,7 @@ class _Currency extends Model
         'name',
         'alpha_three_code',
         'symbol',
-        'symbol_before_amount',
+        'symbol_before_number',
         'usd_rate',
         'min_transactable_cash_amount',
         'smallest_transactable_cash_denomination_amount',

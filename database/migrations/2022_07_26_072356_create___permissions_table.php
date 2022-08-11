@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('slug', 64)->unique();
             $table->unique(['name', 'slug']);
             $table->text('description');
-            $table->enum('status', ['active', 'deactivated'])->default('active');
+            $table->enum('_status', ['active', 'deactivated'])->default('active');
 
             $table->string('creator_username', 64)->nullable();
             $table->foreign('creator_username')

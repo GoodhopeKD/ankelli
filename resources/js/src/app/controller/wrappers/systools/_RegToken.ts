@@ -7,14 +7,14 @@ import _Wrapper_ from 'app/controller/wrappers/_Wrapper_'
     Type Definitions
 */
 type casts_t = 'created_datetime'
-type status_t = 'active' | 'deactivated' | 'used_up'
+type _status_t = 'active' | 'deactivated' | 'used_up'
 
 /* 
     RespObj Export
 */
 export const _RegTokenRespObj = {
     token: undefined as undefined | null | string,
-    status: undefined as undefined | null | status_t,
+    _status: undefined as undefined | null | _status_t,
     use_count: undefined as undefined | null | number,
     creator_username: undefined as undefined | null | string,
     created_datetime: undefined as undefined | null | string,
@@ -25,7 +25,7 @@ export const _RegTokenRespObj = {
 */
 export default class _RegToken extends _Wrapper_ implements Omit<typeof _RegTokenRespObj, casts_t> {
     token: string | null = null
-    status: status_t | null = null
+    _status: _status_t | null = null
     use_count: number | null = null
     creator_username: string | null = null
     created_datetime: _DateTime | null = null

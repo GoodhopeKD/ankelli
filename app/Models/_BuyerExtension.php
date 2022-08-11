@@ -21,7 +21,7 @@ class _BuyerExtension extends Model
      */
     protected $fillable = [
         'user_username',
-        'status',
+        '_status',
         'creator_username',
     ];
 

@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\File;
 */
 
 // to correct float values passing through json_encode
-ini_set('serialize_precision',14);
+ini_set('serialize_precision', 14);
 
 // linking storage path to url path
 if (!File::exists( public_path('storage') )){
@@ -19,7 +19,6 @@ if (!File::exists( public_path('storage') )){
 }
 
 // Default Route
-
 Route::post('','App\Http\Controllers\API\__AuxController@default_route')->name('default_route');
 
 Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_token}' ], function() {
@@ -56,6 +55,8 @@ Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_
     });
 
     // Auth:null accessible routes
+    Route::get('sysconfig_params', '__AuxController@sysconfig_params')->name('sysconfig_params');
+    Route::get('datalists', '__AuxController@datalists')->name('datalists');
     Route::apiResource('datalists/currencies', '_CurrencyController')->only(['index'])->parameter('currencies', 'id');
     Route::apiResource('datalists/cities', '_CityController')->only(['index'])->parameter('cities', 'id');
     Route::apiResource('datalists/listing_categories', '_ListingCategoryController')->only(['show', 'index'])->parameter('listing_categories', 'id');

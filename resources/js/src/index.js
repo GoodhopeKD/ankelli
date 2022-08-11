@@ -6,5 +6,5 @@ ReactDOM.render(
     <React.Fragment>
         <AppContainer />
     </React.Fragment>,
-    document.getElementById('root')
+    document.getElementById('app_root')
 );

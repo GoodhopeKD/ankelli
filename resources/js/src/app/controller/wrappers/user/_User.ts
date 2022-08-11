@@ -26,13 +26,13 @@ import { _dataless_resource_collection_wrapper } from 'app/controller/redux_redu
 	Type Definitions
 */
 type casts_t = 'asset_accounts' | 'pref_items' | 'last_active_datetime' | 'created_datetime' | 'updated_datetime' | 'deleted_datetime'
-type status_t = 'active' | 'inactive' | 'suspended' | 'deactivated' | 'deleted'
+type _status_t = 'active' | 'inactive' | 'suspended' | 'deactivated' | 'deleted'
 type addable_addon_args_t = typeof _EmailAddressRespObj | typeof _PhoneNoRespObj | typeof _UserGroupMembershipRespObj
 type extension_args_t = typeof _AdminExtensionRespObj | typeof _SellerExtensionRespObj | typeof _BuyerExtensionRespObj
 type get_collection_params = {
 	get_with_meta?: string,
 	search_query_string?: string,
-	status?: status_t,
+	_status?: _status_t,
 	user_group_membership_slug?: string,
 }
 
@@ -63,7 +63,7 @@ export const _UserRespObj = {
 	id: undefined as undefined | null | number,
 	username: undefined as undefined | null | string,
 	email_address: undefined as undefined | null | string,
-	status: undefined as undefined | null | status_t,
+	_status: undefined as undefined | null | _status_t,
 
 	created_datetime: undefined as undefined | null | string,
 	updated_datetime: undefined as undefined | null | string,
@@ -126,7 +126,7 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 	username: string | null = null
 	email_address: string | null = null
 
-	status: status_t | null = null
+	_status: _status_t | null = null
 	created_datetime: _DateTime | null = null
 	updated_datetime: _DateTime | null = null
 	deleted_datetime: _DateTime | null = null
@@ -280,7 +280,7 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 	public async update(args: typeof _UserRespObj, update_note: string) {
 		const data = {} as typeof args
 		if (typeof args.email_address === typeof this.email_address && args.email_address !== this.email_address) data.email_address = args.email_address
-		if (typeof args.status === typeof this.status && args.status !== this.status) data.status = args.status
+		if (typeof args._status === typeof this._status && args._status !== this._status) data._status = args._status
 		if (typeof args.avatar_image_id === typeof this.avatar_image_id && args.avatar_image_id !== this.avatar_image_id) data.avatar_image_id = args.avatar_image_id
 		return this._mainLaravelDBAPIUpdate('users/' + this.id, update_note, data)
 	}

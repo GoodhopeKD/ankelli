@@ -17,7 +17,7 @@ class _Asset extends Model
     protected $fillable = [
         'name',
         'code',
-        'status',
+        '_status',
         'creator_username',
     ];
 

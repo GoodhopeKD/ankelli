@@ -14,7 +14,7 @@ import { _dataless_resource_collection_wrapper } from 'app/controller/redux_redu
 	Type Definitions
 */
 type casts_t = 'created_datetime' | 'updated_datetime' | 'deleted_datetime'
-type status_t = 'active' | 'suspended' | 'deactivated'
+type _status_t = 'active' | 'suspended' | 'deactivated'
 type addable_addon_args_t = typeof _PermissionInstanceRespObj
 
 /* 
@@ -24,7 +24,7 @@ export const _AdminExtensionRespObj = {
 	id: undefined as undefined | null | number,
 	user_username:  undefined as undefined | null | string,
 	post_title:  undefined as undefined | null | string,
-	status: undefined as undefined | null | status_t,
+	_status: undefined as undefined | null | _status_t,
 
 	creator_username: undefined as undefined | null | string,
 	created_datetime: undefined as undefined | null | string,
@@ -56,7 +56,7 @@ export default class _AdminExtension extends _Wrapper_ implements Omit<typeof _A
 	id: number | null = null
 	user_username: string | null = null
 	post_title: string | null = null
-	status: status_t | null = null
+	_status: _status_t | null = null
 
 	creator_username: string | null = null
 	created_datetime: _DateTime | null = null

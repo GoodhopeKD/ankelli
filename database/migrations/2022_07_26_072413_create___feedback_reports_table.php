@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('creator_name', 32);
             $table->string('creator_email_address', 64);
             $table->text('closing_note')->nullable();
-            $table->enum('status', ['open', 'closed'])->default('open');
+            $table->enum('_status', ['open', 'closed'])->default('open');
 
             $table->string('creator_username', 64)->nullable();
             $table->foreign('creator_username')

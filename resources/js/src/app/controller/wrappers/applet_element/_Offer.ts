@@ -11,13 +11,13 @@ import { _dataless_resource_collection_wrapper } from 'app/controller/redux_redu
 */
 type casts_t = 'created_datetime' | 'updated_datetime'|'deleted_datetime'
 type offer_to_t = 'buy' | 'sell'
-type status_t = 'online' | 'offline'
+type _status_t = 'online' | 'offline'
 type get_collection_params = {
     get_with_meta?: boolean,
-    offers_to?: offer_to_t,
+    offer_to?: offer_to_t,
     creator_username?: string,
 }
-type payment_method_details_t = { key: string, value: string | number }[]
+type pymt_method_details_t = { key: string, value: string | number }[]
 
 /* 
     RespObj Export
@@ -41,10 +41,10 @@ export const _OfferRespObj = {
     min_purchase_amount: undefined as undefined | null | number,
     max_purchase_amount: undefined as undefined | null | number,
 
-    payment_method_slug: undefined as undefined | null | string,
-    payment_method_details: undefined as undefined | null | payment_method_details_t,
+    pymt_method_slug: undefined as undefined | null | string,
+    pymt_method_details: undefined as undefined | null | pymt_method_details_t,
     note: undefined as undefined | null | string,
-    status: undefined as undefined | null | status_t,
+    _status: undefined as undefined | null | _status_t,
     
     creator_username: undefined as undefined | null | string,
     created_datetime: undefined as undefined | null | string,
@@ -72,10 +72,10 @@ export default class _Offer extends _Wrapper_ implements Omit<typeof _OfferRespO
     min_purchase_amount: number | null = null
     max_purchase_amount: number | null = null
 
-    payment_method_slug: string | null = null
-    payment_method_details: payment_method_details_t | null = null
+    pymt_method_slug: string | null = null
+    pymt_method_details: pymt_method_details_t | null = null
     note: string | null = null
-    status: status_t | null = null
+    _status: _status_t | null = null
 
     creator_username: string | null = null
     created_datetime: _DateTime | null = null

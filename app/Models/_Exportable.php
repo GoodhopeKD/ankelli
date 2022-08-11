@@ -18,7 +18,7 @@ class _Exportable extends Model
         'name',
         'slug',
         'description',
-        'status',
+        '_status',
         'creator_username',
     ];
     

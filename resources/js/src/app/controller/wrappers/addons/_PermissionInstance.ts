@@ -14,12 +14,12 @@ import { _dataless_resource_collection_wrapper } from 'app/controller/redux_redu
     Type Definitions
 */
 type casts_t = 'created_datetime' | 'updated_datetime'
-type status_t = 'active' | 'revoked'
+type _status_t = 'active' | 'revoked'
 type parent_table_t = '__user_groups' | '__admin_extensions'
 type get_collection_params = {
     get_with_meta?: boolean,
     parent_table?: parent_table_t,
-    status?: status_t,
+    _status?: _status_t,
 }
 
 /* 
@@ -30,7 +30,7 @@ export const _PermissionInstanceRespObj = {
     permission_slug: undefined as undefined | null | string,
     parent_table: undefined as undefined | null | parent_table_t,
     parent_uid: undefined as undefined | null | string | number,
-    status: undefined as undefined | null | status_t,
+    _status: undefined as undefined | null | _status_t,
 
     creator_username: undefined as undefined | null | string,
     created_datetime: undefined as undefined | null | string,
@@ -59,7 +59,7 @@ export default class _PermissionInstance extends _Wrapper_ implements Omit<typeo
     permission_slug: string | null = null
     parent_table: parent_table_t | null = null
     parent_uid: string | number | null = null
-    status: status_t | null = null
+    _status: _status_t | null = null
 
     creator_username: string | null = null
     created_datetime: _DateTime | null = null

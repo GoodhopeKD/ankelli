@@ -35,7 +35,7 @@ php artisan make:model _Message -m
 
 php artisan make:model _Asset -m
 php artisan make:model _Currency -m
-php artisan make:model _PaymentMethod -m
+php artisan make:model _PymtMethod -m
 php artisan make:model _City -m
 php artisan make:model _Province -m
 
@@ -103,7 +103,7 @@ In the **`app/Providers/RouteServiceProvider`** file
         $this->configureRateLimiting();
 
         $this->routes(function () {
-            $api_location = env('API_SUBDOMAIN') ? Route::domain(env('API_SUBDOMAIN')) : Route::prefix('api');
+            $api_location = env('API_URL') ? Route::domain(env('API_URL')) : Route::prefix('api');
             $api_location
                 ->middleware('api')
                 ->namespace($this->namespace)
@@ -134,7 +134,7 @@ php artisan make:controller API/_MessageController --api
 
 php artisan make:controller API/_AssetController --api
 php artisan make:controller API/_CurrencyController --api
-php artisan make:controller API/_PaymentMethodController --api
+php artisan make:controller API/_PymtMethodController --api
 php artisan make:controller API/_CityController --api
 php artisan make:controller API/_ProvinceController --api
 
@@ -185,8 +185,8 @@ php artisan make:resource _AssetResource
 php artisan make:resource _AssetResourceCollection --collection
 php artisan make:resource _CurrencyResource
 php artisan make:resource _CurrencyResourceCollection --collection
-php artisan make:resource _PaymentMethodResource
-php artisan make:resource _PaymentMethodResourceCollection --collection
+php artisan make:resource _PymtMethodResource
+php artisan make:resource _PymtMethodResourceCollection --collection
 php artisan make:resource _CityResource
 php artisan make:resource _CityResourceCollection --collection
 php artisan make:resource _ProvinceResource
@@ -327,13 +327,13 @@ Configure the **`config/location.php`** file
 ## Middlware Setup
 
 ```properties
-php artisan make:middleware EnsureAppAccessTokenIsValid
+php artisan make:middleware EnsureSessionTokenIsValid
 ```
 
 Add to the **`app/HTTP/Kernel.php`** in the `api` section
 
 ```php
-\App\Http\Middleware\EnsureAppAccessTokenIsValid::class,
+\App\Http\Middleware\EnsureSessionTokenIsValid::class,
 ```
 
 ## Session setup

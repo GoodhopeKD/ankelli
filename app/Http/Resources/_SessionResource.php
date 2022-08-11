@@ -35,7 +35,7 @@ class _SessionResource extends JsonResource
             'user_username' => $this->user_username,
             'device_info' => json_decode( $device_info ),
             'agent_app_info' => json_decode( $agent_app_info ),
-            'status' => $this->status,
+            '_status' => $this->_status,
             'created_datetime' => $this->created_datetime,
             'updated_datetime' => $this->updated_datetime,
             'signin_datetime' => $this->signin_datetime,

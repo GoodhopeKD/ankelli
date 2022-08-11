@@ -35,8 +35,17 @@ return new class extends Migration
 
         DB::table('__pref_items')->insert([
             [
-                'key_name' => 'App Running',
-                'key_slug' => 'app_running',
+                'key_name' => 'Backend rest api enabled',
+                'key_slug' => 'backend_rest_api_enabled',
+                'value' => true,
+                'value_type' => 'boolean',
+                'parent_table' => '__users',
+                'parent_uid' => 'system',
+                'creator_username' => 'sysadmin',
+            ],
+            [
+                'key_name' => 'Scaffolding app enabled',
+                'key_slug' => 'scaffolding_app_enabled',
                 'value' => true,
                 'value_type' => 'boolean',
                 'parent_table' => '__users',
@@ -171,7 +180,7 @@ return new class extends Migration
             ],
             [
                 'key_name' => 'Offers to buy enabled',
-                'key_slug' => 'offers_to_buy_enabled',
+                'key_slug' => 'offer_to_buy_enabled',
                 'value' => true,
                 'value_type' => 'boolean',
                 'parent_table' => '__users',
@@ -180,7 +189,7 @@ return new class extends Migration
             ],
             [
                 'key_name' => 'Offers to sell enabled',
-                'key_slug' => 'offers_to_sell_enabled',
+                'key_slug' => 'offer_to_sell_enabled',
                 'value' => false,
                 'value_type' => 'boolean',
                 'parent_table' => '__users',

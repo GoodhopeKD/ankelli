@@ -11,6 +11,7 @@ import { app_backend_api } from 'app/controller/config/app_backend_api.config'
 import { active_session_data_reducer } from 'app/controller/redux_reducers/active_session_data.reducer'
 import { app_instance_state_data_reducer } from 'app/controller/redux_reducers/app_instance_state_data.reducer'
 import { auth_user_data_reducer } from 'app/controller/redux_reducers/auth_user_data.reducer'
+import { datalists_data_reducer } from 'app/controller/redux_reducers/datalists_data.reducer'
 import { local_pinnings_collection_reducer } from 'app/controller/redux_reducers/local_pinnings_collection.reducer'
 import { sysconfig_params_data_reducer } from 'app/controller/redux_reducers/sysconfig_params_data.reducer'
 
@@ -50,6 +51,7 @@ const root_reducer = persistReducer(root_persist_config, combineReducers({
     active_session_data: persistReducer(active_session_persist_config, active_session_data_reducer),
     app_instance_state_data: persistReducer(app_instance_state_data_persist_config, app_instance_state_data_reducer),
     auth_user_data: auth_user_data_reducer,
+    datalists_data: datalists_data_reducer,
     sysconfig_params_data: sysconfig_params_data_reducer,
     // collections
     local_pinnings_collection: persistReducer(local_pinnings_collection_persist_config, local_pinnings_collection_reducer),

@@ -9,10 +9,10 @@ import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend
     Type Definitions
 */
 type casts_t = 'created_datetime' | 'updated_datetime' | 'last_active_datetime' | 'signin_datetime' | 'signout_datetime'
-type status_t = 'empty' | 'active' | 'ended'
+type _status_t = 'empty' | 'active' | 'ended'
 type get_collection_params = {
     user_username?: string,
-    status?: status_t,
+    _status?: _status_t,
 }
 
 const HostRespObj = {
@@ -34,7 +34,7 @@ export const _SessionRespObj = {
     user_username: undefined as undefined | null | string,
     device_info: undefined as undefined | null | typeof HostRespObj,
     agent_app_info: undefined as undefined | null | typeof HostRespObj,
-    status: undefined as undefined | null | status_t,
+    _status: undefined as undefined | null | _status_t,
     created_datetime: undefined as undefined | null | string,
     updated_datetime: undefined as undefined | null | string,
     last_active_datetime: undefined as undefined | null | string,
@@ -51,7 +51,7 @@ export default class _Session extends _Wrapper_ implements Omit<typeof _SessionR
     user_username: string | null = null
     device_info: typeof HostRespObj | null = null
     agent_app_info: typeof HostRespObj | null = null
-    status: status_t | null = null
+    _status: _status_t | null = null
     created_datetime: _DateTime | null = null
     updated_datetime: _DateTime | null = null
     last_active_datetime: _DateTime | null = null

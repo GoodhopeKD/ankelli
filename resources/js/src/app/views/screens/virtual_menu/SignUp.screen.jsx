@@ -111,7 +111,7 @@ class SignUpScreen extends React.Component {
                                     </div><button className="w-100 mb-2 btn btn-lg rounded-3 btn-primary" disabled={this.state.btn_signup_working} type="submit" onClick={this.handleSubmit}>
                                         {this.state.btn_signup_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <span>Sign up</span>}
                                     </button>
-                                    <small className="text-muted">By clicking Sign up, you agree to our <Link to='/terms_of_service' target='_blank'>Terms of service</Link> and our <Link to='/privacy_policy' target='_blank'>Privacy Policy.</Link></small>
+                                    <small className="text-muted">By clicking Sign up, you agree to our <Link to='/terms-of-service' target='_blank'>Terms of service</Link> and our <Link to='/privacy-policy' target='_blank'>Privacy Policy.</Link></small>
                                 </form>
                             </> : <>
                                 Sign up is momentarily disabled. Please check back after a while.

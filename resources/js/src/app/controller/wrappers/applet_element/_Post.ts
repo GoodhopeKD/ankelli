@@ -14,11 +14,11 @@ import { _dataless_resource_collection_wrapper } from 'app/controller/redux_redu
     Type Definitions
 */
 type casts_t = 'files' | 'post_datetime' | 'expiry_datetime' | 'created_datetime' | 'updated_datetime' | 'deleted_datetime'
-type status_t = 'visible' | 'hidden'
+type _status_t = 'visible' | 'hidden'
 type get_collection_params = {
     get_with_meta?: boolean,
     search_query_string?: string,
-    status?: status_t,
+    _status?: _status_t,
     creator_username?: string,
 }
 
@@ -31,7 +31,7 @@ export const _PostRespObj = {
     exerpt: undefined as undefined | null | string,
     body: undefined as undefined | null | string,
     files: undefined as undefined | null | typeof _FileRespObj[],
-    status: undefined as undefined | null | status_t,
+    _status: undefined as undefined | null | _status_t,
 
     post_datetime: undefined as undefined | null | string,
     expiry_datetime: undefined as undefined | null | string,
@@ -59,7 +59,7 @@ export default class _Post extends _Wrapper_ implements Omit<typeof _PostRespObj
     exerpt: string | null = null
     body: string | null = null
     files: _File[] = []
-    status: status_t | null = null
+    _status: _status_t | null = null
 
     post_datetime: _DateTime | null = null
     expiry_datetime: _DateTime | null = null

@@ -46,10 +46,8 @@ const config = {
         strictly_auth_clear_endpoints,
         auth_clear_on_GET_endpoints
     },
-    //web_url : 'https://www.ankelli.com',
-    //api_url : 'https://api.ankelli.com',
-    web_url: (window as any)._WEB_URL_,
-    api_url: (window as any)._API_URL_,
+    web_url : process.env.MIX_WEB_URL as string,
+    api_url : process.env.MIX_API_URL as string,
 }
 
 export const app_backend_api = {

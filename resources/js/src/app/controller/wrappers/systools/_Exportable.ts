@@ -12,7 +12,7 @@ import { _dataless_resource_collection_wrapper } from 'app/controller/redux_redu
     Type Definitions
 */
 type casts_t = 'created_datetime' | 'updated_datetime'
-type status_t = 'active' | 'deactivated'
+type _status_t = 'active' | 'deactivated'
 type get_collection_params = {
     get_with_meta?: boolean,
     search_query_string?: string,
@@ -26,7 +26,7 @@ export const _ExportableRespObj = {
     name: undefined as undefined | null | string,
     slug: undefined as undefined | null | string,
     description: undefined as undefined | null | string,
-    status: undefined as undefined | null | status_t,
+    _status: undefined as undefined | null | _status_t,
 
     creator_username: undefined as undefined | null | string,
     created_datetime: undefined as undefined | null | string,
@@ -49,7 +49,7 @@ export default class _Exportable extends _Wrapper_ implements Omit<typeof _Expor
     name: string | null = null
     slug: string | null = null
     description: string | null = null
-    status: status_t | null = null
+    _status: _status_t | null = null
 
     creator_username: string | null = null
     created_datetime: _DateTime | null = null

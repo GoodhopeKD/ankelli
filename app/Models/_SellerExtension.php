@@ -20,7 +20,7 @@ class _SellerExtension extends Model
      */
     protected $fillable = [
         'user_username',
-        'status',
+        '_status',
         'creator_username',
     ];
     
@@ -52,6 +52,6 @@ class _SellerExtension extends Model
 
     public function complete_purchases_count_f()
     {
-        return count( $this->orders_received()->where( "status", "complete" )->get() );
+        return count( $this->orders_received()->where( "_status", "complete" )->get() );
     }
 }

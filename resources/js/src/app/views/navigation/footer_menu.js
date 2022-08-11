@@ -13,17 +13,17 @@ export const footer_menu = {
             children: [
                 {
                     title: 'About us',
-                    path: '/about_us',
+                    path: '/about',
                     element: (props) => <div>Placeholder</div>,
                 },
                 {
                     title: 'Contact us',
-                    path: '/contact_us',
+                    path: '/contact',
                     element: (props) => <div>Placeholder</div>,
                 },
                 {
                     title: 'Contact form',
-                    path: '/contact_us/contact_form',
+                    path: '/contact/form',
                     element: (props) => <div>Placeholder</div>,
                     show_in_menu: false,
                 },
@@ -51,12 +51,12 @@ export const footer_menu = {
                 },
                 {
                     title: 'Privacy Policy',
-                    path: '/privacy_policy',
+                    path: '/privacy-policy',
                     element: (props) => <PrivacyPolicyScreen />,
                 },
                 {
                     title: 'Terms Of Service',
-                    path: '/terms_of_service',
+                    path: '/terms-of-service',
                     element: (props) => <TermsOfServiceScreen />,
                 },
             ]

@@ -12,7 +12,7 @@ import { _dataless_resource_collection_wrapper } from 'app/controller/redux_redu
     Type Definitions
 */
 type casts_t = 'created_datetime' | 'updated_datetime'
-type status_t = 'open' | 'closed'
+type _status_t = 'open' | 'closed'
 type type_t = 'bug_report' | 'crash_report' | 'vulnerability_report' | 'abuse_report' | 'appreciation_message' | 'contact_form_message'
 type get_collection_params = {
     get_with_meta?: boolean,
@@ -27,7 +27,7 @@ type get_collection_params = {
 export const _FeedbackReportRespObj = {
     ticket_code: undefined as undefined | null | string,
     session_token: undefined as undefined | null | string,
-    status: undefined as undefined | null | status_t,
+    _status: undefined as undefined | null | _status_t,
     type: undefined as undefined | null | type_t,
     title: undefined as undefined | null | string,
     message: undefined as undefined | null | string,
@@ -55,7 +55,7 @@ const GettableAddonPropsRespObj = GettableCollectionAddonPropsRespObj
 export default class _FeedbackReport extends _Wrapper_ implements Omit<typeof _FeedbackReportRespObj, casts_t> {
     ticket_code: string | null = null
     session_token: string| null = null
-    status: status_t | null = null
+    _status: _status_t | null = null
     type: type_t | null = null
     title: string | null = null
     message: string | null = null

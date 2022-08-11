@@ -18,7 +18,7 @@ class _PermissionInstance extends Model
         'parent_table',
         'parent_uid',
         'permission_slug',
-        'status',
+        '_status',
         'creator_username',
     ];
     

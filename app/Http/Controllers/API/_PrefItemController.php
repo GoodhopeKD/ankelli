@@ -18,7 +18,20 @@ class _PrefItemController extends Controller
      */
     public function index()
     {
-        //
+        $result = null;
+
+        if ( $result === null ){
+            $simple_query_args = [];
+
+            if ( request()->parent_table ){ $simple_query_args = array_merge( $simple_query_args, [ 'parent_table' => request()->parent_table ]); }
+            if ( request()->parent_uid ){ $simple_query_args = array_merge( $simple_query_args, [ 'parent_uid' => request()->parent_uid ]); }
+
+            $eloquent_query = _PrefItem::where($simple_query_args);
+
+            $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->get(); 
+        }
+
+        return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _PrefItemResource::collection( $result ) : new _PrefItemResourceCollection( $result ) ) : null;
     }
 
     /**

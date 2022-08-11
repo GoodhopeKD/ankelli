@@ -29,7 +29,7 @@ return new class extends Migration
                     ->onDelete('set null');
             $table->unsignedDecimal('asset_value', $precision = 20, $scale = 10);
             $table->unique(['user_username', 'asset_code']);
-            $table->enum('status', ['active', 'frozen'])->default('active');
+            $table->enum('_status', ['active', 'frozen'])->default('active');
 
             $table->timestamp('created_datetime')->useCurrent();
             $table->timestamp('updated_datetime')->nullable()->useCurrentOnUpdate();
@@ -58,6 +58,11 @@ return new class extends Migration
                 'user_username' => 'gudo',
                 'asset_code' => 'USDT',
                 'asset_value' => 478.9897,
+            ],
+            [
+                'user_username' => 'nassim',
+                'asset_code' => 'USDT',
+                'asset_value' => 450.755389,
             ],
         ]);
     }

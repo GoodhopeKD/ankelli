@@ -22,16 +22,20 @@ class _OfferController extends Controller
         $result = null;
 
         if ( $result === null && request()->get_as_addon_prop && request()->get_as_addon_prop == true ){
-            $result = _Offer::where(['status'=>'online'])
+            $result = _Offer::where(['_status'=>'online'])
             ->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->paginate()->withQueryString(); 
         }
-
+        
         if ( $result === null ){
             $simple_query_args = [];
 
-            if ( request()->offers_to ){ $simple_query_args = array_merge( $simple_query_args, [ 'offer_to' => request()->offers_to ]); }
-            if ( request()->status && request()->status !== 'all' ){ $simple_query_args = array_merge( $simple_query_args, [ 'status' => request()->status ]); }
-            if ( !isset(request()->status) ){ $simple_query_args = array_merge( $simple_query_args, [ 'status' => 'online' ]); }
+            if ( request()->offer_to ){ $simple_query_args = array_merge( $simple_query_args, [ 'offer_to' => request()->offer_to ]); }
+            if ( request()->country ){ $simple_query_args = array_merge( $simple_query_args, [ 'country' => request()->country ]); }
+            if ( request()->currency_code ){ $simple_query_args = array_merge( $simple_query_args, [ 'currency_code' => request()->currency_code ]); }
+            if ( request()->asset_code ){ $simple_query_args = array_merge( $simple_query_args, [ 'asset_code' => request()->asset_code ]); }
+            if ( request()->pymt_method_slug ){ $simple_query_args = array_merge( $simple_query_args, [ 'pymt_method_slug' => request()->pymt_method_slug ]); }
+            if ( request()->_status && request()->_status !== 'all' ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => request()->_status ]); }
+            if ( !isset(request()->_status) ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => 'online' ]); }
 
             $eloquent_query = _Offer::where($simple_query_args);
 

@@ -23,7 +23,7 @@ class _FeedbackReport extends Model
         'creator_name',
         'creator_email_address',
         'closing_note',
-        'status',
+        '_status',
         'creator_username',
     ];
     public $incrementing = false;

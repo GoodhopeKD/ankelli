@@ -17,7 +17,7 @@ class _UserGroupMembership extends Model
     protected $fillable = [
         'user_username',
         'user_group_slug',
-        'status',
+        '_status',
         'creator_username',
     ];
     

@@ -37,7 +37,7 @@ class _User extends Authenticatable
         'password',
         'reg_token',
         'avatar_image_id',
-        'status',
+        '_status',
     ];
 
     /**
@@ -183,17 +183,17 @@ class _User extends Authenticatable
     // Permissions
     public function is_active_business_admin_f()
     {
-        return $this->admin_extension()->where('status', 'active')->exists() && $this->user_group_memberships()->where('user_group_slug','business_administrators')->where('status','active')->exists();
+        return $this->admin_extension()->where('_status', 'active')->exists() && $this->user_group_memberships()->where('user_group_slug','business_administrators')->where('_status','active')->exists();
     }
 
     public function can_create_trades_to_sell_f()
     {
-        return !$this->seller_extension()->whereNotIn('status',['revoked'])->exists();
+        return !$this->seller_extension()->whereNotIn('_status',['revoked'])->exists();
     }
 
-    public function can_create_offers_to_buy_f()
+    public function can_create_offer_to_buy_f()
     {
-        return !$this->buyer_extension()->where('status','revoked')->exists();
+        return !$this->buyer_extension()->where('_status','revoked')->exists();
     }
 
     // Extensions
@@ -226,52 +226,52 @@ class _User extends Authenticatable
         $active_user_group_memberships = [];
 
         foreach ($this->user_group_memberships()->get() as $key => $user_group_membership) {
-            if ( $user_group_membership->status === 'active' && $user_group_membership->user_group->status==='active' ){ array_push( $active_user_group_memberships, $user_group_membership->user_group_slug ); }
+            if ( $user_group_membership->_status === 'active' && $user_group_membership->user_group->_status==='active' ){ array_push( $active_user_group_memberships, $user_group_membership->user_group_slug ); }
         }
 
         $admin_extension = $this->admin_extension;
         if (isset($admin_extension) && !(array_search('user_administrators', array_column($user_group_memberships, "user_group_slug")) !== false)){
-            $status = $admin_extension->status === 'active' && _UserGroup::where('slug', 'user_administrators')->first()->status === 'active' ? 'active' : 'revoked';
+            $_status = $admin_extension->_status === 'active' && _UserGroup::where('slug', 'user_administrators')->first()->_status === 'active' ? 'active' : 'revoked';
             array_push( $user_group_memberships, (object)[ 
                 'id'                    => NULL,
                 'user_username'         => $this->username,
                 'user_group_slug'       => 'user_administrators',
-                'status'                => $status,
+                '_status'                => $_status,
                 'creator_username'      => $admin_extension->creator_username,
                 'created_datetime'      => $admin_extension->created_datetime,
                 'updated_datetime'      => $admin_extension->updated_datetime,
             ]);
-            if ( $status === 'active' ){ array_push( $active_user_group_memberships, 'user_administrators' ); }
+            if ( $_status === 'active' ){ array_push( $active_user_group_memberships, 'user_administrators' ); }
         }
 
         $seller_extension = $this->seller_extension;
         if ($seller_extension && !(array_search('sellers', array_column($user_group_memberships, "user_group_slug")) !== false)){
-            $status = $seller_extension->status === 'active' && _UserGroup::where('slug', 'sellers')->first()->status === 'active' ? 'active' : 'revoked';
+            $_status = $seller_extension->_status === 'active' && _UserGroup::where('slug', 'sellers')->first()->_status === 'active' ? 'active' : 'revoked';
             array_push( $user_group_memberships, (object)[ 
                 'id'                    => NULL,
                 'user_username'         => $this->username,
                 'user_group_slug'       => 'sellers',
-                'status'                => $status,
+                '_status'                => $_status,
                 'creator_username'      => $seller_extension->creator_username,
                 'created_datetime'      => $seller_extension->created_datetime,
                 'updated_datetime'      => $seller_extension->updated_datetime,
             ]);
-            if ( $status === 'active' ){ array_push( $active_user_group_memberships, 'sellers' ); }
+            if ( $_status === 'active' ){ array_push( $active_user_group_memberships, 'sellers' ); }
         }
 
         $buyer_extension = $this->buyer_extension;
         if ($buyer_extension && !(array_search('buyers', array_column($user_group_memberships, "user_group_slug")) !== false)){
-            $status = $buyer_extension->status === 'active' && _UserGroup::where('slug', 'buyers')->first()->status === 'active' ? 'active' : 'revoked';
+            $_status = $buyer_extension->_status === 'active' && _UserGroup::where('slug', 'buyers')->first()->_status === 'active' ? 'active' : 'revoked';
             array_push( $user_group_memberships, (object)[ 
                 'id'                    => NULL,
                 'user_username'         => $this->username,
                 'user_group_slug'       => 'buyers',
-                'status'                => $status,
+                '_status'                => $_status,
                 'creator_username'      => $buyer_extension->creator_username,
                 'created_datetime'      => $buyer_extension->created_datetime,
                 'updated_datetime'      => $buyer_extension->updated_datetime,
             ]);
-            if ( $status === 'active' ){ array_push( $active_user_group_memberships, 'buyers' ); }
+            if ( $_status === 'active' ){ array_push( $active_user_group_memberships, 'buyers' ); }
         }
 
         $this->_set_user_group_memberships_info_done = true;

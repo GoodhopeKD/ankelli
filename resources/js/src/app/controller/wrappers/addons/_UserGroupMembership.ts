@@ -14,12 +14,12 @@ import { _dataless_resource_collection_wrapper } from 'app/controller/redux_redu
     Type Definitions
 */
 type casts_t = 'created_datetime' | 'updated_datetime'
-type status_t = 'active' | 'revoked'
+type _status_t = 'active' | 'revoked'
 type get_collection_params = {
     get_with_meta?: boolean,
     user_username?: string,
     user_group_slug?: string,
-    status?: status_t,
+    _status?: _status_t,
 }
 
 /* 
@@ -29,7 +29,7 @@ export const _UserGroupMembershipRespObj = {
     id: undefined as undefined | null | number,
     user_username: undefined as undefined | null | string,
     user_group_slug: undefined as undefined | null | string,
-    status: undefined as undefined | null | status_t,
+    _status: undefined as undefined | null | _status_t,
 
     creator_username: undefined as undefined | null | string,
     created_datetime: undefined as undefined | null | string,
@@ -57,7 +57,7 @@ export default class _UserGroupMembership extends _Wrapper_ implements Omit<type
     id: number | null = null
     user_username: string | null = null
     user_group_slug: string | null = null
-    status: status_t | null = null
+    _status: _status_t | null = null
 
     creator_username: string | null = null
     created_datetime: _DateTime | null = null

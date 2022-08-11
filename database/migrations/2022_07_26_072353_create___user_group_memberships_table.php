@@ -28,7 +28,7 @@ return new class extends Migration
                     ->onUpdate('cascade')
                     ->onDelete('cascade');
             $table->unique(['user_username', 'user_group_slug']);
-            $table->enum('status', ['active', 'revoked'])->default('active');
+            $table->enum('_status', ['active', 'revoked'])->default('active');
 
             $table->string('creator_username', 64)->nullable();
             $table->foreign('creator_username')

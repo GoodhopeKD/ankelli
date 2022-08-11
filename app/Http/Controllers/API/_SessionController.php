@@ -56,7 +56,7 @@ class _SessionController extends Controller
         $active_session_data['user_username'] = null;
         $active_session_data['device_info'] = $encrypt( json_encode( $validated_data['device_info'] ));
         $active_session_data['agent_app_info'] = $encrypt( json_encode( $validated_data['agent_app_info'] ));
-        $active_session_data['status'] = 'empty';
+        $active_session_data['_status'] = 'empty';
         $active_session_data['signin_datetime'] = null;
         $active_session_data['signout_datetime'] = null;
 
@@ -84,7 +84,7 @@ class _SessionController extends Controller
         ]);
 
         $active_session_data = $validated_data;
-        $active_session_data['status'] = 'active';
+        $active_session_data['_status'] = 'active';
         $active_session_data['signin_datetime'] = now()->toDateTimeString();
         $active_session_data['signout_datetime'] = null;
 
@@ -99,7 +99,7 @@ class _SessionController extends Controller
             'entry_uid' => $active_session->token,
             'entry_update_result'=> [
                 [
-                    'column_name' => 'status',
+                    'column_name' => '_status',
                     'initial_value' => 'empty',
                     'final_value' => 'active',
                 ],
@@ -118,7 +118,7 @@ class _SessionController extends Controller
         ]);
 
         $active_session_data = $validated_data;
-        $active_session_data['status'] = 'ended';
+        $active_session_data['_status'] = 'ended';
         $active_session_data['signout_datetime'] = now()->toDateTimeString();
 
         $element = (new _SessionController)->update( new Request( $active_session_data ), $active_session_data['token'] );
@@ -132,7 +132,7 @@ class _SessionController extends Controller
             'entry_uid' => $element->token,
             'entry_update_result'=> [
                 [
-                    'column_name' => 'status',
+                    'column_name' => '_status',
                     'initial_value' => 'active',
                     'final_value' => 'ended',
                 ],
@@ -155,7 +155,7 @@ class _SessionController extends Controller
 
         $active_session_data = $validated_data;
         $active_session_data['remote_end'] = true;
-        $active_session_data['status'] = 'ended';
+        $active_session_data['_status'] = 'ended';
         $active_session_data['signout_datetime'] = now()->toDateTimeString();
 
         $element = (new _SessionController)->update( new Request( $active_session_data ), $active_session_data['token'] );
@@ -169,7 +169,7 @@ class _SessionController extends Controller
             'entry_uid' => $element->token,
             'entry_update_result'=> [
                 [
-                    'column_name' => 'status',
+                    'column_name' => '_status',
                     'initial_value' => 'active',
                     'final_value' => 'ended',
                 ],
@@ -204,7 +204,7 @@ class _SessionController extends Controller
             'user_username' => ['sometimes', 'required', 'exists:__users,username', 'string'],
             'device_info' => ['sometimes', 'array'],
             'agent_app_info' => ['sometimes', 'array'],
-            'status' => ['string', Rule::in(['empty', 'active', 'ended'])],
+            '_status' => ['string', Rule::in(['empty', 'active', 'ended'])],
             'signin_datetime' => ['sometimes', 'date:Y-m-d H:i:s|nullable'],
             'signout_datetime' => ['nullable', 'date:Y-m-d H:i:s'],
 
@@ -220,10 +220,10 @@ class _SessionController extends Controller
 
         if (isset($validated_data['remote_end']) && $validated_data['remote_end']){
             $check_array['user_username'] = $element->user_username;
-            $check_array['status'] = 'active';
+            $check_array['_status'] = 'active';
         } else {
             if (!(isset($validated_data['default_route']) && $validated_data['default_route'])){
-                $check_array['token'] = request()->segments()[env('API_DOMAIN')?0:1];
+                $check_array['token'] = request()->segments()[env('API_URL')?0:1];
             }
             $check_array['user_username'] = $element->user_username ? $api_auth_user_username : null;
         }

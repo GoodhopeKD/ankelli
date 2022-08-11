@@ -16,11 +16,11 @@ import { _dataless_resource_collection_wrapper } from 'app/controller/redux_redu
     Type Definitions
 */
 type casts_t = 'profile_image' | 'created_datetime' | 'updated_datetime' | 'deleted_datetime'
-type status_t = 'active' | 'deactivated'
+type _status_t = 'active' | 'deactivated'
 type get_collection_params = {
     get_with_meta?: boolean,
     get_with_deleted?: boolean,
-    status?: status_t,
+    _status?: _status_t,
 }
 
 /* 
@@ -32,7 +32,7 @@ export const _UserGroupRespObj = {
     slug: undefined as undefined | null | string,
     description: undefined as undefined | null | string,
     profile_image: undefined as undefined | null | typeof _FileRespObj,
-    status: undefined as undefined | null | status_t,
+    _status: undefined as undefined | null | _status_t,
 
     creator_username: undefined as undefined | null | string,
     created_datetime: undefined as undefined | null | string,
@@ -59,7 +59,7 @@ export default class _UserGroup extends _Wrapper_ implements Omit<typeof _UserGr
     slug: string | null = null
     description: string | null = null
     profile_image: _File | null = null
-    status: status_t | null = null
+    _status: _status_t | null = null
 
     creator_username: string | null = null
     created_datetime: _DateTime | null = null

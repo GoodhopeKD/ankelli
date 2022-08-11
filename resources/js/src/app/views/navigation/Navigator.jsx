@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { connect } from 'react-redux'
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from 'react-router-dom';
 
-import { connectivityBoot, _User } from 'app/controller'
+import { connectivityBoot, _User, store } from 'app/controller'
 
 import SplashScreen from 'app/views/screens/Splash.screen'
 import ConnectionFailedScreen from 'app/views/screens/ConnectionFailed.screen'
@@ -39,16 +39,18 @@ let tried = false
 function Navigator(props) {
 
     if (!tried) {
+        if (window.sysconfig_params_data){
+            store.dispatch({ type: 'SYSCONFIG_PARAMS_DATA_UPDATE', sysconfig_params_data: window.sysconfig_params_data })
+        }
+        if (window.datalists_data){
+            store.dispatch({ type: 'DATALISTS_DATA_UPDATE', datalists_data: window.datalists_data })
+        }
         tried = true
         props.connectivityBoot()
     }
 
-    if (props.app_backend_api_connectivity_indicator === null || !props.sysconfig_params_data) {
+    if (props.app_backend_api_connectivity_indicator === null || !props.sysconfig_params) {
         return <SplashScreen />;
-    }
-
-    if (props.app_backend_api_connectivity_indicator === false) {
-        return <ConnectionFailedScreen connectivityBoot={props.connectivityBoot} />;
     }
 
     const auth_user = props.auth_user
@@ -69,7 +71,7 @@ function Navigator(props) {
             if (nav_menus[i].required_sysconfig_params_data) {
                 required_params_passed_i = false
                 Object.keys(nav_menus[i].required_sysconfig_params_data).forEach(param_key => {
-                    if (nav_menus[i].required_sysconfig_params_data[param_key] == props.sysconfig_params_data[param_key]) {
+                    if (nav_menus[i].required_sysconfig_params_data[param_key] == props.sysconfig_params[param_key]) {
                         required_params_passed_i = true
                     }
                 });
@@ -87,7 +89,7 @@ function Navigator(props) {
                     if (nav_menus[i].menu_items[j].required_sysconfig_params_data) {
                         required_params_passed_j = false
                         Object.keys(nav_menus[i].menu_items[j].required_sysconfig_params_data).forEach(param_key => {
-                            if (nav_menus[i].menu_items[j].required_sysconfig_params_data[param_key] == props.sysconfig_params_data[param_key]) {
+                            if (nav_menus[i].menu_items[j].required_sysconfig_params_data[param_key] == props.sysconfig_params[param_key]) {
                                 required_params_passed_j = true
                             }
                         });
@@ -114,7 +116,7 @@ function Navigator(props) {
                             if (nav_menus[i].menu_items[j].children[k].required_sysconfig_params_data) {
                                 required_params_passed_k = false
                                 Object.keys(nav_menus[i].menu_items[j].children[k].required_sysconfig_params_data).forEach(param_key => {
-                                    if (nav_menus[i].menu_items[j].children[k].required_sysconfig_params_data[param_key] == props.sysconfig_params_data[param_key]) {
+                                    if (nav_menus[i].menu_items[j].children[k].required_sysconfig_params_data[param_key] == props.sysconfig_params[param_key]) {
                                         required_params_passed_k = true
                                     }
                                 });
@@ -150,10 +152,15 @@ function Navigator(props) {
     }
 
     const Wrapper = (props) => {
+
+        useEffect(() => {
+            document.title = (props.item.path == '/') ? 'Ankelli - Home' : props.item.title + " - Ankelli" || "";
+        }, [props.item.title]);
+
         return <React.Fragment>
             <TopNavbar
                 curr_auth_state={curr_auth_state}
-                logout={curr_auth_state ? auth_user.signOut : null}
+                auth_user={auth_user}
                 curr_path={useLocation().pathname}
                 top_navbar_menu={nav_menus_filtered.find(menu => menu.slug === 'top_navbar_menu')}
                 top_navbar_auth_menu={nav_menus_filtered.find(menu => menu.slug === 'virtual_menu')}
@@ -177,7 +184,7 @@ function Navigator(props) {
     }
 
     return (
-        <BrowserRouter basename={window._ROUTER_BASENAME_}>
+        <BrowserRouter basename={'/'}>
             <Routes>
                 {nav_list_filtered.map((item, i) => <Route key={i} path={item.path} element={<Wrapper item={item} />} />)}
                 <Route path='*' element={<NoMatch />} />
@@ -188,7 +195,7 @@ function Navigator(props) {
 
 const mapStateToProps = (state) => {
     return {
-        sysconfig_params_data: state.sysconfig_params_data,
+        sysconfig_params: state.sysconfig_params_data,
         app_backend_api_connectivity_indicator: state.app_instance_state_data.app_backend_api_connectivity_indicator,
         firebase_api_connectivity_indicator: state.app_instance_state_data.firebase_api_connectivity_indicator,
         auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['active_user_group_memberships', 'active_permission_instances']) : null,

@@ -16,9 +16,10 @@ return new class extends Migration
         Schema::create('__posts', function (Blueprint $table) {
             $table->id();
             $table->string('title', 64);
+            $table->string('slug', 64)->unique()->nullable();
             $table->string('exerpt', 255);
             $table->text('body');
-            $table->enum('status', ['visible', 'hidden'])->default('visible');
+            $table->enum('_status', ['visible', 'hidden'])->default('visible');
             $table->timestamp('post_datetime')->nullable();
             $table->timestamp('expiry_datetime')->nullable();
 

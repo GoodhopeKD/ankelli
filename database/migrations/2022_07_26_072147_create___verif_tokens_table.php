@@ -24,7 +24,7 @@ return new class extends Migration
             $table->enum('recepient_resource_table', ['__phone_nos', '__email_addresses']);
             $table->unsignedBigInteger('recepient_resource_id');
             $table->enum('charge', ['email_address_verification', 'phone_no_verification', 'password_reset']);
-            $table->enum('status', ['unused', 'verified', 'annulled'])->default('unused');
+            $table->enum('_status', ['unused', 'verified', 'annulled'])->default('unused');
             $table->timestamp('created_datetime')->useCurrent();
             $table->timestamp('verified_datetime')->nullable();
         });

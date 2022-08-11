@@ -29,7 +29,7 @@ class RouteServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
 
         $this->routes(function () {
-            $api_location = env('API_SUBDOMAIN') ? Route::domain(env('API_SUBDOMAIN')) : Route::prefix('api');
+            $api_location = env('API_URL') ? Route::domain(env('API_URL')) : Route::prefix('api');
             $api_location
                 ->middleware('api')
                 ->namespace($this->namespace)

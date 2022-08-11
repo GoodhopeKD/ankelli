@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use App\Models\_Session;
 
-class EnsureAppAccessTokenIsValid
+class EnsureSessionTokenIsValid
 {
     /**
      * Handle an incoming request.
@@ -17,9 +17,9 @@ class EnsureAppAccessTokenIsValid
      */
     public function handle(Request $request, Closure $next)
     {
-        if (( !env('API_DOMAIN') && $request->path() == "api" )||(env('API_DOMAIN') && $request->path() == "")) return $next($request);
-        $session = _Session::find( $request->segments()[env('API_DOMAIN')?0:1] );
-        if ( $session && $session['status'] !== "ended" ){
+        if (( !env('API_URL') && $request->path() == "api" ) || ( env('API_URL') && $request->path() == "/")) return $next($request);
+        $session = _Session::find( $request->segments()[env('API_URL')?0:1] );
+        if ( $session && $session['_status'] !== "ended" ){
             $request->route()->forgetParameter('session_token');
             return $next($request);
         } else {

@@ -3,7 +3,6 @@ import _DateTime from 'app/controller/wrappers/auxilliary/_DateTime'
 /* Parent Class import */
 import _Wrapper_ from 'app/controller/wrappers/_Wrapper_'
 /* Actions, Configs imports */
-import { app_backend_api } from 'app/controller/config/app_backend_api.config'
 import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend_api.actions'
 
 /*
@@ -94,8 +93,6 @@ export default class _File extends _Wrapper_ implements Omit<typeof _FileRespObj
 
     protected populate(args: typeof _FileRespObj) {
         this._populate(args)
-
-        this.uri = (this.uri as string).replace('https://ankelli.com', app_backend_api.config.web_url)
         /*const uri_elems = this.uri.split('/')
         this.filename = uri_elems[uri_elems.length - 1]
         const filename_elems = this.filename.split('.')
