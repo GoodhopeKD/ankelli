@@ -20,6 +20,7 @@ class _AssetResourceCollection extends ResourceCollection
                     'id' => $_this->id,
                     'name' => $_this->name,
                     'code' => $_this->code,
+                    'smallest_display_unit' => $_this->smallest_display_unit,
                     '_status' => $_this->_status,
                     
                     //'creator_username'      => $_this->creator_username,

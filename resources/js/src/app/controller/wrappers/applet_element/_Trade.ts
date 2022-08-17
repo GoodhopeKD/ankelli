@@ -20,7 +20,7 @@ type pymt_method_details_t = { key: string, value: string | number }[]
 type addable_addon_args_t = typeof _MessageRespObj
 type get_collection_params = {
     get_with_meta?: boolean,
-    get_closed?: boolean,
+    user_username?: boolean,
 }
 
 /* 
@@ -28,21 +28,21 @@ type get_collection_params = {
 */
 export const _TradeRespObj = {
     ref_code: undefined as undefined | null | string,
-    country: undefined as undefined | null | string,
+    country_name: undefined as undefined | null | string,
 
     was_offer_to: undefined as undefined | null | was_offer_to_t,
 
     asset_code: undefined as undefined | null | string, // Asset to buy: eg USTD
     currency_code: undefined as undefined | null | string, // Currency to buy asset with: e.g USD
-    asset_value: undefined as undefined | null | number, // Value of asset to be released from seller // Calculated as 1.01 * (purchase_amount  purchase_price) // max: seller's balance
-    purchase_amount: undefined as undefined | null | number, // Amount offer_creator will use to buy asset // Calculated as 0.99 * asset_value *    purchase_price // limits: offer_min-offer_max
-    
+    asset_value: undefined as undefined | null | number, // Value of asset to be released from seller // Calculated as 1.01 * (currency_amount  purchase_price) // max: seller's balance
+    currency_amount: undefined as undefined | null | number, // Amount offer_creator will use to buy asset // Calculated as 0.99 * asset_value *    purchase_price // limits: offer_min-offer_max
+
     // for was_offer_to:sell
     asset_sell_price: undefined as undefined | null | number,
-    
+
     // for was_offer_to:buy
     asset_purchase_price: undefined as undefined | null | number,
-    
+
     pymt_method_slug: undefined as undefined | null | string,
     pymt_method_details: undefined as undefined | null | pymt_method_details_t,
     pymt_declared_datetime: undefined as undefined | null | string,
@@ -79,14 +79,14 @@ const GettableAddonPropsRespObj = GettableCollectionAddonPropsRespObj
 */
 export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespObj, casts_t> {
     ref_code: string | null = null
-    country: string | null = null
+    country_name: string | null = null
 
     was_offer_to: was_offer_to_t | null = null
 
     asset_code: string | null = null
     currency_code: string | null = null
     asset_value: number | null = null
-    purchase_amount: number | null = null
+    currency_amount: number | null = null
 
     asset_sell_price: number | null = null
     asset_purchase_price: number | null = null
@@ -122,18 +122,18 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
 
     /* Creator(s) */
 
-    public static async create(args: typeof _TradeRespObj) {
+    public static async create(args: { offer_ref_code: string, currency_amount: number }) {
         return this._mainLaravelDBAPICreate('trades', args)
     }
 
     /* Readers */
-    
+
     public async read() {
         return this._mainLaravelDBAPIRead('trades/' + this.ref_code)
     }
 
-    public static async getOne(params: { id: number }) {
-        return this._mainLaravelDBAPIGetOne('trades/' + params.id)
+    public static async getOne(params: { ref_code: string }) {
+        return this._mainLaravelDBAPIGetOne('trades/' + params.ref_code)
     }
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {

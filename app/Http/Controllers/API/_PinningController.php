@@ -4,19 +4,14 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+
+use App\Models\_Pinning;
+use App\Http\Resources\_PinningResource;
+use App\Http\Resources\_PinningResourceCollection;
 
 class _PinningController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -25,7 +20,27 @@ class _PinningController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated_data = $request->validate([
+            'user_username' => ['required', 'exists:__users,username', 'string'],
+            'item_table' => ['required', 'string', Rule::in(['__listings', '__events'])],
+            'item_reference_code' => ['required', 'exists:' . $request->item_table . ',reference_code', 'string'],
+            'pinning_type'      => ['required', 'string', Rule::in(['favourite', 'cart'])],
+            'product_quantity'   => ['integer'],
+        ]);
+
+        $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+
+        $element = _Pinning::create($validated_data);
+        // Handle _Log
+        (new _LogController)->store( new Request([
+            'action_note' => 'Addition of _Pinning entry to database.',
+            'action_type' => 'entry_create',
+            'entry_table' => '__pinnings',
+            'entry_uid' => $element->id,
+            'batch_code' => $request->batch_code,
+        ]));
+        // End _Log Handling
+        return response()->json( new _PinningResource( $element ) );
     }
 
     /**
@@ -34,7 +49,7 @@ class _PinningController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(int $id)
     {
         //
     }
@@ -46,9 +61,19 @@ class _PinningController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
-        //
+        $validated_data = $request->validate([
+            'pinning_type'      => ['string', Rule::in(['favourite', 'cart'])],
+            'product_quantity'   => ['integer'],
+        ]);
+
+        $api_auth_user = auth('api')->user();
+
+        $element = _Pinning::find($id);
+        $element->update($validated_data);
+
+        return response()->json( new _PinningResource( $element ) );
     }
 
     /**
@@ -57,8 +82,15 @@ class _PinningController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(int $id)
     {
-        //
+        $api_auth_user = auth('api')->user();
+        $element = _Pinning::find($id);
+        if ( $api_auth_user && $api_auth_user->username === $element->user_username){
+            $element->delete();
+            return response()->json(['success' => 'success'], 200);
+        } else {
+            return abort(403, 'User not allowed to perform operation');
+        }
     }
 }

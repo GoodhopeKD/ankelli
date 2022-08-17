@@ -16,21 +16,10 @@ class _RegToken extends Model
      */
     protected $fillable = [
         'token',
+        '_status',
         'creator_username',
-        'user_username',
-        'used_datetime',
     ];
     public $incrementing = false;
     protected $primaryKey = 'token';
     protected $keyType = 'string';
-    
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        //'created_datetime' => 'datetime',
-        'used_datetime' => 'datetime',
-    ];
 }

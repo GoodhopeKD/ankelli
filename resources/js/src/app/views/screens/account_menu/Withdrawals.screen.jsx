@@ -8,16 +8,18 @@ import { _User } from 'app/controller'
 class WithdrawalsScreen extends React.Component {
 
     render() {
-        return <div className="container-fluid py-3">
-            <div className="row">
-                <div className="col-2">
-                    <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'account_menu')]} />
+        return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
+            <div className="container-fluid py-3">
+                <div className="row">
+                    <div className="col-2">
+                        <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'account_menu')]} />
+                    </div>
+                    <div className="col-10">
+                        Withdrawal Options Appear here
                 </div>
-                <div className="col-10">
-                    Withdrawal Options Appear here
                 </div>
             </div>
-        </div>
+        </this.props.PageWrapper>
     }
 }
 

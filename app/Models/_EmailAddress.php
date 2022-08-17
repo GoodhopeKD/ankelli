@@ -26,7 +26,6 @@ class _EmailAddress extends Model
      * @var array
      */
     protected $casts = [
-        //'created_datetime' => 'datetime',
         'verified_datetime' => 'datetime',
     ];
 

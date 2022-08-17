@@ -8,7 +8,6 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Validation\Rule;
 
 use App\Models\_Session;
@@ -42,35 +41,37 @@ class _UserController extends Controller
      */
     public function store(Request $request)
     {
-        $token_reg_enabled = (boolean)_PrefItem::where('key_slug','token_reg_enabled')->first()->value;
+        $token_reg_enabled = (boolean)_PrefItem::firstWhere('key_slug', 'token_reg_enabled')->value;
+        $factory_data = session()->get('factory_data');
+        $factory_data = isset($factory_data) ? (boolean)$factory_data : null;
         // Request Validation
         $validated_data = $request->validate([
-            'reg_token' => [$token_reg_enabled ? 'required' : 'sometimes', 'string', 'max:16'],
+            'reg_token' => [ $token_reg_enabled && !$factory_data ? 'required' : 'sometimes', 'string', 'max:16'],
             'username' => ['required', 'string', 'min:4', 'max:64'],
             'email_address' => ['required', 'string', 'email', 'max:64'],
             'password' => ['required', 'string', 'min:8', 'max:32', 'confirmed'],
         ]);
 
-        if ( $token_reg_enabled ){
+        if ( $token_reg_enabled && !$factory_data ){
             $reg_token_check = (array)(new __AuxController)->availability_check( new Request([ 'check_param_name' => 'reg_token', 'check_param_value' => $validated_data['reg_token'] ]) )->getData();
-            if (!$reg_token_check['usable']){
+            if ( !$reg_token_check['usable']){
                 return abort(422, $reg_token_check['message']);
             }
         }
 
         $username_check = (array)(new __AuxController)->availability_check( new Request([ 'check_param_name' => 'username', 'check_param_value' => $validated_data['username'] ]) )->getData();
-        if (!$username_check['usable']){
+        if ( !$username_check['usable']){
             return abort(422, $username_check['message']);
         }
 
         $email_address_check = (array)(new __AuxController)->availability_check( new Request([ 'check_param_name' => 'email_address', 'check_param_value' => $validated_data['email_address'] ]) )->getData();
-        if (!$email_address_check['usable']){
+        if ( !$email_address_check['usable']){
             return abort(422, $email_address_check['message']);
         }
 
         // Response Structure
         $response = [
-            'sysconfig_params_data' => ( new __AuxController )->sysconfig_params()->getData()->data,
+            'sysconfig_params_data' => null,
             'active_session_data' => null,
             'auth_user_data' => null,
         ];
@@ -78,13 +79,10 @@ class _UserController extends Controller
         $validated_data['password'] = bcrypt($request->password);
         $api_auth_user = _User::create($validated_data);
 
-        Session::put( 'action_user_username', $validated_data['username'] );
+        session()->put( 'action_user_username', $validated_data['username'] );
 
         // Initialise _Log Batch Handling
         $log_batch_code = random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
-        while ( _Log::where( 'batch_code', $log_batch_code )->exists() ){
-            $log_batch_code = random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
-        }
         (new _LogController)->store( new Request([
             'action_note' => 'User signup.',
             'action_type' => 'batch_init',
@@ -115,21 +113,24 @@ class _UserController extends Controller
             'user_username' => $api_auth_user->username,
             'content' => [
                 'title' => 'Welcome Note.',
-                'subtitle' => 'Welcome to the Eureka E-commerce Platform',
-                'body' => "We as the Eureka Team welcome you to our E-commerce platform.\nPlease, enjoy the services we have prepared for you.\nTo get the most out of your experience here, start by verifying your email address."
+                'subtitle' => 'Welcome to the Ankelli E-commerce Platform',
+                'body' => "We as the Ankelli Team welcome you to our E-commerce platform.\nPlease, enjoy the services we have prepared for you.\nTo get the most out of your experience here, start by verifying your email address."
             ],
             'batch_code' => $log_batch_code,
         ]));
         // End Create notification to verify email
 
-        // Handle _Session
-        $active_session_data = $request->active_session_data;
-        $active_session_data['user_username'] = $api_auth_user->username;
-        $response['active_session_data'] = new _SessionResource((new _SessionController)->_signUserIn( new Request( $active_session_data ), $active_session_data['token'] ));
-        // End _Session Handling
+        if ( !$factory_data){
+            // Handle _Session
+            $active_session_data = $request->active_session_data;
+            $active_session_data['user_username'] = $api_auth_user->username;
+            $response['active_session_data'] = (new _SessionController)->_signUserIn( new Request( $active_session_data ), $active_session_data['token'] );
+            // End _Session Handling
 
-        $response['auth_token'] = $api_auth_user->createToken('auth_token')->accessToken;
-        $response['auth_user_data'] = new _UserResource( $api_auth_user );
+            $response['auth_token'] = $api_auth_user->createToken('auth_token')->accessToken;
+            $response['sysconfig_params_data'] = ( new __AuxController )->sysconfig_params()->getData()->data;
+            $response['auth_user_data'] = new _UserResource( $api_auth_user );
+        }
 
         return response()->json( $response );
     }
@@ -140,7 +141,7 @@ class _UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(int $id)
     {
         //
     }
@@ -169,7 +170,7 @@ class _UserController extends Controller
         // Handle _Session
         $active_session_data = $request->active_session_data;
         $active_session_data['user_username'] = $api_auth_user->username;
-        $response['active_session_data'] = new _SessionResource((new _SessionController)->_signUserIn( new Request( $active_session_data ), $active_session_data['token'] ));
+        $response['active_session_data'] = (new _SessionController)->_signUserIn( new Request( $active_session_data ), $active_session_data['token'] );
         // End _Session
 
         $response['auth_token'] = $api_auth_user->createToken('auth_token')->accessToken;
@@ -189,14 +190,14 @@ class _UserController extends Controller
 
         // Handle Old _Session
         $active_session_data = $request->active_session_data;
-        $active_session = (new _SessionController)->_signUserOut( new Request( $active_session_data ), $active_session_data['token'] );
+        (new _SessionController)->_signUserOut( new Request( $active_session_data ), $active_session_data['token'] );
         // End Old _Session
         
         // Handle New _Session
-        $response['active_session_data'] = new _SessionResource((new _SessionController)->store( new Request( [
+        $response['active_session_data'] = (new _SessionController)->store( new Request( [
             'device_info' => $active_session_data['device_info'],
             'agent_app_info' => $active_session_data['agent_app_info'],
-        ])));
+        ]))->getData();
         // End New _Session
 
         return response()->json( $response );
@@ -207,12 +208,12 @@ class _UserController extends Controller
         switch ($request->check_param_name) {
             case 'reg_token':
                 $reg_token = _RegToken::find( $request->check_param_value );
-                $usable = $reg_token && $reg_token->_status === 'active' && count(_User::where('reg_token',$request->check_param_value)->get()) <= (integer)_PrefItem::where('key_slug','reg_token_max_use_count')->first()->value;
+                $usable = $reg_token && $reg_token->_status === 'active' && count(_User::where('reg_token', $request->check_param_value)->get()) <= (integer)_PrefItem::firstWhere('key_slug', 'reg_token_max_use_count')->value;
                 $message = $usable ? 'Reg token available for use.' : ($reg_token ? ($reg_token->_status === 'available' ? 'Reg token used up.' : 'Reg token has _status "'.$reg_token->_status.'".') : 'Reg token not found.');
                 break;
 
             case 'username':
-                $reserved_usernames = ['ankelli','goodhope','admin','administrator', 'sysadmin', 'system'];
+                $reserved_usernames = ['ankelli', 'goodhope', 'admin', 'administrator', 'sysadmin', 'system'];
                 $usable = !_User::where('username', $request->check_param_value )->exists() && !in_array( $request->check_param_value , $reserved_usernames );
                 $message = $usable ? 'Username available for use.' : ( in_array( $request->check_param_value , $reserved_usernames ) ? 'Chosen username is reserved word and can\'t be used.' : 'Username already in use in the system.');
                 break;
@@ -242,7 +243,7 @@ class _UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         //
     }
@@ -253,7 +254,7 @@ class _UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(int $id)
     {
         //
     }

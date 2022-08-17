@@ -24,17 +24,11 @@ const auth_clear_endpoints = [
 const auth_clear_on_GET_endpoints = [
     // Offers
     'offers',
-    'offers/{uid}',
-    // Events
-    'events',
-    'events/{uid}',
-    // Sellers
-    'stores',
-    'stores/{uid}',
+    'offers/{ref_code}',
     // Datalists
+    'datalists/assets',
     'datalists/currencies',
     'datalists/cities',
-    'datalists/listing_categories',
 ]
 
 const config = {

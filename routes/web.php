@@ -25,9 +25,6 @@ Route::view('/root/posts', 'pages/root/posts');
 /* 
     React scaffolding app 
 */
-//$scaffolding_app_enabled_pref_item = _PrefItem::where('key_slug','scaffolding_app_enabled')->first();
-//if ( $scaffolding_app_enabled_pref_item && $scaffolding_app_enabled_pref_item->value === 'react' ){
-    Route::view('/{path?}', 'scaffolding_app')
-        ->where('path', '.*')
-        ->name('react');
-//}
+Route::view('/{path?}', 'scaffolding_app')
+    ->where('path', '.*')
+    ->name('react');

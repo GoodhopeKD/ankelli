@@ -31,8 +31,10 @@ class _Currency extends Model
      * @var array
      */
     protected $casts = [
-        //'created_datetime' => 'datetime',
-        //'updated_datetime' => 'datetime',
+        'symbol_before_number' => 'boolean',
+        'usd_rate' => 'float',
+        'min_transactable_cash_amount' => 'float',
+        'smallest_transactable_cash_denomination_amount' => 'float',
     ];
 
     /**

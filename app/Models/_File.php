@@ -30,14 +30,4 @@ class _File extends Model
         'order_index',
         'creator_username',
     ];
-    
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        //'created_datetime' => 'datetime',
-        //'updated_datetime' => 'datetime',
-    ];
 }

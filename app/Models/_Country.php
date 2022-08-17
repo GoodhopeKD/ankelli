@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class _City extends Model
+class _Country extends Model
 {
     const CREATED_AT = 'created_datetime';
     const UPDATED_AT = 'updated_datetime';
@@ -16,8 +16,11 @@ class _City extends Model
      */
     protected $fillable = [
         'name',
-        'province',
-        'country',
+        'code',
+        'choice_pymt_method_slugs',
+        'choice_currency_codes',
+        'allowed_asset_codes',
+        '_status',
         'creator_username',
     ];
     
@@ -27,8 +30,9 @@ class _City extends Model
      * @var array
      */
     protected $casts = [
-        //'created_datetime' => 'datetime',
-        //'updated_datetime' => 'datetime',
+        'choice_pymt_method_slugs' => 'array',
+        'choice_currency_codes' => 'array',
+        'allowed_asset_codes' => 'array',
     ];
 
     /**
@@ -36,6 +40,6 @@ class _City extends Model
      */
     public function logs()
     {
-        return $this->hasMany( _Log::class, 'entry_uid' )->where('entry_table', '__cities');
+        return $this->hasMany( _Log::class, 'entry_uid' )->where('entry_table', '__countries');
     }
 }

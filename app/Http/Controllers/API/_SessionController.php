@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -61,7 +60,7 @@ class _SessionController extends Controller
         $active_session_data['signout_datetime'] = null;
 
         $element = _Session::create($active_session_data);
-        Session::put('active_session_token', $session_token);
+        session()->put('active_session_token', $session_token);
         // Handle _Log
         (new _LogController)->store( new Request([
             'action_note' => 'Addition of _Session entry to database.',
@@ -71,7 +70,7 @@ class _SessionController extends Controller
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        return new _SessionResource( _Session::find($session_token) );
+        return response()->json( new _SessionResource( $element ) );
     }
 
     public function _signUserIn(Request $request)
@@ -88,25 +87,25 @@ class _SessionController extends Controller
         $active_session_data['signin_datetime'] = now()->toDateTimeString();
         $active_session_data['signout_datetime'] = null;
 
-        $active_session = (new _SessionController)->update( new Request( $active_session_data ), $active_session_data['token'] );
+        $element = (new _SessionController)->update( new Request( $active_session_data ), $active_session_data['token'] )->getData();
 
         // Handle _Log
         (new _LogController)->store( new Request([
-            'session_token' => $active_session->token,
+            'session_token' => $element->token,
             'action_note' => 'User signin.',
             'action_type' => 'entry_update',
             'entry_table' => '__sessions',
-            'entry_uid' => $active_session->token,
+            'entry_uid' => $element->token,
             'entry_update_result'=> [
                 [
-                    'column_name' => '_status',
-                    'initial_value' => 'empty',
-                    'final_value' => 'active',
+                    'field_name' => '_status',
+                    'old_value' => 'empty',
+                    'new_value' => 'active',
                 ],
             ],
         ]));
         // End _Log Handling
-        return new _SessionResource( _Session::find($active_session->token) );
+        //return response()->json( new _SessionResource( _Session::find( $element->token ) ) );
     }
 
     public function _signUserOut(Request $request)
@@ -121,7 +120,7 @@ class _SessionController extends Controller
         $active_session_data['_status'] = 'ended';
         $active_session_data['signout_datetime'] = now()->toDateTimeString();
 
-        $element = (new _SessionController)->update( new Request( $active_session_data ), $active_session_data['token'] );
+        $element = (new _SessionController)->update( new Request( $active_session_data ), $active_session_data['token'] )->getData();
 
         // Handle _Log
         (new _LogController)->store( new Request([
@@ -132,18 +131,18 @@ class _SessionController extends Controller
             'entry_uid' => $element->token,
             'entry_update_result'=> [
                 [
-                    'column_name' => '_status',
-                    'initial_value' => 'active',
-                    'final_value' => 'ended',
+                    'field_name' => '_status',
+                    'old_value' => 'active',
+                    'new_value' => 'ended',
                 ],
             ],
         ]));
         // End _Log Handling
-        $utc_offset = Session::get('utc_offset');
+        $utc_offset = session()->get('utc_offset');
         Auth::user()->token()->revoke();
-        Session::flush();
-        Session::put( 'utc_offset', $utc_offset );
-        return new _SessionResource( _Session::find($element->token) );
+        session()->flush();
+        session()->put( 'utc_offset', $utc_offset );
+        return response()->json( new _SessionResource( _Session::find( $element->token )  ) );
     }
 
     public function _end(Request $request)
@@ -158,7 +157,7 @@ class _SessionController extends Controller
         $active_session_data['_status'] = 'ended';
         $active_session_data['signout_datetime'] = now()->toDateTimeString();
 
-        $element = (new _SessionController)->update( new Request( $active_session_data ), $active_session_data['token'] );
+        $element = (new _SessionController)->update( new Request( $active_session_data ), $active_session_data['token'] )->getData();
 
         // Handle _Log
         (new _LogController)->store( new Request([
@@ -169,15 +168,14 @@ class _SessionController extends Controller
             'entry_uid' => $element->token,
             'entry_update_result'=> [
                 [
-                    'column_name' => '_status',
-                    'initial_value' => 'active',
-                    'final_value' => 'ended',
+                    'field_name' => '_status',
+                    'old_value' => 'active',
+                    'new_value' => 'ended',
                 ],
             ],
         ]));
         // End _Log Handling
-
-        return new _SessionResource( _Session::find($element->token) );
+        return response()->json( new _SessionResource( _Session::find( $element->token ) ) );
     }
 
     /**
@@ -186,7 +184,7 @@ class _SessionController extends Controller
      * @param  string  $token
      * @return \Illuminate\Http\Response
      */
-    public function show($token)
+    public function show(string $token)
     {
         //
     }
@@ -198,7 +196,7 @@ class _SessionController extends Controller
      * @param  string  $token
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, string $token)
+    public function update(Request $request, $token)
     {
         $validated_data = $request->validate([
             'user_username' => ['sometimes', 'required', 'exists:__users,username', 'string'],
@@ -232,8 +230,8 @@ class _SessionController extends Controller
             return abort(422, 'Session props mismatch');
         }*/
 
-        if ($api_auth_user_username){
-            Session::put('api_auth_user_username', $api_auth_user_username);
+        if ( $api_auth_user_username){
+            session()->put('api_auth_user_username', $api_auth_user_username);
         }
 
         //$encrypt = Crypt::encryptString;
@@ -244,6 +242,6 @@ class _SessionController extends Controller
 
         $element->update($validated_data);
 
-        return new _SessionResource( _Session::find($element->token) );
+        return response()->json( new _SessionResource( $element ) );
     }
 }

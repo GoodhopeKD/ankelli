@@ -13,7 +13,7 @@ type casts_t = 'created_datetime' | 'used_datetime'
 */
 export const _DepositTokenRespObj = {
     token: undefined as undefined | null | string,
-    asset_name: undefined as undefined | null | string,
+    asset_code: undefined as undefined | null | string,
     asset_value: undefined as undefined | null | number,
 
     creator_username: undefined as undefined | null | string,
@@ -27,7 +27,7 @@ export const _DepositTokenRespObj = {
 */
 export default class _DepositToken extends _Wrapper_ implements Omit<typeof _DepositTokenRespObj, casts_t> {
     token: string | null = null
-    asset_name: string | null = null
+    asset_code: string | null = null
     asset_value: number | null = null
 
     creator_username: string | null = null

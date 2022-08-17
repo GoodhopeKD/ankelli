@@ -39,19 +39,6 @@ return new class extends Migration
             $table->timestamp('created_datetime')->useCurrent();
             $table->timestamp('updated_datetime')->nullable()->useCurrentOnUpdate();
         });
-
-        DB::table('__user_group_memberships')->insert([
-            [
-                'user_username' => 'sysadmin',
-                'user_group_slug' => 'system_administrators',
-                'creator_username' => 'system',
-            ],
-            [
-                'user_username' => 'hopekd01',
-                'user_group_slug' => 'system_administrators',
-                'creator_username' => 'system',
-            ],
-        ]);
     }
 
     /**

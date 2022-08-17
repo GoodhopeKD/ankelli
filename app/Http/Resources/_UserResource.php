@@ -14,6 +14,9 @@ class _UserResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return array_filter(array_merge(
+        parent::toArray($request), [
+            'asset_accounts' => $this->asset_accounts_f(),
+        ]), static function($var){ return $var !== null;} );
     }
 }

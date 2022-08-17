@@ -16,6 +16,7 @@ use App\Http\Resources\_AdminExtensionResourceCollection;
 use App\Http\Resources\_SellerExtensionResourceCollection;
 use App\Http\Resources\_BuyerExtensionResourceCollection;
 use App\Http\Resources\_PrefItemResourceCollection;
+use App\Http\Resources\_AssetAccountResourceCollection;
 use App\Http\Resources\_UserGroupMembershipResourceCollection;
 
 class _User extends Authenticatable
@@ -56,8 +57,6 @@ class _User extends Authenticatable
      * @var array
      */
     protected $casts = [
-        //'created_datetime' => 'datetime',
-        //'updated_datetime' => 'datetime',
     ];
 
     /**
@@ -140,6 +139,14 @@ class _User extends Authenticatable
     }
 
     /**
+     * Get the asset_accounts associated with the user.
+     */
+    public function asset_accounts()
+    {
+        return $this->hasMany( _AssetAccount::class, 'user_username', 'username');
+    }
+
+    /**
      * Get the logs associated with the user.
      */
     public function logs()
@@ -183,7 +190,7 @@ class _User extends Authenticatable
     // Permissions
     public function is_active_business_admin_f()
     {
-        return $this->admin_extension()->where('_status', 'active')->exists() && $this->user_group_memberships()->where('user_group_slug','business_administrators')->where('_status','active')->exists();
+        return $this->admin_extension()->where('_status', 'active')->exists() && $this->user_group_memberships()->where('user_group_slug', 'business_administrators')->where('_status', 'active')->exists();
     }
 
     public function can_create_trades_to_sell_f()
@@ -193,7 +200,7 @@ class _User extends Authenticatable
 
     public function can_create_offer_to_buy_f()
     {
-        return !$this->buyer_extension()->where('_status','revoked')->exists();
+        return !$this->buyer_extension()->where('_status', 'revoked')->exists();
     }
 
     // Extensions
@@ -217,6 +224,11 @@ class _User extends Authenticatable
         return count($this->pref_items) ? json_decode(( new _PrefItemResourceCollection( $this->pref_items ))->toJson(),true)['data']: null;
     }
 
+    public function asset_accounts_f()
+    {
+        return count($this->asset_accounts) ? json_decode(( new _AssetAccountResourceCollection( $this->asset_accounts ))->toJson(),true)['data']: null;
+    }
+
     private function _set_user_group_memberships_info()
     {
         // User Groups
@@ -231,7 +243,7 @@ class _User extends Authenticatable
 
         $admin_extension = $this->admin_extension;
         if (isset($admin_extension) && !(array_search('user_administrators', array_column($user_group_memberships, "user_group_slug")) !== false)){
-            $_status = $admin_extension->_status === 'active' && _UserGroup::where('slug', 'user_administrators')->first()->_status === 'active' ? 'active' : 'revoked';
+            $_status = $admin_extension->_status === 'active' && _UserGroup::firstWhere('slug', 'user_administrators')->_status === 'active' ? 'active' : 'revoked';
             array_push( $user_group_memberships, (object)[ 
                 'id'                    => NULL,
                 'user_username'         => $this->username,
@@ -245,8 +257,8 @@ class _User extends Authenticatable
         }
 
         $seller_extension = $this->seller_extension;
-        if ($seller_extension && !(array_search('sellers', array_column($user_group_memberships, "user_group_slug")) !== false)){
-            $_status = $seller_extension->_status === 'active' && _UserGroup::where('slug', 'sellers')->first()->_status === 'active' ? 'active' : 'revoked';
+        if ( $seller_extension && !(array_search('sellers', array_column($user_group_memberships, "user_group_slug")) !== false)){
+            $_status = $seller_extension->_status === 'active' && _UserGroup::firstWhere('slug', 'sellers')->_status === 'active' ? 'active' : 'revoked';
             array_push( $user_group_memberships, (object)[ 
                 'id'                    => NULL,
                 'user_username'         => $this->username,
@@ -260,8 +272,8 @@ class _User extends Authenticatable
         }
 
         $buyer_extension = $this->buyer_extension;
-        if ($buyer_extension && !(array_search('buyers', array_column($user_group_memberships, "user_group_slug")) !== false)){
-            $_status = $buyer_extension->_status === 'active' && _UserGroup::where('slug', 'buyers')->first()->_status === 'active' ? 'active' : 'revoked';
+        if ( $buyer_extension && !(array_search('buyers', array_column($user_group_memberships, "user_group_slug")) !== false)){
+            $_status = $buyer_extension->_status === 'active' && _UserGroup::firstWhere('slug', 'buyers')->_status === 'active' ? 'active' : 'revoked';
             array_push( $user_group_memberships, (object)[ 
                 'id'                    => NULL,
                 'user_username'         => $this->username,

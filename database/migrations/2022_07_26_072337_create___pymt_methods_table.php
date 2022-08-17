@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('name', 64)->unique();
             $table->string('slug', 64)->unique();
             $table->text('details_required');
+            $table->string('hex_color', 6)->nullable();
             $table->enum('_status', ['active', 'deactivated'])->default('active');
 
             $table->string('creator_username', 64)->nullable();
@@ -35,6 +36,7 @@ return new class extends Migration
             [
                 'name' => 'Cash in person',
                 'slug' => 'cash_in_person',
+                'hex_color' => '5e5d4b',
                 'details_required' => json_encode([
                     'address' => '255',
                     'phone_number'=> '16',
@@ -44,24 +46,27 @@ return new class extends Migration
             [
                 'name' => 'Stanbic bank',
                 'slug' => 'stanbic_bank',
+                'hex_color' => '066ef3',
                 'details_required' => json_encode([
                     'account_holder_name' => '255',
-                    'account_number'=> '32',
+                    'account_no'=> '32',
                 ]),
                 'creator_username' => 'system',
             ],
             [
                 'name' => 'FNB bank',
                 'slug' => 'fnb_bank',
+                'hex_color' => '009eaa',
                 'details_required' => json_encode([
                     'account_holder_name' => '255',
-                    'account_number'=> '32',
+                    'account_no'=> '32',
                 ]),
                 'creator_username' => 'system',
             ],
             [
                 'name' => 'Mukuru',
                 'slug' => 'mukuru',
+                'hex_color' => 'e77924',
                 'details_required' => json_encode([
                     'recepient_name' => '255',
                     'recepient_number'=> '32',
@@ -71,10 +76,91 @@ return new class extends Migration
             [
                 'name' => 'Algérie Poste',
                 'slug' => 'algerie_poste',
+                'hex_color' => '01009a',
                 'details_required' => json_encode([
                     'account_holder_name' => '255',
-                    'account_number'=> '32',
+                    'account_no'=> '32',
                     'account_key'=> '2',
+                ]),
+                'creator_username' => 'system',
+            ],
+            [
+                'name' => 'MTN Mobile Money',
+                'slug' => 'mtn_momo',
+                'hex_color' => 'feca05',
+                'details_required' => json_encode([
+                    'recepient_name' => '255',
+                    'recepient_number'=> '32',
+                ]),
+                'creator_username' => 'system',
+            ],
+            [
+                'name' => 'Ecocash',
+                'slug' => 'ecocash',
+                'hex_color' => '005ba4',
+                'details_required' => json_encode([
+                    'recepient_name' => '255',
+                    'recepient_number'=> '32',
+                ]),
+                'creator_username' => 'system',
+            ],
+            [
+                'name' => 'Paypal',
+                'slug' => 'paypal',
+                'hex_color' => '27346a',
+                'details_required' => json_encode([
+                    'recepient_name' => '255',
+                    'recepient_email_address'=> '32',
+                ]),
+                'creator_username' => 'system',
+            ],
+            [
+                'name' => 'Skrill',
+                'slug' => 'skrill',
+                'hex_color' => '862165',
+                'details_required' => json_encode([
+                    'recepient_name' => '255',
+                    'recepient_email_address'=> '32',
+                ]),
+                'creator_username' => 'system',
+            ],
+            [
+                'name' => 'World Remit',
+                'slug' => 'world_remit',
+                'hex_color' => '604684',
+                'details_required' => json_encode([
+                    'recepient_name' => '255',
+                    'recepient_email_address'=> '32',
+                ]),
+                'creator_username' => 'system',
+            ],
+            [
+                'name' => 'Mastercard',
+                'slug' => 'mastercard',
+                'hex_color' => 'cc0001',
+                'details_required' => json_encode([
+                    'recepient_name' => '255',
+                    'recepient_account_no'=> '32',
+                ]),
+                'creator_username' => 'system',
+            ],
+            [
+                'name' => 'Visa',
+                'slug' => 'visa',
+                'hex_color' => '0055a5',
+                'details_required' => json_encode([
+                    'recepient_name' => '255',
+                    'recepient_account_no'=> '32',
+                ]),
+                'creator_username' => 'system',
+            ],
+            [
+                'name' => 'FBC Bank',
+                'slug' => 'fbc_bank',
+                'hex_color' => '0055a5',
+                'details_required' => json_encode([
+                    'recepient_name' => '255',
+                    'recepient_account_no'=> '32',
                 ]),
                 'creator_username' => 'system',
             ],

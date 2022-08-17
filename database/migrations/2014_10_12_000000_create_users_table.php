@@ -31,53 +31,38 @@ return new class extends Migration
             // Default System _User, Cannot be accessed, used for automatic functions
             [
                 'username' => 'system',
-                'email_address' => '',
+                'email_address' => 'system',
                 'password' => '',
-                'avatar_image_id' => 25,
-            ],
-            // Default System administrator, Cannot buy, sell; can only manage system features
-            [
-                'username' => 'sysadmin',
-                'email_address' => 'sysadmin@ankelli.com',
-                'password' => bcrypt('Ank3ll1#1'),
-                'avatar_image_id' => 25,
-            ],
-            // Ankelli finance tracking account
-            [
-                'username' => 'ankelli',
-                'email_address' => 'ankelli@ankelli.com',
-                'password' => bcrypt('Ank3ll1#1'),
-                'avatar_image_id' => 27,
-            ],
-            // Personal Account with access to all features
-            [
-                'username' => 'hopekd01',
-                'email_address' => 'goodhopedhliwayo@gmail.com',
-                'password' => bcrypt('Password#123'),
-                'avatar_image_id' => 25,
-            ],
-        ]);
-
-        DB::table('__users')->insert([
-            [
-                'username' => 'popo',
-                'email_address' => 'popo@ankelli.com',
-                'password' => bcrypt('Password#123'),
             ],
             [
-                'username' => 'momo',
-                'email_address' => 'momo@ankelli.com',
-                'password' => bcrypt('Password#123'),
+                'username' => 'escrow',
+                'email_address' => 'escrow',
+                'password' => '',
             ],
             [
-                'username' => 'gudo',
-                'email_address' => 'gudo@ankelli.com',
-                'password' => bcrypt('Password#123'),
+                'username' => 'tracker.platform-charges',
+                'email_address' => 'tracker.platform-charges',
+                'password' => '',
             ],
             [
-                'username' => 'nassim',
-                'email_address' => 'nassim@ankelli.com',
-                'password' => bcrypt('Password#123'),
+                'username' => 'tracker.internal-transactions',
+                'email_address' => 'tracker.internal-transactions',
+                'password' => '',
+            ],
+            [
+                'username' => 'tracker.token-deposits',
+                'email_address' => 'tracker.token-deposits',
+                'password' => '',
+            ],
+            [
+                'username' => 'tracker.internalisations',
+                'email_address' => 'tracker.internalisations',
+                'password' => '',
+            ],
+            [
+                'username' => 'tracker.externalisations',
+                'email_address' => 'tracker.externalisations',
+                'password' => '',
             ],
         ]);
     }

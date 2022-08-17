@@ -16,10 +16,10 @@ class _DepositToken extends Model
      */
     protected $fillable = [
         'token',
-        'asset_name',
+        'asset_code',
         'asset_value',
-        'purchase_currency',
-        'purchase_amount',
+        'currency_code',
+        'currency_amount',
         'creator_username',
         'user_username',
         'used_datetime',
@@ -34,7 +34,7 @@ class _DepositToken extends Model
      * @var array
      */
     protected $casts = [
-        //'created_datetime' => 'datetime',
+        'asset_value' => 'float',
         'used_datetime' => 'datetime',
     ];
 

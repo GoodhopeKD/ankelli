@@ -5,6 +5,9 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Models\_EmailAddress;
+use App\Http\Resources\_EmailAddressResource;
+
 class _EmailAddressController extends Controller
 {
     /**
@@ -25,7 +28,21 @@ class _EmailAddressController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated_data = $request->validate([
+            'email_address' => ['required', 'string', 'min:5', 'max:64', 'email', 'unique:__email_addresses'],
+            'user_username' => ['required', 'string', 'exists:__users,username'],
+        ]);
+        $element = _EmailAddress::create($validated_data);
+        // Handle _Log
+        (new _LogController)->store( new Request([
+            'action_note' => 'Addition of _EmailAddress entry to database.',
+            'action_type' => 'entry_create',
+            'entry_table' => '__email_addresses',
+            'entry_uid' => $element->email_address,
+            'batch_code' => $request->batch_code,
+        ]));
+        // End _Log Handling
+        return response()->json( new _EmailAddressResource( $element ) );
     }
 
     /**
@@ -34,7 +51,7 @@ class _EmailAddressController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(int $id)
     {
         //
     }
@@ -46,7 +63,7 @@ class _EmailAddressController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, int $id)
     {
         //
     }
@@ -57,7 +74,7 @@ class _EmailAddressController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(int $id)
     {
         //
     }

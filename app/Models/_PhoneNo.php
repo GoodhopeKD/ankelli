@@ -30,8 +30,6 @@ class _PhoneNo extends Model
      * @var array
      */
     protected $casts = [
-        //'created_datetime' => 'datetime',
-        //'updated_datetime' => 'datetime',
         'verified_datetime' => 'datetime',
     ];
 }

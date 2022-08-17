@@ -14,22 +14,22 @@ export const account_menu = {
         {
             title: 'Dashboard',
             path: '/account/dashboard',
-            element: (props) => <UserProfileScreen nav_menus={props.nav_menus} />,
+            element: (props) => <UserProfileScreen {...props} />,
         },
         {
             title: 'Deposit',
             path: '/account/deposit',
-            element: (props) => <DepositsScreen nav_menus={props.nav_menus} />,
+            element: (props) => <DepositsScreen {...props} />,
         },
         {
             title: 'Withdraw',
             path: '/account/withdraw',
-            element: (props) => <WithdrawalsScreen nav_menus={props.nav_menus} />,
+            element: (props) => <WithdrawalsScreen {...props} />,
         },
         {
             title: 'Transactions',
             path: '/account/transactions',
-            element: (props) => <TransactionsListViewScreen nav_menus={props.nav_menus} />,
+            element: (props) => <TransactionsListViewScreen {...props} />,
         },
     ]
 }

@@ -9,11 +9,15 @@ window.ucfirst = function (s) {
 	return s && s.length ? s[0].toUpperCase() + s.slice(1) : ''
 }
 
-window.priceString = (price) => parseFloat(price).toLocaleString('de-DE', {
-	style: 'currency',
-	currency: 'DZD',
-	maximumFractionDigits: 2
-}).replace(',00','').replace('DZD','DA')
+window.currencyAmountString = (amount, currency) => {
+	currency = currency ?? { symbol: '' }
+	return (currency.symbol_before_number ? currency.symbol : '') + (Math.round((parseFloat(amount) + Number.EPSILON) * 100) / 100).toLocaleString('zw-ZW') + (currency.symbol_before_number ? '' : currency.symbol)
+}
+
+window.assetValueString = (value, asset, show_code = true) => {
+	asset = asset ?? { code: '', smallest_display_unit: 0.01 }
+	return (Math.round((parseFloat(value)) * (1 / asset.smallest_display_unit)) / (1 / asset.smallest_display_unit)) + (show_code ? ' ' + asset.code : '')
+}
 
 window.instanceToRespObj = (obj) => {
 	if (null === obj || 'object' != typeof obj) return obj

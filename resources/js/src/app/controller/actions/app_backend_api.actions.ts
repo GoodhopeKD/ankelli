@@ -170,7 +170,7 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
                             } : null
                         }
 
-                        if (error.message.includes('Request failed with _status code') && error.response) {
+                        if (error.message.includes('Request failed with status code') && error.response) {
                             error.message = error.response.message
                         }
                     } else {

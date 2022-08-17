@@ -20,12 +20,14 @@ class _Trade extends Model
      */
     protected $fillable = [
         'ref_code',
-        'country',
+        'country_name',
+        'location',
         'was_offer_to',
         'asset_code',
         'currency_code',
         'asset_value',
-        'purchase_amount',
+        'platform_charge_asset_factor',
+        'currency_amount',
         'asset_sell_price',
         'asset_purchase_price',
         'pymt_method_slug',
@@ -39,7 +41,7 @@ class _Trade extends Model
         'creator_username',
     ];
     public $incrementing = false;
-    protected $primaryKey = 'token';
+    protected $primaryKey = 'ref_code';
     protected $keyType = 'string';
     
     /**
@@ -48,8 +50,13 @@ class _Trade extends Model
      * @var array
      */
     protected $casts = [
-        //'created_datetime' => 'datetime',
-        //'updated_datetime' => 'datetime',
+        'visible_to_creator' => 'boolean',
+        'visible_to_offer_creator' => 'boolean',
+        'asset_value' => 'float',
+        'platform_charge_asset_factor' => 'float',
+        'asset_sell_price' => 'float',
+        'asset_purchase_price' => 'float',
+        'pymt_method_details' => 'array',
     ];
 
     /**

@@ -23,16 +23,6 @@ class _SellerExtension extends Model
         '_status',
         'creator_username',
     ];
-    
-    /**
-     * The attributes that should be cast to native types.
-     *
-     * @var array
-     */
-    protected $casts = [
-        //'created_datetime' => 'datetime',
-        //'updated_datetime' => 'datetime',
-    ];
 
     /**
      * Get the listings_posted associated with the user.

@@ -41,7 +41,7 @@ return new class extends Migration
                 'value_type' => 'boolean',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Scaffolding app enabled',
@@ -50,7 +50,7 @@ return new class extends Migration
                 'value_type' => 'boolean',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Fallback Display Language',
@@ -59,7 +59,7 @@ return new class extends Migration
                 'value_type' => 'enum:langs',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Fallback Display Theme',
@@ -68,7 +68,7 @@ return new class extends Migration
                 'value_type' => 'enum:themes',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Image storage driver',
@@ -77,7 +77,7 @@ return new class extends Migration
                 'value_type' => 'enum:file_storage_drivers',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Document storage driver',
@@ -86,7 +86,7 @@ return new class extends Migration
                 'value_type' => 'enum:file_storage_drivers',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Logs database driver',
@@ -95,7 +95,7 @@ return new class extends Migration
                 'value_type' => 'enum:db_drivers',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Notifications database driver',
@@ -104,7 +104,7 @@ return new class extends Migration
                 'value_type' => 'enum:db_drivers',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Chats database driver',
@@ -113,7 +113,7 @@ return new class extends Migration
                 'value_type' => 'enum:db_drivers',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Messages database driver',
@@ -122,7 +122,7 @@ return new class extends Migration
                 'value_type' => 'enum:db_drivers',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Offers database driver',
@@ -131,7 +131,7 @@ return new class extends Migration
                 'value_type' => 'enum:db_drivers',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Trades database driver',
@@ -140,7 +140,7 @@ return new class extends Migration
                 'value_type' => 'enum:db_drivers',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Token registration enabled',
@@ -149,7 +149,7 @@ return new class extends Migration
                 'value_type' => 'boolean',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Token registration max use count',
@@ -158,7 +158,7 @@ return new class extends Migration
                 'value_type' => 'integer',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Open Registration enabled',
@@ -167,7 +167,7 @@ return new class extends Migration
                 'value_type' => 'boolean',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Learn mode available',
@@ -176,7 +176,7 @@ return new class extends Migration
                 'value_type' => 'boolean',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Offers to buy enabled',
@@ -185,7 +185,7 @@ return new class extends Migration
                 'value_type' => 'boolean',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Offers to sell enabled',
@@ -194,7 +194,7 @@ return new class extends Migration
                 'value_type' => 'boolean',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Use development crypto asset engine',
@@ -203,7 +203,7 @@ return new class extends Migration
                 'value_type' => 'boolean',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Use tatum crypto asset engine',
@@ -212,16 +212,16 @@ return new class extends Migration
                 'value_type' => 'boolean',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Value charged by platform on transactions',
-                'key_slug' => 'platform_charge_value',
+                'key_slug' => 'platform_charge_asset_factor',
                 'value' => 0.01,
                 'value_type' => 'float',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Minimum allowed price per unit currency on offers',
@@ -230,26 +230,7 @@ return new class extends Migration
                 'value_type' => 'float',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
-                'creator_username' => 'sysadmin',
-            ],
-
-            [
-                'key_name' => 'Receive Promotions in Email Inbox',
-                'key_slug' => 'receive_promos_email_inbox',
-                'value' => false,
-                'value_type' => 'boolean',
-                'parent_table' => '__email_addresses',
-                'parent_uid' => 'ankelli@ankelli.com',
-                'creator_username' => 'sysadmin',
-            ],
-            [
-                'key_name' => 'Receive Promotions in Email Inbox',
-                'key_slug' => 'receive_promos_email_inbox',
-                'value' => false,
-                'value_type' => 'boolean',
-                'parent_table' => '__email_addresses',
-                'parent_uid' => 'goodhopedhliwayo@gmail.com',
-                'creator_username' => 'hopekd01',
+                'creator_username' => 'system',
             ],
         ]);
     }

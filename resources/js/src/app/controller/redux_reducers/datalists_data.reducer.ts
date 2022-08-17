@@ -29,7 +29,14 @@ export const datalists_data_reducer = (state = initial_state, action: any) => {
                     active_pymt_methods[element.slug] = element
                 });
             }
-			return { ...state, active_assets, active_currencies, active_pymt_methods }
+            var active_countries = state.active_countries as any
+            if (action.datalists_data.active_countries){
+                active_countries = {}
+                action.datalists_data.active_countries.forEach((element: any) => {
+                    active_countries[element.name] = element
+                });
+            }
+			return { ...state, active_assets, active_currencies, active_pymt_methods, active_countries }
 
 		case 'DATALISTS_CLEAR_ALL':
 			return null

@@ -26,32 +26,32 @@ export const account_settings_menu = {
         {
             title: 'Email Settings',
             path: '/account_settings/email_addresses',
-            element: (props) => <ExampleElement title={props.title} nav_menus={[props.nav_menus.find(menu => menu.slug === 'account_settings_menu')]} />,
+            element: (props) => <ExampleElement {...props} nav_menus={[props.nav_menus.find(menu => menu.slug === 'account_settings_menu')]} />,
         },
         {
             title: 'Change Password',
             path: '/account_settings/change_password',
-            element: (props) => <ExampleElement title={props.title} nav_menus={[props.nav_menus.find(menu => menu.slug === 'account_settings_menu')]} />,
+            element: (props) => <ExampleElement {...props} nav_menus={[props.nav_menus.find(menu => menu.slug === 'account_settings_menu')]} />,
         },
         {
             title: 'Display Settings',
             path: '/account_settings/display_settings',
-            element: (props) => <ExampleElement title={props.title} nav_menus={[props.nav_menus.find(menu => menu.slug === 'account_settings_menu')]} />,
+            element: (props) => <ExampleElement {...props} nav_menus={[props.nav_menus.find(menu => menu.slug === 'account_settings_menu')]} />,
         },
         {
             title: 'Avatar Image',
             path: '/account_settings/avatar_image',
-            element: (props) => <ExampleElement title={props.title} nav_menus={[props.nav_menus.find(menu => menu.slug === 'account_settings_menu')]} />,
+            element: (props) => <ExampleElement {...props} nav_menus={[props.nav_menus.find(menu => menu.slug === 'account_settings_menu')]} />,
         },
         {
             title: 'User Group Memberships',
             path: '/account_settings/actions/user_group_memberships',
-            element: (props) => <ExampleElement title={props.title} nav_menus={[props.nav_menus.find(menu => menu.slug === 'account_settings_menu')]} />,
+            element: (props) => <ExampleElement {...props} nav_menus={[props.nav_menus.find(menu => menu.slug === 'account_settings_menu')]} />,
         },
         {
             title: 'Permissions',
             path: '/account_settings/actions/permission_instances',
-            element: (props) => <ExampleElement title={props.title} nav_menus={[props.nav_menus.find(menu => menu.slug === 'account_settings_menu')]} />,
+            element: (props) => <ExampleElement {...props} nav_menus={[props.nav_menus.find(menu => menu.slug === 'account_settings_menu')]} />,
         },
         {
             title: 'Sessions',
@@ -60,18 +60,18 @@ export const account_settings_menu = {
                 {
                     title: 'Recent Sessions',
                     path: '/account_settings/session_info/recent_sessions',
-                    element: (props) => <ExampleElement title={props.title} nav_menus={[props.nav_menus.find(menu => menu.slug === 'account_settings_menu')]} />,
+                    element: (props) => <ExampleElement {...props} nav_menus={[props.nav_menus.find(menu => menu.slug === 'account_settings_menu')]} />,
                 },
                 {
                     title: 'Recent Session Info',
                     path: '/account_settings/session_info/recent_sessions/:session_token',
-                    element: (props) => <ExampleElement title={props.title} nav_menus={[props.nav_menus.find(menu => menu.slug === 'account_settings_menu')]} />,
+                    element: (props) => <ExampleElement {...props} nav_menus={[props.nav_menus.find(menu => menu.slug === 'account_settings_menu')]} />,
                     show_in_menu: false,
                 },
                 {
                     title: 'Log Viewer',
                     path: '/account_settings/session_info/log_viewer',
-                    element: (props) => <ExampleElement title={props.title} nav_menus={[props.nav_menus.find(menu => menu.slug === 'account_settings_menu')]} />,
+                    element: (props) => <ExampleElement {...props} nav_menus={[props.nav_menus.find(menu => menu.slug === 'account_settings_menu')]} />,
                 }
             ]
         },

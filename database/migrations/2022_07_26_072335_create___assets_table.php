@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('name', 64)->unique();
             $table->string('code', 64)->unique();
+            $table->string('smallest_display_unit', 32); // unsignedDecimal
             $table->enum('_status', ['active', 'deactivated'])->default('active');
 
             $table->string('creator_username', 64)->nullable();
@@ -33,6 +34,7 @@ return new class extends Migration
             [
                 'name' => 'Tether USD',
                 'code' => 'USDT',
+                'smallest_display_unit' => 0.0001,
                 'creator_username' => 'system',
             ],
         ]);

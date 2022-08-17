@@ -25,24 +25,6 @@ return new class extends Migration
             $table->timestamp('created_datetime')->useCurrent();
             $table->timestamp('verified_datetime')->nullable();
         });
-
-        DB::table('__email_addresses')->insert([
-            [
-                'user_username' => 'sysadmin',
-                'email_address' => 'sysadmin@ankelli.com',
-                'verified_datetime' => now()->toDateTimeString(),
-            ],
-            [
-                'user_username' => 'ankelli',
-                'email_address' => 'ankelli@ankelli.com',
-                'verified_datetime' => now()->toDateTimeString(),
-            ],
-            [
-                'user_username' => 'hopekd01',
-                'email_address' => 'goodhopedhliwayo@gmail.com',
-                'verified_datetime' => now()->toDateTimeString(),
-            ],
-        ]);
     }
 
     /**

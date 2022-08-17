@@ -25,13 +25,6 @@ return new class extends Migration
                     ->onDelete('cascade');
             $table->timestamp('created_datetime')->useCurrent();
         });
-
-        DB::table('__reg_tokens')->insert([
-            [
-                'token' => '1234567890',
-                'creator_username' => 'hopekd01',
-            ],
-        ]);
     }
 
     /**

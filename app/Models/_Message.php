@@ -31,7 +31,6 @@ class _Message extends Model
      * @var array
      */
     protected $casts = [
-        //'created_datetime' => 'datetime',
         'read_datetime' => 'datetime',
     ];
 }

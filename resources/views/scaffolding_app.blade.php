@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-100">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,8 +7,11 @@
     <title>Ankelli</title>
   @if(env('APP_ENV') == 'local')
   <link rel="stylesheet" href="https://cdn-emu.local/bootstrap-5.2.0-dist/css/bootstrap.min.css" >
+  <!--<link rel="stylesheet" href="https://cdn-emu.local/fontawesome-free-5.15.4-web/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" >-->
+  <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />-->
   @else
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
   @endif
   <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="icon" href="{{ asset('images/logo.jpeg') }}" />
@@ -29,17 +32,10 @@
     <meta name="twitter:description"      content="Welcome to the Ankelli Platform" />
     <meta name="twitter:image"            content="{{ asset('images/logo.jpeg') }}" />
   </head>
-  <body>
-    <div id="app_root">
-
-    <script>
-    window.sysconfig_params_data = <?php echo json_encode((new App\Http\Controllers\API\__AuxController)->sysconfig_params()->getData()->data); ?>
+  <body class="h-100">
     
-    window.datalists_data = <?php echo json_encode((new App\Http\Controllers\API\__AuxController)->datalists()->getData()); ?>
-    
-    </script>
-
-<?php $scaffolding_app_enabled_pref_item = App\Models\_PrefItem::where('key_slug','scaffolding_app_enabled')->first();
+    <div id="app_root" class="h-100 d-flex flex-column">
+<?php $scaffolding_app_enabled_pref_item = App\Models\_PrefItem::firstWhere('key_slug', 'scaffolding_app_enabled');
 if ( $scaffolding_app_enabled_pref_item && !$scaffolding_app_enabled_pref_item->value ){ ?>
       <div class="container-fluid p-3">
         <p>The Ankelli App is undergoing maintenance. Please check again in a short while.</p>
@@ -54,14 +50,20 @@ if ( $scaffolding_app_enabled_pref_item && !$scaffolding_app_enabled_pref_item->
       </div>
 <?php } ?>
     </div>
+
+    <script>
+      window.sysconfig_params_data = <?php echo json_encode((new App\Http\Controllers\API\__AuxController)->sysconfig_params()->getData()->data); ?> 
+      window.datalists_data = <?php echo json_encode((new App\Http\Controllers\API\__AuxController)->datalists()->getData()); ?> 
+    </script>
   @if(env('APP_ENV') == 'local')
-  <script src="https://cdn-emu.local/bootstrap-5.2.0-dist/js/bootstrap.bundle.min.js" ></script>   
+  <script src="https://cdn-emu.local/bootstrap-5.2.0-dist/js/bootstrap.bundle.min.js" ></script>
   @else
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
   @endif
-<?php $scaffolding_app_enabled_pref_item = App\Models\_PrefItem::where('key_slug','scaffolding_app_enabled')->first();
+<?php $scaffolding_app_enabled_pref_item = App\Models\_PrefItem::firstWhere('key_slug', 'scaffolding_app_enabled');
 if ( $scaffolding_app_enabled_pref_item && $scaffolding_app_enabled_pref_item->value ){ ?>
   <script src="{{ asset('js/app.js') }}" ></script>
 <?php } ?>
+
   </body>
 </html>

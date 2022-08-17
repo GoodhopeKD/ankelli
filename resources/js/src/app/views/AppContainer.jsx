@@ -7,6 +7,7 @@ import { createFirestoreInstance } from 'redux-firestore'
 import 'app/controller/utils/globals'
 import { store, persistor } from 'app/controller'
 import { AppNavigation } from 'app/views'
+import FlashSnackbarComponent from 'app/views/components/flash-snackbar.component'
 import { langs } from 'app/assets'
 
 /*
@@ -34,6 +35,7 @@ export default function AppContainer() {
         <StoreProvider store={store}>
             <PersistGate loading={null} persistor={persistor}>
                 {/*<ReactReduxFirebaseProvider {...rrfProps}>*/}
+                <FlashSnackbarComponent />
                 <AppNavigation />
                 {/*</ReactReduxFirebaseProvider>*/}
             </PersistGate>

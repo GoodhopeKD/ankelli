@@ -61,7 +61,7 @@ class SignUpScreen extends React.Component {
             this.setState({ errors }) // Remove input error indicators under text inputs
             let _input = Object.assign(Object.create(Object.getPrototypeOf(input)), input) // Dereference input object
             Object.keys(_input).forEach(key => { if (_input[key] instanceof _Input) _input[key] = _input[key] + "" }) // convert _Input instances to Text
-            _User.signUp(_input).then(() => _Notification.create({ dest: 'flash', content: { body: 'Sign up successful!', data: { flash_duration: 750 } } }))
+            _User.signUp(_input).then(() => _Notification.flash({ message: 'Sign up successful!', duration: 750 }))
                 .catch((error) => {
                     errors.push(error.message)
                     this.setState({ btn_signup_working, errors })
@@ -72,55 +72,57 @@ class SignUpScreen extends React.Component {
     }
 
     render() {
-        return <div className="container">
-            <div className="modal py-2 position-static d-block">
-                <div className="modal-dialog" role="document">
-                    <div className="modal-content rounded-4 shadow">
-                        <div className="modal-header p-4 border-bottom-0">
-                            <h2 className="fw-bold mb-0">Sign up</h2>
-                        </div>
-                        <div className="modal-body p-4 pt-0">
-                            {(this.props.sysconfig_params_data.open_reg_enabled || this.props.sysconfig_params_data.token_reg_enabled) ? <>
-                                <form className="" onSubmit={e => e.preventDefault()}>
-                                    {this.props.sysconfig_params_data.token_reg_enabled &&
+        return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
+            <div className="container">
+                <div className="modal py-2 position-static d-block">
+                    <div className="modal-dialog" role="document">
+                        <div className="modal-content rounded-4 shadow">
+                            <div className="modal-header p-4 border-bottom-0">
+                                <h2 className="fw-bold mb-0">Sign up</h2>
+                            </div>
+                            <div className="modal-body p-4 pt-0">
+                                {(this.props.sysconfig_params_data.open_reg_enabled || this.props.sysconfig_params_data.token_reg_enabled) ? <>
+                                    <form className="" onSubmit={e => e.preventDefault()}>
+                                        {this.props.sysconfig_params_data.token_reg_enabled &&
+                                            <div className="form-floating mb-3">
+                                                <input type='text' required={!this.props.sysconfig_params_data.open_reg_enabled} className={"form-control rounded-3 " + (this.state.input.reg_token.hasError() ? 'is-invalid' : '')} id="input_reg_token" placeholder="Registration Token" name='input_reg_token' defaultValue={this.state.input.reg_token + ''} />
+                                                <label htmlFor="input_reg_token">Registration Token</label>
+                                            </div>
+                                        }
                                         <div className="form-floating mb-3">
-                                            <input type='text' required={!this.props.sysconfig_params_data.open_reg_enabled} className={"form-control rounded-3 " + (this.state.input.reg_token.hasError() ? 'is-invalid' : '')} id="input_reg_token" placeholder="Registration Token" name='input_reg_token' defaultValue={this.state.input.reg_token + ''} />
-                                            <label htmlFor="input_reg_token">Registration Token</label>
+                                            <input type='text' required className={"form-control rounded-3 " + (this.state.input.username.hasError() ? 'is-invalid' : '')} id="input_username" placeholder="Username" name='input_username' defaultValue={this.state.input.username + ''} />
+                                            <label htmlFor="input_username">Username</label>
                                         </div>
-                                    }
-                                    <div className="form-floating mb-3">
-                                        <input type='text' required className={"form-control rounded-3 " + (this.state.input.username.hasError() ? 'is-invalid' : '')} id="input_username" placeholder="Username" name='input_username' defaultValue={this.state.input.username + ''} />
-                                        <label htmlFor="input_username">Username</label>
-                                    </div>
-                                    <div className="form-floating mb-3">
-                                        <input type='email' required className={"form-control rounded-3 " + (this.state.input.email_address.hasError() ? 'is-invalid' : '')} id="input_email_address" placeholder="Email Address" name='input_email_address' defaultValue={this.state.input.email_address + ''} />
-                                        <label htmlFor="input_email_address">Email Address</label>
-                                    </div>
-                                    <div className="form-floating mb-3">
-                                        <input type="password" required className={"form-control rounded-3 " + (this.state.input.password.hasError() ? 'is-invalid' : '')} id="input_password" placeholder="Password" name='input_password' defaultValue={this.state.input.password + ''} />
-                                        <label htmlFor="input_password">Password</label>
-                                    </div>
-                                    <div className="form-floating mb-3">
-                                        <input type="password" required className={"form-control rounded-3 " + (this.state.input.password_confirmation.hasError() ? 'is-invalid' : '')} id="input_password_confirmation" placeholder="Password again" name='input_password_confirmation' defaultValue={this.state.input.password_confirmation + ''} />
-                                        <label htmlFor="input_password_confirmation">Password again</label>
-                                    </div>
-                                    <div className="mb-3">
-                                        {this.state.errors.map((error, key) => (
-                                            <div key={key}>• <span style={{ color: 'red' }}>{error}</span></div>
-                                        ))}
-                                    </div><button className="w-100 mb-2 btn btn-lg rounded-3 btn-primary" disabled={this.state.btn_signup_working} type="submit" onClick={this.handleSubmit}>
-                                        {this.state.btn_signup_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <span>Sign up</span>}
-                                    </button>
-                                    <small className="text-muted">By clicking Sign up, you agree to our <Link to='/terms-of-service' target='_blank'>Terms of service</Link> and our <Link to='/privacy-policy' target='_blank'>Privacy Policy.</Link></small>
-                                </form>
-                            </> : <>
-                                Sign up is momentarily disabled. Please check back after a while.
+                                        <div className="form-floating mb-3">
+                                            <input type='email' required className={"form-control rounded-3 " + (this.state.input.email_address.hasError() ? 'is-invalid' : '')} id="input_email_address" placeholder="Email Address" name='input_email_address' defaultValue={this.state.input.email_address + ''} />
+                                            <label htmlFor="input_email_address">Email Address</label>
+                                        </div>
+                                        <div className="form-floating mb-3">
+                                            <input type="password" required className={"form-control rounded-3 " + (this.state.input.password.hasError() ? 'is-invalid' : '')} id="input_password" placeholder="Password" name='input_password' defaultValue={this.state.input.password + ''} />
+                                            <label htmlFor="input_password">Password</label>
+                                        </div>
+                                        <div className="form-floating mb-3">
+                                            <input type="password" required className={"form-control rounded-3 " + (this.state.input.password_confirmation.hasError() ? 'is-invalid' : '')} id="input_password_confirmation" placeholder="Password again" name='input_password_confirmation' defaultValue={this.state.input.password_confirmation + ''} />
+                                            <label htmlFor="input_password_confirmation">Password again</label>
+                                        </div>
+                                        <div className="mb-3">
+                                            {this.state.errors.map((error, key) => (
+                                                <div key={key}>• <span style={{ color: 'red' }}>{error}</span></div>
+                                            ))}
+                                        </div><button className="w-100 mb-2 btn btn-lg rounded-3 btn-primary" disabled={this.state.btn_signup_working} type="submit" onClick={this.handleSubmit}>
+                                            {this.state.btn_signup_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <span>Sign up</span>}
+                                        </button>
+                                        <small className="text-muted">By clicking Sign up, you agree to our <Link to='/terms-of-service' target='_blank'>Terms of service</Link> and confirm that you have read our <Link to='/privacy-policy' target='_blank'>Privacy Policy.</Link></small>
+                                    </form>
+                                </> : <>
+                                    Sign up is momentarily disabled. Please check back after a while.
                             </>}
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </this.props.PageWrapper>
     }
 }
 

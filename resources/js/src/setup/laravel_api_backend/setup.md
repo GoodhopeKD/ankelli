@@ -37,7 +37,7 @@ php artisan make:model _Asset -m
 php artisan make:model _Currency -m
 php artisan make:model _PymtMethod -m
 php artisan make:model _City -m
-php artisan make:model _Province -m
+php artisan make:model _Country -m
 
 php artisan make:model _UserGroup -m
 php artisan make:model _UserGroupMembership -m
@@ -119,6 +119,8 @@ In the **`app/Providers/RouteServiceProvider`** file
 Create and modify the controllers
 
 ```properties
+php artisan make:controller API/__AuxController --api
+
 php artisan make:controller API/_UserController --api
 php artisan make:controller API/_SessionController --api
 php artisan make:controller API/_EmailAddressController --api
@@ -136,7 +138,7 @@ php artisan make:controller API/_AssetController --api
 php artisan make:controller API/_CurrencyController --api
 php artisan make:controller API/_PymtMethodController --api
 php artisan make:controller API/_CityController --api
-php artisan make:controller API/_ProvinceController --api
+php artisan make:controller API/_CountryController --api
 
 php artisan make:controller API/_UserGroupController --api
 php artisan make:controller API/_UserGroupMembershipController --api
@@ -189,8 +191,8 @@ php artisan make:resource _PymtMethodResource
 php artisan make:resource _PymtMethodResourceCollection --collection
 php artisan make:resource _CityResource
 php artisan make:resource _CityResourceCollection --collection
-php artisan make:resource _ProvinceResource
-php artisan make:resource _ProvinceResourceCollection --collection
+php artisan make:resource _CountryResource
+php artisan make:resource _CountryResourceCollection --collection
 
 php artisan make:resource _UserGroupResource
 php artisan make:resource _UserGroupResourceCollection --collection

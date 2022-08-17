@@ -25,6 +25,7 @@ export const _PymtMethodRespObj = {
     name: undefined as undefined | null | string,
     slug: undefined as undefined | null | string,
     details_required: undefined as undefined | null | object,
+    hex_color: undefined as undefined | null | string,
     icon: undefined as undefined | null | typeof _FileRespObj,
     _status: undefined as undefined | null | _status_t,
 
@@ -42,6 +43,7 @@ export default class _PymtMethod extends _Wrapper_ implements Omit<typeof _PymtM
     name: string | null = null
     slug: string | null = null
     details_required: object | null = null
+    hex_color: string | null = null
     icon: _File | null = null
     _status: _status_t | null = null
 

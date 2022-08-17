@@ -15,15 +15,15 @@ return new class extends Migration
     {
         Schema::create('__deposit_tokens', function (Blueprint $table) {
             $table->string('token', 16)->primary();
-            $table->string('asset_name', 64)->nullable();
-            $table->foreign('asset_name')
-                    ->references('name')
+            $table->string('asset_code', 64)->nullable();
+            $table->foreign('asset_code')
+                    ->references('code')
                     ->on('__assets')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->unsignedDecimal('asset_value', $precision = 20, $scale = 10);
-            $table->string('purchase_currency', 3);
-            $table->unsignedBigInteger('purchase_amount');
+            $table->string('asset_value', 32); // unsignedDecimal
+            $table->string('currency_code', 3);
+            $table->unsignedBigInteger('currency_amount');
             
             $table->string('creator_username', 64);
             $table->foreign('creator_username')
@@ -32,12 +32,12 @@ return new class extends Migration
                     ->onUpdate('cascade')
                     ->onDelete('cascade');
             $table->timestamp('created_datetime')->useCurrent();
-            $table->string('user_username', 64);
+            $table->string('user_username', 64)->nullable();
             $table->foreign('user_username')
                     ->references('username')
                     ->on('__users')
                     ->onUpdate('cascade')
-                    ->onDelete('cascade');
+                    ->onDelete('set null');
             $table->timestamp('used_datetime')->nullable();
         });
     }

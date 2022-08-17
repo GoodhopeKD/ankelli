@@ -5,6 +5,13 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Models\_AssetAccount;
+use App\Models\_PrefItem;
+
+use App\Models\_Transaction;
+use App\Http\Resources\_TransactionResource;
+use App\Http\Resources\_TransactionResourceCollection;
+
 class _TransactionController extends Controller
 {
     /**
@@ -25,39 +32,115 @@ class _TransactionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated_data = $request->validate([
+            'note' => ['nullable', 'string'],
+            'source_user_username' => ['sometimes', 'exists:__users,username', 'string'],
+            'destination_user_username' => ['sometimes', 'exists:__users,username', 'string'],
+            'asset_code' => ['required', 'exists:__assets,code', 'string'],
+            'source_account_transfer_value' => ['required', 'numeric'],
+            'platform_charge_asset_factor' => ['sometimes', 'numeric'],
+        ]);
+
+        // Create uid
+        $validated_data['ref_code'] = random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
+        $validated_data['session_token'] = session()->get('active_session_token', isset(request()->segments()[env('API_URL')?0:1]) ? request()->segments()[env('API_URL')?0:1] : null );
+        $validated_data['action_user_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $validated_data['transfer_result'] = [];
+
+        $platform_charge_asset_factor = $validated_data['platform_charge_asset_factor'] ?? (float)_PrefItem::firstWhere('key_slug', 'platform_charge_asset_factor')->value;
+        $validated_data['platform_charge_asset_value'] = (!isset($validated_data['source_user_username']) || $validated_data['source_user_username'] == 'ankelli' || $validated_data['destination_user_username'] == 'ankelli') ? 0 : $validated_data['source_account_transfer_value'] * $platform_charge_asset_factor / ( 1 + $platform_charge_asset_factor );
+
+        $saving_platform_charge_as_transaction = false;
+
+        if (isset($validated_data['source_user_username'])){
+            if ( isset($validated_data['destination_user_username']) && $validated_data['source_user_username'] == $validated_data['destination_user_username']){
+                return abort(422, 'Cannot transact to self.');
+            }
+            //$source_user = _User::firstWhere('username', $validated_data['source_user_username']);
+            $source_user_asset_account = _AssetAccount::firstWhere([
+                'user_username' => $validated_data['source_user_username'], 
+                'asset_code' => $validated_data['asset_code']
+            ]);
+
+            if ( $source_user_asset_account->_status == 'frozen' ){ return abort(422, 'Selected asset is frozen.'); }
+            if ( !$source_user_asset_account ){ return abort(422, 'Current ' . $validated_data['asset_code'] . ' balance insufficient for transaction.'); }
+            
+            $old_asset_value = $source_user_asset_account->asset_value;
+            $new_asset_value = $old_asset_value - $validated_data['source_account_transfer_value'];
+
+            if ( $new_asset_value < 0 ){ return abort(422, 'Current ' . $validated_data['asset_code'] . ' balance insufficient for transaction.'); }
+
+            if ( $validated_data['platform_charge_asset_value'] ){
+                $saving_platform_charge_as_transaction = false;
+                if ($saving_platform_charge_as_transaction){
+                    (new _TransactionController)->store( new Request([
+                        'note' => 'Transaction charges.',
+                        'source_user_username' => $validated_data['source_user_username'],
+                        'destination_user_username' => 'ankelli',
+                        'asset_code' => $validated_data['asset_code'],
+                        'source_account_transfer_value' => $validated_data['platform_charge_asset_value'],
+                    ]));
+                } else {
+                    $ankelli_asset_account = _AssetAccount::firstOrCreate([
+                        'user_username' => 'ankelli', 
+                        'asset_code' => $validated_data['asset_code']
+                    ]);
+                    array_push( $validated_data['transfer_result'], [
+                        'user_username' => 'ankelli',
+                        'old_asset_value' => $ankelli_asset_account->asset_value,
+                        'new_asset_value' => $ankelli_asset_account->asset_value + $validated_data['platform_charge_asset_value'],
+                    ]);
+                    (new _AssetAccountController)->update( new Request([
+                        'asset_value' => $ankelli_asset_account->asset_value + $validated_data['platform_charge_asset_value'],
+                    ]), $ankelli_asset_account->id );
+                }
+            }
+
+            array_push( $validated_data['transfer_result'], [
+                'user_username' => $validated_data['source_user_username'],
+                'old_asset_value' => $old_asset_value,
+                'new_asset_value' => $new_asset_value,
+            ]);
+
+            (new _AssetAccountController)->update( new Request([
+                'asset_value' => $new_asset_value
+            ]), $source_user_asset_account->id );
+        }
+
+        if (isset($validated_data['destination_user_username'])){
+            //$destination_user = _User::where('username', $validated_data['destination_user_username']);
+            $destination_user_asset_account = _AssetAccount::firstOrCreate([
+                'user_username' => $validated_data['destination_user_username'], 
+                'asset_code' => $validated_data['asset_code']
+            ]);
+
+            $old_asset_value = $destination_user_asset_account->asset_value;
+            $validated_data['destination_account_transfer_value'] = $validated_data['source_account_transfer_value'] - $validated_data['platform_charge_asset_value'];
+            $new_asset_value = $old_asset_value + $validated_data['destination_account_transfer_value'];
+
+            array_push( $validated_data['transfer_result'], [
+                'user_username' => $validated_data['destination_user_username'],
+                'old_asset_value' => $old_asset_value,
+                'new_asset_value' => $new_asset_value,
+            ]);
+
+            (new _AssetAccountController)->update( new Request([
+                'asset_value' => $new_asset_value
+            ]), $destination_user_asset_account->id );
+        }
+
+        $element = _Transaction::create($validated_data);
+
+        return response()->json( new _TransactionResource( $element ) );
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  string $ref_code
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+    public function show(string $ref_code)
     {
         //
     }

@@ -20,7 +20,7 @@ type get_collection_params = {
 export const _AssetAccountRespObj = {
     id: undefined as undefined | null | number,
     user_username: undefined as undefined | null | string,
-    asset_name: undefined as undefined | null | string,
+    asset_code: undefined as undefined | null | string,
     asset_value: undefined as undefined | null | number,
     _status: undefined as undefined | null | _status_t,
 
@@ -34,7 +34,7 @@ export const _AssetAccountRespObj = {
 export default class _AssetAccount extends _Wrapper_ implements Omit<typeof _AssetAccountRespObj, casts_t> {
     id: number | null = null
     user_username: string | null = null
-    asset_name: string | null = null
+    asset_code: string | null = null
     asset_value: number | null = null
     _status: _status_t | null = null
 

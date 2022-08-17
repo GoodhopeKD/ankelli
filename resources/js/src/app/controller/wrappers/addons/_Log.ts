@@ -17,9 +17,9 @@ type get_collection_params = {
 
 /* Result Objects */
 type entry_update_result_t = {
-    column_name : string,
-    initial_value : string,
-    final_value : string,
+    field_name : string,
+    old_value : string,
+    new_value : string,
 }[]
 
 /* 

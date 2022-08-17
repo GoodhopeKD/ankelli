@@ -33,8 +33,6 @@ class _Session extends Model
      * @var array
      */
     protected $casts = [
-        //'created_datetime' => 'datetime',
-        //'updated_datetime' => 'datetime',
         'signin_datetime' => 'datetime',
         'signout_datetime' => 'datetime',
     ];

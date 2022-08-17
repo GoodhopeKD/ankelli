@@ -16,8 +16,17 @@ class _AssetAccount extends Model
      */
     protected $fillable = [
         'user_username',
-        'asset_name',
+        'asset_code',
         'asset_value',
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'asset_value' => 'float',
     ];
 
     /**

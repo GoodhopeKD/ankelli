@@ -17,8 +17,18 @@ class _Asset extends Model
     protected $fillable = [
         'name',
         'code',
+        'smallest_display_unit',
         '_status',
         'creator_username',
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'smallest_display_unit' => 'float',
     ];
 
     /**

@@ -8,7 +8,6 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use Stevebauman\Location\Facades\Location;
 
@@ -58,10 +57,10 @@ class _LogController extends Controller
                 //$encrypt = Crypt::encryptString;
                 $encrypt = function ($in) { return $in; };
                 $validated_data['request_location'] = $encrypt( json_encode( Location::get() ? (array)(Location::get()) : [ 'ip' => request()->ip() ] ));
-                $validated_data['utc_offset'] = Session::get('utc_offset');
+                $validated_data['utc_offset'] = session()->get('utc_offset');
             }
-            $validated_data['session_token'] = Session::get('active_session_token');
-            $validated_data['action_user_username'] = Session::get('api_auth_user_username');
+            $validated_data['session_token'] = session()->get('active_session_token', isset(request()->segments()[env('API_URL')?0:1]) ? request()->segments()[env('API_URL')?0:1] : null );
+            $validated_data['action_user_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
 
             _Log::create($validated_data);
         }
@@ -73,7 +72,7 @@ class _LogController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(int $id)
     {
         //
     }

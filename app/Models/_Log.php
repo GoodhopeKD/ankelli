@@ -37,7 +37,6 @@ class _Log extends Model
      * @var array
      */
     protected $casts = [
-        //'action_datetime' => 'datetime',
         'entry_update_result' => 'array',
     ];
 }

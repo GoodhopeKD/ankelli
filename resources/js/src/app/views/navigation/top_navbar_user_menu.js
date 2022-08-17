@@ -9,7 +9,7 @@ export const top_navbar_user_menu = {
         {
             title: 'Notifications',
             path: '/user_notifications',
-            element: (props) => <UserNotificationsListViewScreen />,
+            element: (props) => <UserNotificationsListViewScreen {...props} />,
         },
         {
             title: 'My Account',

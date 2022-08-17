@@ -14,36 +14,37 @@ export const top_navbar_menu = {
             title: 'P2P',
             path: '/offers',
             path_alias: '/',
-            element: (props) => <OffersListViewScreen />,
+            element: (props) => <OffersListViewScreen {...props} />,
         },
         {
             title: 'View Offer',
-            path: '/offers/:offer_id',
-            element: (props) => <OffersSingleViewScreen />,
+            path: '/offers/:ref_code',
+            path_alias: '/offers/:ref_code/:currency_amount',
+            element: (props) => <OffersSingleViewScreen {...props} />,
             show_in_menu: false
         },
         {
             title: 'Create an Offer',
             path: '/offers/new',
-            element: (props) => <OffersCreateNewScreen />,
+            element: (props) => <OffersCreateNewScreen {...props} />,
         },
         {
             title: 'Trades',
             path: '/trades',
-            element: (props) => <TradesListViewScreen />,
+            element: (props) => <TradesListViewScreen {...props} />,
             show_when_auth_state_is: true,
         },
         {
             title: 'View Trade',
-            path: '/trades/:trade_id',
-            element: (props) => <TradesSingleViewScreen />,
+            path: '/trades/:ref_code',
+            element: (props) => <TradesSingleViewScreen {...props} />,
             show_when_auth_state_is: true,
             show_in_menu: false
         },
         {
             title: 'Learn',
             path: '/learn',
-            element: (props) => <LearnScreen />,
+            element: (props) => <LearnScreen {...props} />,
         },
     ]
 }

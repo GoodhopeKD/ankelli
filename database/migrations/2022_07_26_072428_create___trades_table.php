@@ -15,7 +15,13 @@ return new class extends Migration
     {
         Schema::create('__trades', function (Blueprint $table) {
             $table->string('ref_code', 16)->primary();
-            $table->string('country', 32);
+            $table->string('country_name', 32)->nullable();
+            $table->foreign('country_name')
+                    ->references('name')
+                    ->on('__countries')
+                    ->onUpdate('cascade')
+                    ->onDelete('set null');
+            $table->string('location', 32);
             
             $table->enum('was_offer_to', ['buy', 'sell']);
 
@@ -31,11 +37,12 @@ return new class extends Migration
                     ->on('__currencies')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->unsignedDecimal('asset_value', $precision = 20, $scale = 10);
-            $table->unsignedBigInteger('purchase_amount');
+            $table->string('asset_value', 32); // unsignedDecimal
+            $table->string('platform_charge_asset_factor', 32); // unsignedDecimal
+            $table->unsignedBigInteger('currency_amount');
 
-            $table->unsignedDecimal('asset_sell_price', $precision = 20, $scale = 10)->nullable();
-            $table->unsignedDecimal('asset_purchase_price', $precision = 20, $scale = 10)->nullable();
+            $table->string('asset_sell_price', 32)->nullable(); // unsignedDecimal
+            $table->string('asset_purchase_price', 32)->nullable(); // unsignedDecimal
 
             $table->string('pymt_method_slug', 64)->nullable();
             $table->foreign('pymt_method_slug')

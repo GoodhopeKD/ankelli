@@ -7,6 +7,7 @@ import { connectivityBoot, _User, store } from 'app/controller'
 import SplashScreen from 'app/views/screens/Splash.screen'
 import ConnectionFailedScreen from 'app/views/screens/ConnectionFailed.screen'
 import TopNavbar from 'app/views/components/TopNavbar'
+import Footer from 'app/views/components/Footer'
 
 // stack not in menues
 import { virtual_menu } from 'app/views/navigation/virtual_menu'
@@ -39,10 +40,14 @@ let tried = false
 function Navigator(props) {
 
     if (!tried) {
-        if (window.sysconfig_params_data){
+        //return <SplashScreen />;
+    }
+
+    if (!tried) {
+        if (window.sysconfig_params_data) {
             store.dispatch({ type: 'SYSCONFIG_PARAMS_DATA_UPDATE', sysconfig_params_data: window.sysconfig_params_data })
         }
-        if (window.datalists_data){
+        if (window.datalists_data) {
             store.dispatch({ type: 'DATALISTS_DATA_UPDATE', datalists_data: window.datalists_data })
         }
         tried = true
@@ -151,11 +156,11 @@ function Navigator(props) {
         }
     }
 
-    const Wrapper = (props) => {
+    const PageWrapper = (props) => {
 
         useEffect(() => {
-            document.title = (props.item.path == '/') ? 'Ankelli - Home' : props.item.title + " - Ankelli" || "";
-        }, [props.item.title]);
+            document.title = (props.path == '/') ? 'Ankelli - Home' : props.title + " - Ankelli";
+        }, [props.title]);
 
         return <React.Fragment>
             <TopNavbar
@@ -166,7 +171,12 @@ function Navigator(props) {
                 top_navbar_auth_menu={nav_menus_filtered.find(menu => menu.slug === 'virtual_menu')}
                 top_navbar_user_menu={nav_menus_filtered.find(menu => menu.slug === 'top_navbar_user_menu')}
             />
-            <props.item.element nav_menus={nav_menus_filtered} title={props.item.title} />
+            <div className="bg-white shadow" style={{ borderBottomColor: 'black', borderBottomWidth: 1 }}>
+                <div className="b-example-divider" style={{ height: 105 }}></div>
+                {props.children}
+            </div>
+            {/*<div style={{ minHeight: 379, zIndex: -2 }} />*/}
+            <Footer footer_menu={nav_menus_filtered.find(menu => menu.slug === 'footer_menu')} />
         </React.Fragment>
     }
 
@@ -180,13 +190,14 @@ function Navigator(props) {
         if (curr_path_exists && !curr_auth_state) {
             return <Navigate to={'/signin?rdr=' + curr_path} />
         }
-        return <Wrapper item={nav_list.find(rt => rt.path === (curr_path_exists ? '/403' : '/404'))} />
+        const item = nav_list.find(rt => rt.path === (curr_path_exists ? '/403' : '/404'))
+        return <item.element PageWrapper={PageWrapper} title={item.title} path={item.path} />
     }
 
     return (
         <BrowserRouter basename={'/'}>
             <Routes>
-                {nav_list_filtered.map((item, i) => <Route key={i} path={item.path} element={<Wrapper item={item} />} />)}
+                {nav_list_filtered.map((item, i) => <Route key={i} path={item.path} element={<item.element PageWrapper={PageWrapper} nav_menus={nav_menus_filtered} title={item.title} path={item.path} />} />)}
                 <Route path='*' element={<NoMatch />} />
             </Routes>
         </BrowserRouter>

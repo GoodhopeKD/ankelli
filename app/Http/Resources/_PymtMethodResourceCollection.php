@@ -21,6 +21,7 @@ class _PymtMethodResourceCollection extends ResourceCollection
                     'name' => $_this->name,
                     'slug' => $_this->slug,
                     'details_required' => $_this->details_required,
+                    'hex_color' => $_this->hex_color,
                     'icon' => $_this->icon_f(),
                     '_status' => $_this->_status,
                     

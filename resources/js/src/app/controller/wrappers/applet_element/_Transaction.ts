@@ -17,8 +17,8 @@ type get_collection_params = {
 /* Result Objects */
 type transfer_result_t = {
     user_username : string,
-    initial_value : number,
-    final_value : number,
+    old_asset_value : number,
+    new_asset_value : number,
 }[]
 
 /* 
@@ -30,8 +30,10 @@ export const _TransactionRespObj = {
     note: undefined as undefined | null | string,
     source_user_username: undefined as undefined | null | string,
     destination_user_username: undefined as undefined | null | string,
-    asset_name: undefined as undefined | null | string,
-    transfer_value: undefined as undefined | null | number,
+    asset_code: undefined as undefined | null | string,
+    source_account_transfer_value: undefined as undefined | null | number,
+    destination_account_transfer_value: undefined as undefined | null | number,
+    platform_charge_asset_value: undefined as undefined | null | number,
     transfer_result: undefined as undefined | null | transfer_result_t,
     transfer_datetime: undefined as undefined | null | string,
 }
@@ -45,8 +47,10 @@ export default class _Transaction extends _Wrapper_ implements Omit<typeof _Tran
     note: string| null = null
     source_user_username: string | null = null
     destination_user_username: string | null = null
-    asset_name: string | null = null
-    transfer_value: number | null = null
+    asset_code: string | null = null
+    source_account_transfer_value: number | null = null
+    destination_account_transfer_value: number | null = null
+    platform_charge_asset_value: number | null = null
     transfer_result: transfer_result_t | null = null
     transfer_datetime: _DateTime | null = null
 

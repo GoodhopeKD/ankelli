@@ -21,6 +21,7 @@ export const _AssetRespObj = {
     id: undefined as undefined | null | number,
     name: undefined as undefined | null | string,
     code: undefined as undefined | null | string,
+    smallest_display_unit: undefined as undefined | null | number,
     _status: undefined as undefined | null | _status_t,
 
     creator_username: undefined as undefined | null | string,
@@ -35,6 +36,7 @@ export default class _Asset extends _Wrapper_ implements Omit<typeof _AssetRespO
     id: number | null = null
     name: string | null = null
     code: string | null = null
+    smallest_display_unit: number | null = null
     _status: _status_t | null = null
 
     creator_username: string | null = null

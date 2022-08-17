@@ -29,7 +29,6 @@ class _Notification extends Model
      * @var array
      */
     protected $casts = [
-        //'created_datetime' => 'datetime',
         'content' => 'array',
         'read_datetime' => 'datetime',
     ];

@@ -24,6 +24,7 @@ class _PymtMethod extends Model
         'name',
         'slug',
         'details_required',
+        'hex_color',
         '_status',
         'creator_username',
     ];
@@ -35,8 +36,6 @@ class _PymtMethod extends Model
      */
     protected $casts = [
         'details_required' => 'array',
-        //'created_datetime' => 'datetime',
-        //'updated_datetime' => 'datetime',
     ];
 
     /**

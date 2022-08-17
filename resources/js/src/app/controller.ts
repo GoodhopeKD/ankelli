@@ -11,14 +11,14 @@ import _FeedbackReport, { _FeedbackReportRespObj } from 'app/controller/wrappers
 import _Message, { _MessageRespObj } from 'app/controller/wrappers/addons/_Message'
 import _Post, { _PostRespObj } from 'app/controller/wrappers/applet_element/_Post'
 import _Offer, { _OfferRespObj } from 'app/controller/wrappers/applet_element/_Offer'
+import _Trade, { _TradeRespObj } from 'app/controller/wrappers/applet_element/_Trade'
 // auxilliary
 import _Input from 'app/controller/wrappers/auxilliary/_Input'
 import _Date from 'app/controller/wrappers/auxilliary/_Date'
 import _DateTime from 'app/controller/wrappers/auxilliary/_DateTime'
 // datalist_element
 import _Currency, { _CurrencyRespObj } from 'app/controller/wrappers/datalist_element/_Currency'
-import _City, { _CityRespObj } from 'app/controller/wrappers/datalist_element/_City'
-import _Province, { _ProvinceRespObj } from 'app/controller/wrappers/datalist_element/_Province'
+import _Country, { _CountryRespObj } from 'app/controller/wrappers/datalist_element/_Country'
 // addons
 import _PhoneNo, { _PhoneNoRespObj } from 'app/controller/wrappers/addons/_PhoneNo'
 import _File, { _FileRespObj } from 'app/controller/wrappers/addons/_File'
@@ -53,12 +53,12 @@ export {
     _Message, _MessageRespObj,
     _Post, _PostRespObj,
     _Offer, _OfferRespObj,
+    _Trade, _TradeRespObj,
     // auxilliary
     _Input, _Date, _DateTime,
     // datalist_element
     _Currency, _CurrencyRespObj,
-    _City, _CityRespObj,
-    _Province, _ProvinceRespObj,
+    _Country, _CountryRespObj,
     // addons
     _PhoneNo, _PhoneNoRespObj,
     _File, _FileRespObj,

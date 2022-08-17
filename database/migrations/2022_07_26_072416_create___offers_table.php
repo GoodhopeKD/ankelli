@@ -15,7 +15,12 @@ return new class extends Migration
     {
         Schema::create('__offers', function (Blueprint $table) {
             $table->string('ref_code', 16)->primary();
-            $table->string('country', 32);
+            $table->string('country_name', 32)->nullable();
+            $table->foreign('country_name')
+                    ->references('name')
+                    ->on('__countries')
+                    ->onUpdate('cascade')
+                    ->onDelete('set null');
             $table->string('location', 32);
             
             $table->enum('offer_to', ['buy', 'sell']);
@@ -33,13 +38,15 @@ return new class extends Migration
                     ->onUpdate('cascade')
                     ->onDelete('set null');
 
-            $table->unsignedDecimal('asset_sell_price', $precision = 20, $scale = 10)->nullable();
-            $table->unsignedDecimal('min_sell_value', $precision = 20, $scale = 10)->nullable();
-            $table->unsignedDecimal('max_sell_value', $precision = 20, $scale = 10)->nullable();
-
-            $table->unsignedDecimal('asset_purchase_price', $precision = 20, $scale = 10)->nullable();
+            // for offer_to = buy
+            $table->string('asset_purchase_price', 32)->nullable(); // unsignedDecimal
             $table->unsignedBigInteger('min_purchase_amount')->nullable();
             $table->unsignedBigInteger('max_purchase_amount')->nullable();
+
+            // for offer_to = sell
+            $table->string('asset_sell_price', 32)->nullable(); // unsignedDecimal
+            $table->string('min_sell_value', 32)->nullable(); // unsignedDecimal
+            $table->string('max_sell_value', 32)->nullable(); // unsignedDecimal
 
             $table->string('pymt_method_slug', 64)->nullable();
             $table->foreign('pymt_method_slug')
@@ -47,8 +54,8 @@ return new class extends Migration
                     ->on('__pymt_methods')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->text('pymt_method_details');
-            $table->string('note', 64);
+            $table->text('pymt_method_details')->nullable();
+            $table->string('note', 64)->nullable();
             $table->enum('_status', ['online', 'offline'])->default('online');
 
             $table->string('creator_username', 64)->nullable();
@@ -61,119 +68,6 @@ return new class extends Migration
             $table->timestamp('updated_datetime')->nullable()->useCurrentOnUpdate();
             $table->softDeletes('deleted_datetime');
         });
-
-        // Offers to buy
-        DB::table('__offers')->insert([
-            [
-                'ref_code' => '001',
-                'country' => 'Zimbabwe',
-                'location' => 'Harare CBD',
-                'offer_to' => 'buy',
-                'asset_code' => 'USDT',
-                'currency_code' => 'USD',
-                'asset_purchase_price' => 0.95,
-                'min_purchase_amount' => 100,
-                'max_purchase_amount' => 500,
-                'pymt_method_slug' => 'cash_in_person',
-                'pymt_method_details' => json_encode([
-                    'address' => 'Kingstones Book Shop, Cnr First st, R.Mugabe.',
-                    'phone_number' => '+263776543256'
-                ]),
-                'note' => 'Quick deal',
-                'creator_username' => 'popo',
-            ],
-            [
-                'ref_code' => '002',
-                'country' => 'Zimbabwe',
-                'location' => 'Byo CBD',
-                'offer_to' => 'buy',
-                'asset_code' => 'USDT',
-                'currency_code' => 'USD',
-                'asset_purchase_price' => 0.96,
-                'min_purchase_amount' => 100,
-                'max_purchase_amount' => 500,
-                'pymt_method_slug' => 'stanbic_bank',
-                'pymt_method_details' => json_encode([
-                    'account_holder_name' => 'Sekuru Gudo',
-                    'account_number' => '9146898775793'
-                ]),
-                'note' => 'Quick deal',
-                'creator_username' => 'gudo',
-            ],
-            [
-                'ref_code' => '003',
-                'country' => 'Algeria',
-                'location' => 'Oran',
-                'offer_to' => 'buy',
-                'asset_code' => 'USDT',
-                'currency_code' => 'DZD',
-                'asset_purchase_price' => 175,
-                'min_purchase_amount' => 10000,
-                'max_purchase_amount' => 20000,
-                'pymt_method_slug' => 'algerie_poste',
-                'pymt_method_details' => json_encode([
-                    'account_holder_name' => 'Nassim',
-                    'account_number' => '257698097',
-                    'account_key' => '55',
-                ]),
-                'note' => 'Quick deal',
-                'creator_username' => 'nassim',
-            ],
-            [
-                'ref_code' => '004',
-                'country' => 'United Kingdom',
-                'location' => 'Manchester',
-                'offer_to' => 'buy',
-                'asset_code' => 'USDT',
-                'currency_code' => 'EUR',
-                'asset_purchase_price' => 0.71,
-                'min_purchase_amount' => 200,
-                'max_purchase_amount' => 1000,
-                'pymt_method_slug' => 'cash_in_person',
-                'pymt_method_details' => json_encode([
-                    'address' => '10 First Street',
-                    'phone_number' => '+44788654789',
-                ]),
-                'note' => 'Quick deal',
-                'creator_username' => 'gudo',
-            ],
-            [
-                'ref_code' => '005',
-                'country' => 'South Africa',
-                'location' => 'Capetown',
-                'offer_to' => 'buy',
-                'asset_code' => 'USDT',
-                'currency_code' => 'ZAR',
-                'asset_purchase_price' => 14,
-                'min_purchase_amount' => 500,
-                'max_purchase_amount' => 2000,
-                'pymt_method_slug' => 'fnb_bank',
-                'pymt_method_details' => json_encode([
-                    'account_holder_name' => 'Momoterai',
-                    'account_number' => '257698097',
-                ]),
-                'note' => 'Quick deal',
-                'creator_username' => 'momo',
-            ],
-            [
-                'ref_code' => '006',
-                'country' => 'Zimbabwe',
-                'location' => 'Gweru',
-                'offer_to' => 'buy',
-                'asset_code' => 'USDT',
-                'currency_code' => 'USD',
-                'asset_purchase_price' => 0.94,
-                'min_purchase_amount' => 100,
-                'max_purchase_amount' => 500,
-                'pymt_method_slug' => 'mukuru',
-                'pymt_method_details' => json_encode([
-                    'name' => 'Momo',
-                    'phone_number' => '+263776587536'
-                ]),
-                'note' => 'Quick deal',
-                'creator_username' => 'momo',
-            ],
-        ]);
     }
 
     /**

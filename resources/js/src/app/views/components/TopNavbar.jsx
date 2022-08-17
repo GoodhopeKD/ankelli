@@ -8,9 +8,9 @@ export default class TopNavbar extends React.Component {
 
     render() {
         return <>
-            <div className="container-fluid fixed-top bg-white">
+            <div className="container-fluid fixed-top bg-white shadow" style={{ borderBottomColor: 'black', borderBottomWidth: 1 }}>
                 <div className="container">
-                    <header className="d-flex flex-wrap py-3 mb-4 border-bottom align-items-center" >
+                    <header className="d-flex flex-wrap py-3 align-items-center" >
                         <div className="col-md-3">
                             <Link to={'/'} className={'d-flex mb-2 mb-md-0 text-dark text-decoration-none'} >
                                 <img src={Logo} alt="logo" width="32" height="32" className="rounded-circle" />
@@ -57,8 +57,6 @@ export default class TopNavbar extends React.Component {
                     </header>
                 </div>
             </div>
-
-            <div className="b-example-divider"></div>
         </>
     }
 }

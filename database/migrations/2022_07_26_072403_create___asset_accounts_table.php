@@ -27,44 +27,13 @@ return new class extends Migration
                     ->on('__assets')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->unsignedDecimal('asset_value', $precision = 20, $scale = 10);
+            $table->string('asset_value', 32)->default(0); // unsignedDecimal
             $table->unique(['user_username', 'asset_code']);
             $table->enum('_status', ['active', 'frozen'])->default('active');
 
             $table->timestamp('created_datetime')->useCurrent();
             $table->timestamp('updated_datetime')->nullable()->useCurrentOnUpdate();
         });
-
-        DB::table('__asset_accounts')->insert([
-            [
-                'user_username' => 'ankelli',
-                'asset_code' => 'USDT',
-                'asset_value' => 2500,
-            ],
-        ]);
-
-        DB::table('__asset_accounts')->insert([
-            [
-                'user_username' => 'popo',
-                'asset_code' => 'USDT',
-                'asset_value' => 347.3367778,
-            ],
-            [
-                'user_username' => 'momo',
-                'asset_code' => 'USDT',
-                'asset_value' => 22.8658,
-            ],
-            [
-                'user_username' => 'gudo',
-                'asset_code' => 'USDT',
-                'asset_value' => 478.9897,
-            ],
-            [
-                'user_username' => 'nassim',
-                'asset_code' => 'USDT',
-                'asset_value' => 450.755389,
-            ],
-        ]);
     }
 
     /**

@@ -19,18 +19,23 @@ if (!File::exists( public_path('storage') )){
 }
 
 // Default Route
-Route::post('','App\Http\Controllers\API\__AuxController@default_route')->name('default_route');
+Route::post('', 'App\Http\Controllers\API\__AuxController@default_route')->name('default_route');
 
 Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_token}' ], function() {
+
+    Route::post('factory_data', 'App\Http\Controllers\API\__AuxController@factory_data')->name('factory_data');
+    Route::post('test_data', 'App\Http\Controllers\API\__AuxController@test_data')->name('test_data');
+    Route::post('test', '_TransactionController@store');
     
     // User authentication routes
     Route::post('users/signup', '_UserController@store')->name('users.signup');
     Route::post('users/signin', '_UserController@signin')->name('users.signin');
 
     // User recovery routes
-    Route::post('users/recovery/generate_password_reset_token', '_VerificationTokenController@store')->name('users.generate_password_reset_token');
-    Route::post('users/recovery/confirm_password_reset_token', '_VerificationTokenController@update')->name('users.confirm_password_reset_token');
+    Route::post('users/recovery/generate_password_reset_token', '_VerifTokenController@store')->name('users.generate_password_reset_token');
+    Route::post('users/recovery/confirm_password_reset_token', '_VerifTokenController@update')->name('users.confirm_password_reset_token');
     Route::post('users/reset_lost_password', '_UserController@reset_password')->name('users.reset_password');
+    Route::post('users/recover_lost_username', '_UserController@recover_username')->name('users.recover_username');
 
     Route::group(['middleware' => 'auth:api'], function () {
 
@@ -38,7 +43,7 @@ Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_
         Route::post('users/signout', '_UserController@signout')->name('users.signout');
 
         // User modification and deletion routes
-        Route::apiResource('users', '_UserController')->only(['update'])->parameter('users', 'uid');
+        Route::apiResource('users', '_UserController')->only(['update', 'index'])->parameter('users', 'uid');
 
         // User extension management routes
         Route::post('users/{uid}/admin_extension', '_AdminExtensionController@store')->name('users.add_admin_extension');
@@ -55,37 +60,38 @@ Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_
     });
 
     // Auth:null accessible routes
+    Route::get('availability_check/{check_param_name}/{check_param_value}', '__AuxController@availability_check')->name('availability_check');
     Route::get('sysconfig_params', '__AuxController@sysconfig_params')->name('sysconfig_params');
     Route::get('datalists', '__AuxController@datalists')->name('datalists');
+
+    Route::apiResource('datalists/assets', '_AssetController')->only(['index'])->parameter('assets', 'id');
+    Route::apiResource('datalists/countries', '_CountryController')->only(['index'])->parameter('countries', 'id');
     Route::apiResource('datalists/currencies', '_CurrencyController')->only(['index'])->parameter('currencies', 'id');
-    Route::apiResource('datalists/cities', '_CityController')->only(['index'])->parameter('cities', 'id');
-    Route::apiResource('datalists/listing_categories', '_ListingCategoryController')->only(['show', 'index'])->parameter('listing_categories', 'id');
-    Route::apiResource('offers', '_OfferController')->only(['show', 'index'])->parameter('offers', 'uid');
-    Route::apiResource('events', '_EventController')->only(['show', 'index'])->parameter('events', 'uid');
-    Route::apiResource('stores', '_StoreController')->only(['show', 'index'])->parameter('stores', 'uid');
-    Route::apiResource('users', '_UserController')->only(['show', 'index'])->parameter('users', 'uid');
-    Route::get('availability_check/{check_param_name}/{check_param_value}', '__AuxController@availability_check')->name('availability_check');
+    Route::apiResource('datalists/pymt_methods', '_PymtMethodController')->only(['index'])->parameter('pymt_methods', 'id');
+
+    Route::apiResource('offers', '_OfferController')->only(['show', 'index'])->parameter('offers', 'ref_code');
+    Route::apiResource('users', '_UserController')->only(['show'])->parameter('users', 'uid');
 
     // Auth:true accessible routes
     Route::group(['middleware' => 'auth:api'], function () {
-        Route::apiResource('datalists/cities', '_CityController')->only(['store', 'update', 'destroy'])->parameter('cities', 'id');
-        Route::apiResource('discount_codes', '_DiscountCodeController')->parameter('discount_codes', 'id');
-        Route::apiResource('discount_instances', '_DiscountInstanceController')->parameter('discount_instances', 'id');
-        Route::apiResource('email_addresses', '_EmailAddressController')->only(['store', 'index', 'destroy'])->parameter('email_addresses', 'id');
-        Route::apiResource('feedback_reports', '_FeedbackReportController')->parameter('feedback_reports', 'uid');
-        Route::apiResource('datalists/listing_categories', '_ListingCategoryController')->only(['store', 'update', 'destroy'])->parameter('listing_categories', 'id');
-        Route::apiResource('offers', '_OfferController')->only(['store', 'update', 'destroy'])->parameter('offers', 'uid');
-        Route::apiResource('trades', '_TradeController')->parameter('trades', 'uid');
-        Route::apiResource('phone_nos', '_PhoneNumberController')->parameter('phone_nos', 'id');
-        Route::apiResource('pinnings', '_PinningController')->only(['store', 'update', 'destroy'])->parameter('pinnings', 'id');
-        Route::apiResource('pref_items', '_PrefItemController')->parameter('pref_items', 'id');
-        Route::apiResource('events', '_EventController')->only(['store', 'update', 'destroy'])->parameter('events', 'uid');
         Route::post('files/upload', '_FileController@upload')->name('files.upload');
         Route::apiResource('files', '_FileController')->only(['show', 'update', 'destroy'])->parameter('files', 'id');
-        Route::apiResource('links', '_LinkController')->parameter('links', 'id');
+        Route::apiResource('email_addresses', '_EmailAddressController')->only(['store', 'index', 'destroy'])->parameter('email_addresses', 'id');
+        Route::apiResource('feedback_reports', '_FeedbackReportController')->parameter('feedback_reports', 'uid');
+        Route::apiResource('offers', '_OfferController')->only(['store', 'update', 'destroy'])->parameter('offers', 'ref_code');
+        Route::apiResource('trades', '_TradeController')->parameter('trades', 'ref_code');
+        Route::apiResource('phone_nos', '_PhoneNoController')->parameter('phone_nos', 'id');
+        Route::apiResource('pinnings', '_PinningController')->only(['store', 'update', 'destroy'])->parameter('pinnings', 'id');
+        Route::apiResource('pref_items', '_PrefItemController')->parameter('pref_items', 'id');
         Route::apiResource('logs', '_LogController')->only(['index'])->parameter('logs', 'id');
-        Route::apiResource('notifications', '_NotificationController')->only(['index', 'update', 'destroy'])->parameter('notifications', 'id');
-        Route::apiResource('stores', '_StoreController')->only(['show', 'update', 'destroy'])->parameter('stores', 'uid');
+        Route::apiResource('notifications', '_NotificationController')->only(['index', 'update', 'destroy'])->parameter('notifications', 'token');
+
+        Route::apiResource('systools/exportables', '_ExportableController')->parameter('exportables', 'id');
+        Route::apiResource('systools/reg_tokens', '_RegTokenController')->parameter('reg_tokens', 'token');
+        Route::apiResource('systools/verif_tokens', '_VerifTokenController')->parameter('verif_tokens', 'token');
+
+        Route::apiResource('systools/permissions', '_PermissionController')->parameter('permissions', 'uid');
+        Route::apiResource('systools/permission_instances', '_PermissionInstanceController')->parameter('permission_instances', 'id');
         Route::apiResource('systools/user_groups', '_UserGroupController')->parameter('user_groups', 'uid');
         Route::apiResource('systools/user_group_memberships', '_UserGroupMembershipController')->parameter('user_group_memberships', 'id');
     });

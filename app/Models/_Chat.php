@@ -24,14 +24,14 @@ class _Chat extends Model
     ];
     public $incrementing = false;
     protected $keyType = 'string';
-    
+
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
     protected $casts = [
-        //'created_datetime' => 'datetime',
-        //'updated_datetime' => 'datetime',
+        'participant_one_visible' => 'boolean',
+        'participant_two_visible' => 'boolean',
     ];
 }
