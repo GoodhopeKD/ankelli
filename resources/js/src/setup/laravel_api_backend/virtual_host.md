@@ -2,15 +2,21 @@
 
 ### a) Using one domain or with a few known subdomains
 
-Add the following line to /etc/hosts file
+Add the following line to **`/etc/hosts`** file
+
+On MacOS
 
 ```properties
 nano /etc/hosts
 ```
 
+On Windows
+
+Open File **`C:\Windows\System32\drivers\etc\hosts`**
+
 ```properties
-# ankelli.test/
-127.0.0.1   ankelli.test/ www.ankelli.test/ api.ankelli.test/
+# ankelli.test
+127.0.0.1   ankelli.test www.ankelli.test api.ankelli.test
 ```
 
 ### b) Using wildcard subdomains
@@ -22,7 +28,7 @@ nano /usr/local/etc/dnsmasq.conf
 ```
 
 ```properties
-address=/ankelli.test//127.0.0.1
+address=/ankelli.test/127.0.0.1
 ```
 
 Restart dnsmasq
@@ -49,15 +55,27 @@ EOF
 
 ## 2. Activate virtual hosts in apache
 
-Uncomment the following line in **`/Applications/XAMPP/xamppfiles/etc/httpd.conf`** if not already uncommented
+Uncomment the following line in the **`httpd.conf`** file if not already uncommented
 
 ```properties
 Include etc/extra/httpd-vhosts.conf
 ```
 
+On MacOS
+
+**`/Applications/XAMPP/xamppfiles/etc/httpd.conf`**
+
+On Windows
+
+**`C:\xampp\apache\conf\httpd.conf`**
+
 ## 3. Add the virtual host in apache
 
-Add the following VHost entry to the **`/Applications/XAMPP/xamppfiles/etc/extra/httpd-vhosts.conf`** file
+Add the following VHost entry to the **`httpd-vhosts.conf`** file
+
+On MacOS
+
+**`/Applications/XAMPP/xamppfiles/etc/extra/httpd-vhosts.conf`**
 
 ```properties
 # localhost [must be included as the default named server]
@@ -73,15 +91,35 @@ Add the following VHost entry to the **`/Applications/XAMPP/xamppfiles/etc/extra
 </VirtualHost>
 ```
 
-### a) Simple unsecured
+On Windows
+
+**`C:\xampp\apache\conf\extra\httpd-vhosts.conf`**
 
 ```properties
-# ankelli.test/
+# localhost [must be included as the default named server]
 <VirtualHost *:80>
-	ServerName ankelli.test/
-	ServerAlias www.ankelli.test/ api.ankelli.test/
-	ServerAlias *.ankelli.test/ # If using wildcard subdomains
-	ServerAdmin webmaster@ankelli.test/
+	ServerName localhost
+	DocumentRoot "C:\xampp\htdocs"
+	<Directory "C:\xampp\htdocs">
+		Options Indexes FollowSymLinks MultiViews
+		AllowOverride All
+		Order allow,deny
+		allow from all 
+	</Directory>
+</VirtualHost>
+```
+
+### a) Simple unsecured
+
+On MacOS
+
+```properties
+# ankelli.test
+<VirtualHost *:80>
+	ServerName ankelli.test
+	ServerAlias www.ankelli.test api.ankelli.test
+	ServerAlias *.ankelli.test # If using wildcard subdomains
+	ServerAdmin webmaster@ankelli.test
 	DocumentRoot "/Applications/XAMPP/xamppfiles/htdocs/ankelli/public"
 	<Directory "/Applications/XAMPP/xamppfiles/htdocs/ankelli/public">
 		Options Indexes FollowSymLinks MultiViews
@@ -89,8 +127,29 @@ Add the following VHost entry to the **`/Applications/XAMPP/xamppfiles/etc/extra
 		Order allow,deny
 		allow from all
 	</Directory>
-	ErrorLog "logs/ankelli.test/-error_log"
-	CustomLog "logs/ankelli.test/-access_log" common
+	ErrorLog "logs/ankelli.test-error_log"
+	CustomLog "logs/ankelli.test-access_log" common
+</VirtualHost>
+```
+
+On Windows
+
+```properties
+# ankelli.test
+<VirtualHost *:80>
+	ServerName ankelli.test
+	ServerAlias www.ankelli.test api.ankelli.test
+	ServerAlias *.ankelli.test # If using wildcard subdomains
+	ServerAdmin webmaster@ankelli.test
+	DocumentRoot "C:\xampp\htdocs\ankelli\public"
+	<Directory "C:\xampp\htdocs\ankelli\public">
+		Options Indexes FollowSymLinks MultiViews
+		AllowOverride All
+		Order allow,deny
+		allow from all
+	</Directory>
+	ErrorLog "logs\ankelli.test-error_log"
+	CustomLog "logs\ankelli.test-access_log" common
 </VirtualHost>
 ```
 
@@ -99,22 +158,36 @@ Add the following VHost entry to the **`/Applications/XAMPP/xamppfiles/etc/extra
 
 Install [mkcert](https://github.com/FiloSottile/mkcert) if not already installed
 
-Generate ssl for ankelli.test/ *.ankelli.test/
+```properties
+npm install -g mkcert
+```
+
+Generate ssl for ankelli.test *.ankelli.test
+
+On MacOS
 
 ```properties
 mkdir /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt
-mkcert -cert-file /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/ankelli.test/.pem -key-file /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/ankelli.test/-key.pem ankelli.test/ *.ankelli.test/
+mkcert -cert-file /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/ankelli.test.pem -key-file /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/ankelli.test-key.pem ankelli.test *.ankelli.test
 mkcert -install
 ```
 
-Use different certificates (for domain and subdomain) to avoid redirects
+On Windows
 
 ```properties
-# ankelli.test/
+mkdir C:\xampp\htdocs\ankelli\.crt
+mkcert -cert-file C:\xampp\htdocs\ankelli\.crt\ankelli.test.pem -key-file C:\xampp\htdocs\ankelli\.crt\ankelli.test-key.pem ankelli.test *.ankelli.test
+mkcert -install
+```
+
+On MacOS
+
+```properties
+# ankelli.test
 <VirtualHost *:80 *:443>
-	ServerName ankelli.test/
-	ServerAlias *.ankelli.test/
-	ServerAdmin webmaster@ankelli.test/
+	ServerName ankelli.test
+	ServerAlias *.ankelli.test
+	ServerAdmin webmaster@ankelli.test
 	DocumentRoot "/Applications/XAMPP/xamppfiles/htdocs/ankelli/public"
 	<Directory "/Applications/XAMPP/xamppfiles/htdocs/ankelli/public">
 		Options Indexes FollowSymLinks MultiViews
@@ -122,19 +195,25 @@ Use different certificates (for domain and subdomain) to avoid redirects
 		Order allow,deny
 		allow from all
 	</Directory>
-	ErrorLog "logs/ankelli.test/-error_log"
-	CustomLog "logs/ankelli.test/-access_log" common
+	ErrorLog "logs/ankelli.test-error_log"
+	CustomLog "logs/ankelli.test-access_log" common
 
 	# Site SSL configuration
 	SSLEngine on
-	SSLCertificateKeyFile /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/ankelli.test/-key.pem
-	SSLCertificateFile /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/ankelli.test/.pem
+	SSLCertificateKeyFile /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/ankelli.test-key.pem
+	SSLCertificateFile /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/ankelli.test.pem
 	SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown
 </VirtualHost>
+```
 
+On MacOS
+
+```properties
+# ankelli.test
 <VirtualHost *:80 *:443>
-	ServerName api.ankelli.test/
-	ServerAdmin webmaster@ankelli.test/
+	ServerName ankelli.test
+	ServerAlias *.ankelli.test
+	ServerAdmin webmaster@ankelli.test
 	DocumentRoot "/Applications/XAMPP/xamppfiles/htdocs/ankelli/public"
 	<Directory "/Applications/XAMPP/xamppfiles/htdocs/ankelli/public">
 		Options Indexes FollowSymLinks MultiViews
@@ -142,13 +221,39 @@ Use different certificates (for domain and subdomain) to avoid redirects
 		Order allow,deny
 		allow from all
 	</Directory>
-	ErrorLog "logs/api.ankelli.test/-error_log"
-	CustomLog "logs/api.ankelli.test/-access_log" common
+	ErrorLog "logs/ankelli.test-error_log"
+	CustomLog "logs/ankelli.test-access_log" common
 
-	# App_name SSL configuration
+	# Site SSL configuration
 	SSLEngine on
-	SSLCertificateKeyFile /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/ankelli.test/-key.pem
-	SSLCertificateFile /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/ankelli.test/.pem
+	SSLCertificateKeyFile /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/ankelli.test-key.pem
+	SSLCertificateFile /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/ankelli.test.pem
+	SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown
+</VirtualHost>
+```
+
+On Windows
+
+```properties
+# ankelli.test
+<VirtualHost *:80 *:443>
+	ServerName ankelli.test
+	ServerAlias *.ankelli.test
+	ServerAdmin webmaster@ankelli.test
+	DocumentRoot "C:\xampp\htdocs\ankelli\public"
+	<Directory "C:\xampp\htdocs\ankelli\public">
+		Options Indexes FollowSymLinks MultiViews
+		AllowOverride All
+		Order allow,deny
+		allow from all
+	</Directory>
+	ErrorLog "logs\ankelli.test-error_log"
+	CustomLog "logs\ankelli.test-access_log" common
+
+	# Site SSL configuration
+	SSLEngine on
+	SSLCertificateKeyFile C:\xampp\htdocs\ankelli\.crt\ankelli.test-key.pem
+	SSLCertificateFile C:\xampp\htdocs\ankelli\.crt\ankelli.test.pem
 	SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown
 </VirtualHost>
 ```
