@@ -5,8 +5,17 @@ Array.prototype.move = function (from, to) {
 	return this
 }
 
+String.prototype.capitalize = function () {
+	return this.toLowerCase().split(' ').map(function (i) {
+		if (i.length > 2) {
+			return i.charAt(0).toUpperCase() + i.substr(1);
+		}
+		return i;
+	}).join(' ');
+};
+
 window.ucfirst = function (s) {
-	return s && s.length ? s[0].toUpperCase() + s.slice(1) : ''
+	return s && s.length ? s[0].capitalize() + s.slice(1) : ''
 }
 
 window.currencyAmountString = (amount, currency) => {

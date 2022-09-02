@@ -1,13 +1,131 @@
 import React from "react"
 import { connect } from 'react-redux'
+import _ from 'lodash'
 
 import SideBar from 'app/views/components/SideBar'
 
-import { _User } from 'app/controller'
+import { _User, _Input, _Transaction, _DateTime, _Notification } from 'app/controller'
+import CustomSelect from 'app/views/components/CustomSelect'
+
+class BgTaskHandler { static runInBackground = (fn) => fn() }
 
 class TransactionsListViewScreen extends React.Component {
 
+    working = false
+
+    default_input = {
+        tr_type: undefined,
+        asset_code: undefined,
+    }
+
+    state = {
+        transactions_list_loaded: false,
+        list: [],
+        list_loaded: false,
+        list_full: false,
+        list_refreshing: false,
+        _collecion: { meta: {}, links: {} },
+
+        input: _.cloneDeep(this.default_input),
+        page_select: {
+            page: 1,
+        },
+        per_page: 10
+    };
+
+
+    should_load_items = true
+
+    handleInputChange(field = 'field.deep_field', value, use_raw = false) {
+        const input = this.state.input
+        const fields = field.split('.')
+        const val = use_raw ? value : new _Input(value)
+        if (fields.length === 1) {
+            input[fields] = val
+        } else {
+            input[fields[0]][fields[1]] = val
+        }
+        this.setState({ input }, () => this.should_load_items = true)
+    }
+
+    async universalGetCollection(_Type, indicator_var_name, input = null, page_select = null, per_page = null) {
+        //if (page_select && this.state.list_full) return Promise.resolve();
+        if (!this.should_load_items) {
+            _Notification.flash({ message: 'No filters changed', duration: 2000 })
+            return Promise.resolve();
+        }
+        if (!this.working) {
+            this.working = true
+            this.setState({
+                transactions_list_loaded: false,
+                list: [],
+                list_loaded: false,
+                list_full: false,
+                list_refreshing: false
+            })
+            setTimeout(
+                () => {
+                    _Type.getCollection({ ...input, user_username: this.props.auth_user.username }, page_select, per_page)
+                        .then(({ collection }) => {
+                            if (!collection.data) return Promise.resolve();
+                            let update_object = {
+                                //list: page_select ? this.state.list.concat(collection.data) : collection.data,
+                                list: collection.data,
+                                list_loaded: true,
+                                list_full: collection.meta.current_page === collection.meta.last_page,
+                                _collecion: {
+                                    links: collection.links,
+                                    meta: collection.meta,
+                                }
+                            };
+                            update_object[indicator_var_name] = true;
+                            this.setState(update_object);
+                            this.working = false
+                            this.should_load_items = false
+                            return Promise.resolve();
+                        })
+                        .catch((error) => {
+                            this.working = false
+                            this.should_load_items = false
+                            return Promise.reject(error);
+                        })
+                }, 0
+            );
+        } else {
+            return Promise.resolve();
+        }
+    }
+
+    populateScreenWithItems = async (show_list_refreshing_loader = true) => {
+        this.setState({ list_refreshing: show_list_refreshing_loader });
+        await this.universalGetCollection(_Transaction, 'transactions_list_loaded', JSON.parse(JSON.stringify(this.state.input)), this.state.page_select, this.state.per_page)
+        if (show_list_refreshing_loader) this.setState({ list_refreshing: false })
+    };
+
+    componentDidMount() {
+        const bgTask = () => this.populateScreenWithItems(false)
+        try { BgTaskHandler.runInBackground(() => bgTask()) } catch (e) { bgTask() }
+    }
+
     render() {
+
+        const asset_options = [];
+        Object.keys(this.props.datalists.active_assets).forEach(asset_code => {
+            const asset = this.props.datalists.active_assets[asset_code]
+            asset_options.push({
+                value: asset_code,
+                searchable_text: asset_code + asset.name + asset.description,
+                output_element: () => <>{asset.name}</>
+            })
+        })
+
+        const pagination_pages = [1]
+        if (this.state._collecion.meta.last_page && this.state._collecion.meta.last_page !== 1) {
+            for (let index = 2; index < this.state._collecion.meta.last_page + 1; index++) {
+                pagination_pages.push(index)
+            }
+        }
+
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container-fluid py-3">
                 <div className="row">
@@ -15,8 +133,118 @@ class TransactionsListViewScreen extends React.Component {
                         <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'account_menu')]} />
                     </div>
                     <div className="col-10">
-                        User Transactions Show Here
-                </div>
+
+                        <div className="row">
+                            <div className="col">
+                                <label htmlFor="input_per_page" className="form-label">Items</label>
+                                <select className="form-select" id="input_per_page" value={this.state.per_page} onChange={element => this.setState({ per_page: parseInt(element.target.value) }, () => { this.should_load_items = true; this.populateScreenWithItems() })} >
+                                    {[5, 10, 25, 50, 100].map((per_page, index) => <option key={index} value={per_page} >{per_page}</option>)}
+                                </select>
+                            </div>
+
+                            <div className="col">
+                                <label htmlFor="input_asset_code" className="form-label">Asset</label>
+                                <CustomSelect
+                                    element_id="input_asset_code"
+                                    options={asset_options}
+                                    max_shown_options_count={5}
+                                    selected_option_value={this.state.input.asset_code}
+                                    onChange={asset_code => this.handleInputChange('asset_code', asset_code, true)}
+                                />
+                            </div>
+                            <div className="col">
+                                <label htmlFor="input_tr_type" className="form-label">Type</label>
+                                <select className="form-select" id="input_tr_type" value={this.state.input.tr_type} onChange={rr => this.handleInputChange('tr_type', rr.target.value, true)} >
+                                    <option value="debit">Debit</option>
+                                    <option value="credit" >Credit</option>
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div className="d-flex justify-content-between">
+
+                            <button
+                                onClick={() => { if (this.state.page_select.page !== 1) { this.setState({ page_select: { page: 1 } }, () => { this.should_load_items = true; this.populateScreenWithItems() }) } else { this.populateScreenWithItems() } }}
+                                className="btn btn-outline-danger mt-3"
+                            >
+                                Load transactions
+                            </button>
+                            <button
+                                onClick={() => this.setState({
+                                    input: _.cloneDeep(this.default_input)
+                                }, () => this.should_load_items = true)}
+                                className="btn btn-outline-danger mt-3"
+                            >
+                                Reset Filters
+                            </button>
+                        </div>
+
+                        <hr />
+
+                        {this.state.list_loaded ? (
+                            <div>
+                                <table className="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Ref Code</th>
+                                            <th scope="col">Type</th>
+                                            <th scope="col">Asset Value</th>
+                                            <th scope="col">Note</th>
+                                            <th scope="col">Platform charge</th>
+                                            <th scope="col">Datetime</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {this.state.list.map((transaction, index) => {
+                                            const asset = this.props.datalists.active_assets[transaction.asset_code]
+                                            const debit = transaction.source_user_username == this.props.auth_user.username
+                                            const tr_type = debit ? 'Debit' : 'Credit'
+                                            return <tr key={index} >
+                                                <td className="align-middle">{transaction.ref_code}</td>
+                                                <td className="align-middle">{tr_type}</td>
+                                                <td className="align-middle">{window.assetValueString(transaction.destination_account_transfer_value, asset)}</td>
+                                                <td className="align-middle">{transaction.note}</td>
+                                                <td className="align-middle">{debit ? window.assetValueString(transaction.platform_charge_asset_value, asset) : '-'}</td>
+                                                <td className="align-middle">{window.ucfirst(new _DateTime(transaction.transfer_datetime).prettyDatetime())}</td>
+                                            </tr>
+                                        })}
+                                    </tbody>
+                                </table>
+                                <div className="row" >
+                                    <div className="col">
+                                        <nav aria-label="Standard pagination example">
+                                            <ul className="pagination">
+                                                <li className={"page-item " + (this.state._collecion.meta.current_page == 1 ? 'disabled' : '')}>
+                                                    <a className="page-link" href="#" aria-label="Previous"
+                                                        onClick={() => this.setState({ page_select: { page: 1, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })}
+                                                    >
+                                                        <span aria-hidden="true">«</span>
+                                                    </a>
+                                                </li>
+                                                {pagination_pages.map(page => <li key={page} className={"page-item " + (this.state._collecion.meta.current_page == page ? 'active' : '')}
+                                                    onClick={() => this.setState({ page_select: { page } }, () => { this.should_load_items = true; this.populateScreenWithItems() })}
+                                                ><a className="page-link" href="#">{page}</a></li>
+                                                )}
+
+                                                <li className={"page-item " + (this.state._collecion.meta.current_page == this.state._collecion.meta.last_page ? 'disabled' : '')}>
+                                                    <a className="page-link" href="#" aria-label="Next"
+                                                        onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.last_page, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })}
+                                                    >
+                                                        <span aria-hidden="true">»</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </nav>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div style={{ alignItems: 'center', padding: 40 }} className='d-grid'>
+                                <div className="spinner-grow text-danger" style={{ justifySelf: 'center', width: 50, height: 50 }}></div>
+                            </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </this.props.PageWrapper>
@@ -25,7 +253,8 @@ class TransactionsListViewScreen extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['active_navigation_screens', 'profile_image']) : null,
+        datalists: state.datalists_data,
+        auth_user: state.auth_user_data ? new _User(state.auth_user_data) : null,
     }
 }
 

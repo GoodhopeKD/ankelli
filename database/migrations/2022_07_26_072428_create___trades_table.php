@@ -21,7 +21,7 @@ return new class extends Migration
                     ->on('__countries')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->string('location', 32);
+        	$table->string('location', 32)->nullable();
             
             $table->enum('was_offer_to', ['buy', 'sell']);
 
@@ -41,8 +41,7 @@ return new class extends Migration
             $table->string('platform_charge_asset_factor', 32); // unsignedDecimal
             $table->unsignedBigInteger('currency_amount');
 
-            $table->string('asset_sell_price', 32)->nullable(); // unsignedDecimal
-            $table->string('asset_purchase_price', 32)->nullable(); // unsignedDecimal
+            $table->string('offer_price', 32)->nullable(); // unsignedDecimal
 
             $table->string('pymt_method_slug', 64)->nullable();
             $table->foreign('pymt_method_slug')
@@ -50,7 +49,7 @@ return new class extends Migration
                     ->on('__pymt_methods')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->text('pymt_method_details');
+            $table->text('pymt_details');
             $table->timestamp('pymt_declared_datetime')->nullable();
             $table->timestamp('pymt_confirmed_datetime')->nullable();
             $table->boolean('visible_to_creator')->default(true);

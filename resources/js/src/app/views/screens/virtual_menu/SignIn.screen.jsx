@@ -2,6 +2,8 @@ import React from 'react'
 import { _User, _Input, _Notification } from 'app/controller';
 import { Link } from "react-router-dom";
 
+import withRouter from 'app/views/navigation/withRouter'
+
 const DEBUG = true
 
 const debug_users = {
@@ -17,7 +19,7 @@ const debug_users = {
     },
 }
 
-export default class SignInScreen extends React.Component {
+export default withRouter(class SignInScreen extends React.Component {
 
     state = {
         btn_signin_working: false,
@@ -28,15 +30,21 @@ export default class SignInScreen extends React.Component {
         errors: [],
     };
 
-    handleInputChange(field, value) {
-        let input = this.state.input
-        input[field] = new _Input(value)
+    handleInputChange(field = 'field.deep_field', value, use_raw = false) {
+        const input = this.state.input
+        const fields = field.split('.')
+        const val = use_raw ? value : new _Input(value)
+        if (fields.length === 1) {
+            input[fields] = val
+        } else {
+            input[fields[0]][fields[1]] = val
+        }
         this.setState({ input })
     }
 
     handleSubmit = () => {
-        this.handleInputChange('username', document.getElementById('input_username').value)
-        this.handleInputChange('password', document.getElementById('input_password').value)
+        this.handleInputChange('username', document.getElementById('input_username').value, true)
+        this.handleInputChange('password', document.getElementById('input_password').value, true)
         this.setState({ btn_signin_working: true })
 
         const btn_signin_working = false
@@ -72,7 +80,7 @@ export default class SignInScreen extends React.Component {
                                 <h2 className="fw-bold mb-0">Sign in</h2>
                             </div>
                             <div className="modal-body p-4 pt-0">
-                                <form className="" onSubmit={e => e.preventDefault()}>
+                                <form className="" onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
                                     <div className="form-floating mb-3">
                                         <input type='text' required className={"form-control rounded-3 " + (this.state.input.username.hasError() ? 'is-invalid' : '')} id="input_username" placeholder="Username" name='input_username' defaultValue={this.state.input.username + ''} />
                                         <label htmlFor="input_username">Username</label>
@@ -90,10 +98,10 @@ export default class SignInScreen extends React.Component {
                                             <div key={key}>• <span style={{ color: 'red' }}>{error}</span></div>
                                         ))}
                                     </div>
-                                    <button className="w-100 mb-2 btn btn-lg rounded-3 btn-primary" disabled={this.state.btn_signin_working} type="submit" onClick={this.handleSubmit}>
+                                    <button className="w-100 mb-2 btn btn-lg rounded-3 btn-primary" disabled={this.state.btn_signin_working} type="submit" >
                                         {this.state.btn_signin_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Sign in</>}
                                     </button>
-                                    <small className="text-muted">Click here if you <Link to='/reset_lost_password'>forgot password</Link> or <Link to='/recover_lost_username' >forgot username</Link>.</small>
+                                    <small className="text-muted">Click here if you <Link to={'/reset_lost_password' + this.props.location.search}>forgot password</Link> or <Link to={'/recover_lost_username' + this.props.location.search} >forgot username</Link>.</small>
                                 </form>
                             </div>
                         </div>
@@ -102,4 +110,4 @@ export default class SignInScreen extends React.Component {
             </div>
         </this.props.PageWrapper>
     }
-}
+})

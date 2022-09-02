@@ -21,7 +21,28 @@ class _TransactionController extends Controller
      */
     public function index()
     {
-        //
+        $result = null;
+
+        if ( $result === null && request()->get_as_addon_prop && request()->get_as_addon_prop == true ){
+            $result = _Transaction::where(['_status'=>'active'])
+            ->orderByDesc('transfer_datetime')->paginate(request()->per_page)->withQueryString(); 
+        }
+        
+        if ( $result === null ){
+            $simple_query_args = [];
+
+            $eloquent_query = _Transaction::where($simple_query_args);
+
+            if ( request()->user_username && is_string( request()->user_username ) ){
+                $eloquent_query = $eloquent_query
+                ->where(['source_user_username' => request()->user_username ])
+                ->orWhere(function($query) { $query->where(['destination_user_username' => request()->user_username ]); });
+            }
+            
+            $result = $eloquent_query->orderByDesc('transfer_datetime')->paginate(request()->per_page)->withQueryString();
+        }
+
+        return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _TransactionResource::collection( $result ) : new _TransactionResourceCollection( $result ) ) : null;
     }
 
     /**

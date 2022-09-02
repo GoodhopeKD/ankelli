@@ -28,10 +28,9 @@ class _Trade extends Model
         'asset_value',
         'platform_charge_asset_factor',
         'currency_amount',
-        'asset_sell_price',
-        'asset_purchase_price',
+        'offer_price',
         'pymt_method_slug',
-        'pymt_method_details',
+        'pymt_details',
         'pymt_declared_datetime',
         'pymt_confirmed_datetime',
         'visible_to_creator',
@@ -54,9 +53,8 @@ class _Trade extends Model
         'visible_to_offer_creator' => 'boolean',
         'asset_value' => 'float',
         'platform_charge_asset_factor' => 'float',
-        'asset_sell_price' => 'float',
-        'asset_purchase_price' => 'float',
-        'pymt_method_details' => 'array',
+        'offer_price' => 'float',
+        'pymt_details' => 'array',
     ];
 
     /**

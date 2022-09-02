@@ -1,10 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+import withRouter from 'app/views/navigation/withRouter'
+
 import Logo from "app/assets/img/logo/logo.jpeg";
 import DisplayPhoto from "app/assets/img/user_avatar/025.png";
 
-export default class TopNavbar extends React.Component {
+export default withRouter(class TopNavbar extends React.Component {
 
     render() {
         return <>
@@ -50,8 +52,8 @@ export default class TopNavbar extends React.Component {
                             </div>
                             :
                             <div className="col-md-3 text-end">
-                                <Link to={'/signin'} className={'btn btn-outline-primary me-2'} >Login</Link>
-                                <Link to={'/signup'} className={'btn btn-primary'} >Sign Up</Link>
+                                <Link to={'/signin' + this.props.location.search} className={'btn btn-outline-primary me-2'} >Login</Link>
+                                <Link to={'/signup' + this.props.location.search} className={'btn btn-primary'} >Sign Up</Link>
                             </div>
                         }
                     </header>
@@ -59,4 +61,4 @@ export default class TopNavbar extends React.Component {
             </div>
         </>
     }
-}
+})

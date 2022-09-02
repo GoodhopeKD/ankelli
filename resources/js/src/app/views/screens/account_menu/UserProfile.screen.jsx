@@ -15,8 +15,24 @@ class UserProfileScreen extends React.Component {
                         <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'account_menu')]} />
                     </div>
                     <div className="col-10">
-                        User Dashboard Shows Here
-                </div>
+                        <h4>My asset accounts</h4>
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Asset Code</th>
+                                    <th scope="col">Balance</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {this.props.auth_user.asset_accounts.map((asset_account, index) => {
+                                    return <tr key={index} >
+                                        <td className="align-middle">{asset_account.asset_code}</td>
+                                        <td className="align-middle">{asset_account.asset_value}</td>
+                                    </tr>
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </this.props.PageWrapper>
@@ -25,7 +41,7 @@ class UserProfileScreen extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['active_navigation_screens', 'profile_image']) : null,
+        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_accounts']) : null,
     }
 }
 

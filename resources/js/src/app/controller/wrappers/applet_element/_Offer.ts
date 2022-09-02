@@ -19,7 +19,7 @@ type get_collection_params = {
     offer_to?: offer_to_t,
     creator_username?: string,
 }
-type pymt_method_details_t = { key: string, value: string | number }[]
+type pymt_details_t = { key: string, value: string | number }[]
 
 /* 
     RespObj Export
@@ -32,19 +32,18 @@ export const _OfferRespObj = {
 
     asset_code: undefined as undefined | null | string, // Asset to buy: e.g USTD
     currency_code: undefined as undefined | null | string, // Currency to buy asset with: e.g USD
+    offer_price: undefined as undefined | null | number,
 
     // for offer_to:buy
-    asset_purchase_price: undefined as undefined | null | number,
     min_purchase_amount: undefined as undefined | null | number,
     max_purchase_amount: undefined as undefined | null | number,
 
     // for offer_to:sell
-    asset_sell_price: undefined as undefined | null | number,
     min_sell_value: undefined as undefined | null | number,
     max_sell_value: undefined as undefined | null | number,
 
     pymt_method_slug: undefined as undefined | null | string,
-    pymt_method_details: undefined as undefined | null | pymt_method_details_t,
+    pymt_details: undefined as undefined | null | pymt_details_t,
     note: undefined as undefined | null | string,
     _status: undefined as undefined | null | _status_t,
 
@@ -65,17 +64,16 @@ export default class _Offer extends _Wrapper_ implements Omit<typeof _OfferRespO
 
     asset_code: string | null = null
     currency_code: string | null = null
+    offer_price: number | null = null
 
-    asset_purchase_price: number | null = null
     min_purchase_amount: number | null = null
     max_purchase_amount: number | null = null
 
-    asset_sell_price: number | null = null
     min_sell_value: number | null = null
     max_sell_value: number | null = null
 
     pymt_method_slug: string | null = null
-    pymt_method_details: pymt_method_details_t | null = null
+    pymt_details: pymt_details_t | null = null
     note: string | null = null
     _status: _status_t | null = null
 
@@ -107,7 +105,23 @@ export default class _Offer extends _Wrapper_ implements Omit<typeof _OfferRespO
         return this._mainLaravelDBAPIGetCollection('offers', params, page_select, per_page)
     }
 
-    public async accept(currency_amount: number){
-        return _Trade.create({ offer_ref_code: this.ref_code as string, currency_amount})
+    public async accept(currency_amount: number, pymt_details: any = undefined) {
+        return _Trade.create({ offer_ref_code: this.ref_code as string, currency_amount, pymt_details })
+    }
+
+    /* Updaters */
+
+    public async update(args: typeof _OfferRespObj, update_note: string) {
+        const data = {} as typeof args
+        if (typeof args._status === typeof this._status && args._status !== this._status) data._status = args._status
+        return this._mainLaravelDBAPIUpdate('offers/' + this.ref_code, update_note, data)
+    }
+
+    public async setOffline() {
+        return this.update({ _status: 'offline' } as typeof _OfferRespObj, "Set _Offer _status to offline")
+    }
+
+    public async setOnline() {
+        return this.update({ _status: 'online' } as typeof _OfferRespObj, "Set _Offer _status to online")
     }
 }

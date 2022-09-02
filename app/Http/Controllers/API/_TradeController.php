@@ -45,10 +45,10 @@ class _TradeController extends Controller
 
             if ( request()->user_username && is_string( request()->user_username ) ){
                 $eloquent_query = $eloquent_query
-                ->where( 'creator_username' , request()->user_username )
-                ->orWhere( 'offer_creator_username' , request()->user_username );
+                ->where(['creator_username' => request()->user_username, 'visible_to_creator' => true])
+                ->orWhere(function($query) { $query->where(['offer_creator_username' => request()->user_username, 'visible_to_offer_creator' => true]); });
             }
-
+            
             $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->paginate(request()->per_page)->withQueryString();
         }
 
@@ -66,15 +66,19 @@ class _TradeController extends Controller
         $validated_data = $request->validate([
             'offer_ref_code' => ['required', 'exists:__offers,ref_code', 'string'],
             'currency_amount' => ['required', 'numeric'],
-            'pymt_method_details' => ['sometimes', 'array'],
+            'pymt_details' => ['sometimes', 'array'],
+            /*'pymt_details.physical_address' => ['sometimes', 'string', 'max:255'],
+            'pymt_details.email_address' => ['sometimes', 'string', 'email', 'max:64'],
+            'pymt_details.fullname' => ['sometimes', 'string', 'max:255'],
+            'pymt_details.account_no' => ['sometimes', 'string', 'max:64'],
+            'pymt_details.phone_no' => ['sometimes', 'string', 'max:64'],*/
             '_status' => ['sometimes', 'string', Rule::in(['active', 'cancelled', 'flagged', 'completed'])],
         ]);
 
-        $offer = _Offer::find($validated_data['offer_ref_code'])->makeVisible(['pymt_method_details']);
+        $offer = _Offer::find($validated_data['offer_ref_code'])->makeVisible(['pymt_details']);
 
-        $offer_price = $offer->offer_to == 'buy' ? $offer->asset_purchase_price : $offer->asset_sell_price;
         $validated_data['platform_charge_asset_factor'] = (float)_PrefItem::firstWhere('key_slug', 'platform_charge_asset_factor')->value;
-        $validated_data['asset_value'] = ($validated_data['currency_amount'] / $offer_price) * (1 + $validated_data['platform_charge_asset_factor']);
+        $validated_data['asset_value'] = ($validated_data['currency_amount'] / $offer->offer_price) * (1 + $validated_data['platform_charge_asset_factor']);
 
         if ($offer->offer_to == 'buy'){
             if (!($validated_data['currency_amount'] >= $offer->min_purchase_amount && $validated_data['currency_amount'] <= $offer->max_purchase_amount)){
@@ -95,7 +99,7 @@ class _TradeController extends Controller
 
         // Lock seller asset in escrow
         $seller_asset_account = _AssetAccount::firstWhere([
-            'user_username' => $seller_username, 
+            'user_username' => $seller_username,
             'asset_code' => $offer->asset_code
         ]);
 
@@ -144,7 +148,8 @@ class _TradeController extends Controller
      */
     public function show(string $ref_code)
     {
-        //
+        $element = _Trade::find($ref_code);
+        return response()->json( new _TradeResource( $element ) );
     }
 
     /**
@@ -172,6 +177,7 @@ class _TradeController extends Controller
 
         if (isset($validated_data['pymt_confirmed']) && $validated_data['pymt_confirmed'] == true){
             $validated_data['pymt_confirmed_datetime'] = now()->toDateTimeString();
+            $validated_data['_status'] = 'active';
 
             // Unlock asset from escrow
             $seller_username = $element->was_offer_to == 'buy' ? $element->creator_username : $element->offer_creator_username;

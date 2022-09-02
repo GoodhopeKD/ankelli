@@ -16,7 +16,7 @@ import { _dataless_resource_collection_wrapper } from 'app/controller/redux_redu
 type casts_t = 'pymt_declared_datetime' | 'pymt_confirmed_datetime' | 'created_datetime' | 'updated_datetime'
 type was_offer_to_t = 'buy' | 'sell'
 type _status_t = 'active' | 'cancelled' | 'flagged' | 'completed'
-type pymt_method_details_t = { key: string, value: string | number }[]
+type pymt_details_t = { key: string, value: string | number }[]
 type addable_addon_args_t = typeof _MessageRespObj
 type get_collection_params = {
     get_with_meta?: boolean,
@@ -37,14 +37,10 @@ export const _TradeRespObj = {
     asset_value: undefined as undefined | null | number, // Value of asset to be released from seller // Calculated as 1.01 * (currency_amount  purchase_price) // max: seller's balance
     currency_amount: undefined as undefined | null | number, // Amount offer_creator will use to buy asset // Calculated as 0.99 * asset_value *    purchase_price // limits: offer_min-offer_max
 
-    // for was_offer_to:sell
-    asset_sell_price: undefined as undefined | null | number,
-
-    // for was_offer_to:buy
-    asset_purchase_price: undefined as undefined | null | number,
+    offer_price: undefined as undefined | null | number,
 
     pymt_method_slug: undefined as undefined | null | string,
-    pymt_method_details: undefined as undefined | null | pymt_method_details_t,
+    pymt_details: undefined as undefined | null | pymt_details_t,
     pymt_declared_datetime: undefined as undefined | null | string,
     pymt_confirmed_datetime: undefined as undefined | null | string,
     visible_to_creator: undefined as undefined | null | boolean,
@@ -88,16 +84,16 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
     asset_value: number | null = null
     currency_amount: number | null = null
 
-    asset_sell_price: number | null = null
-    asset_purchase_price: number | null = null
+    offer_price: number | null = null
 
     pymt_method_slug: string | null = null
-    pymt_method_details: pymt_method_details_t | null = null
+    pymt_details: pymt_details_t | null = null
     pymt_declared_datetime: _DateTime | null = null
     pymt_confirmed_datetime: _DateTime | null = null
     visible_to_creator: boolean | null = null
     visible_to_offer_creator: boolean | null = null
     _status: _status_t | null = null
+    progress: number = 0
 
     offer_creator_username: string | null = null
     creator_username: string | null = null
@@ -118,11 +114,20 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
         this.pymt_confirmed_datetime = args.pymt_confirmed_datetime && typeof args.pymt_confirmed_datetime === 'string' ? new _DateTime(args.pymt_confirmed_datetime) : null
         this.created_datetime = args.created_datetime && typeof args.created_datetime === 'string' ? new _DateTime(args.created_datetime) : null
         this.updated_datetime = args.updated_datetime && typeof args.updated_datetime === 'string' ? new _DateTime(args.updated_datetime) : null
+        
+        if (this.created_datetime)
+            this.progress = 25
+        if (this.pymt_declared_datetime)
+            this.progress = this.progress + 25
+        if (this.pymt_confirmed_datetime)
+            this.progress = this.progress + 25
+        if (this._status == 'completed')
+            this.progress = this.progress + 25
     }
 
     /* Creator(s) */
 
-    public static async create(args: { offer_ref_code: string, currency_amount: number }) {
+    public static async create(args: { offer_ref_code: string, currency_amount: number, pymt_details?: pymt_details_t }) {
         return this._mainLaravelDBAPICreate('trades', args)
     }
 
@@ -154,6 +159,40 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
     }
 
     /* Updaters */
+
+    public async update(args: typeof _TradeRespObj | any, update_note: string) {
+        const data = {} as typeof args
+        if (typeof args.pymt_declared == 'boolean') data.pymt_declared = args.pymt_declared
+        if (typeof args.pymt_confirmed == 'boolean') data.pymt_confirmed = args.pymt_confirmed
+        if (typeof args.visible_to_creator === typeof this.visible_to_creator && args.visible_to_creator !== this.visible_to_creator) data.visible_to_creator = args.visible_to_creator
+        if (typeof args.visible_to_offer_creator === typeof this.visible_to_offer_creator && args.visible_to_offer_creator !== this.visible_to_offer_creator) data.visible_to_offer_creator = args.visible_to_offer_creator
+        if (typeof args._status === typeof this._status && args._status !== this._status) data._status = args._status
+        return this._mainLaravelDBAPIUpdate('trades/' + this.ref_code, update_note, data)
+    }
+
+    public async declarePymt() {
+        return this.update({ pymt_declared: true } as unknown as typeof _TradeRespObj, 'Set _Trade pymt_declared_datetime')
+    }
+
+    public async confirmPymt() {
+        return this.update({ pymt_confirmed: true } as unknown as typeof _TradeRespObj, 'Set _Trade pymt_confirmed_datetime')
+    }
+
+    public async flag() {
+        return this.update({ _status: 'flagged' }, 'Set _Offer _status to flagged')
+    }
+
+    public async unFlag() {
+        return this.update({ _status: 'active' }, 'Set _Offer _status to active')
+    }
+
+    public async creatorHide() {
+        return this.update({ visible_to_creator: false }, 'Set _Offer visible_to_creator to false')
+    }
+
+    public async offerCreatorHide() {
+        return this.update({ visible_to_offer_creator: false }, 'Set _Offer visible_to_offer_creator to false')
+    }
 
     public async addAddonProp(prop_name: keyof typeof AddableAddonPropsRespObj, args: addable_addon_args_t) {
         const prop_types = {

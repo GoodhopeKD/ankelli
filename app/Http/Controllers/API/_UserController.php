@@ -42,17 +42,17 @@ class _UserController extends Controller
     public function store(Request $request)
     {
         $token_reg_enabled = (boolean)_PrefItem::firstWhere('key_slug', 'token_reg_enabled')->value;
-        $factory_data = session()->get('factory_data');
-        $factory_data = isset($factory_data) ? (boolean)$factory_data : null;
+        $load_factory_data = session()->get('load_factory_data');
+        $load_factory_data = isset($load_factory_data) ? (boolean)$load_factory_data : null;
         // Request Validation
         $validated_data = $request->validate([
-            'reg_token' => [ $token_reg_enabled && !$factory_data ? 'required' : 'sometimes', 'string', 'max:16'],
+            'reg_token' => [ $token_reg_enabled && !$load_factory_data ? 'required' : 'sometimes', 'string', 'max:16'],
             'username' => ['required', 'string', 'min:4', 'max:64'],
             'email_address' => ['required', 'string', 'email', 'max:64'],
             'password' => ['required', 'string', 'min:8', 'max:32', 'confirmed'],
         ]);
 
-        if ( $token_reg_enabled && !$factory_data ){
+        if ( $token_reg_enabled && !$load_factory_data ){
             $reg_token_check = (array)(new __AuxController)->availability_check( new Request([ 'check_param_name' => 'reg_token', 'check_param_value' => $validated_data['reg_token'] ]) )->getData();
             if ( !$reg_token_check['usable']){
                 return abort(422, $reg_token_check['message']);
@@ -120,7 +120,7 @@ class _UserController extends Controller
         ]));
         // End Create notification to verify email
 
-        if ( !$factory_data){
+        if ( !$load_factory_data){
             // Handle _Session
             $active_session_data = $request->active_session_data;
             $active_session_data['user_username'] = $api_auth_user->username;

@@ -1,9 +1,11 @@
 import React from "react"
 import { connect } from 'react-redux'
 import { Link } from "react-router-dom";
+import _ from 'lodash'
 
-import { _Offer, _Notification, _DateTime } from 'app/controller'
+import { _Offer, _Notification, _DateTime, _User } from 'app/controller'
 
+import withRouter from 'app/views/navigation/withRouter'
 import CustomSelect from 'app/views/components/CustomSelect'
 
 class BgTaskHandler { static runInBackground = (fn) => fn() }
@@ -11,6 +13,16 @@ class BgTaskHandler { static runInBackground = (fn) => fn() }
 class OffersListViewScreen extends React.Component {
 
     working = false
+
+    default_input = {
+        offer_to: this.props.path == '/my-offers' ? undefined : (this.props.sysconfig_params.offer_to_buy_enabled ? 'buy' : this.props.sysconfig_params.offer_to_sell_enabled ? 'sell' : undefined),
+        country_name: undefined,
+        currency_code: undefined,
+        asset_code: undefined,
+        pymt_method_slug: undefined,
+        _status: this.props.path == '/my-offers' ? 'all' : 'online',
+        creator_username: this.props.path == '/my-offers' ? this.props.auth_user.username : undefined
+    }
 
     state = {
         offers_list_loaded: false,
@@ -22,13 +34,8 @@ class OffersListViewScreen extends React.Component {
 
         showing_offer_to: this.props.sysconfig_params.offer_to_buy_enabled ? 'buy' : this.props.sysconfig_params.offer_to_sell_enabled ? 'sell' : undefined,
 
-        get_collection_params: {
-            offer_to: this.props.sysconfig_params.offer_to_buy_enabled ? 'buy' : this.props.sysconfig_params.offer_to_sell_enabled ? 'sell' : undefined,
-            country_name: undefined,
-            currency_code: undefined,
-            asset_code: undefined,
-            pymt_method_slug: undefined,
-        },
+        input: _.cloneDeep(this.default_input),
+
         page_select: {
             page: 1,
         },
@@ -37,13 +44,19 @@ class OffersListViewScreen extends React.Component {
 
     should_load_items = true
 
-    handle_get_collection_params_change(field, value) {
-        let get_collection_params = this.state.get_collection_params
-        get_collection_params[field] = value
-        this.setState({ get_collection_params }, () => { this.should_load_items = true })
+    handleInputChange(field = 'field.deep_field', value, use_raw = false) {
+        const input = this.state.input
+        const fields = field.split('.')
+        const val = use_raw ? value : new _Input(value)
+        if (fields.length === 1) {
+            input[fields] = val
+        } else {
+            input[fields[0]][fields[1]] = val
+        }
+        this.setState({ input }, () => this.should_load_items = true)
     }
 
-    async universalGetCollection(_Type, indicator_var_name, get_collection_params = null, page_select = null, per_page = null) {
+    async universalGetCollection(_Type, indicator_var_name, input = null, page_select = null, per_page = null) {
         //if (page_select && this.state.list_full) return Promise.resolve();
         if (!this.should_load_items) {
             _Notification.flash({ message: 'No filters changed', duration: 2000 })
@@ -60,11 +73,11 @@ class OffersListViewScreen extends React.Component {
             })
             setTimeout(
                 () => {
-                    _Type.getCollection(get_collection_params, page_select, per_page)
+                    _Type.getCollection(input, page_select, per_page)
                         .then(({ collection }) => {
                             if (!collection.data) return Promise.resolve();
                             let update_object = {
-                                showing_offer_to: get_collection_params.offer_to,
+                                showing_offer_to: input.offer_to,
                                 //list: page_select ? this.state.list.concat(collection.data) : collection.data,
                                 list: collection.data,
                                 list_loaded: true,
@@ -94,7 +107,7 @@ class OffersListViewScreen extends React.Component {
 
     populateScreenWithItems = async (show_list_refreshing_loader = true) => {
         this.setState({ list_refreshing: show_list_refreshing_loader });
-        await this.universalGetCollection(_Offer, 'offers_list_loaded', JSON.parse(JSON.stringify(this.state.get_collection_params)), this.state.page_select, this.state.per_page)
+        await this.universalGetCollection(_Offer, 'offers_list_loaded', JSON.parse(JSON.stringify(this.state.input)), this.state.page_select, this.state.per_page)
         if (show_list_refreshing_loader) this.setState({ list_refreshing: false })
     };
 
@@ -104,6 +117,7 @@ class OffersListViewScreen extends React.Component {
     }
 
     render() {
+
         const country_options = [];
         Object.keys(this.props.datalists.active_countries).forEach(country_name => { country_options.push({ value: country_name, searchable_text: country_name, output_element: () => country_name }) })
 
@@ -147,106 +161,99 @@ class OffersListViewScreen extends React.Component {
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container py-3">
 
-                <div className="row">
-                    {(this.props.sysconfig_params.offer_to_buy_enabled && this.props.sysconfig_params.offer_to_sell_enabled) &&
+                {this.props.path == '/offers' && <>
+                    <div className="row">
+                        {(this.props.sysconfig_params.offer_to_buy_enabled && this.props.sysconfig_params.offer_to_sell_enabled) &&
+                            <div className="col">
+                                <label htmlFor="input_offer_to" className="form-label">Offers to</label>
+                                <select className="form-select" id="input_offer_to" value={this.state.input.offer_to} onChange={rr => this.handleInputChange('offer_to', rr.target.value, true)} >
+                                    <option value="buy">Buy</option>
+                                    <option value="sell" >Sell</option>
+                                </select>
+                            </div>
+                        }
+
                         <div className="col">
-                            <label htmlFor="input_offer_to" className="form-label">Offers to</label>
-                            <select className="form-select" id="input_offer_to" value={this.state.get_collection_params.offer_to} onChange={rr => this.handle_get_collection_params_change('offer_to', rr.target.value)} >
-                                <option value="buy">Buy</option>
-                                <option value="sell" >Sell</option>
-                            </select>
+                            <label htmlFor="input_country_name" className="form-label">Country</label>
+                            <CustomSelect
+                                element_id="input_country_name"
+                                options={country_options}
+                                max_shown_options_count={5}
+                                selected_option_value={this.state.input.country_name}
+                                onChange={country_name => this.handleInputChange('country_name', country_name, true)}
+                            />
                         </div>
-                    }
 
-                    <div className="col">
-                        <label htmlFor="input_country_name" className="form-label">Country</label>
-                        <CustomSelect
-                            element_id="input_country_name"
-                            options={country_options}
-                            max_shown_options_count={5}
-                            selected_option_value={this.state.get_collection_params.country_name}
-                            onChange={country_name => this.handle_get_collection_params_change('country_name', country_name)}
-                        />
+                        <div className="col">
+                            <label htmlFor="input_pymt_method_slug" className="form-label">Payment method</label>
+                            <CustomSelect
+                                element_id="input_pymt_method_slug"
+                                options={pymt_method_options}
+                                max_shown_options_count={5}
+                                selected_option_value={this.state.input.pymt_method_slug}
+                                onChange={pymt_method_slug => this.handleInputChange('pymt_method_slug', pymt_method_slug, true)}
+                            />
+                        </div>
+
+                        <div className="col">
+                            <label htmlFor="input_asset_code" className="form-label">Asset</label>
+                            <CustomSelect
+                                element_id="input_asset_code"
+                                options={asset_options}
+                                max_shown_options_count={5}
+                                selected_option_value={this.state.input.asset_code}
+                                onChange={asset_code => this.handleInputChange('asset_code', asset_code, true)}
+                            />
+                        </div>
+
+                        <div className="col">
+                            <label htmlFor="input_currency_code" className="form-label">Currency</label>
+                            <CustomSelect
+                                element_id="input_currency_code"
+                                options={currency_options}
+                                max_shown_options_count={5}
+                                selected_option_value={this.state.input.currency_code}
+                                onChange={currency_code => this.handleInputChange('currency_code', currency_code, true)}
+                            />
+                        </div>
+
                     </div>
 
-                    <div className="col">
-                        <label htmlFor="input_pymt_method_slug" className="form-label">Payment method</label>
-                        <CustomSelect
-                            element_id="input_pymt_method_slug"
-                            options={pymt_method_options}
-                            max_shown_options_count={5}
-                            selected_option_value={this.state.get_collection_params.pymt_method_slug}
-                            onChange={pymt_method_slug => this.handle_get_collection_params_change('pymt_method_slug', pymt_method_slug)}
-                        />
-                    </div>
+                    <div className="d-flex justify-content-between">
 
-                    <div className="col">
-                        <label htmlFor="input_asset_code" className="form-label">Asset</label>
-                        <CustomSelect
-                            element_id="input_asset_code"
-                            options={asset_options}
-                            max_shown_options_count={5}
-                            selected_option_value={this.state.get_collection_params.asset_code}
-                            onChange={asset_code => this.handle_get_collection_params_change('asset_code', asset_code)}
-                        />
-                    </div>
-
-                    <div className="col">
-                        <label htmlFor="input_currency_code" className="form-label">Currency</label>
-                        <CustomSelect
-                            element_id="input_currency_code"
-                            options={currency_options}
-                            max_shown_options_count={5}
-                            selected_option_value={this.state.get_collection_params.currency_code}
-                            onChange={currency_code => this.handle_get_collection_params_change('currency_code', currency_code)}
-                        />
-                    </div>
-
-                </div>
-
-                <div className="d-flex justify-content-between">
-                    <div className="d-flex gap-2 mt-3">
-                        <label htmlFor="input_per_page" className="align-self-center">Items</label>
-                        <select className="form-select" id="input_per_page" value={this.state.per_page} onChange={element => this.setState({ per_page: parseInt(element.target.value) }, () => { this.should_load_items = true; this.populateScreenWithItems() })} >
-                            {[5, 10, 25, 50, 100].map((per_page, index) => <option key={index} value={per_page} >{per_page}</option>)}
-                        </select>
-                    </div>
-                    <button
-                        onClick={() => this.setState({ page_select: { page: 1 } }, () => { this.should_load_items = true; this.populateScreenWithItems() })}
-                        className="btn btn-outline-danger mt-3"
-                    >
-                        Find offers
+                        <button
+                            onClick={() => { if (this.state.page_select.page !== 1) { this.setState({ page_select: { page: 1 } }, () => { this.should_load_items = true; this.populateScreenWithItems() }) } else { this.populateScreenWithItems() } }}
+                            className="btn btn-outline-danger mt-3"
+                        >
+                            Find offers
+                        </button>
+                        <button
+                            onClick={() => this.setState({
+                                input: _.cloneDeep(this.default_input)
+                            }, () => this.should_load_items = true)}
+                            className="btn btn-outline-danger mt-3"
+                        >
+                            Reset Filters
                     </button>
-                    <button
-                        onClick={() => this.setState({
-                            get_collection_params: {
-                                offer_to: 'buy',
-                                country_name: undefined,
-                                currency_code: undefined,
-                                asset_code: undefined,
-                                pymt_method_slug: undefined,
-                            }
-                        }, () => this.should_load_items = true)}
-                        className="btn btn-outline-danger mt-3"
-                    >
-                        Reset Filters
-                    </button>
-                </div>
+                    </div>
 
+                    <hr />
 
-                <hr />
+                </>}
 
                 {this.state.list_loaded ? (
                     <div>
                         <table className="table">
                             <thead>
                                 <tr>
-                                    <th scope="col">{this.state.showing_offer_to === 'buy' ? 'Buyer' : 'Seller'}</th>
+                                    {this.props.path == '/offers' && <th scope="col">{this.state.showing_offer_to === 'buy' ? 'Buyer' : 'Seller'}</th>}
+                                    {this.props.path == '/my-offers' && <th scope="col">Location</th>}
                                     <th scope="col">Trading</th>
                                     <th scope="col">Price</th>
                                     <th scope="col">Limit</th>
                                     <th scope="col">Payment method</th>
                                     <th scope="col">Trade</th>
+                                    {this.props.path == '/my-offers' && <th scope="col">Status</th>}
                                 </tr>
                             </thead>
                             <tbody>
@@ -254,16 +261,20 @@ class OffersListViewScreen extends React.Component {
                                     const currency = this.props.datalists.active_currencies[offer.currency_code]
                                     const pymt_method = this.props.datalists.active_pymt_methods[offer.pymt_method_slug]
                                     return <tr key={index} >
-                                        <td className="align-middle"><i>@{offer.creator_username}</i><br />In #{offer.location}</td>
-                                        {this.state.showing_offer_to === 'buy' ? <>
+                                        <td className="align-middle">
+                                            {this.props.path == '/offers' && <i>@{offer.creator_username}</i>}
+                                            {this.props.path == '/my-offers' && <i>Offer to: {offer.offer_to}</i>}
+                                            <br />In {offer.location !== null && <> #{offer.location} - </>} {offer.country_name}
+                                        </td>
+                                        {offer.offer_to === 'buy' ? <>
                                             <td className="align-middle"><b>{offer.asset_code}</b> <i>for</i> <b>{offer.currency_code}</b>
-                                                <br /><small className="text-muted"><i>Posted {(new _DateTime(offer.updated_datetime).prettyDatetime())}</i></small></td>
-                                            <td className="align-middle">{window.currencyAmountString(offer.asset_purchase_price, currency)}</td>
+                                                <br /><small className="text-muted"><i>{this.props.auth_user && this.props.auth_user.username == offer.creator_username ? 'Last updated' : 'Posted'} {(new _DateTime(offer.updated_datetime).prettyDatetime())}</i></small></td>
+                                            <td className="align-middle">{window.currencyAmountString(offer.offer_price, currency)}</td>
                                             <td className="align-middle">{window.currencyAmountString(offer.min_purchase_amount, currency)} - {window.currencyAmountString(offer.max_purchase_amount, currency)}</td>
                                         </> : <>
                                             <td className="align-middle"><b>{offer.currency_code}</b> <i>for</i> <b>{offer.asset_code}</b>
-                                                <br /><small className="text-muted"><i>Posted {(new _DateTime(offer.updated_datetime).prettyDatetime())}</i></small></td>
-                                            <td className="align-middle">{window.currencyAmountString(offer.asset_sell_price, currency)}</td>
+                                                <br /><small className="text-muted"><i>{this.props.auth_user && this.props.auth_user.username == offer.creator_username ? 'Last updated' : 'Posted'} {(new _DateTime(offer.updated_datetime).prettyDatetime())}</i></small></td>
+                                            <td className="align-middle">{window.currencyAmountString(offer.offer_price, currency)}</td>
                                             <td className="align-middle">{offer.min_sell_value} {offer.asset_code} - {offer.max_sell_value} {offer.asset_code}</td>
                                         </>}
                                         <td className="align-middle">
@@ -273,17 +284,35 @@ class OffersListViewScreen extends React.Component {
                                         <td className="align-middle">
                                             <div className="btn-group">
                                                 <button type="button" className="btn btn-sm btn-outline-secondary">•••</button>
-                                                <Link to={'/offers/' + offer.ref_code} className='btn btn-danger' >{offer.offer_to == 'buy' ? <>Sell</> : <>Buy</>}</Link>
+                                                <Link to={'/offers/' + offer.ref_code} className='btn btn-sm btn-danger' >{offer.offer_to == 'buy' ? <>Sell</> : <>Buy</>}</Link>
                                             </div>
                                         </td>
+                                        {this.props.path == '/my-offers' && <td className="align-middle">
+                                            <div className="form-check form-switch d-flex justify-content-center">
+                                                {this.state.loading_item == offer.ref_code ?
+                                                    <div className="spinner-border spinner-border-sm text-dark" style={{ width: 20, height: 20, marginLeft: -45 }}></div> :
+                                                    <input className="form-check-input" type="checkbox" role="switch"
+                                                        checked={offer._status == 'online'}
+                                                        onChange={() => { this.setState({ loading_item: offer.ref_code }); const callbackAction = offer._status == 'online' ? () => (new _Offer(offer)).setOffline() : () => (new _Offer(offer)).setOnline(); callbackAction().then(() => { this.should_load_items = true; this.populateScreenWithItems(); this.setState({ loading_item: null }); }).catch(e => { }) }}
+                                                    />
+                                                }
+                                            </div>
+                                        </td>}
                                     </tr>
                                 })}
                             </tbody>
                         </table>
-                        <div className="row" >
+                        <div className="d-flex gap-2" >
 
-
-                            <div className="col">
+                            <div className="">
+                                <div className="d-flex gap-2">
+                                    <label htmlFor="input_per_page" className="align-self-center">Items</label>
+                                    <select className="form-select" id="input_per_page" value={this.state.per_page} onChange={element => this.setState({ per_page: parseInt(element.target.value) }, () => { this.should_load_items = true; this.populateScreenWithItems() })} >
+                                        {[5, 10, 25, 50, 100].map((per_page, index) => <option key={index} value={per_page} >{per_page}</option>)}
+                                    </select>
+                                </div>
+                            </div>
+                            <div className="">
                                 <nav aria-label="Standard pagination example">
                                     <ul className="pagination">
                                         <li className={"page-item " + (this.state._collecion.meta.current_page == 1 ? 'disabled' : '')}>
@@ -326,7 +355,8 @@ const mapStateToProps = (state) => {
     return {
         datalists: state.datalists_data,
         sysconfig_params: state.sysconfig_params_data,
+        auth_user: state.auth_user_data ? new _User(state.auth_user_data) : null,
     }
 }
 
-export default connect(mapStateToProps)(OffersListViewScreen)
+export default connect(mapStateToProps)(withRouter(OffersListViewScreen))

@@ -2,9 +2,7 @@ import React from "react"
 import { connect } from 'react-redux'
 import { Link } from "react-router-dom";
 
-import { _Trade, _Notification, _User, _DateTime } from 'app/controller'
-
-import CustomSelect from 'app/views/components/CustomSelect'
+import { _Trade, _Notification, _User, _DateTime, _Input } from 'app/controller'
 
 class BgTaskHandler { static runInBackground = (fn) => fn() }
 
@@ -20,9 +18,8 @@ class TradesListViewScreen extends React.Component {
         list_refreshing: false,
         _collecion: { meta: {}, links: {} },
 
-        get_collection_params: {
+        input: {
             _status: 'all',
-            was_offer_to: this.props.sysconfig_params.offer_to_buy_enabled ? 'buy' : this.props.sysconfig_params.offer_to_sell_enabled ? 'sell' : undefined,
             country_name: undefined,
             currency_code: undefined,
             asset_code: undefined,
@@ -31,18 +28,24 @@ class TradesListViewScreen extends React.Component {
         page_select: {
             page: 1,
         },
-        per_page: 5
+        per_page: 10
     };
 
     should_load_items = true
 
-    handle_get_collection_params_change(field, value) {
-        let get_collection_params = this.state.get_collection_params
-        get_collection_params[field] = value
-        this.setState({ get_collection_params }, () => { this.should_load_items = true })
+    handleInputChange(field = 'field.deep_field', value, use_raw = false) {
+        const input = this.state.input
+        const fields = field.split('.')
+        const val = use_raw ? value : new _Input(value)
+        if (fields.length === 1) {
+            input[fields] = val
+        } else {
+            input[fields[0]][fields[1]] = val
+        }
+        this.setState({ input }, () => this.should_load_items = true)
     }
 
-    async universalGetCollection(_Type, indicator_var_name, get_collection_params = null, page_select = null, per_page = null) {
+    async universalGetCollection(_Type, indicator_var_name, input = null, page_select = null, per_page = null) {
         //if (page_select && this.state.list_full) return Promise.resolve();
         if (!this.should_load_items) {
             _Notification.flash({ message: 'No filters changed', duration: 2000 })
@@ -59,7 +62,7 @@ class TradesListViewScreen extends React.Component {
             })
             setTimeout(
                 () => {
-                    _Type.getCollection({ ...get_collection_params, user_username: this.props.auth_user.username }, page_select, per_page)
+                    _Type.getCollection({ ...input, user_username: this.props.auth_user.username }, page_select, per_page)
                         .then(({ collection }) => {
                             if (!collection.data) return Promise.resolve();
                             let update_object = {
@@ -92,7 +95,7 @@ class TradesListViewScreen extends React.Component {
 
     populateScreenWithItems = async (show_list_refreshing_loader = true) => {
         this.setState({ list_refreshing: show_list_refreshing_loader });
-        await this.universalGetCollection(_Trade, 'trades_list_loaded', JSON.parse(JSON.stringify(this.state.get_collection_params)), this.state.page_select, this.state.per_page)
+        await this.universalGetCollection(_Trade, 'trades_list_loaded', JSON.parse(JSON.stringify(this.state.input)), this.state.page_select, this.state.per_page)
         if (show_list_refreshing_loader) this.setState({ list_refreshing: false })
     };
 
@@ -149,7 +152,7 @@ class TradesListViewScreen extends React.Component {
                 <div className="d-flex gap-2 justify-content-betwee">
                     <div className="d-flex gap-2 mt-3">
                         <label htmlFor="input__status" className="align-self-center">Status</label>
-                        <select className="form-select" id="input__status" value={this.state.get_collection_params._status} onChange={rr => { this.handle_get_collection_params_change('_status', rr.target.value); this.should_load_items = true; this.populateScreenWithItems() }} >
+                        <select className="form-select" id="input__status" value={this.state.input._status} onChange={rr => { this.handleInputChange('_status', rr.target.value, true); this.should_load_items = true; this.populateScreenWithItems() }} >
                             <option value="all">All</option>
                             <option value="active" >Active</option>
                             <option value="cancelled" >Cancelled</option>
@@ -177,6 +180,7 @@ class TradesListViewScreen extends React.Component {
                                     <th scope="col">Amount</th>
                                     <th scope="col">Asset Value</th>
                                     <th scope="col">Payment method</th>
+                                    <th scope="col">Status</th>
                                     <th scope="col">Action</th>
                                 </tr>
                             </thead>
@@ -185,8 +189,17 @@ class TradesListViewScreen extends React.Component {
                                     const asset = this.props.datalists.active_assets[trade.asset_code]
                                     const currency = this.props.datalists.active_currencies[trade.currency_code]
                                     const pymt_method = this.props.datalists.active_pymt_methods[trade.pymt_method_slug]
+
+                                    var btn_class = 'success'
+                                    switch (trade._status) {
+                                        case 'active': btn_class = 'primary'; break;
+                                        case 'flagged': btn_class = 'warning'; break;
+                                        case 'cancelled': btn_class = 'danger'; break;
+                                        case 'completed': btn_class = 'success'; break;
+                                    }
+
                                     return <tr key={index} >
-                                        <td className="align-middle"><i>@{trade.was_offer_to == 'buy' ? trade.offer_creator_username : trade.creator_username}</i><br />In #{trade.location}</td>
+                                        <td className="align-middle"><i>@{trade.creator_username == this.props.auth_user.username ? trade.offer_creator_username : trade.creator_username}</i><br />In {trade.location !== null && <> #{trade.location} - </>} {trade.country_name}</td>
                                         <td className="align-middle"><b>{trade.asset_code}</b> <i>for</i> <b>{trade.currency_code}</b>
                                             <br /><small className="text-muted"><i>Last activity: {window.ucfirst(new _DateTime(trade.updated_datetime).prettyDatetime())}</i></small></td>
                                         <td className="align-middle">{window.currencyAmountString(trade.currency_amount, currency)}</td>
@@ -195,10 +208,13 @@ class TradesListViewScreen extends React.Component {
                                             <img src={pymt_method.icon.uri} alt={pymt_method.name + " icon"} width="40" height="40" className="rounded-1 me-2" />
                                             {pymt_method.name}
                                         </td>
+                                        <td className="align-middle" width="100">
+                                            <button type="button" className={"btn w-100 btn-sm btn-outline-" + btn_class}>{window.ucfirst(trade._status)}</button>
+                                        </td>
                                         <td className="align-middle">
                                             <div className="btn-group">
                                                 <button type="button" className="btn btn-sm btn-outline-secondary">•••</button>
-                                                <Link to={'/trades/' + trade.ref_code} className='btn btn-primary' >Open</Link>
+                                                <Link to={'/trades/' + trade.ref_code} className='btn btn-sm btn-primary' >Open</Link>
                                             </div>
                                         </td>
                                     </tr>
@@ -206,7 +222,6 @@ class TradesListViewScreen extends React.Component {
                             </tbody>
                         </table>
                         <div className="row" >
-
 
                             <div className="col">
                                 <nav aria-label="Standard pagination example">

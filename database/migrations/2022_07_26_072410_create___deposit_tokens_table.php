@@ -22,7 +22,12 @@ return new class extends Migration
                     ->onUpdate('cascade')
                     ->onDelete('set null');
             $table->string('asset_value', 32); // unsignedDecimal
-            $table->string('currency_code', 3);
+            $table->string('currency_code', 3)->nullable();
+            $table->foreign('currency_code')
+                    ->references('code')
+                    ->on('__currencies')
+                    ->onUpdate('cascade')
+                    ->onDelete('set null');
             $table->unsignedBigInteger('currency_amount');
             
             $table->string('creator_username', 64);

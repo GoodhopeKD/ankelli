@@ -39,6 +39,7 @@ class _OfferController extends Controller
             if ( request()->pymt_method_slug ){ $simple_query_args = array_merge( $simple_query_args, [ 'pymt_method_slug' => request()->pymt_method_slug ]); }
             if ( request()->_status && request()->_status !== 'all' ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => request()->_status ]); }
             if ( !isset(request()->_status) ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => 'online' ]); }
+            if ( request()->creator_username ){ $simple_query_args = array_merge( $simple_query_args, [ 'creator_username' => request()->creator_username ]); }
 
             $eloquent_query = _Offer::where($simple_query_args);
 
@@ -61,21 +62,20 @@ class _OfferController extends Controller
     {
         $validated_data = $request->validate([
             'country_name' => ['required', 'exists:__countries,name', 'string'],
-            'location' => ['required', 'string'],
+            'location' => ['required_if:pymt_method_slug,==,cash_in_person', 'string'],
             'offer_to' => ['required', 'string', Rule::in(['buy', 'sell'])],
             'asset_code' => ['required', 'exists:__assets,code', 'string'],
             'currency_code' => ['required', 'exists:__currencies,code', 'string'],
+            'offer_price' => ['required', 'numeric'],
             // for offer_to = buy
-            'asset_purchase_price' => ['required_if:offer_to,==,buy', 'numeric'],
             'min_purchase_amount' => ['required_if:offer_to,==,buy', 'integer'],
             'max_purchase_amount' => ['required_if:offer_to,==,buy', 'integer'],
             // for offer_to = sell
-            'asset_sell_price' => ['required_if:offer_to,==,sell', 'numeric'],
             'min_sell_value' => ['required_if:offer_to,==,sell', 'numeric'],
             'max_sell_value' => ['required_if:offer_to,==,sell', 'numeric'],
             'pymt_method_slug' => ['required', 'exists:__pymt_methods,slug', 'string'],
-            'pymt_method_details' => ['required_if:offer_to,==,buy', 'array'],
-            'note' => ['sometimes', 'string'],
+            'pymt_details' => ['required_if:offer_to,==,sell|pymt_method_slug,==,cash_in_person', 'array'],
+            'note' => ['nullable', 'string'],
             '_status' => ['sometimes', 'string', Rule::in(['online', 'offline'])],
         ]);
 
@@ -114,9 +114,39 @@ class _OfferController extends Controller
      * @param  string $ref_code
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $ref_code)
+    public function update(Request $request, string $ref_code)
     {
-        //
+        $validated_data = $request->validate([
+            'update_note' => ['required', 'string', 'max:255'],
+            '_status' => ['sometimes', 'string', Rule::in(['online', 'offline'])],
+        ]);
+
+        $element = _Offer::find($ref_code);
+
+        // Handle _Log
+        $log_entry_update_result = [];
+        foreach ( $validated_data as $key => $value ) {
+            if ( $element->{$key} != $value ){
+                array_push( $log_entry_update_result, [
+                    'field_name' => $key,
+                    'old_value' => $element->{$key},
+                    'new_value' => $value,
+                ]);
+            }
+        }
+        (new _LogController)->store( new Request([
+            'action_note' => $request->update_note,
+            'action_type' => 'entry_update',
+            'entry_table' => '__offers',
+            'entry_uid' => $element->ref_code,
+            'batch_code' => $request->batch_code,
+            'entry_update_result'=> $log_entry_update_result,
+        ]));
+        // End _Log Handling
+
+        $element->update($validated_data);
+
+        return response()->json( new _OfferResource( $element ) );
     }
 
     /**

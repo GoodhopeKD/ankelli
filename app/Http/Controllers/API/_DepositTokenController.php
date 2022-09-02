@@ -19,7 +19,29 @@ class _DepositTokenController extends Controller
      */
     public function index()
     {
-        //
+        $result = null;
+
+        if ( $result === null && request()->get_as_addon_prop && request()->get_as_addon_prop == true ){
+            $result = _DepositToken::where(['_status'=>'online'])
+            ->orderByRaw('ifnull(used_datetime, created_datetime) DESC')->paginate(request()->per_page)->withQueryString(); 
+        }
+        
+        if ( $result === null ){
+            $simple_query_args = [];
+
+            if ( request()->currency_code ){ $simple_query_args = array_merge( $simple_query_args, [ 'currency_code' => request()->currency_code ]); }
+            if ( request()->asset_code ){ $simple_query_args = array_merge( $simple_query_args, [ 'asset_code' => request()->asset_code ]); }
+            if ( request()->creator_username ){ $simple_query_args = array_merge( $simple_query_args, [ 'creator_username' => request()->creator_username ]); }
+
+            $eloquent_query = _DepositToken::where($simple_query_args);
+
+            if ( request()->_status && request()->_status == 'unused' ){ $eloquent_query->whereNull('used_datetime'); }
+            if ( request()->_status && request()->_status == 'used' ){ $eloquent_query->whereNotNull('used_datetime'); }
+
+            $result = $eloquent_query->orderByRaw('ifnull(used_datetime, created_datetime) DESC')->paginate(request()->per_page)->withQueryString();
+        }
+
+        return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _DepositTokenResource::collection( $result ) : new _DepositTokenResourceCollection( $result ) ) : null;
     }
 
     /**
@@ -78,12 +100,16 @@ class _DepositTokenController extends Controller
 
         $element = _DepositToken::find($token);
 
+        if (!$element){
+            return abort(422,"Token not valid.");
+        }
+
         if ($element->asset_code != $validated_data['asset_code']){
             return abort(422,"Token not valid for selected asset.");
         }
 
         if ($element->used_datetime){
-            return abort(422,"Already used.");
+            return abort(422,"Token already used.");
         }
 
         $validated_data['user_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );

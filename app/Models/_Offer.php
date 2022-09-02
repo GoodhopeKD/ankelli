@@ -25,17 +25,16 @@ class _Offer extends Model
         'offer_to',
         'asset_code',
         'currency_code',
+        'offer_price',
 
-        'asset_purchase_price',
         'min_purchase_amount',
         'max_purchase_amount',
 
-        'asset_sell_price',
         'min_sell_value',
         'max_sell_value',
 
         'pymt_method_slug',
-        'pymt_method_details',
+        'pymt_details',
         'note',
         '_status',
         'creator_username',
@@ -50,7 +49,7 @@ class _Offer extends Model
      * @var array
      */
     protected $hidden = [
-        'pymt_method_details',
+        'pymt_details',
     ];
     
     /**
@@ -59,11 +58,10 @@ class _Offer extends Model
      * @var array
      */
     protected $casts = [
-        'asset_purchase_price' => 'float',
-        'asset_sell_price' => 'float',
+        'offer_price' => 'float',
         'min_sell_value' => 'float',
         'max_sell_value' => 'float',
-        'pymt_method_details' => 'array',
+        'pymt_details' => 'array',
     ];
 
     /**

@@ -29,6 +29,11 @@ export const top_navbar_menu = {
             element: (props) => <OffersCreateNewScreen {...props} />,
         },
         {
+            title: 'Learn',
+            path: '/learn',
+            element: (props) => <LearnScreen {...props} />,
+        },
+        {
             title: 'Trades',
             path: '/trades',
             element: (props) => <TradesListViewScreen {...props} />,
@@ -42,9 +47,17 @@ export const top_navbar_menu = {
             show_in_menu: false
         },
         {
-            title: 'Learn',
-            path: '/learn',
-            element: (props) => <LearnScreen {...props} />,
+            title: 'My offers',
+            path: '/my-offers',
+            show_when_auth_state_is: true,
+            element: (props) => <OffersListViewScreen {...props} screen_mode="my-offers" />,
+        },
+        {
+            title: 'View Offer',
+            path: '/my-offers/:ref_code',
+            element: (props) => <OffersSingleViewScreen {...props} screen_mode="my-offers" />,
+            show_when_auth_state_is: true,
+            show_in_menu: false
         },
     ]
 }

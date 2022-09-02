@@ -1,19 +1,23 @@
 import React from "react"
+import DepositTokensListViewScreen from 'app/views/screens/admin_menu/business_management/DepositTokensListView.screen'
+import DepositTokensCreateNewScreen from 'app/views/screens/admin_menu/business_management/DepositTokensCreateNew.screen'
 
 import SideBar from 'app/views/components/SideBar'
 
 class ExampleElement extends React.Component {
     render() {
-        return <div className="container-fluid py-3">
-            <div className="row">
-                <div className="col-2">
-                    <SideBar nav_menus={this.props.nav_menus} />
-                </div>
-                <div className="col-10">
-                    {this.props.title} Screen
+        return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
+            <div className="container-fluid py-3">
+                <div className="row">
+                    <div className="col-2">
+                        <SideBar nav_menus={this.props.nav_menus} />
+                    </div>
+                    <div className="col-10">
+                        {this.props.title} Screen
+                    </div>
                 </div>
             </div>
-        </div>
+        </this.props.PageWrapper>
     }
 }
 
@@ -58,14 +62,14 @@ export const admin_menu = {
                 {
                     title: 'Deposit Tokens',
                     path: '/business_management/deposit_tokens',
-                    element: (props) => <ExampleElement {...props} nav_menus={[props.nav_menus.find(menu => menu.slug === 'admin_menu')]} />,
+                    element: (props) => <DepositTokensListViewScreen {...props} />,
                     required_permissions: ['manage_deposit_tokens'],
                     show_in_menu: true,
                 },
                 {
                     title: 'New Deposit Token',
                     path: '/business_management/deposit_tokens/new',
-                    element: (props) => <ExampleElement {...props} nav_menus={[props.nav_menus.find(menu => menu.slug === 'admin_menu')]} />,
+                    element: (props) => <DepositTokensCreateNewScreen {...props} />,
                     required_permissions: ['manage_deposit_tokens'],
                     show_in_menu: false,
                 },

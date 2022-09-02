@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 import { Link } from "react-router-dom";
 
 import { _User, _Input, _Notification } from 'app/controller';
+import withRouter from 'app/views/navigation/withRouter'
 
 const DEBUG = true
 
@@ -20,19 +21,25 @@ class SignUpScreen extends React.Component {
         errors: [],
     };
 
-    handleInputChange(field, value) {
-        let input = this.state.input
-        input[field] = new _Input(value)
+    handleInputChange(field = 'field.deep_field', value, use_raw = false) {
+        const input = this.state.input
+        const fields = field.split('.')
+        const val = use_raw ? value : new _Input(value)
+        if (fields.length === 1) {
+            input[fields] = val
+        } else {
+            input[fields[0]][fields[1]] = val
+        }
         this.setState({ input })
     }
 
     handleSubmit = async () => {
 
-        if (this.props.sysconfig_params_data.token_reg_enabled) this.handleInputChange('reg_token', document.getElementById('input_reg_token').value)
-        this.handleInputChange('username', document.getElementById('input_username').value)
-        this.handleInputChange('email_address', document.getElementById('input_email_address').value)
-        this.handleInputChange('password', document.getElementById('input_password').value)
-        this.handleInputChange('password_confirmation', document.getElementById('input_password_confirmation').value)
+        if (this.props.sysconfig_params_data.token_reg_enabled) this.handleInputChange('reg_token', document.getElementById('input_reg_token').value, true)
+        this.handleInputChange('username', document.getElementById('input_username').value, true)
+        this.handleInputChange('email_address', document.getElementById('input_email_address').value, true)
+        this.handleInputChange('password', document.getElementById('input_password').value, true)
+        this.handleInputChange('password_confirmation', document.getElementById('input_password_confirmation').value, true)
         this.setState({ btn_signup_working: true })
 
         const btn_signup_working = false
@@ -82,7 +89,7 @@ class SignUpScreen extends React.Component {
                             </div>
                             <div className="modal-body p-4 pt-0">
                                 {(this.props.sysconfig_params_data.open_reg_enabled || this.props.sysconfig_params_data.token_reg_enabled) ? <>
-                                    <form className="" onSubmit={e => e.preventDefault()}>
+                                    <form className="" onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
                                         {this.props.sysconfig_params_data.token_reg_enabled &&
                                             <div className="form-floating mb-3">
                                                 <input type='text' required={!this.props.sysconfig_params_data.open_reg_enabled} className={"form-control rounded-3 " + (this.state.input.reg_token.hasError() ? 'is-invalid' : '')} id="input_reg_token" placeholder="Registration Token" name='input_reg_token' defaultValue={this.state.input.reg_token + ''} />
@@ -109,7 +116,7 @@ class SignUpScreen extends React.Component {
                                             {this.state.errors.map((error, key) => (
                                                 <div key={key}>• <span style={{ color: 'red' }}>{error}</span></div>
                                             ))}
-                                        </div><button className="w-100 mb-2 btn btn-lg rounded-3 btn-primary" disabled={this.state.btn_signup_working} type="submit" onClick={this.handleSubmit}>
+                                        </div><button className="w-100 mb-2 btn btn-lg rounded-3 btn-primary" disabled={this.state.btn_signup_working} type="submit" >
                                             {this.state.btn_signup_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <span>Sign up</span>}
                                         </button>
                                         <small className="text-muted">By clicking Sign up, you agree to our <Link to='/terms-of-service' target='_blank'>Terms of service</Link> and confirm that you have read our <Link to='/privacy-policy' target='_blank'>Privacy Policy.</Link></small>
@@ -132,4 +139,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(SignUpScreen)
+export default connect(mapStateToProps)(withRouter(SignUpScreen))

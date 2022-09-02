@@ -72,9 +72,9 @@ class __AuxController extends Controller
 
     public function reserved_usernames()
     {
-        $factory_data = session()->get('factory_data');
-        $factory_data = isset($factory_data) ? (boolean)$factory_data : null;
-        return $factory_data ? [] : ['ankelli', 'goodhope', 'admin', 'administrator', 'sysadmin', 'system'];
+        $load_factory_data = session()->get('load_factory_data');
+        $load_factory_data = isset($load_factory_data) ? (boolean)$load_factory_data : null;
+        return $load_factory_data ? [] : ['ankelli', 'goodhope', 'admin', 'administrator', 'sysadmin', 'system'];
     }
 
     public function availability_check(Request $request)
@@ -206,9 +206,9 @@ class __AuxController extends Controller
         ]);
     }
 
-    public function factory_data()
+    public function load_factory_data()
     {
-        session()->put('factory_data', 'true');
+        session()->put('load_factory_data', 'true');
         session()->put('active_session_token', request()->segments()[env('API_URL')?0:1] );
         
         // user:developer
@@ -253,15 +253,15 @@ class __AuxController extends Controller
             '_status' => 'deactivated', 'creator_username' => 'system',
         ]));
 
-        session()->forget('factory_data');
+        session()->forget('load_factory_data');
         session()->forget('active_session_token');
     }
 
-    public function test_data()
+    public function load_test_data()
     {
-        (new __AuxController)->factory_data();
+        (new __AuxController)->load_factory_data();
         
-        session()->put('factory_data', 'true');
+        session()->put('load_factory_data', 'true');
         session()->put('active_session_token', request()->segments()[env('API_URL')?0:1] );
 
         // user:guddaz
@@ -294,10 +294,12 @@ class __AuxController extends Controller
         // Internalisation transactions
 
         $internalisations = [
-            ['ankelli', 3000, 'Loading initial platform trading balance.'],
-            ['guddaz', 218.87587867, 'Loading initial personal trading balance.'],
-            ['lodza', 967.86579, 'Loading initial personal trading balance.'],
-            ['flint', 400, 'Loading initial personal trading balance.'],
+            ['ankelli', 3000, 'Transfer from Coinbase wallet.'],
+            ['guddaz', 218.87587867, 'Transfer from Coinbase wallet.'],
+            ['guddaz', 98.9012, 'Transfer from Exodus wallet.'],
+            ['lodza', 106.76, 'Transfer from Coinbase wallet.'],
+            ['lodza', 967.86579, 'Transfer from Ledger wallet.'],
+            ['flint', 400, 'Transfer from Coinbase wallet.'],
         ];
 
         foreach ($internalisations as $key => $internalisation) {
@@ -329,7 +331,7 @@ class __AuxController extends Controller
                 'currency_amount' => $deposit_tokener[3],
             ]))->getData();
             session()->put('api_auth_user_username', $deposit_tokener[0]);
-            (new _DepositTokenController)->use( new Request([ 'asset_code' => 'USDT', ]), $deposit_token->token );
+            (new _DepositTokenController)->use( new Request([ 'asset_code' => 'USDT' ]), $deposit_token->token );
         }
         
 
@@ -341,11 +343,11 @@ class __AuxController extends Controller
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
-            'asset_purchase_price' => 0.94,
+            'offer_price' => 0.94,
             'min_purchase_amount' => 100,
             'max_purchase_amount' => 500,
             'pymt_method_slug' => 'mukuru',
-            'pymt_method_details' => [ 'recepient_name' => 'Kudakwashe Magadze', 'recepient_phone_no' => '+263 7658 357' ],
+            'pymt_details' => [ 'fullname' => 'Kudakwashe Magadze', 'phone_no' => '+263 7658 357' ],
         ]))->getData();
         session()->put('api_auth_user_username', 'guddaz');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 100, ]))->getData();
@@ -360,7 +362,7 @@ class __AuxController extends Controller
             'offer_to' => 'sell',
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
-            'asset_sell_price' => 1.04,
+            'offer_price' => 1.04,
             'min_sell_value' => 50,
             'max_sell_value' => 200,
             'pymt_method_slug' => 'cash_in_person',
@@ -375,11 +377,11 @@ class __AuxController extends Controller
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
-            'asset_purchase_price' => 0.95,
+            'offer_price' => 0.95,
             'min_purchase_amount' => 100,
             'max_purchase_amount' => 500,
             'pymt_method_slug' => 'world_remit',
-            'pymt_method_details' => [ 'recepient_name' => 'Kudakwashe Magadze', 'recepient_phone_no' => '+263 765 357',],
+            'pymt_details' => [ 'fullname' => 'Kudakwashe Magadze', 'phone_no' => '+263 765 357',],
         ]))->getData();
         session()->put('api_auth_user_username', 'lodza');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 100, ]))->getData();
@@ -396,11 +398,11 @@ class __AuxController extends Controller
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
-            'asset_purchase_price' => 0.94,
+            'offer_price' => 0.94,
             'min_purchase_amount' => 100,
             'max_purchase_amount' => 500,
             'pymt_method_slug' => 'paypal',
-            'pymt_method_details' => [ 'recepient_name' => 'Tawanda Chakatsva', 'recepient_email_address' => 'tawanda@example.com', ],
+            'pymt_details' => [ 'fullname' => 'Tawanda Chakatsva', 'recepient_email_address' => 'tawanda@example.com', ],
         ]))->getData();
         session()->put('api_auth_user_username', 'lodza');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 140, ]))->getData();
@@ -417,11 +419,11 @@ class __AuxController extends Controller
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
-            'asset_purchase_price' => 0.94,
+            'offer_price' => 0.94,
             'min_purchase_amount' => 100,
             'max_purchase_amount' => 1000,
             'pymt_method_slug' => 'skrill',
-            'pymt_method_details' => [ 'recepient_name' => 'Mulenga Mwamba', 'recepient_email_address' => 'mulenga@example.com', ],
+            'pymt_details' => [ 'fullname' => 'Mulenga Mwamba', 'recepient_email_address' => 'mulenga@example.com', ],
         ]))->getData();
         session()->put('api_auth_user_username', 'lodza');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 600, ]))->getData();
@@ -437,11 +439,11 @@ class __AuxController extends Controller
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
-            'asset_purchase_price' => 0.94,
+            'offer_price' => 0.94,
             'min_purchase_amount' => 100,
             'max_purchase_amount' => 1000,
             'pymt_method_slug' => 'cash_in_person',
-            'pymt_method_details' => [ 'recepient_name' => 'Mulenga Mwamba', 'recepient_phone_no' => 'mulenga@example.com', ],
+            'pymt_details' => [ 'fullname' => 'Mulenga Mwamba', 'phone_no' => 'mulenga@example.com', ],
         ]))->getData();
         session()->put('api_auth_user_username', 'ross');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 200, ]))->getData();
@@ -457,11 +459,11 @@ class __AuxController extends Controller
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
-            'asset_purchase_price' => 0.95,
+            'offer_price' => 0.95,
             'min_purchase_amount' => 200,
             'max_purchase_amount' => 1000,
             'pymt_method_slug' => 'cash_in_person',
-            'pymt_method_details' => [ 'recepient_name' => 'Mulenga Mwamba', 'recepient_phone_no' => 'mulenga@example.com', ],
+            'pymt_details' => [ 'fullname' => 'Mulenga Mwamba', 'phone_no' => 'mulenga@example.com', ],
         ]))->getData();
         session()->put('api_auth_user_username', 'keith');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 200, ]))->getData();
@@ -477,11 +479,11 @@ class __AuxController extends Controller
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
-            'asset_purchase_price' => 0.94,
+            'offer_price' => 0.94,
             'min_purchase_amount' => 200,
             'max_purchase_amount' => 300,
             'pymt_method_slug' => 'fbc_bank',
-            'pymt_method_details' => [ 'recepient_name' => 'Tadiwa Magodi', 'recepient_account_no' => '556788965445', ],
+            'pymt_details' => [ 'fullname' => 'Tadiwa Magodi', 'recepient_account_no' => '556788965445', ],
         ]))->getData();
         session()->put('api_auth_user_username', 'keith');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 250, ]))->getData();
@@ -497,11 +499,11 @@ class __AuxController extends Controller
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
-            'asset_purchase_price' => 0.96,
+            'offer_price' => 0.96,
             'min_purchase_amount' => 100,
             'max_purchase_amount' => 180,
             'pymt_method_slug' => 'fnb_bank',
-            'pymt_method_details' => [ 'recepient_name' => 'William Mbeki', 'recepient_account_no' => '6557890898', ],
+            'pymt_details' => [ 'fullname' => 'William Mbeki', 'recepient_account_no' => '6557890898', ],
         ]))->getData();
         session()->put('api_auth_user_username', 'keith');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 180, ]))->getData();
@@ -517,11 +519,11 @@ class __AuxController extends Controller
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
-            'asset_purchase_price' => 0.95,
+            'offer_price' => 0.95,
             'min_purchase_amount' => 40,
             'max_purchase_amount' => 200,
             'pymt_method_slug' => 'fnb_bank',
-            'pymt_method_details' => [ 'recepient_name' => 'William Mbeki', 'recepient_account_no' => '6557890898', ],
+            'pymt_details' => [ 'fullname' => 'William Mbeki', 'recepient_account_no' => '6557890898', ],
         ]))->getData();
         session()->put('api_auth_user_username', 'jimmy');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 180, ]))->getData();
@@ -537,11 +539,11 @@ class __AuxController extends Controller
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
             'currency_code' => 'EUR',
-            'asset_purchase_price' => 0.76,
+            'offer_price' => 0.76,
             'min_purchase_amount' => 200,
             'max_purchase_amount' => 500,
             'pymt_method_slug' => 'world_remit',
-            'pymt_method_details' => [ 'recepient_name' => 'Panashe Gabvu', 'recepient_phone_no' => '+78 568 6553', ],
+            'pymt_details' => [ 'fullname' => 'Panashe Gabvu', 'phone_no' => '+78 568 6553', ],
         ]))->getData();
         session()->put('api_auth_user_username', 'jimmy');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 200, ]))->getData();
@@ -557,11 +559,11 @@ class __AuxController extends Controller
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
             'currency_code' => 'DZD',
-            'asset_purchase_price' => 178,
+            'offer_price' => 178,
             'min_purchase_amount' => 10000,
             'max_purchase_amount' => 40000,
             'pymt_method_slug' => 'algerie_poste',
-            'pymt_method_details' => [ 'recepient_name' => 'Djenna Moulad', 'recepient_account_no' => '22657899', 'recepient_account_key' => '67', ],
+            'pymt_details' => [ 'fullname' => 'Djenna Moulad', 'recepient_account_no' => '22657899', 'recepient_account_key' => '67', ],
         ]))->getData();
         session()->put('api_auth_user_username', 'jimmy');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 36000, ]))->getData();
@@ -569,7 +571,7 @@ class __AuxController extends Controller
         session()->put('api_auth_user_username', 'nassim');
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, ]), $trade->ref_code );
 
-        session()->forget('factory_data');
+        session()->forget('load_factory_data');
         session()->forget('active_session_token');
         session()->forget('api_auth_user_username');
     }

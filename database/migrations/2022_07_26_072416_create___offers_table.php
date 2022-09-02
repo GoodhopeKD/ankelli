@@ -21,7 +21,7 @@ return new class extends Migration
                     ->on('__countries')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->string('location', 32);
+            $table->string('location', 32)->nullable();
             
             $table->enum('offer_to', ['buy', 'sell']);
 
@@ -38,13 +38,13 @@ return new class extends Migration
                     ->onUpdate('cascade')
                     ->onDelete('set null');
 
+            $table->string('offer_price', 32)->nullable(); // unsignedDecimal
+
             // for offer_to = buy
-            $table->string('asset_purchase_price', 32)->nullable(); // unsignedDecimal
             $table->unsignedBigInteger('min_purchase_amount')->nullable();
             $table->unsignedBigInteger('max_purchase_amount')->nullable();
 
             // for offer_to = sell
-            $table->string('asset_sell_price', 32)->nullable(); // unsignedDecimal
             $table->string('min_sell_value', 32)->nullable(); // unsignedDecimal
             $table->string('max_sell_value', 32)->nullable(); // unsignedDecimal
 
@@ -54,7 +54,7 @@ return new class extends Migration
                     ->on('__pymt_methods')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->text('pymt_method_details')->nullable();
+            $table->text('pymt_details')->nullable();
             $table->string('note', 64)->nullable();
             $table->enum('_status', ['online', 'offline'])->default('online');
 
