@@ -34,11 +34,18 @@ return new class extends Migration
 
         DB::table('__user_groups')->insert([
             [
-                'name' => 'System root users',
-                'slug' => 'system_root_users',
+                'name' => 'Administrators',
+                'slug' => 'administrators',
+                'description' => 'Automatically joined group (Users with active Admin Extension). 
+Members can be added to other admin groups.',
+                'creator_username' => 'system',
+            ],
+            [
+                'name' => 'Developers',
+                'slug' => 'developers',
                 'description' => 'Group for unrestricted system users. 
-Members have access to all features and OTP access to account named "sysroot". 
-Only "sysroot" account can add members to this group.
+Members have access to all features and OTP access to account named "developer". 
+Only "developer" account can add members to this group.
 Group used for System Development and Maintenance.',
                 'creator_username' => 'system',
             ],
@@ -56,21 +63,21 @@ Only "sysadmin" account can add members to this group.',
                 'slug' => 'business_administrators',
                 'description' => 'Admin group for Business Intelligence.
 Members have access to business related features.
-Members have OTP access to account named "ankelli".
-Only "ankelli" account can add members to this group.',
+Members have OTP access to accounts named "reserves" and "busadmin".
+Only "busadmin" account can add members to this group.',
                 'creator_username' => 'system',
             ],
             [
                 'name' => 'User Administrators',
                 'slug' => 'user_administrators',
-                'description' => 'Automatically joined group (Users with active Admin Extension) for User Administrators. 
+                'description' => 'Admin group for User Administrators. 
 Members can manage other users and user related queries.',
                 'creator_username' => 'system',
             ],
             [
                 'name' => 'Platform moderators',
                 'slug' => 'platform_moderators',
-                'description' => 'Admin Group for Platform moderators. 
+                'description' => 'Group for Platform moderators. 
 Members can respond in the customer service chat module, handle flagged business elems, manage daily updates.',
                 'creator_username' => 'system',
             ],

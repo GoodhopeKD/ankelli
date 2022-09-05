@@ -76,7 +76,7 @@ function Navigator(props) {
             if (nav_menus[i].required_active_user_group_membership_slugs) {
                 required_params_passed_i = false
                 nav_menus[i].required_active_user_group_membership_slugs.forEach(user_group_membership_slug => {
-                    if (auth_user && (auth_user.active_user_group_membership_slugs.includes(user_group_membership_slug) || auth_user.active_user_group_membership_slugs.includes('system_root_users'))) {
+                    if (auth_user && (auth_user.active_user_group_membership_slugs.includes(user_group_membership_slug) || auth_user.active_user_group_membership_slugs.includes('developers'))) {
                         required_params_passed_i = true
                     }
                 });
@@ -94,7 +94,7 @@ function Navigator(props) {
                     if (nav_menus[i].menu_items[j].required_active_user_group_membership_slugs) {
                         required_params_passed_j = false
                         nav_menus[i].menu_items[j].required_active_user_group_membership_slugs.forEach(user_group_membership_slug => {
-                            if (auth_user && (auth_user.active_user_group_membership_slugs.includes(user_group_membership_slug) || auth_user.active_user_group_membership_slugs.includes('system_root_users'))) {
+                            if (auth_user && (auth_user.active_user_group_membership_slugs.includes(user_group_membership_slug) || auth_user.active_user_group_membership_slugs.includes('developers'))) {
                                 required_params_passed_j = true
                             }
                         });
@@ -121,7 +121,7 @@ function Navigator(props) {
                             if (nav_menus[i].menu_items[j].children[k].required_active_user_group_membership_slugs) {
                                 required_params_passed_k = false
                                 nav_menus[i].menu_items[j].children[k].required_active_user_group_membership_slugs.forEach(user_group_membership_slug => {
-                                    if (auth_user && (auth_user.active_user_group_membership_slugs.includes(user_group_membership_slug) || auth_user.active_user_group_membership_slugs.includes('system_root_users'))) {
+                                    if (auth_user && (auth_user.active_user_group_membership_slugs.includes(user_group_membership_slug) || auth_user.active_user_group_membership_slugs.includes('developers'))) {
                                         required_params_passed_k = true
                                     }
                                 });

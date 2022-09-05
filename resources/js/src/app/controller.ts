@@ -19,7 +19,9 @@ import _Input from 'app/controller/wrappers/auxilliary/_Input'
 import _Date from 'app/controller/wrappers/auxilliary/_Date'
 import _DateTime from 'app/controller/wrappers/auxilliary/_DateTime'
 // datalist_element
+import _Asset, { _AssetRespObj } from 'app/controller/wrappers/datalist_element/_Asset'
 import _Currency, { _CurrencyRespObj } from 'app/controller/wrappers/datalist_element/_Currency'
+import _PymtMethod, { _PymtMethodRespObj } from 'app/controller/wrappers/datalist_element/_PymtMethod'
 import _Country, { _CountryRespObj } from 'app/controller/wrappers/datalist_element/_Country'
 // addons
 import _PhoneNo, { _PhoneNoRespObj } from 'app/controller/wrappers/addons/_PhoneNo'
@@ -61,7 +63,9 @@ export {
     // auxilliary
     _Input, _Date, _DateTime,
     // datalist_element
+    _Asset, _AssetRespObj,
     _Currency, _CurrencyRespObj,
+    _PymtMethod, _PymtMethodRespObj,
     _Country, _CountryRespObj,
     // addons
     _PhoneNo, _PhoneNoRespObj,

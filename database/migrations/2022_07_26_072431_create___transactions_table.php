@@ -21,7 +21,8 @@ return new class extends Migration
                     ->on('__sessions')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->string('description', 255)->nullable();
+            $table->string('description', 255);
+            $table->string('type', 64);
             $table->string('source_user_username', 64)->nullable(); 
             $table->foreign('source_user_username')
                     ->references('username')

@@ -14,6 +14,9 @@ class _RegTokenResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return array_filter(array_merge(
+            parent::toArray($request), [
+                'use_count' => count($this->users),
+            ]), static function($var){ return $var !== null;} );
     }
 }

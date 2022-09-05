@@ -28,7 +28,7 @@ class _CountryController extends Controller
 
             $eloquent_query = _Country::where($simple_query_args);
 
-            $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->get(); 
+            $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->paginate(request()->per_page)->withQueryString();
         }
 
         return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _CountryResource::collection( $result ) : new _CountryResourceCollection( $result ) ) : null;

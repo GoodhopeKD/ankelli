@@ -42,7 +42,7 @@ class _SellerExtensionController extends Controller
         (new _LogController)->store( new Request([
             'action_note' => 'Addition of _SellerExtension entry to database.',
             'action_type' => 'entry_create',
-            'entry_table' => '__seller_extensions',
+            'entry_table' => $element->getTable(),
             'entry_uid' => $element->user_username,
             'batch_code' => $request->batch_code,
         ]));

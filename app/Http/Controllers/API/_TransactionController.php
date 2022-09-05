@@ -54,7 +54,8 @@ class _TransactionController extends Controller
     public function store(Request $request)
     {
         $validated_data = $request->validate([
-            'description' => ['nullable', 'string'],
+            'description' => ['required', 'string'],
+            'type' => ['required', 'string'],
             'source_user_username' => ['sometimes', 'exists:__users,username', 'string'],
             'destination_user_username' => ['sometimes', 'exists:__users,username', 'string'],
             'asset_code' => ['required', 'exists:__assets,code', 'string'],
@@ -69,7 +70,7 @@ class _TransactionController extends Controller
         $validated_data['transfer_result'] = [];
 
         $platform_charge_asset_factor = $validated_data['platform_charge_asset_factor'] ?? (float)_PrefItem::firstWhere('key_slug', 'platform_charge_asset_factor')->value;
-        $validated_data['platform_charge_asset_value'] = (!isset($validated_data['source_user_username']) || $validated_data['source_user_username'] == 'ankelli' || $validated_data['source_user_username'] == 'escrow' || $validated_data['destination_user_username'] == 'ankelli' || $validated_data['destination_user_username'] == 'escrow') ? 0 : $validated_data['transfer_value'] * $platform_charge_asset_factor;
+        $validated_data['platform_charge_asset_value'] = (!isset($validated_data['source_user_username']) || $validated_data['source_user_username'] == 'reserves' || $validated_data['source_user_username'] == 'escrow' || $validated_data['destination_user_username'] == 'reserves' || $validated_data['destination_user_username'] == 'escrow') ? 0 : $validated_data['transfer_value'] * $platform_charge_asset_factor;
 
         $saving_platform_charge_as_transaction = true;
 
@@ -91,18 +92,18 @@ class _TransactionController extends Controller
             if ( $new_asset_value < 0 ){ return abort(422, 'Current ' . $validated_data['asset_code'] . ' balance for ' . $validated_data['source_user_username'] . ' insufficient for transaction.'); }
 
             if ( $validated_data['platform_charge_asset_value'] && !$saving_platform_charge_as_transaction ){
-                $ankelli_asset_account = _AssetAccount::firstOrCreate([
-                    'user_username' => 'ankelli', 
+                $ankelli_reserves_asset_account = _AssetAccount::firstOrCreate([
+                    'user_username' => 'reserves', 
                     'asset_code' => $validated_data['asset_code']
                 ]);
                 array_push( $validated_data['transfer_result'], [
-                    'user_username' => 'ankelli',
-                    'old_asset_value' => $ankelli_asset_account->asset_value,
-                    'new_asset_value' => $ankelli_asset_account->asset_value + $validated_data['platform_charge_asset_value'],
+                    'user_username' => 'reserves',
+                    'old_asset_value' => $ankelli_reserves_asset_account->asset_value,
+                    'new_asset_value' => $ankelli_reserves_asset_account->asset_value + $validated_data['platform_charge_asset_value'],
                 ]);
                 (new _AssetAccountController)->update( new Request([
-                    'asset_value' => $ankelli_asset_account->asset_value + $validated_data['platform_charge_asset_value'],
-                ]), $ankelli_asset_account->id );
+                    'asset_value' => $ankelli_reserves_asset_account->asset_value + $validated_data['platform_charge_asset_value'],
+                ]), $ankelli_reserves_asset_account->id );
             }
 
             array_push( $validated_data['transfer_result'], [
@@ -148,9 +149,10 @@ class _TransactionController extends Controller
         if ( isset($validated_data['source_user_username']) && $validated_data['platform_charge_asset_value'] && $saving_platform_charge_as_transaction ){
             sleep(1);
             (new _TransactionController)->store( new Request([
-                'description' => 'Platform trade charges.',
+                'description' => 'Platform charge for transaction "' . $element->ref_code . '"',
+                'type' => 'platform_charge',
                 'source_user_username' => $validated_data['source_user_username'],
-                'destination_user_username' => 'ankelli',
+                'destination_user_username' => 'reserves',
                 'asset_code' => $validated_data['asset_code'],
                 'transfer_value' => $validated_data['platform_charge_asset_value'],
             ]));

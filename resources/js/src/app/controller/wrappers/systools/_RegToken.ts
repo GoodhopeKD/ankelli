@@ -2,12 +2,21 @@
 import _DateTime from 'app/controller/wrappers/auxilliary/_DateTime'
 /* Parent Class import */
 import _Wrapper_ from 'app/controller/wrappers/_Wrapper_'
+/* Actions, Configs imports */
+import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend_api.actions'
 
 /*
     Type Definitions
 */
 type casts_t = 'created_datetime'
 type _status_t = 'active' | 'deactivated' | 'used_up'
+type get_collection_params = {
+    get_with_meta?: boolean,
+    asset_code?: string,
+    currency_code?: string,
+    creator_username?: string,
+    _status?: string,
+}
 
 /* 
     RespObj Export
@@ -43,5 +52,9 @@ export default class _RegToken extends _Wrapper_ implements Omit<typeof _RegToke
 
     public static async create(args: typeof _RegTokenRespObj) {
         return this._mainLaravelDBAPICreate('systools/reg_tokens', args)
+    }
+
+    public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
+        return this._mainLaravelDBAPIGetCollection('systools/reg_tokens', params, page_select, per_page)
     }
 }

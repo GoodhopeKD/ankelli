@@ -118,7 +118,7 @@ return new class extends Migration
             [
                 'name' => 'Skrill',
                 'slug' => 'skrill',
-                'hex_color' => '8625',
+                'hex_color' => '862165',
                 'details_required' => json_encode([
                     'fullname' => '',
                     'email_address' => '',

@@ -39,31 +39,6 @@ return new class extends Migration
                 'email_address' => 'escrow',
                 'password' => '',
             ],
-            [
-                'username' => 'tracker.platform-charges',
-                'email_address' => 'tracker.platform-charges',
-                'password' => '',
-            ],
-            [
-                'username' => 'tracker.internal-transactions',
-                'email_address' => 'tracker.internal-transactions',
-                'password' => '',
-            ],
-            [
-                'username' => 'tracker.token-deposits',
-                'email_address' => 'tracker.token-deposits',
-                'password' => '',
-            ],
-            [
-                'username' => 'tracker.internalisations',
-                'email_address' => 'tracker.internalisations',
-                'password' => '',
-            ],
-            [
-                'username' => 'tracker.externalisations',
-                'email_address' => 'tracker.externalisations',
-                'password' => '',
-            ],
         ]);
     }
 

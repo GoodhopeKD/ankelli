@@ -54,7 +54,7 @@ class __AuxController extends Controller
             $active_session_data = $request->active_session_data;
             if ( $active_session_data){
                 $active_session_data['request_location'] = Location::get() ? (array)(Location::get()) : [ 'ip' => $request->ip() ];
-                if ( isset($active_session_data['token']) && _Session::where('token', $active_session_data['token'] )->exists() && _Session::find($active_session_data['token'])['_status'] !== 'ended' ){
+                if ( isset($active_session_data['token']) && _Session::where('token', $active_session_data['token'] )->exists() && _Session::findOrFail($active_session_data['token'])['_status'] !== 'ended' ){
                     $active_session_data['default_route'] = true;
                     $response['active_session_data'] = ( new _SessionController )->update( new Request( array_filter( $active_session_data) ), $active_session_data['token'] )->getData();
                 } else {
@@ -74,7 +74,7 @@ class __AuxController extends Controller
     {
         $load_factory_data = session()->get('load_factory_data');
         $load_factory_data = isset($load_factory_data) ? (boolean)$load_factory_data : null;
-        return $load_factory_data ? [] : ['ankelli', 'goodhope', 'admin', 'administrator', 'sysadmin', 'system'];
+        return $load_factory_data ? [] : ['ankelli', 'admin', 'system', 'root', 'user'];
     }
 
     public function availability_check(Request $request)
@@ -88,8 +88,16 @@ class __AuxController extends Controller
 
             case 'username':
                 $reserved_usernames = (new __AuxController)->reserved_usernames();
-                $usable = !_User::where('username', $request->check_param_value )->exists() && !in_array( $request->check_param_value , $reserved_usernames );
-                $message = $usable ? 'Username available for use.' : ( in_array( $request->check_param_value , $reserved_usernames ) ? 'Chosen username is reserved word and can\'t be used.' : 'Username already in use in the system.');
+                $regex_passes = true;
+                $regex_failed_username = '';
+                foreach ($reserved_usernames as $reserved_username) {
+                    if(preg_match("/{$reserved_username}/i", $request->check_param_value)) {
+                        $regex_passes = false;
+                        $regex_failed_username = $reserved_username;
+                    }
+                }
+                $usable = !_User::where('username', $request->check_param_value )->exists() && !in_array( $request->check_param_value , $reserved_usernames ) && $regex_passes;
+                $message = $usable ? 'Username available for use.' : ( in_array( $request->check_param_value , $reserved_usernames ) ? 'Chosen username is reserved word and can\'t be used.' : ( !$regex_passes ? 'Username contains "' . $regex_failed_username . '" which is a reserved word' : 'Username already in use in the system.' ) );
                 break;
 
             case 'email_address':
@@ -211,20 +219,20 @@ class __AuxController extends Controller
         session()->put('load_factory_data', 'true');
         session()->put('active_session_token', request()->segments()[env('API_URL')?0:1] );
         
-        // user:sysroot
+        // user:developer
         (new _UserController)->store( new Request([
-            'username' => 'sysroot',
-            'email_address' => 'sysroot.ankelli@gmail.com',
+            'username' => 'developer',
+            'email_address' => 'developer.ankelli@gmail.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
         session()->put('api_auth_user_username', 'system');
         (new _AdminExtensionController)->store( new Request([
-            'user_username' => 'sysroot',
-            'post_title' => 'System Root User',
+            'user_username' => 'developer',
+            'post_title' => 'Default Developer',
         ]));
         (new _UserGroupMembershipController)->store( new Request([
-            'user_username' => 'sysroot',
-            'user_group_slug' => 'system_root_users',
+            'user_username' => 'developer',
+            'user_group_slug' => 'developers',
         ]));
 
         // user:sysadmin
@@ -251,27 +259,51 @@ class __AuxController extends Controller
             'user_group_slug' => 'system_administrators',
         ]));
 
-        // user:ankelli
+        // user:reserves
         (new _UserController)->store( new Request([
-            'username' => 'ankelli',
-            'email_address' => 'business@ankelli.com',
+            'username' => 'reserves',
+            'email_address' => 'reserves@ankelli.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
         session()->put('api_auth_user_username', 'system');
         (new _AdminExtensionController)->store( new Request([
-            'user_username' => 'ankelli',
-            'post_title' => 'Default Business Administrator',
+            'user_username' => 'reserves',
+            'post_title' => 'Asset Reserves',
         ]));
         (new _BuyerExtensionController)->store( new Request([
-            'user_username' => 'ankelli',
+            'user_username' => 'reserves',
             '_status' => 'deactivated',
         ]));
         (new _SellerExtensionController)->store( new Request([
-            'user_username' => 'ankelli',
+            'user_username' => 'reserves',
             '_status' => 'deactivated',
         ]));
         (new _UserGroupMembershipController)->store( new Request([
-            'user_username' => 'ankelli',
+            'user_username' => 'reserves',
+            'user_group_slug' => 'business_administrators',
+        ]));
+
+        // user:busadmin
+        (new _UserController)->store( new Request([
+            'username' => 'busadmin',
+            'email_address' => 'busadmin@ankelli.com',
+            'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
+        ]));
+        session()->put('api_auth_user_username', 'system');
+        (new _AdminExtensionController)->store( new Request([
+            'user_username' => 'busadmin',
+            'post_title' => 'Default Business Administrator',
+        ]));
+        (new _BuyerExtensionController)->store( new Request([
+            'user_username' => 'busadmin',
+            '_status' => 'deactivated',
+        ]));
+        (new _SellerExtensionController)->store( new Request([
+            'user_username' => 'busadmin',
+            '_status' => 'deactivated',
+        ]));
+        (new _UserGroupMembershipController)->store( new Request([
+            'user_username' => 'busadmin',
             'user_group_slug' => 'business_administrators',
         ]));
 
@@ -286,6 +318,9 @@ class __AuxController extends Controller
         session()->put('load_factory_data', 'true');
         session()->put('active_session_token', request()->segments()[env('API_URL')?0:1] );
 
+        session()->put('api_auth_user_username', 'system');
+        (new _RegTokenController)->store( new Request([]));
+
         // user:guddaz
         (new _UserController)->store( new Request([
             'username' => 'guddaz', 'email_address' => 'goodhopedhliwayo@gmail.com',
@@ -293,11 +328,11 @@ class __AuxController extends Controller
         ]));
         session()->put('api_auth_user_username', 'system');
         (new _AdminExtensionController)->store( new Request([
-            'user_username' => 'guddaz', 'post_title' => 'Head system sysroot',
+            'user_username' => 'guddaz', 'post_title' => 'Head system developer',
         ]));
         (new _UserGroupMembershipController)->store( new Request([
             'user_username' => 'guddaz',
-            'user_group_slug' => 'system_root_users',
+            'user_group_slug' => 'developers',
         ]));
         
         // user:lodza
@@ -311,6 +346,9 @@ class __AuxController extends Controller
         ]));
         (new _UserGroupMembershipController)->store( new Request([
             'user_username' => 'lodza', 'user_group_slug' => 'system_administrators',
+        ]));
+        (new _UserGroupMembershipController)->store( new Request([
+            'user_username' => 'lodza', 'user_group_slug' => 'user_administrators',
         ]));
         (new _UserGroupMembershipController)->store( new Request([
             'user_username' => 'lodza', 'user_group_slug' => 'business_administrators',
@@ -328,18 +366,19 @@ class __AuxController extends Controller
         // Internalisation transactions
 
         $internalisations = [
-            ['ankelli', 3000, 'Transfer from Coinbase wallet.'],
-            ['guddaz', 218.87587867, 'Transfer from Coinbase wallet.'],
-            ['lodza', 967.86579, 'Transfer from Ledger wallet.'],
-            ['flint', 400, 'Transfer from Coinbase wallet.'],
-            ['guddaz', 98.9012, 'Transfer from Exodus wallet.'],
-            ['lodza', 106.76, 'Transfer from Coinbase wallet.'],
+            ['reserves', 3000, 'Transfer from Coinbase wallet to Ankelli Reserves Wallet.'],
+            ['guddaz', 218.87587867, 'Transfer from Coinbase wallet to Ankelli wallet.'],
+            ['lodza', 967.86579, 'Transfer from Ledger wallet to Ankelli wallet.'],
+            ['flint', 400, 'Transfer from Coinbase wallet to Ankelli wallet.'],
+            ['guddaz', 98.9012, 'Transfer from Exodus wallet to Ankelli wallet.'],
+            ['lodza', 106.76, 'Transfer from Coinbase wallet to Ankelli wallet.'],
         ];
 
         foreach ($internalisations as $key => $internalisation) {
             session()->put('api_auth_user_username', $internalisation[0]);
             (new _TransactionController)->store( new Request([
                 'description' => $internalisation[2],
+                'type' => 'internalisation',
                 'destination_user_username' => $internalisation[0], 
                 'asset_code' => 'USDT',
                 'transfer_value' => $internalisation[1],

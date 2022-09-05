@@ -105,7 +105,7 @@ class _OfferController extends Controller
         (new _LogController)->store( new Request([
             'action_note' => 'Addition of _Offer entry to database.',
             'action_type' => 'entry_create',
-            'entry_table' => '__offers',
+            'entry_table' => $element->getTable(),
             'entry_uid' => $element->ref_code,
             'batch_code' => $request->batch_code,
         ]));
@@ -121,7 +121,7 @@ class _OfferController extends Controller
      */
     public function show(string $ref_code)
     {
-        $element = _Offer::find($ref_code);
+        $element = _Offer::findOrFail($ref_code);
         return response()->json( new _OfferResource( $element ) );
     }
 
@@ -139,7 +139,7 @@ class _OfferController extends Controller
             '_status' => ['sometimes', 'string', Rule::in(['online', 'offline'])],
         ]);
 
-        $element = _Offer::find($ref_code);
+        $element = _Offer::findOrFail($ref_code);
 
         // Handle _Log
         $log_entry_update_result = [];
@@ -155,7 +155,7 @@ class _OfferController extends Controller
         (new _LogController)->store( new Request([
             'action_note' => $request->update_note,
             'action_type' => 'entry_update',
-            'entry_table' => '__offers',
+            'entry_table' => $element->getTable(),
             'entry_uid' => $element->ref_code,
             'batch_code' => $request->batch_code,
             'entry_update_result'=> $log_entry_update_result,

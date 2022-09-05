@@ -79,7 +79,7 @@ class _TradeController extends Controller
             '_status' => ['sometimes', 'string', Rule::in(['active', 'cancelled', 'flagged', 'completed'])],
         ]);
 
-        $offer = _Offer::find($validated_data['offer_ref_code'])->makeVisible(['pymt_details']);
+        $offer = _Offer::findOrFail($validated_data['offer_ref_code'])->makeVisible(['pymt_details']);
 
         $validated_data['platform_charge_asset_factor'] = (float)_PrefItem::firstWhere('key_slug', 'platform_charge_asset_factor')->value;
         $validated_data['asset_value'] = $validated_data['currency_amount'] / $offer->offer_price;
@@ -166,7 +166,8 @@ class _TradeController extends Controller
             ]), $escrow_asset_account->id );
         } else {
             (new _TransactionController)->store( new Request([
-                'description' => 'Lock asset in escrow.',
+                'description' => 'Lock asset in escrow for trade "' . $validated_data['ref_code'] . '"',
+                'type' => 'escrow_asset_lock',
                 'source_user_username' => $seller_username, 
                 'destination_user_username' => 'escrow', 
                 'asset_code' => $offer->asset_code,
@@ -190,7 +191,7 @@ class _TradeController extends Controller
         (new _LogController)->store( new Request([
             'action_note' => 'Addition of _Trade entry to database.',
             'action_type' => 'entry_create',
-            'entry_table' => '__trades',
+            'entry_table' => $element->getTable(),
             'entry_uid' => $element->ref_code,
             'batch_code' => $request->batch_code,
         ]));
@@ -206,7 +207,7 @@ class _TradeController extends Controller
      */
     public function show(string $ref_code)
     {
-        $element = _Trade::find($ref_code);
+        $element = _Trade::findOrFail($ref_code);
         return response()->json( new _TradeResource( $element ) );
     }
 
@@ -227,7 +228,7 @@ class _TradeController extends Controller
             '_status' => ['sometimes', 'string', Rule::in(['active', 'cancelled', 'flagged', 'completed'])],
         ]);
 
-        $element = _Trade::find($ref_code);
+        $element = _Trade::findOrFail($ref_code);
         $validated_data['updater_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
         
         if (isset($validated_data['pymt_declared']) && $validated_data['pymt_declared'] == true){
@@ -275,7 +276,8 @@ class _TradeController extends Controller
                 ]), $escrow_asset_account->id );
             } else {
                 (new _TransactionController)->store( new Request([
-                    'description' => 'Unlock asset from escrow.',
+                    'description' => 'Unlock asset from escrow for trade "' . $ref_code . '"',
+                    'type' => 'escrow_asset_unlock',
                     'source_user_username' => 'escrow', 
                     'destination_user_username' => $seller_username, 
                     'asset_code' => $element->asset_code,
@@ -286,7 +288,8 @@ class _TradeController extends Controller
             // End unlock asset from escrow
             
             (new _TransactionController)->store( new Request([
-                'description' => 'Trade asset release.',
+                'description' => 'Asset release for trade "' . $ref_code . '"',
+                'type' => 'trade_asset_release',
                 'source_user_username' => $seller_username, 
                 'destination_user_username' => $buyer_username, 
                 'asset_code' => $element->asset_code,
@@ -320,7 +323,7 @@ class _TradeController extends Controller
         (new _LogController)->store( new Request([
             'action_note' => 'Updating of _Trade entry in database.',
             'action_type' => 'entry_update',
-            'entry_table' => '__trades',
+            'entry_table' => $element->getTable(),
             'entry_uid' => $element->ref_code,
             'batch_code' => $request->batch_code,
             'entry_update_result'=> $log_entry_update_result,

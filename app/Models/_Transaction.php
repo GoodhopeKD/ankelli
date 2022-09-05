@@ -18,6 +18,7 @@ class _Transaction extends Model
         'ref_code',
         'session_token',
         'description',
+        'type',
         'source_user_username',
         'destination_user_username',
         'asset_code',

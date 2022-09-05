@@ -19,7 +19,7 @@ class DepositTokensCreateNewScreen extends React.Component {
     state = {
         btn_create_deposit_token_working: false,
         input: _.cloneDeep(this.default_input),
-        ankelli_user_asset_accounts: [],
+        ankelli_reserves_user_asset_accounts: [],
         errors: [],
     }
 
@@ -58,8 +58,8 @@ class DepositTokensCreateNewScreen extends React.Component {
     }
 
     componentDidMount = async () => {
-        await _User.getOne({ username: 'ankelli' })
-            .then(ankelli_user => this.setState({ ankelli_user_asset_accounts: ankelli_user.asset_accounts }))
+        await _User.getOne({ username: 'reserves' })
+            .then(ankelli_reserves_user => this.setState({ ankelli_reserves_user_asset_accounts: ankelli_reserves_user.asset_accounts }))
             .catch(e => console.log(e))
     }
 
@@ -137,7 +137,7 @@ class DepositTokensCreateNewScreen extends React.Component {
                                             </div>
                                             <div className="col">
                                                 <label htmlFor="output_current_balance" className="form-label">Current balance</label>
-                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.state.ankelli_user_asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value, asset)}</span>
+                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.state.ankelli_reserves_user_asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value, asset)}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -146,7 +146,7 @@ class DepositTokensCreateNewScreen extends React.Component {
                                         <input type="number" className="form-control" id={'input_asset_value'}
                                             required
                                             value={this.state.input.asset_value}
-                                            max={window.assetValueString((this.state.ankelli_user_asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value, asset, false)}
+                                            max={window.assetValueString((this.state.ankelli_reserves_user_asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value, asset, false)}
                                             onChange={e => this.handleInputChange('asset_value', e.target.value, true)}
                                         />
                                     </div>

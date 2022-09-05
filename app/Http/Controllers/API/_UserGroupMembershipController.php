@@ -36,7 +36,6 @@ class _UserGroupMembershipController extends Controller
             'user_username' => ['required', 'exists:__users,username', 'string'],
             'user_group_slug' => ['required', 'exists:__user_groups,slug', 'string'],
             '_status' => ['sometimes', 'string', Rule::in(['active', 'deactivated'])],
-            'post_title' => ['sometimes', 'string'],
         ]);
 
         $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
@@ -51,9 +50,9 @@ class _UserGroupMembershipController extends Controller
         }
 
         $protected_user_groups = [
-            'system_root_users' => ['system', 'sysroot'],
-            'system_administrators' => ['system', 'sysroot', 'sysadmin'],
-            'business_administrators' => ['system', 'sysroot', 'ankelli'],
+            'developers' => ['system', 'developer'],
+            'system_administrators' => ['system', 'developer', 'sysadmin'],
+            'business_administrators' => ['system', 'developer', 'busadmin'],
         ];
         
         foreach ($protected_user_groups as $user_group_slug => $permitted_adders) {
@@ -69,10 +68,7 @@ class _UserGroupMembershipController extends Controller
                     return abort(422,"User cannot be added to group because _AdminExtension is " . $new_member_admin_extension->_status);
                 }
             } else {
-                (new _AdminExtensionController)->store( new Request([
-                    'user_username' => $validated_data['user_username'],
-                    'post_title' => $validated_data['post_title'] ?? 'Administrator',
-                ]));
+                return abort(422,"User needs to be added as admin to be  added to this group");
             }
         }
 
@@ -81,7 +77,7 @@ class _UserGroupMembershipController extends Controller
         (new _LogController)->store( new Request([
             'action_note' => 'Addition of _UserGroupMembership entry to database.',
             'action_type' => 'entry_create',
-            'entry_table' => '__user_group_memberships',
+            'entry_table' => $element->getTable(),
             'entry_uid' => $element->id,
             'batch_code' => $request->batch_code,
         ]));

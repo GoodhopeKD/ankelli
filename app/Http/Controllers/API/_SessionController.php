@@ -65,7 +65,7 @@ class _SessionController extends Controller
         (new _LogController)->store( new Request([
             'action_note' => 'Addition of _Session entry to database.',
             'action_type' => 'entry_create',
-            'entry_table' => '__sessions',
+            'entry_table' => $element->getTable(),
             'entry_uid' => $session_token,
             'batch_code' => $request->batch_code,
         ]));
@@ -105,7 +105,7 @@ class _SessionController extends Controller
             ],
         ]));
         // End _Log Handling
-        //return response()->json( new _SessionResource( _Session::find( $element->token ) ) );
+        //return response()->json( new _SessionResource( _Session::findOrFail( $element->token ) ) );
     }
 
     public function _signUserOut(Request $request)
@@ -142,7 +142,7 @@ class _SessionController extends Controller
         Auth::user()->token()->revoke();
         session()->flush();
         session()->put( 'utc_offset', $utc_offset );
-        return response()->json( new _SessionResource( _Session::find( $element->token )  ) );
+        return response()->json( new _SessionResource( _Session::findOrFail( $element->token )  ) );
     }
 
     public function _end(Request $request)
@@ -175,7 +175,7 @@ class _SessionController extends Controller
             ],
         ]));
         // End _Log Handling
-        return response()->json( new _SessionResource( _Session::find( $element->token ) ) );
+        return response()->json( new _SessionResource( _Session::findOrFail( $element->token ) ) );
     }
 
     /**
@@ -213,7 +213,7 @@ class _SessionController extends Controller
         $api_auth_user = Auth::user();
         $api_auth_user_username = $api_auth_user ? $api_auth_user->username: null;
 
-        $element = _Session::find($token);
+        $element = _Session::findOrFail($token);
         /*$check_array = ['token' => $token];
 
         if (isset($validated_data['remote_end']) && $validated_data['remote_end']){

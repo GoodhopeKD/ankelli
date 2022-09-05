@@ -244,18 +244,18 @@ class _User extends Authenticatable
         }
 
         $admin_extension = $this->admin_extension;
-        if (isset($admin_extension) && !(array_search('user_administrators', array_column($user_group_memberships, "user_group_slug")) !== false)){
-            $_status = $admin_extension->_status === 'active' && _UserGroup::firstWhere('slug', 'user_administrators')->_status === 'active' ? 'active' : 'revoked';
+        if (isset($admin_extension) && !(array_search('administrators', array_column($user_group_memberships, "user_group_slug")) !== false)){
+            $_status = $admin_extension->_status === 'active' && _UserGroup::firstWhere('slug', 'administrators')->_status === 'active' ? 'active' : 'revoked';
             array_push( $user_group_memberships, new Request([ 
                 'id'                    => NULL,
                 'user_username'         => $this->username,
-                'user_group_slug'       => 'user_administrators',
+                'user_group_slug'       => 'administrators',
                 '_status'                => $_status,
                 'creator_username'      => $admin_extension->creator_username,
                 'created_datetime'      => $admin_extension->created_datetime,
                 'updated_datetime'      => $admin_extension->updated_datetime,
             ]));
-            if ( $_status === 'active' ){ array_push( $active_user_group_membership_slugs, 'user_administrators' ); }
+            if ( $_status === 'active' ){ array_push( $active_user_group_membership_slugs, 'administrators' ); }
         }
 
         $seller_extension = $this->seller_extension;

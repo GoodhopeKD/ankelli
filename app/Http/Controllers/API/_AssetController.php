@@ -28,7 +28,7 @@ class _AssetController extends Controller
 
             $eloquent_query = _Asset::where($simple_query_args);
 
-            $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->get(); 
+            $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->paginate(request()->per_page ?? count($eloquent_query->get()))->withQueryString();
         }
 
         return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _AssetResource::collection( $result ) : new _AssetResourceCollection( $result ) ) : null;

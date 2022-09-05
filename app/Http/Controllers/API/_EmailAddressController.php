@@ -38,7 +38,7 @@ class _EmailAddressController extends Controller
         (new _LogController)->store( new Request([
             'action_note' => 'Addition of _EmailAddress entry to database.',
             'action_type' => 'entry_create',
-            'entry_table' => '__email_addresses',
+            'entry_table' => $element->getTable(),
             'entry_uid' => $element->email_address,
             'batch_code' => $request->batch_code,
         ]));

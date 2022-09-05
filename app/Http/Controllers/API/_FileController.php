@@ -94,7 +94,7 @@ class _FileController extends Controller
         (new _LogController)->store( new Request([
             'action_note' => 'Addition of _File entry to database.',
             'action_type' => 'entry_create',
-            'entry_table' => '__files',
+            'entry_table' => $element->getTable(),
             'entry_uid' => $element->id,
             'batch_code' => $request->batch_code,
         ]));
@@ -128,9 +128,9 @@ class _FileController extends Controller
             'order_index'       => ['integer', 'nullable'],
         ]);
 
-        $element = _File::find($id);
+        $element = _File::findOrFail($id);
         $element->update($validated_data);
-        return response()->json( (new _FileResource( _File::find( $id ) )) );
+        return response()->json( (new _FileResource( _File::findOrFail( $id ) )) );
     }
 
     /**
@@ -141,7 +141,7 @@ class _FileController extends Controller
      */
     public function destroy(int $id)
     {
-        $element = _File::find($id);
+        $element = _File::findOrFail($id);
         if (in_array( auth('api')->user()->username, [$element->creator_username, $element->upater_username] )){
             Storage::delete( 'public/' . $element->filegroup . '/' . ltrim( $element->parent_table, '__' ) . '/' . $element->filename );
             $element->delete();

@@ -44,7 +44,7 @@ class _PhoneNoController extends Controller
         (new _LogController)->store( new Request([
             'action_note' => 'Addition of _PhoneNo entry to database.',
             'action_type' => 'entry_create',
-            'entry_table' => '__phone_nos',
+            'entry_table' => $element->getTable(),
             'entry_uid' => $element->id,
             'batch_code' => $request->batch_code,
         ]));

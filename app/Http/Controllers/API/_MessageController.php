@@ -44,7 +44,7 @@ class _MessageController extends Controller
         (new _LogController)->store( new Request([
             'action_note' => 'Addition of _Message entry to database.',
             'action_type' => 'entry_create',
-            'entry_table' => '__messages',
+            'entry_table' => $element->getTable(),
             'entry_uid' => $element->id,
             'batch_code' => $request->batch_code,
         ]));

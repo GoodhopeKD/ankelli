@@ -37,13 +37,13 @@ class _AssetAccountController extends Controller
         ]);
 
         $element = _AssetAccount::create($validated_data);
-        $element = _AssetAccount::find($element->id);
+        $element = _AssetAccount::findOrFail($element->id);
         
         // Handle _Log
         (new _LogController)->store( new Request([
             'action_note' => 'Addition of _AssetAccount entry to database.',
             'action_type' => 'entry_create',
-            'entry_table' => '__asset_accounts',
+            'entry_table' => $element->getTable(),
             'entry_uid' => $element->id,
             'batch_code' => $request->batch_code,
         ]));
@@ -59,7 +59,7 @@ class _AssetAccountController extends Controller
      */
     public function show(int $id)
     {
-        $element = _AssetAccount::find($id);
+        $element = _AssetAccount::findOrFail($id);
         return response()->json( new _AssetAccountResource( $element ) );
     }
 
@@ -77,7 +77,7 @@ class _AssetAccountController extends Controller
             '_status' => ['sometimes', 'string', Rule::in(['active', 'frozen'])],
         ]);
 
-        $element = _AssetAccount::find($id);
+        $element = _AssetAccount::findOrFail($id);
 
         // Handle _Log
         $log_entry_update_result = [];
@@ -93,7 +93,7 @@ class _AssetAccountController extends Controller
         (new _LogController)->store( new Request([
             'action_note' => 'Updating of _AssetAccount entry in database.',
             'action_type' => 'entry_update',
-            'entry_table' => '__asset_accounts',
+            'entry_table' => $element->getTable(),
             'entry_uid' => $element->id,
             'batch_code' => $request->batch_code,
             'entry_update_result'=> $log_entry_update_result,

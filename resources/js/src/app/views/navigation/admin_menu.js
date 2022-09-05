@@ -1,6 +1,9 @@
 import React from "react"
 import DepositTokensListViewScreen from 'app/views/screens/admin_menu/business_management/DepositTokensListView.screen'
 import DepositTokensCreateNewScreen from 'app/views/screens/admin_menu/business_management/DepositTokensCreateNew.screen'
+import RegTokensListViewScreen from 'app/views/screens/admin_menu/user_management/RegTokensListView.screen'
+import RegTokensCreateNewScreen from 'app/views/screens/admin_menu/user_management/RegTokensCreateNew.screen'
+import DatasetListViewScreen from "app/views/screens/admin_menu/datalists/DatasetListView.screen"
 
 import SideBar from 'app/views/components/SideBar'
 
@@ -26,7 +29,7 @@ export const admin_menu = {
     menu_title: 'Admin Menu',
     show_in_menu: true,
     show_when_auth_state_is: true,
-    required_active_user_group_membership_slugs: ['system_administrators', 'business_administrators', 'user_administrators', 'platform_moderators'],
+    required_active_user_group_membership_slugs: ['administrators', 'platform_moderators'],
     menu_items: [
         {
             title: 'Dashboard',
@@ -122,7 +125,7 @@ export const admin_menu = {
                 {
                     title: 'Registration Tokens',
                     path: '/user_management/reg_tokens',
-                    element: (props) => <ExampleElement {...props} nav_menus={[props.nav_menus.find(menu => menu.slug === 'admin_menu')]} />,
+                    element: (props) => <RegTokensListViewScreen {...props} />,
                     show_in_menu: true,
                 },
                 {
@@ -140,7 +143,7 @@ export const admin_menu = {
                 {
                     title: 'New Registration Token',
                     path: '/user_management/reg_tokens/new',
-                    element: (props) => <ExampleElement {...props} nav_menus={[props.nav_menus.find(menu => menu.slug === 'admin_menu')]} />,
+                    element: (props) => <RegTokensCreateNewScreen {...props} />,
                     show_in_menu: false,
                 },
                 {
@@ -375,25 +378,25 @@ export const admin_menu = {
                 {
                     title: 'Assets List',
                     path: '/datalists/assets',
-                    element: (props) => <ExampleElement {...props} nav_menus={[props.nav_menus.find(menu => menu.slug === 'admin_menu')]} />,
+                    element: (props) => <DatasetListViewScreen {...props} />,
                     show_in_menu: true,
                 },
                 {
                     title: 'Currencies List',
                     path: '/datalists/currencies',
-                    element: (props) => <ExampleElement {...props} nav_menus={[props.nav_menus.find(menu => menu.slug === 'admin_menu')]} />,
+                    element: (props) => <DatasetListViewScreen {...props} />,
                     show_in_menu: true,
                 },
                 {
                     title: 'Payment Methods List',
                     path: '/datalists/payment_methods',
-                    element: (props) => <ExampleElement {...props} nav_menus={[props.nav_menus.find(menu => menu.slug === 'admin_menu')]} />,
+                    element: (props) => <DatasetListViewScreen {...props} />,
                     show_in_menu: true,
                 },
                 {
                     title: 'Countries List',
                     path: '/datalists/countries',
-                    element: (props) => <ExampleElement {...props} nav_menus={[props.nav_menus.find(menu => menu.slug === 'admin_menu')]} />,
+                    element: (props) => <DatasetListViewScreen {...props} />,
                     show_in_menu: true,
                 },
             ]

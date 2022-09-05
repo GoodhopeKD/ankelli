@@ -22,4 +22,20 @@ class _RegToken extends Model
     public $incrementing = false;
     protected $primaryKey = 'token';
     protected $keyType = 'string';
+
+    /**
+     * Get the logs associated with the city.
+     */
+    public function logs()
+    {
+        return $this->hasMany( _Log::class, 'entry_uid' )->where('entry_table', '__trades');
+    }
+
+    /**
+     * Get the users associated with the city.
+     */
+    public function users()
+    {
+        return $this->hasMany( _User::class, 'reg_token' );
+    }
 }

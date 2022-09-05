@@ -40,7 +40,7 @@ class _NotificationController extends Controller
         (new _LogController)->store( new Request([
             'action_note' => 'Addition of _Notification entry to database.',
             'action_type' => 'entry_create',
-            'entry_table' => '__notifications',
+            'entry_table' => $element->getTable(),
             'entry_uid' => $element->id,
             'batch_code' => $request->batch_code,
         ]));

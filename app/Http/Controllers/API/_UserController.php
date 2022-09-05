@@ -233,7 +233,7 @@ class _UserController extends Controller
     {
         switch ($request->check_param_name) {
             case 'reg_token':
-                $reg_token = _RegToken::find( $request->check_param_value );
+                $reg_token = _RegToken::findOrFail( $request->check_param_value );
                 $usable = $reg_token && $reg_token->_status === 'active' && count(_User::where('reg_token', $request->check_param_value)->get()) <= (integer)_PrefItem::firstWhere('key_slug', 'reg_token_max_use_count')->value;
                 $message = $usable ? 'Reg token available for use.' : ($reg_token ? ($reg_token->_status === 'available' ? 'Reg token used up.' : 'Reg token has _status "'.$reg_token->_status.'".') : 'Reg token not found.');
                 break;

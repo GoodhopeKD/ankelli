@@ -35,7 +35,7 @@ class _PinningController extends Controller
         (new _LogController)->store( new Request([
             'action_note' => 'Addition of _Pinning entry to database.',
             'action_type' => 'entry_create',
-            'entry_table' => '__pinnings',
+            'entry_table' => $element->getTable(),
             'entry_uid' => $element->id,
             'batch_code' => $request->batch_code,
         ]));
@@ -70,7 +70,7 @@ class _PinningController extends Controller
 
         $api_auth_user = auth('api')->user();
 
-        $element = _Pinning::find($id);
+        $element = _Pinning::findOrFail($id);
         $element->update($validated_data);
 
         return response()->json( new _PinningResource( $element ) );
@@ -85,7 +85,7 @@ class _PinningController extends Controller
     public function destroy(int $id)
     {
         $api_auth_user = auth('api')->user();
-        $element = _Pinning::find($id);
+        $element = _Pinning::findOrFail($id);
         if ( $api_auth_user && $api_auth_user->username === $element->user_username){
             $element->delete();
             return response()->json(['success' => 'success'], 200);

@@ -28,7 +28,7 @@ class _PymtMethodController extends Controller
 
             $eloquent_query = _PymtMethod::where($simple_query_args);
 
-            $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->get(); 
+            $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->paginate(request()->per_page)->withQueryString();
         }
 
         return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _PymtMethodResource::collection( $result ) : new _PymtMethodResourceCollection( $result ) ) : null;

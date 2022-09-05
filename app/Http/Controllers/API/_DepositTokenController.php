@@ -22,7 +22,7 @@ class _DepositTokenController extends Controller
         $result = null;
 
         if ( $result === null && request()->get_as_addon_prop && request()->get_as_addon_prop == true ){
-            $result = _DepositToken::where(['_status'=>'online'])
+            $result = _DepositToken::where(['_status'=>'active'])
             ->orderByRaw('ifnull(used_datetime, created_datetime) DESC')->paginate(request()->per_page)->withQueryString(); 
         }
         
@@ -66,7 +66,7 @@ class _DepositTokenController extends Controller
         (new _LogController)->store( new Request([
             'action_note' => 'Addition of _DepositToken entry to database.',
             'action_type' => 'entry_create',
-            'entry_table' => '__deposit_tokens',
+            'entry_table' => $element->getTable(),
             'entry_uid' => $element->token,
             'batch_code' => $request->batch_code,
         ]));
@@ -98,7 +98,7 @@ class _DepositTokenController extends Controller
             'asset_code' => ['required', 'exists:__assets,code', 'string'],
         ]);
 
-        $element = _DepositToken::find($token);
+        $element = _DepositToken::findOrFail($token);
 
         if (!$element){
             return abort(422,"Token not valid.");
@@ -116,8 +116,9 @@ class _DepositTokenController extends Controller
         $validated_data['used_datetime'] = now()->toDateTimeString();
 
         (new _TransactionController)->store( new Request([
-            'description' => 'Deposit token topup.',
-            'source_user_username' => 'ankelli', 
+            'description' => 'Wallet topup using deposit token "' . $token . '"',
+            'type' => 'deposit_token_topup',
+            'source_user_username' => 'reserves', 
             'destination_user_username' => $validated_data['user_username'], 
             'asset_code' => $element->asset_code,
             'transfer_value' => $element->asset_value,
@@ -137,7 +138,7 @@ class _DepositTokenController extends Controller
         (new _LogController)->store( new Request([
             'action_note' => 'Updating of _DepositToken entry in database.',
             'action_type' => 'entry_update',
-            'entry_table' => '__deposit_tokens',
+            'entry_table' => $element->getTable(),
             'entry_uid' => $element->token,
             'batch_code' => $request->batch_code,
             'entry_update_result'=> $log_entry_update_result,
