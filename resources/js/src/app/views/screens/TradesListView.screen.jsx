@@ -125,7 +125,7 @@ class TradesListViewScreen extends React.Component {
             asset_options.push({
                 value: asset_code,
                 searchable_text: asset_code + asset.name + asset.description,
-                output_element: () => <>{asset.name}</>
+                output_element: () => <>{asset.name} <i className="text-primary">{asset_code}</i></>
             })
         })
 

@@ -106,6 +106,7 @@ export default class _Offer extends _Wrapper_ implements Omit<typeof _OfferRespO
     }
 
     public async accept(currency_amount: number, pymt_details: any = undefined) {
+        console.log(pymt_details)
         return _Trade.create({ offer_ref_code: this.ref_code as string, currency_amount, pymt_details })
     }
 

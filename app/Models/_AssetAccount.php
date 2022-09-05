@@ -18,6 +18,7 @@ class _AssetAccount extends Model
         'user_username',
         'asset_code',
         'asset_value',
+        '_status',
     ];
 
     /**

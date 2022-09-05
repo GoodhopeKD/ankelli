@@ -62,9 +62,11 @@ class DepositsScreen extends React.Component {
             asset_options.push({
                 value: asset_code,
                 searchable_text: asset_code + asset.name + asset.description,
-                output_element: () => <>{asset.name}</>
+                output_element: () => <>{asset.name} <i className="text-primary">{asset_code}</i></>
             })
         })
+
+        const asset = this.props.datalists.active_assets[this.state.input.asset_code]
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container-fluid py-3">
@@ -78,11 +80,12 @@ class DepositsScreen extends React.Component {
                                 Deposit token topup
                             </div>
                             <div className="card-body">
-                                <form className="" onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
+                                <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
 
-                                    <div className="mb-3">
-                                        <label htmlFor="input_asset_code" className="form-label">Asset</label>
-                                        <CustomSelect
+                                    <div className="mb-3 row">
+                                        <div className="col">
+                                            <label htmlFor="input_asset_code" className="form-label">Asset</label>
+                                            <CustomSelect
                                             element_id="input_asset_code"
                                             has_none_option={false}
                                             options={asset_options}
@@ -90,6 +93,11 @@ class DepositsScreen extends React.Component {
                                             selected_option_value={this.state.input.asset_code}
                                             onChange={asset_code => this.handleInputChange('asset_code', asset_code, true)}
                                         />
+                                        </div>
+                                        <div className="col">
+                                            <label htmlFor="output_current_balance" className="form-label">Current balance</label>
+                                            <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value, asset)}</span>
+                                        </div>
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="input_token" className="form-label">Deposit token</label>
@@ -124,7 +132,7 @@ class DepositsScreen extends React.Component {
 const mapStateToProps = (state) => {
     return {
         datalists: state.datalists_data,
-        auth_user: state.auth_user_data ? new _User(state.auth_user_data) : null,
+        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_accounts']) : null,
     }
 }
 

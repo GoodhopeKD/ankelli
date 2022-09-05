@@ -15,7 +15,7 @@ String.prototype.capitalize = function () {
 };
 
 window.ucfirst = function (s) {
-	return s && s.length ? s[0].capitalize() + s.slice(1) : ''
+	return s && s.length ? s[0].toUpperCase() + s.slice(1) : ''
 }
 
 window.currencyAmountString = (amount, currency) => {

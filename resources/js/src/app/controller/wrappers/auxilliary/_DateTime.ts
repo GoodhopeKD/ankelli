@@ -62,7 +62,7 @@ export default class _DateTime extends _Date {
 	}
 
 	prettyDatetime(rel_offset_minutes: number = 0): string {
-		if (!this._is_valid_datetime) return 'Invalid time and date'
+		if (!this._is_valid_datetime) return 'invalid time and date'
 
 		rel_offset_minutes = rel_offset_minutes !== 0 ? rel_offset_minutes * 60 : 0
 

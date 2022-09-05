@@ -107,7 +107,7 @@ class OffersCreateNewScreen extends React.Component {
             asset_options.push({
                 value: asset_code,
                 searchable_text: asset_code + asset.name + asset.description,
-                output_element: () => <>{asset.name}</>
+                output_element: () => <>{asset.name} <i className="text-primary">{asset_code}</i></>
             })
         })
 
@@ -148,7 +148,7 @@ class OffersCreateNewScreen extends React.Component {
                             </div>
                         }
 
-                        <form className="" onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
+                        <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
                             <div className="mb-3">
                                 <label htmlFor="input_country_name" className="form-label">Country</label>
                                 <CustomSelect
@@ -171,7 +171,7 @@ class OffersCreateNewScreen extends React.Component {
                                     has_none_option={false}
                                     max_shown_options_count={5}
                                     selected_option_value={this.state.input.pymt_method_slug}
-                                    onChange={pymt_method_slug => { this.handleInputChange('pymt_method_slug', pymt_method_slug, true); this.handleInputChange('pymt_details', this.props.datalists.active_pymt_methods[pymt_method_slug].details_required, true); }}
+                                    onChange={pymt_method_slug => { this.handleInputChange('pymt_method_slug', pymt_method_slug, true); this.handleInputChange('pymt_details', _.cloneDeep(this.props.datalists.active_pymt_methods[pymt_method_slug].details_required), true); }}
                                 />
                             </div>
 
@@ -220,9 +220,10 @@ class OffersCreateNewScreen extends React.Component {
                                 </div>
                                 <div className="card-body">
                                     <div className="mb-3">
-                                        <label htmlFor="input_asset_code" className="form-label">Asset</label>
+
                                         <div className="row">
                                             <div className="col">
+                                                <label htmlFor="input_asset_code" className="form-label">Asset</label>
                                                 <CustomSelect
                                                     disabled={all_disabled}
                                                     element_id="input_asset_code"
@@ -234,7 +235,8 @@ class OffersCreateNewScreen extends React.Component {
                                                 />
                                             </div>
                                             {!all_disabled && <div className="col">
-                                                <span className="form-control">Current balance: {window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value, asset)}</span>
+                                                <label htmlFor="output_current_balance" className="form-label">Current balance</label>
+                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value, asset)}</span>
                                             </div>}
                                         </div>
 

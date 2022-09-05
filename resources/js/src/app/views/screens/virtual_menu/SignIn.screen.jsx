@@ -43,8 +43,6 @@ export default withRouter(class SignInScreen extends React.Component {
     }
 
     handleSubmit = () => {
-        this.handleInputChange('username', document.getElementById('input_username').value, true)
-        this.handleInputChange('password', document.getElementById('input_password').value, true)
         this.setState({ btn_signin_working: true })
 
         const btn_signin_working = false
@@ -80,13 +78,29 @@ export default withRouter(class SignInScreen extends React.Component {
                                 <h2 className="fw-bold mb-0">Sign in</h2>
                             </div>
                             <div className="modal-body p-4 pt-0">
-                                <form className="" onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
+                                <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
                                     <div className="form-floating mb-3">
-                                        <input type='text' required className={"form-control rounded-3 " + (this.state.input.username.hasError() ? 'is-invalid' : '')} id="input_username" placeholder="Username" name='input_username' defaultValue={this.state.input.username + ''} />
+                                        <input
+                                            type='text'
+                                            className={"form-control rounded-3 " + (this.state.input.username.hasError() ? 'is-invalid' : '')}
+                                            id="input_username"
+                                            value={this.state.input.username + ''}
+                                            onChange={e => this.handleInputChange('username', e.target.value)}
+                                            required
+                                            placeholder="Username"
+                                        />
                                         <label htmlFor="input_username">Username</label>
                                     </div>
                                     <div className="form-floating mb-3">
-                                        <input type="password" required className={"form-control rounded-3 " + (this.state.input.password.hasError() ? 'is-invalid' : '')} id="input_password" placeholder="Password" name='input_password' defaultValue={this.state.input.password + ''} />
+                                        <input
+                                            type="password"
+                                            className={"form-control rounded-3 " + (this.state.input.password.hasError() ? 'is-invalid' : '')}
+                                            id="input_password"
+                                            value={this.state.input.password + ''}
+                                            onChange={e => this.handleInputChange('username', e.target.value)}
+                                            required
+                                            placeholder="Password"
+                                        />
                                         <label htmlFor="input_password">Password</label>
                                     </div>
                                     <div className="text-center mb-3">

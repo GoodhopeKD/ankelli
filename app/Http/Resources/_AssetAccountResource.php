@@ -14,6 +14,10 @@ class _AssetAccountResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return array_filter(array_merge(
+            parent::toArray($request), [
+                'asset_value' => $this->asset_value,
+                '_status' => $this->_status,
+            ]), static function($var){ return $var !== null;} );
     }
 }

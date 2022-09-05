@@ -137,7 +137,7 @@ class OffersListViewScreen extends React.Component {
             asset_options.push({
                 value: asset_code,
                 searchable_text: asset_code + asset.name + asset.description,
-                output_element: () => <>{asset.name}</>
+                output_element: () => <>{asset.name} <i className="text-primary">{asset_code}</i></>
             })
         })
 
@@ -161,7 +161,7 @@ class OffersListViewScreen extends React.Component {
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container py-3">
 
-                {this.props.path == '/offers' && <>
+                {(this.props.path == '/offers' || this.props.path == '/') && <>
                     <div className="row">
                         {(this.props.sysconfig_params.offer_to_buy_enabled && this.props.sysconfig_params.offer_to_sell_enabled) &&
                             <div className="col">
@@ -246,7 +246,7 @@ class OffersListViewScreen extends React.Component {
                         <table className="table">
                             <thead>
                                 <tr>
-                                    {this.props.path == '/offers' && <th scope="col">{this.state.showing_offer_to === 'buy' ? 'Buyer' : 'Seller'}</th>}
+                                    {(this.props.path == '/offers' || this.props.path == '/') && <th scope="col">{this.state.showing_offer_to === 'buy' ? 'Buyer' : 'Seller'}</th>}
                                     {this.props.path == '/my-offers' && <th scope="col">Location</th>}
                                     <th scope="col">Trading</th>
                                     <th scope="col">Price</th>
@@ -262,7 +262,7 @@ class OffersListViewScreen extends React.Component {
                                     const pymt_method = this.props.datalists.active_pymt_methods[offer.pymt_method_slug]
                                     return <tr key={index} >
                                         <td className="align-middle">
-                                            {this.props.path == '/offers' && <i>@{offer.creator_username}</i>}
+                                            {(this.props.path == '/offers' || this.props.path == '/') && <i>@{offer.creator_username}</i>}
                                             {this.props.path == '/my-offers' && <i>Offer to: {offer.offer_to}</i>}
                                             <br />In {offer.location !== null && <> #{offer.location} - </>} {offer.country_name}
                                         </td>
@@ -304,7 +304,7 @@ class OffersListViewScreen extends React.Component {
                         </table>
                         <div className="d-flex gap-2" >
 
-                            <div className="">
+                            <div>
                                 <div className="d-flex gap-2">
                                     <label htmlFor="input_per_page" className="align-self-center">Items</label>
                                     <select className="form-select" id="input_per_page" value={this.state.per_page} onChange={element => this.setState({ per_page: parseInt(element.target.value) }, () => { this.should_load_items = true; this.populateScreenWithItems() })} >
@@ -312,7 +312,7 @@ class OffersListViewScreen extends React.Component {
                                     </select>
                                 </div>
                             </div>
-                            <div className="">
+                            <div>
                                 <nav aria-label="Standard pagination example">
                                     <ul className="pagination">
                                         <li className={"page-item " + (this.state._collecion.meta.current_page == 1 ? 'disabled' : '')}>

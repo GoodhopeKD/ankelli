@@ -115,7 +115,7 @@ class TransactionsListViewScreen extends React.Component {
             asset_options.push({
                 value: asset_code,
                 searchable_text: asset_code + asset.name + asset.description,
-                output_element: () => <>{asset.name}</>
+                output_element: () => <>{asset.name} <i className="text-primary">{asset_code}</i></>
             })
         })
 
@@ -190,9 +190,9 @@ class TransactionsListViewScreen extends React.Component {
                                             <th scope="col">Ref Code</th>
                                             <th scope="col">Type</th>
                                             <th scope="col">Asset Value</th>
-                                            <th scope="col">Note</th>
-                                            <th scope="col">Platform charge</th>
+                                            <th scope="col">Description</th>
                                             <th scope="col">Datetime</th>
+                                            <th scope="col">New balance</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -203,10 +203,10 @@ class TransactionsListViewScreen extends React.Component {
                                             return <tr key={index} >
                                                 <td className="align-middle">{transaction.ref_code}</td>
                                                 <td className="align-middle">{tr_type}</td>
-                                                <td className="align-middle">{window.assetValueString(transaction.destination_account_transfer_value, asset)}</td>
-                                                <td className="align-middle">{transaction.note}</td>
-                                                <td className="align-middle">{debit ? window.assetValueString(transaction.platform_charge_asset_value, asset) : '-'}</td>
+                                                <td className="align-middle">{window.assetValueString(transaction.transfer_value, asset)}</td>
+                                                <td className="align-middle">{transaction.description}</td>
                                                 <td className="align-middle">{window.ucfirst(new _DateTime(transaction.transfer_datetime).prettyDatetime())}</td>
+                                                <td className="align-middle">{window.assetValueString(transaction.transfer_result.find(tr => tr.user_username == this.props.auth_user.username).new_asset_value, asset)}</td>
                                             </tr>
                                         })}
                                     </tbody>

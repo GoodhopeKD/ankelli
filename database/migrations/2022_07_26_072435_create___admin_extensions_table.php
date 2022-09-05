@@ -34,6 +34,14 @@ return new class extends Migration
             $table->timestamp('updated_datetime')->nullable()->useCurrentOnUpdate();
             $table->softDeletes('deleted_datetime');
         });
+
+        DB::table('__admin_extensions')->insert([
+            [
+                'user_username' => 'system',
+                'post_title' => 'System',
+                'creator_username' => 'system',
+            ],
+        ]);
     }
 
     /**

@@ -116,11 +116,11 @@ class _DepositTokenController extends Controller
         $validated_data['used_datetime'] = now()->toDateTimeString();
 
         (new _TransactionController)->store( new Request([
-            'note' => 'Deposit token topup.',
+            'description' => 'Deposit token topup.',
             'source_user_username' => 'ankelli', 
             'destination_user_username' => $validated_data['user_username'], 
             'asset_code' => $element->asset_code,
-            'source_account_transfer_value' => $element->asset_value,
+            'transfer_value' => $element->asset_value,
         ]));
 
         // Handle _Log

@@ -14,6 +14,9 @@ class _TradeResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return array_filter(array_merge(
+        parent::toArray($request), [
+            'messages' => $this->messages_f(),
+        ]), static function($var){ return $var !== null;} );
     }
 }

@@ -178,6 +178,10 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
         return this.update({ pymt_confirmed: true } as unknown as typeof _TradeRespObj, 'Set _Trade pymt_confirmed_datetime')
     }
 
+    public async cancel() {
+        return this.update({ _status: 'cancelled' }, 'Set _Offer _status to cancelled')
+    }
+
     public async flag() {
         return this.update({ _status: 'flagged' }, 'Set _Offer _status to flagged')
     }

@@ -211,11 +211,20 @@ class __AuxController extends Controller
         session()->put('load_factory_data', 'true');
         session()->put('active_session_token', request()->segments()[env('API_URL')?0:1] );
         
-        // user:developer
+        // user:sysroot
         (new _UserController)->store( new Request([
-            'username' => 'developer',
-            'email_address' => 'developer.ankelli@gmail.com',
+            'username' => 'sysroot',
+            'email_address' => 'sysroot.ankelli@gmail.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
+        ]));
+        session()->put('api_auth_user_username', 'system');
+        (new _AdminExtensionController)->store( new Request([
+            'user_username' => 'sysroot',
+            'post_title' => 'System Root User',
+        ]));
+        (new _UserGroupMembershipController)->store( new Request([
+            'user_username' => 'sysroot',
+            'user_group_slug' => 'system_root_users',
         ]));
 
         // user:sysadmin
@@ -224,18 +233,22 @@ class __AuxController extends Controller
             'email_address' => 'sysadmin@ankelli.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
+        session()->put('api_auth_user_username', 'system');
         (new _AdminExtensionController)->store( new Request([
             'user_username' => 'sysadmin',
             'post_title' => 'Default System Administrator',
-            'creator_username' => 'system',
         ]));
         (new _BuyerExtensionController)->store( new Request([
             'user_username' => 'sysadmin',
-            '_status' => 'deactivated', 'creator_username' => 'system',
+            '_status' => 'deactivated',
         ]));
         (new _SellerExtensionController)->store( new Request([
             'user_username' => 'sysadmin',
-            '_status' => 'deactivated', 'creator_username' => 'system',
+            '_status' => 'deactivated',
+        ]));
+        (new _UserGroupMembershipController)->store( new Request([
+            'user_username' => 'sysadmin',
+            'user_group_slug' => 'system_administrators',
         ]));
 
         // user:ankelli
@@ -244,13 +257,22 @@ class __AuxController extends Controller
             'email_address' => 'business@ankelli.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
+        session()->put('api_auth_user_username', 'system');
+        (new _AdminExtensionController)->store( new Request([
+            'user_username' => 'ankelli',
+            'post_title' => 'Default Business Administrator',
+        ]));
         (new _BuyerExtensionController)->store( new Request([
             'user_username' => 'ankelli',
-            '_status' => 'deactivated', 'creator_username' => 'system',
+            '_status' => 'deactivated',
         ]));
         (new _SellerExtensionController)->store( new Request([
             'user_username' => 'ankelli',
-            '_status' => 'deactivated', 'creator_username' => 'system',
+            '_status' => 'deactivated',
+        ]));
+        (new _UserGroupMembershipController)->store( new Request([
+            'user_username' => 'ankelli',
+            'user_group_slug' => 'business_administrators',
         ]));
 
         session()->forget('load_factory_data');
@@ -269,8 +291,13 @@ class __AuxController extends Controller
             'username' => 'guddaz', 'email_address' => 'goodhopedhliwayo@gmail.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
+        session()->put('api_auth_user_username', 'system');
         (new _AdminExtensionController)->store( new Request([
-            'user_username' => 'guddaz', 'post_title' => 'Head system developer', 'creator_username' => 'system',
+            'user_username' => 'guddaz', 'post_title' => 'Head system sysroot',
+        ]));
+        (new _UserGroupMembershipController)->store( new Request([
+            'user_username' => 'guddaz',
+            'user_group_slug' => 'system_root_users',
         ]));
         
         // user:lodza
@@ -278,8 +305,15 @@ class __AuxController extends Controller
             'username' => 'lodza', 'email_address' => 'lodza@example.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
+        session()->put('api_auth_user_username', 'system');
         (new _AdminExtensionController)->store( new Request([
-            'user_username' => 'lodza', 'post_title' => 'Business Intelligence HOD', 'creator_username' => 'system',
+            'user_username' => 'lodza', 'post_title' => 'Business Intelligence HOD',
+        ]));
+        (new _UserGroupMembershipController)->store( new Request([
+            'user_username' => 'lodza', 'user_group_slug' => 'system_administrators',
+        ]));
+        (new _UserGroupMembershipController)->store( new Request([
+            'user_username' => 'lodza', 'user_group_slug' => 'business_administrators',
         ]));
 
         $simple_users = ['ross', 'jimmy', 'keith', 'peter', 'flint', 'clarence', 'raymond', 'nassim'];
@@ -296,20 +330,21 @@ class __AuxController extends Controller
         $internalisations = [
             ['ankelli', 3000, 'Transfer from Coinbase wallet.'],
             ['guddaz', 218.87587867, 'Transfer from Coinbase wallet.'],
-            ['guddaz', 98.9012, 'Transfer from Exodus wallet.'],
-            ['lodza', 106.76, 'Transfer from Coinbase wallet.'],
             ['lodza', 967.86579, 'Transfer from Ledger wallet.'],
             ['flint', 400, 'Transfer from Coinbase wallet.'],
+            ['guddaz', 98.9012, 'Transfer from Exodus wallet.'],
+            ['lodza', 106.76, 'Transfer from Coinbase wallet.'],
         ];
 
         foreach ($internalisations as $key => $internalisation) {
             session()->put('api_auth_user_username', $internalisation[0]);
             (new _TransactionController)->store( new Request([
-                'note' => $internalisation[2],
+                'description' => $internalisation[2],
                 'destination_user_username' => $internalisation[0], 
                 'asset_code' => 'USDT',
-                'source_account_transfer_value' => $internalisation[1],
+                'transfer_value' => $internalisation[1],
             ]));
+            sleep(1);
         }
 
         // Deposit token transactioins,
@@ -332,6 +367,7 @@ class __AuxController extends Controller
             ]))->getData();
             session()->put('api_auth_user_username', $deposit_tokener[0]);
             (new _DepositTokenController)->use( new Request([ 'asset_code' => 'USDT' ]), $deposit_token->token );
+            sleep(1);
         }
         
 
@@ -351,9 +387,34 @@ class __AuxController extends Controller
         ]))->getData();
         session()->put('api_auth_user_username', 'guddaz');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 100, ]))->getData();
+        (new _MessageController)->store( new Request([
+            'parent_table' => '__trades',
+            'parent_uid' => $trade->ref_code,
+            'body' => "I'm sending the cash in a couple of minutes."
+        ]));
+        sleep(1);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
+        sleep(1);
+        (new _MessageController)->store( new Request([
+            'parent_table' => '__trades',
+            'parent_uid' => $trade->ref_code,
+            'body' => "I've sent the cash.\nPlease confirm receiving it."
+        ]));
+        sleep(1);
         session()->put('api_auth_user_username', 'ross');
+        (new _MessageController)->store( new Request([
+            'parent_table' => '__trades',
+            'parent_uid' => $trade->ref_code,
+            'body' => "I've collected the money."
+        ]));
+        sleep(1);
+        (new _MessageController)->store( new Request([
+            'parent_table' => '__trades',
+            'parent_uid' => $trade->ref_code,
+            'body' => "Pleasure doing business with you."
+        ]));
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, ]), $trade->ref_code );
+        sleep(1);
 
         session()->put('api_auth_user_username', 'guddaz');
         $offer = (new _OfferController)->store( new Request([
@@ -388,6 +449,7 @@ class __AuxController extends Controller
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', 'raymond');
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, ]), $trade->ref_code );
+        sleep(1);
 
 
         // Offer -> trade -> transaction
@@ -402,13 +464,14 @@ class __AuxController extends Controller
             'min_purchase_amount' => 100,
             'max_purchase_amount' => 500,
             'pymt_method_slug' => 'paypal',
-            'pymt_details' => [ 'fullname' => 'Tawanda Chakatsva', 'recepient_email_address' => 'tawanda@example.com', ],
+            'pymt_details' => [ 'fullname' => 'Tawanda Chakatsva', 'email_address' => 'tawanda@example.com', ],
         ]))->getData();
         session()->put('api_auth_user_username', 'lodza');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 140, ]))->getData();
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', 'keith');
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, ]), $trade->ref_code );
+        sleep(1);
 
 
         // Offer -> trade -> transaction
@@ -423,13 +486,14 @@ class __AuxController extends Controller
             'min_purchase_amount' => 100,
             'max_purchase_amount' => 1000,
             'pymt_method_slug' => 'skrill',
-            'pymt_details' => [ 'fullname' => 'Mulenga Mwamba', 'recepient_email_address' => 'mulenga@example.com', ],
+            'pymt_details' => [ 'fullname' => 'Mulenga Mwamba', 'email_address' => 'mulenga@example.com', ],
         ]))->getData();
         session()->put('api_auth_user_username', 'lodza');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 600, ]))->getData();
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', 'jimmy');
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, ]), $trade->ref_code );
+        sleep(1);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'clarence');
@@ -450,6 +514,7 @@ class __AuxController extends Controller
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', 'clarence');
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, ]), $trade->ref_code );
+        sleep(1);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'lodza');
@@ -470,6 +535,7 @@ class __AuxController extends Controller
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', 'lodza');
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, ]), $trade->ref_code );
+        sleep(1);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'peter');
@@ -483,13 +549,14 @@ class __AuxController extends Controller
             'min_purchase_amount' => 200,
             'max_purchase_amount' => 300,
             'pymt_method_slug' => 'fbc_bank',
-            'pymt_details' => [ 'fullname' => 'Tadiwa Magodi', 'recepient_account_no' => '556788965445', ],
+            'pymt_details' => [ 'fullname' => 'Tadiwa Magodi', 'account_no' => '556788965445', ],
         ]))->getData();
         session()->put('api_auth_user_username', 'keith');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 250, ]))->getData();
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', 'peter');
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, ]), $trade->ref_code );
+        sleep(1);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'flint');
@@ -503,13 +570,14 @@ class __AuxController extends Controller
             'min_purchase_amount' => 100,
             'max_purchase_amount' => 180,
             'pymt_method_slug' => 'fnb_bank',
-            'pymt_details' => [ 'fullname' => 'William Mbeki', 'recepient_account_no' => '6557890898', ],
+            'pymt_details' => [ 'fullname' => 'William Mbeki', 'account_no' => '6557890898', ],
         ]))->getData();
         session()->put('api_auth_user_username', 'keith');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 180, ]))->getData();
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', 'flint');
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, ]), $trade->ref_code );
+        sleep(1);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'lodza');
@@ -523,13 +591,14 @@ class __AuxController extends Controller
             'min_purchase_amount' => 40,
             'max_purchase_amount' => 200,
             'pymt_method_slug' => 'fnb_bank',
-            'pymt_details' => [ 'fullname' => 'William Mbeki', 'recepient_account_no' => '6557890898', ],
+            'pymt_details' => [ 'fullname' => 'William Mbeki', 'account_no' => '6557890898', ],
         ]))->getData();
         session()->put('api_auth_user_username', 'jimmy');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 180, ]))->getData();
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', 'lodza');
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, ]), $trade->ref_code );
+        sleep(1);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'raymond');
@@ -550,6 +619,7 @@ class __AuxController extends Controller
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', 'raymond');
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, ]), $trade->ref_code );
+        sleep(1);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'nassim');
@@ -563,13 +633,56 @@ class __AuxController extends Controller
             'min_purchase_amount' => 10000,
             'max_purchase_amount' => 40000,
             'pymt_method_slug' => 'algerie_poste',
-            'pymt_details' => [ 'fullname' => 'Djenna Moulad', 'recepient_account_no' => '22657899', 'recepient_account_key' => '67', ],
+            'pymt_details' => [ 'account_holder_name' => 'Djenna Moulad', 'account_no' => '22657899', 'account_key' => '67', ],
         ]))->getData();
         session()->put('api_auth_user_username', 'jimmy');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 36000, ]))->getData();
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', 'nassim');
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, ]), $trade->ref_code );
+        sleep(1);
+
+        // Offer -> trade -> transaction
+        session()->put('api_auth_user_username', 'guddaz');
+        $offer = (new _OfferController)->store( new Request([
+            'country_name' => 'Zimbabwe',
+            'location' => 'Marondera', 
+            'offer_to' => 'buy',
+            'asset_code' => 'USDT',
+            'currency_code' => 'USD',
+            'offer_price' => 0.94,
+            'min_purchase_amount' => 100,
+            'max_purchase_amount' => 200,
+            'pymt_method_slug' => 'cash_in_person',
+            'pymt_details' => [ 'fullname' => 'Tamari Karongo', 'address' => 'Opposite OK Marondera', 'phone_no' => '+263 7658 357' ],
+        ]))->getData();
+        session()->put('api_auth_user_username', 'flint');
+        $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 200, ]))->getData();
+        (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
+        session()->put('api_auth_user_username', 'guddaz');
+        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, ]), $trade->ref_code );
+        sleep(1);
+
+        // Offer -> trade -> transaction
+        session()->put('api_auth_user_username', 'peter');
+        $offer = (new _OfferController)->store( new Request([
+            'country_name' => 'Algeria',
+            'location' => 'Constantine', 
+            'offer_to' => 'buy',
+            'asset_code' => 'USDT',
+            'currency_code' => 'DZD',
+            'offer_price' => 170,
+            'min_purchase_amount' => 20000,
+            'max_purchase_amount' => 40000,
+            'pymt_method_slug' => 'algerie_poste',
+            'pymt_details' => [ 'account_holder_name' => 'Timothy Tambo', 'account_number' => '22558678', 'account_key' => '87' ],
+        ]))->getData();
+        session()->put('api_auth_user_username', 'flint');
+        $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 35000, ]))->getData();
+        (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
+        session()->put('api_auth_user_username', 'peter');
+        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, ]), $trade->ref_code );
+        sleep(1);
 
         session()->forget('load_factory_data');
         session()->forget('active_session_token');

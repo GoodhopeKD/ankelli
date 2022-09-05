@@ -17,7 +17,7 @@ class _Message extends Model
     protected $fillable = [
         'id',
         'parent_table',
-        'parent_id',
+        'parent_uid',
         'body',
         'creator_username',
         'read_datetime',

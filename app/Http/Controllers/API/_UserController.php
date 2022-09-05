@@ -20,6 +20,7 @@ use App\Models\_Log;
 
 use App\Models\_User;
 use App\Http\Resources\_UserResource;
+use App\Http\Resources\_UserResourceCollection;
 
 class _UserController extends Controller
 {
@@ -30,7 +31,31 @@ class _UserController extends Controller
      */
     public function index()
     {
-        //
+        $result = null;
+
+        if ( $result === null && request()->get_as_addon_prop && request()->get_as_addon_prop == true ){
+            $result = _User::where(['_status'=>'active'])
+            ->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->paginate(request()->per_page)->withQueryString(); 
+        }
+        
+        if ( $result === null ){
+            $simple_query_args = [];
+
+            if ( request()->_status && request()->_status !== 'all' ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => request()->_status ]); }
+            if ( !isset(request()->_status) ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => 'active' ]); }
+
+            $eloquent_query = _User::where($simple_query_args);
+
+            if ( request()->user_username && is_string( request()->user_username ) ){
+                $eloquent_query = $eloquent_query
+                ->where(['creator_username' => request()->user_username, 'visible_to_creator' => true])
+                ->orWhere(function($query) { $query->where(['offer_creator_username' => request()->user_username, 'visible_to_offer_creator' => true]); });
+            }
+            
+            $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->paginate(request()->per_page)->withQueryString();
+        }
+
+        return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _UserResource::collection( $result ) : new _UserResourceCollection( $result ) ) : null;
     }
 
     /**
@@ -138,12 +163,13 @@ class _UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  string  $username
      * @return \Illuminate\Http\Response
      */
-    public function show(int $id)
+    public function show(string $username)
     {
-        //
+        $element = _User::where('username',$username)->first();
+        return $element ? response()->json( new _UserResource( $element ) ) : null;
     }
 
     public function signIn(Request $request)

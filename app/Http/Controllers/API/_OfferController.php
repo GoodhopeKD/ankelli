@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
+use App\Models\_BuyerExtension;
+use App\Models\_SellerExtension;
 use App\Models\_PrefItem;
 
 use App\Models\_Offer;
@@ -81,6 +83,22 @@ class _OfferController extends Controller
 
         $validated_data['ref_code'] = random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
         $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+
+        // Check if seller is allowed to sell
+        if ($validated_data['offer_to'] == 'sell'){
+            $seller_seller_extension = _SellerExtension::firstWhere([ 'user_username' => $validated_data['creator_username'] ]);
+            if ($seller_seller_extension && $seller_seller_extension->_status!='active'){
+                return abort(403,"Current user cannot sell because _SellerExtension is " . $seller_seller_extension->_status);
+            }
+        }
+
+        // Check if buyer is allowed to buy
+        if ($validated_data['offer_to'] == 'buy'){
+            $buyer_buyer_extension = _BuyerExtension::firstWhere([ 'user_username' => $validated_data['creator_username'] ]);
+            if ($buyer_buyer_extension && $buyer_buyer_extension->_status!='active'){
+                return abort(403,"Current user cannot buy because _BuyerExtension is " . $buyer_buyer_extension->_status);
+            }
+        }
 
         $element = _Offer::create($validated_data);
         // Handle _Log

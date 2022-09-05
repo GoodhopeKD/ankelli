@@ -38,6 +38,7 @@ return new class extends Migration
                     ->onUpdate('cascade')
                     ->onDelete('set null');
             $table->string('asset_value', 32); // unsignedDecimal
+            $table->string('asset_value_escrowed', 32); // unsignedDecimal
             $table->string('platform_charge_asset_factor', 32); // unsignedDecimal
             $table->unsignedBigInteger('currency_amount');
 

@@ -19,6 +19,7 @@ class DepositTokensCreateNewScreen extends React.Component {
     state = {
         btn_create_deposit_token_working: false,
         input: _.cloneDeep(this.default_input),
+        ankelli_user_asset_accounts: [],
         errors: [],
     }
 
@@ -56,6 +57,12 @@ class DepositTokensCreateNewScreen extends React.Component {
         }
     }
 
+    componentDidMount = async () => {
+        await _User.getOne({ username: 'ankelli' })
+            .then(ankelli_user => this.setState({ ankelli_user_asset_accounts: ankelli_user.asset_accounts }))
+            .catch(e => console.log(e))
+    }
+
     render() {
 
         const asset_options = [];
@@ -64,7 +71,7 @@ class DepositTokensCreateNewScreen extends React.Component {
             asset_options.push({
                 value: asset_code,
                 searchable_text: asset_code + asset.name + asset.description,
-                output_element: () => <>{asset.name}</>
+                output_element: () => <>{asset.name} <i className="text-primary">{asset_code}</i></>
             })
         })
 
@@ -77,6 +84,8 @@ class DepositTokensCreateNewScreen extends React.Component {
                 output_element: () => <><span className="d-inline-block rounded-circle align-self-center text-success" ><i><b>{currency.symbol}</b></i></span>{currency.name}<i className="text-success">{currency_code}</i></>
             })
         })
+
+        const asset = this.props.datalists.active_assets[this.state.input.asset_code]
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container-fluid py-3">
@@ -91,7 +100,7 @@ class DepositTokensCreateNewScreen extends React.Component {
                                 Create Deposit Token
                             </div>
                             <div className="card-body">
-                                <form className="" onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
+                                <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
 
                                     <div className="mb-3">
                                         <label htmlFor="input_currency_code" className="form-label">Currency of received amount</label>
@@ -114,21 +123,30 @@ class DepositTokensCreateNewScreen extends React.Component {
                                     </div>
 
                                     <div className="mb-3">
-                                        <label htmlFor="input_asset_code" className="form-label">Asset to transfer</label>
-                                        <CustomSelect
-                                            element_id="input_asset_code"
-                                            has_none_option={false}
-                                            options={asset_options}
-                                            max_shown_options_count={5}
-                                            selected_option_value={this.state.input.asset_code}
-                                            onChange={asset_code => this.handleInputChange('asset_code', asset_code, true)}
-                                        />
+                                        <div className="row">
+                                            <div className="col">
+                                                <label htmlFor="input_asset_code" className="form-label">Asset to transfer</label>
+                                                <CustomSelect
+                                                    element_id="input_asset_code"
+                                                    has_none_option={false}
+                                                    options={asset_options}
+                                                    max_shown_options_count={5}
+                                                    selected_option_value={this.state.input.asset_code}
+                                                    onChange={asset_code => this.handleInputChange('asset_code', asset_code, true)}
+                                                />
+                                            </div>
+                                            <div className="col">
+                                                <label htmlFor="output_current_balance" className="form-label">Current balance</label>
+                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.state.ankelli_user_asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value, asset)}</span>
+                                            </div>
+                                        </div>
                                     </div>
                                     <div className="mb-3">
                                         <label htmlFor="input_asset_value" className="form-label">Value of asset</label>
                                         <input type="number" className="form-control" id={'input_asset_value'}
                                             required
                                             value={this.state.input.asset_value}
+                                            max={window.assetValueString((this.state.ankelli_user_asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value, asset, false)}
                                             onChange={e => this.handleInputChange('asset_value', e.target.value, true)}
                                         />
                                     </div>

@@ -35,11 +35,6 @@ class SignUpScreen extends React.Component {
 
     handleSubmit = async () => {
 
-        if (this.props.sysconfig_params_data.token_reg_enabled) this.handleInputChange('reg_token', document.getElementById('input_reg_token').value, true)
-        this.handleInputChange('username', document.getElementById('input_username').value, true)
-        this.handleInputChange('email_address', document.getElementById('input_email_address').value, true)
-        this.handleInputChange('password', document.getElementById('input_password').value, true)
-        this.handleInputChange('password_confirmation', document.getElementById('input_password_confirmation').value, true)
         this.setState({ btn_signup_working: true })
 
         const btn_signup_working = false
@@ -89,27 +84,68 @@ class SignUpScreen extends React.Component {
                             </div>
                             <div className="modal-body p-4 pt-0">
                                 {(this.props.sysconfig_params_data.open_reg_enabled || this.props.sysconfig_params_data.token_reg_enabled) ? <>
-                                    <form className="" onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
+                                    <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
                                         {this.props.sysconfig_params_data.token_reg_enabled &&
                                             <div className="form-floating mb-3">
-                                                <input type='text' required={!this.props.sysconfig_params_data.open_reg_enabled} className={"form-control rounded-3 " + (this.state.input.reg_token.hasError() ? 'is-invalid' : '')} id="input_reg_token" placeholder="Registration Token" name='input_reg_token' defaultValue={this.state.input.reg_token + ''} />
+                                                <input
+                                                    type='text'
+                                                    className={"form-control rounded-3 " + (this.state.input.reg_token.hasError() ? 'is-invalid' : '')}
+                                                    id="input_reg_token"
+                                                    value={this.state.input.reg_token + ''}
+                                                    onChange={e => this.handleInputChange('reg_token', e.target.value)}
+                                                    required={!this.props.sysconfig_params_data.open_reg_enabled}
+                                                    placeholder="Registration Token"
+                                                />
                                                 <label htmlFor="input_reg_token">Registration Token</label>
                                             </div>
                                         }
+
                                         <div className="form-floating mb-3">
-                                            <input type='text' required className={"form-control rounded-3 " + (this.state.input.username.hasError() ? 'is-invalid' : '')} id="input_username" placeholder="Username" name='input_username' defaultValue={this.state.input.username + ''} />
+                                            <input
+                                                type='text'
+                                                className={"form-control rounded-3 " + (this.state.input.username.hasError() ? 'is-invalid' : '')}
+                                                id="input_username"
+                                                value={this.state.input.username + ''}
+                                                onChange={e => this.handleInputChange('username', e.target.value)}
+                                                required
+                                                placeholder="Username"
+                                            />
                                             <label htmlFor="input_username">Username</label>
                                         </div>
                                         <div className="form-floating mb-3">
-                                            <input type='email' required className={"form-control rounded-3 " + (this.state.input.email_address.hasError() ? 'is-invalid' : '')} id="input_email_address" placeholder="Email Address" name='input_email_address' defaultValue={this.state.input.email_address + ''} />
+                                            <input
+                                                type='email'
+                                                className={"form-control rounded-3 " + (this.state.input.email_address.hasError() ? 'is-invalid' : '')}
+                                                id="input_email_address"
+                                                value={this.state.input.email_address + ''}
+                                                onChange={e => this.handleInputChange('email_address', e.target.value)}
+                                                required
+                                                placeholder="Email Address"
+                                            />
                                             <label htmlFor="input_email_address">Email Address</label>
                                         </div>
                                         <div className="form-floating mb-3">
-                                            <input type="password" required className={"form-control rounded-3 " + (this.state.input.password.hasError() ? 'is-invalid' : '')} id="input_password" placeholder="Password" name='input_password' defaultValue={this.state.input.password + ''} />
+                                            <input
+                                                type="password"
+                                                className={"form-control rounded-3 " + (this.state.input.password.hasError() ? 'is-invalid' : '')}
+                                                id="input_password"
+                                                value={this.state.input.password + ''}
+                                                onChange={e => this.handleInputChange('password', e.target.value)}
+                                                required
+                                                placeholder="Password"
+                                            />
                                             <label htmlFor="input_password">Password</label>
                                         </div>
                                         <div className="form-floating mb-3">
-                                            <input type="password" required className={"form-control rounded-3 " + (this.state.input.password_confirmation.hasError() ? 'is-invalid' : '')} id="input_password_confirmation" placeholder="Password again" name='input_password_confirmation' defaultValue={this.state.input.password_confirmation + ''} />
+                                            <input
+                                                type="password"
+                                                className={"form-control rounded-3 " + (this.state.input.password_confirmation.hasError() ? 'is-invalid' : '')}
+                                                id="input_password_confirmation"
+                                                value={this.state.input.password_confirmation + ''}
+                                                onChange={e => this.handleInputChange('password_confirmation', e.target.value)}
+                                                required
+                                                placeholder="Password again"
+                                            />
                                             <label htmlFor="input_password_confirmation">Password again</label>
                                         </div>
                                         <div className="mb-3">

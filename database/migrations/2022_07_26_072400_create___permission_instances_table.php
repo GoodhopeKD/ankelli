@@ -37,34 +37,34 @@ return new class extends Migration
         });
 
         DB::table('__permission_instances')->insert([
-            // _UserGroup: platform_administrators
+            // _UserGroup: system_administrators
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'platform_administrators',
+                'parent_uid' => 'system_administrators',
                 'permission_slug' => 'update_sysconfig_params',
                 'creator_username' => 'system',
             ],
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'platform_administrators',
+                'parent_uid' => 'system_administrators',
                 'permission_slug' => 'handle_feedback_reports',
                 'creator_username' => 'system',
             ],
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'platform_administrators',
+                'parent_uid' => 'system_administrators',
                 'permission_slug' => 'manage_systools',
                 'creator_username' => 'system',
             ],
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'platform_administrators',
+                'parent_uid' => 'system_administrators',
                 'permission_slug' => 'manage_datalists',
                 'creator_username' => 'system',
             ],
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'platform_administrators',
+                'parent_uid' => 'system_administrators',
                 'permission_slug' => 'view_all_logs',
                 'creator_username' => 'system',
             ],

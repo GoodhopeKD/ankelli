@@ -73,10 +73,10 @@ function Navigator(props) {
             const show_in_menu_i = nav_menus[i].show_in_menu !== undefined ? nav_menus[i].show_in_menu : false
             const show_when_auth_state_is_i = nav_menus[i].show_when_auth_state_is !== undefined ? nav_menus[i].show_when_auth_state_is : null
             let required_params_passed_i = true
-            if (nav_menus[i].required_sysconfig_params_data) {
+            if (nav_menus[i].required_active_user_group_membership_slugs) {
                 required_params_passed_i = false
-                Object.keys(nav_menus[i].required_sysconfig_params_data).forEach(param_key => {
-                    if (nav_menus[i].required_sysconfig_params_data[param_key] == props.sysconfig_params[param_key]) {
+                nav_menus[i].required_active_user_group_membership_slugs.forEach(user_group_membership_slug => {
+                    if (auth_user && (auth_user.active_user_group_membership_slugs.includes(user_group_membership_slug) || auth_user.active_user_group_membership_slugs.includes('system_root_users'))) {
                         required_params_passed_i = true
                     }
                 });
@@ -91,10 +91,10 @@ function Navigator(props) {
                     const show_in_menu_j = nav_menus[i].menu_items[j].show_in_menu !== undefined ? nav_menus[i].menu_items[j].show_in_menu : show_in_menu_i
                     const show_when_auth_state_is_j = nav_menus[i].menu_items[j].show_when_auth_state_is !== undefined ? nav_menus[i].menu_items[j].show_when_auth_state_is : show_when_auth_state_is_i
                     let required_params_passed_j = true
-                    if (nav_menus[i].menu_items[j].required_sysconfig_params_data) {
+                    if (nav_menus[i].menu_items[j].required_active_user_group_membership_slugs) {
                         required_params_passed_j = false
-                        Object.keys(nav_menus[i].menu_items[j].required_sysconfig_params_data).forEach(param_key => {
-                            if (nav_menus[i].menu_items[j].required_sysconfig_params_data[param_key] == props.sysconfig_params[param_key]) {
+                        nav_menus[i].menu_items[j].required_active_user_group_membership_slugs.forEach(user_group_membership_slug => {
+                            if (auth_user && (auth_user.active_user_group_membership_slugs.includes(user_group_membership_slug) || auth_user.active_user_group_membership_slugs.includes('system_root_users'))) {
                                 required_params_passed_j = true
                             }
                         });
@@ -118,10 +118,10 @@ function Navigator(props) {
                             const show_in_menu_k = nav_menus[i].menu_items[j].children[k].show_in_menu !== undefined ? nav_menus[i].menu_items[j].children[k].show_in_menu : show_in_menu_j
                             const show_when_auth_state_is_k = nav_menus[i].menu_items[j].children[k].show_when_auth_state_is !== undefined ? nav_menus[i].menu_items[j].children[k].show_when_auth_state_is : show_when_auth_state_is_j
                             let required_params_passed_k = true
-                            if (nav_menus[i].menu_items[j].children[k].required_sysconfig_params_data) {
+                            if (nav_menus[i].menu_items[j].children[k].required_active_user_group_membership_slugs) {
                                 required_params_passed_k = false
-                                Object.keys(nav_menus[i].menu_items[j].children[k].required_sysconfig_params_data).forEach(param_key => {
-                                    if (nav_menus[i].menu_items[j].children[k].required_sysconfig_params_data[param_key] == props.sysconfig_params[param_key]) {
+                                nav_menus[i].menu_items[j].children[k].required_active_user_group_membership_slugs.forEach(user_group_membership_slug => {
+                                    if (auth_user && (auth_user.active_user_group_membership_slugs.includes(user_group_membership_slug) || auth_user.active_user_group_membership_slugs.includes('system_root_users'))) {
                                         required_params_passed_k = true
                                     }
                                 });
@@ -209,7 +209,7 @@ const mapStateToProps = (state) => {
         sysconfig_params: state.sysconfig_params_data,
         app_backend_api_connectivity_indicator: state.app_instance_state_data.app_backend_api_connectivity_indicator,
         firebase_api_connectivity_indicator: state.app_instance_state_data.firebase_api_connectivity_indicator,
-        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['active_user_group_memberships', 'active_permission_instances']) : null,
+        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['active_user_group_membership_slugs', 'active_permission_instances']) : null,
     }
 }
 

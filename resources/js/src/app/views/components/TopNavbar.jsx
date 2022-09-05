@@ -39,10 +39,10 @@ export default withRouter(class TopNavbar extends React.Component {
                                     <li><hr className="dropdown-divider" /></li>
                                     {this.props.top_navbar_user_menu.menu_items.map((item, index) => {
                                         const linkk = <Link to={item.path} className="dropdown-item" onClick={e => { if (item.path === '/#/logout') { e.preventDefault(); this.props.auth_user.signOut() } }} >{item.title}</Link>
-                                        if (item.has_divider_below) {
+                                        if (item.has_divider_above) {
                                             return <React.Fragment key={index}>
-                                                <li>{linkk}</li>
                                                 <li><hr className="dropdown-divider" /></li>
+                                                <li>{linkk}</li>
                                             </React.Fragment>
                                         } else {
                                             return <li key={index}>{linkk}</li>

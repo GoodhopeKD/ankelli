@@ -17,13 +17,11 @@ class _Transaction extends Model
     protected $fillable = [
         'ref_code',
         'session_token',
-        'note',
+        'description',
         'source_user_username',
         'destination_user_username',
         'asset_code',
-        'source_account_transfer_value',
-        'destination_account_transfer_value',
-        'platform_charge_asset_value',
+        'transfer_value',
         'transfer_result',
     ];
     public $incrementing = false;
@@ -36,9 +34,7 @@ class _Transaction extends Model
      * @var array
      */
     protected $casts = [
-        'source_account_transfer_value' => 'float',
-        'destination_account_transfer_value' => 'float',
-        'platform_charge_asset_value' => 'float',
+        'transfer_value' => 'float',
         'transfer_result' => 'array',
         'transfer_datetime' => 'datetime',
     ];

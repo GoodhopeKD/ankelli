@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Models\_EmailAddress;
 use App\Http\Resources\_EmailAddressResource;
+use App\Http\Resources\_EmailAddressResourceCollection;
 
 class _EmailAddressController extends Controller
 {

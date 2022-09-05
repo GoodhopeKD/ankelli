@@ -85,7 +85,7 @@ export const _UserRespObj = {
 	last_active_datetime: undefined as undefined | null | string,
 	prefs: undefined,
 	pref_items: undefined as undefined | null | typeof _PrefItemRespObj[],
-	active_user_group_memberships: undefined as undefined | null | string[],
+	active_user_group_membership_slugs: undefined as undefined | null | string[],
 	active_permission_instances: undefined as undefined | null | string[],
 }
 
@@ -144,7 +144,7 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 	last_active_datetime: _DateTime | null = null
 	pref_items: _PrefItem[] = []
 	prefs: any = {}
-	active_user_group_memberships: string[] = []
+	active_user_group_membership_slugs: string[] = []
 	active_permission_instances: string[] = []
 
 	// Fetched AddonProps
@@ -195,8 +195,8 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 				this.prefs[args.pref_items[i].key_slug as string] = args.pref_items[i].value
 			}
 		}
-		this.active_user_group_memberships = (loader && loader.length && loader.includes('active_user_group_memberships')) && args.active_user_group_memberships && args.active_user_group_memberships.length && typeof args.active_user_group_memberships === typeof _UserRespObj.active_user_group_memberships ? args.active_user_group_memberships : []
-		this.active_permission_instances = (loader && loader.length && loader.includes('active_permission_instances')) && args.active_permission_instances && args.active_permission_instances.length && typeof args.active_permission_instances === typeof _UserRespObj.active_permission_instances ? args.active_permission_instances : []
+		this.active_user_group_membership_slugs = loader && loader.length && loader.includes('active_user_group_membership_slugs') && args.active_user_group_membership_slugs && args.active_user_group_membership_slugs.length ? args.active_user_group_membership_slugs : []
+		this.active_permission_instances = loader && loader.length && loader.includes('active_permission_instances') && args.active_permission_instances && args.active_permission_instances.length ? args.active_permission_instances : []
 
 		// Load DateTimes
 		this.last_active_datetime = (loader && loader.length && loader.includes('last_active_datetime')) ? new _DateTime(args.last_active_datetime) : null
@@ -218,8 +218,12 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 
 	/* Readers */
 
+	public static async getOne(params: { username: string }) {
+		return this._mainLaravelDBAPIGetOne('users/' + params.username)
+	}
+
 	isInUserGroup(slug: string): boolean {
-		return this.active_user_group_memberships.includes(slug)
+		return this.active_user_group_membership_slugs.includes(slug)
 	}
 
 	hasPermission(permission_slug: string): boolean {

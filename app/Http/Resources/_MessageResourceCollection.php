@@ -14,6 +14,16 @@ class _MessageResourceCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'data' => $this->collection->transform(function($_this){
+                return array_filter(array_merge(
+                    is_array($_this->resource) ? $_this->resource: $_this->resource->toArray(), [
+                    'parent_table' => null,
+                    'parent_uid' => null,
+                    //'created_datetime'      => null,
+                    //'updated_datetime'      => null,
+                ]), static function($var){ return $var !== null;} );
+            }),
+        ];
     }
 }

@@ -85,14 +85,14 @@ class OffersSingleViewScreen extends React.Component {
 
     render() {
 
-        const cond = this.state.focused_offer_loaded
-        const pymt_method = cond ? this.props.datalists.active_pymt_methods[this.focused_offer.pymt_method_slug] : null
-        const asset = cond ? this.props.datalists.active_assets[this.focused_offer.asset_code] : null
-        const currency = cond ? this.props.datalists.active_currencies[this.focused_offer.currency_code] : null
+        const load_condition = this.state.focused_offer_loaded
+        const pymt_method = load_condition ? this.props.datalists.active_pymt_methods[this.focused_offer.pymt_method_slug] : null
+        const asset = load_condition ? this.props.datalists.active_assets[this.focused_offer.asset_code] : null
+        const currency = load_condition ? this.props.datalists.active_currencies[this.focused_offer.currency_code] : null
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container py-4">
-                {this.state.focused_offer_loaded ? <>
+                {load_condition ? <>
                     <div className="row">
                         <div className="col">
                             <p>Asset you'll sell: {asset.name} ({asset.code})</p>
@@ -105,11 +105,11 @@ class OffersSingleViewScreen extends React.Component {
                         </div>
                     </div>
 
-                    <form className="" onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
+                    <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
                         <div className="card mb-3">
                             <div className="card-header">
                                 Calculator
-                        </div>
+                            </div>
                             <div className="card-body">
                                 <div className="row">
                                     <div className="col-lg-6">

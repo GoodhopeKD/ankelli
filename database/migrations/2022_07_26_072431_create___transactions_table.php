@@ -21,7 +21,7 @@ return new class extends Migration
                     ->on('__sessions')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->string('note', 255)->nullable();
+            $table->string('description', 255)->nullable();
             $table->string('source_user_username', 64)->nullable(); 
             $table->foreign('source_user_username')
                     ->references('username')
@@ -40,9 +40,7 @@ return new class extends Migration
                     ->on('__assets')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->string('source_account_transfer_value', 32)->nullable(); // unsignedDecimal
-            $table->string('destination_account_transfer_value', 32)->nullable(); // unsignedDecimal
-            $table->string('platform_charge_asset_value', 32)->nullable(); // unsignedDecimal
+            $table->string('transfer_value', 32)->nullable(); // unsignedDecimal
             $table->text('transfer_result');
             $table->timestamp('transfer_datetime')->useCurrent()->nullable();
         });

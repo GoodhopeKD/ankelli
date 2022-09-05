@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('__messages', function (Blueprint $table) {
             $table->string('id', 16)->primary();
             $table->enum('parent_table', ['__chats', '__trades']);
-            $table->unsignedBigInteger('parent_id');
+            $table->string('parent_uid', 64)->nullable();
             $table->mediumText('body');
 
             $table->string('creator_username', 64)->nullable();

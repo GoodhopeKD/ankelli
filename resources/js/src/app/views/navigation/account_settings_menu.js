@@ -4,16 +4,18 @@ import SideBar from 'app/views/components/SideBar'
 
 class ExampleElement extends React.Component {
     render() {
-        return <div className="container-fluid py-3">
-            <div className="row">
-                <div className="col-2">
-                    <SideBar nav_menus={this.props.nav_menus} />
-                </div>
-                <div className="col-10">
-                    {this.props.title} Screen
+        return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
+            <div className="container-fluid py-3">
+                <div className="row">
+                    <div className="col-2">
+                        <SideBar nav_menus={this.props.nav_menus} />
+                    </div>
+                    <div className="col-10">
+                        {this.props.title} Screen
+                    </div>
                 </div>
             </div>
-        </div>
+        </this.props.PageWrapper>
     }
 }
 

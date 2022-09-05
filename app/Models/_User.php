@@ -7,6 +7,8 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Laravel\Passport\HasApiTokens;
 
+use Illuminate\Http\Request;
+
 use App\Http\Resources\__UserDisplayCardResource;
 use App\Http\Resources\_FileResourceCollection;
 use App\Http\Resources\_AddressResourceCollection;
@@ -235,16 +237,16 @@ class _User extends Authenticatable
         $user_group_memberships = $this->user_group_memberships()->get()->toArray();
 
         // Active User Groups
-        $active_user_group_memberships = [];
+        $active_user_group_membership_slugs = [];
 
         foreach ($this->user_group_memberships()->get() as $key => $user_group_membership) {
-            if ( $user_group_membership->_status === 'active' && $user_group_membership->user_group->_status==='active' ){ array_push( $active_user_group_memberships, $user_group_membership->user_group_slug ); }
+            if ( $user_group_membership->_status === 'active' && $user_group_membership->user_group->_status==='active' ){ array_push( $active_user_group_membership_slugs, $user_group_membership->user_group_slug ); }
         }
 
         $admin_extension = $this->admin_extension;
         if (isset($admin_extension) && !(array_search('user_administrators', array_column($user_group_memberships, "user_group_slug")) !== false)){
             $_status = $admin_extension->_status === 'active' && _UserGroup::firstWhere('slug', 'user_administrators')->_status === 'active' ? 'active' : 'revoked';
-            array_push( $user_group_memberships, (object)[ 
+            array_push( $user_group_memberships, new Request([ 
                 'id'                    => NULL,
                 'user_username'         => $this->username,
                 'user_group_slug'       => 'user_administrators',
@@ -252,14 +254,14 @@ class _User extends Authenticatable
                 'creator_username'      => $admin_extension->creator_username,
                 'created_datetime'      => $admin_extension->created_datetime,
                 'updated_datetime'      => $admin_extension->updated_datetime,
-            ]);
-            if ( $_status === 'active' ){ array_push( $active_user_group_memberships, 'user_administrators' ); }
+            ]));
+            if ( $_status === 'active' ){ array_push( $active_user_group_membership_slugs, 'user_administrators' ); }
         }
 
         $seller_extension = $this->seller_extension;
         if ( $seller_extension && !(array_search('sellers', array_column($user_group_memberships, "user_group_slug")) !== false)){
             $_status = $seller_extension->_status === 'active' && _UserGroup::firstWhere('slug', 'sellers')->_status === 'active' ? 'active' : 'revoked';
-            array_push( $user_group_memberships, (object)[ 
+            array_push( $user_group_memberships, new Request([ 
                 'id'                    => NULL,
                 'user_username'         => $this->username,
                 'user_group_slug'       => 'sellers',
@@ -267,14 +269,14 @@ class _User extends Authenticatable
                 'creator_username'      => $seller_extension->creator_username,
                 'created_datetime'      => $seller_extension->created_datetime,
                 'updated_datetime'      => $seller_extension->updated_datetime,
-            ]);
-            if ( $_status === 'active' ){ array_push( $active_user_group_memberships, 'sellers' ); }
+            ]));
+            if ( $_status === 'active' ){ array_push( $active_user_group_membership_slugs, 'sellers' ); }
         }
 
         $buyer_extension = $this->buyer_extension;
         if ( $buyer_extension && !(array_search('buyers', array_column($user_group_memberships, "user_group_slug")) !== false)){
             $_status = $buyer_extension->_status === 'active' && _UserGroup::firstWhere('slug', 'buyers')->_status === 'active' ? 'active' : 'revoked';
-            array_push( $user_group_memberships, (object)[ 
+            array_push( $user_group_memberships, new Request([ 
                 'id'                    => NULL,
                 'user_username'         => $this->username,
                 'user_group_slug'       => 'buyers',
@@ -282,13 +284,13 @@ class _User extends Authenticatable
                 'creator_username'      => $buyer_extension->creator_username,
                 'created_datetime'      => $buyer_extension->created_datetime,
                 'updated_datetime'      => $buyer_extension->updated_datetime,
-            ]);
-            if ( $_status === 'active' ){ array_push( $active_user_group_memberships, 'buyers' ); }
+            ]));
+            if ( $_status === 'active' ){ array_push( $active_user_group_membership_slugs, 'buyers' ); }
         }
 
         $this->_set_user_group_memberships_info_done = true;
         $this->user_group_memberships_f = count($user_group_memberships) ? json_decode(( new _UserGroupMembershipResourceCollection( $user_group_memberships ))->toJson(),true)['data']: null;
-        $this->active_user_group_memberships_f = $active_user_group_memberships;
+        $this->active_user_group_membership_slugs_f = $active_user_group_membership_slugs;
     }
 
     public function user_group_memberships_f()
@@ -299,11 +301,11 @@ class _User extends Authenticatable
         return $this->user_group_memberships_f;
     }
 
-    public function active_user_group_memberships_f()
+    public function active_user_group_membership_slugs_f()
     {
         if (!isset($this->_set_user_group_memberships_info_done)){
             $this->_set_user_group_memberships_info();
         }
-        return $this->active_user_group_memberships_f;
+        return $this->active_user_group_membership_slugs_f;
     }
 }

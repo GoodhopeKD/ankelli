@@ -115,7 +115,7 @@ class DepositTokensListViewScreen extends React.Component {
             asset_options.push({
                 value: asset_code,
                 searchable_text: asset_code + asset.name + asset.description,
-                output_element: () => <>{asset.name}</>
+                output_element: () => <>{asset.name} <i className="text-primary">{asset_code}</i></>
             })
         })
 
@@ -241,7 +241,7 @@ class DepositTokensListViewScreen extends React.Component {
                                 </table>
                                 <div className="d-flex gap-2" >
 
-                                    <div className="">
+                                    <div>
                                         <nav aria-label="Standard pagination example">
                                             <ul className="pagination">
                                                 <li className={"page-item " + (this.state._collecion.meta.current_page == 1 ? 'disabled' : '')}>
@@ -267,7 +267,7 @@ class DepositTokensListViewScreen extends React.Component {
                                         </nav>
                                     </div>
 
-                                    <div className="">
+                                    <div>
                                         <Link to={'/business_management/deposit_tokens/new'} className='btn btn-success' >Create new</Link>
                                     </div>
                                 </div>

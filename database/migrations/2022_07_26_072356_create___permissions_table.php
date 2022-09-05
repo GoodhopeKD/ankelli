@@ -33,7 +33,7 @@ return new class extends Migration
         });
 
         DB::table('__permissions')->insert([
-            // _UserGroups: platform_administrators
+            // _UserGroups: system_administrators
             [
                 'name' => 'Update system config params',
                 'slug' => 'update_sysconfig_params',

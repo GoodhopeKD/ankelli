@@ -37,12 +37,14 @@ class _AssetAccountController extends Controller
         ]);
 
         $element = _AssetAccount::create($validated_data);
+        $element = _AssetAccount::find($element->id);
+        
         // Handle _Log
         (new _LogController)->store( new Request([
             'action_note' => 'Addition of _AssetAccount entry to database.',
             'action_type' => 'entry_create',
             'entry_table' => '__asset_accounts',
-            'entry_uid' => $element->user_username,
+            'entry_uid' => $element->id,
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
@@ -57,7 +59,8 @@ class _AssetAccountController extends Controller
      */
     public function show(int $id)
     {
-        //
+        $element = _AssetAccount::find($id);
+        return response()->json( new _AssetAccountResource( $element ) );
     }
 
     /**
@@ -91,7 +94,7 @@ class _AssetAccountController extends Controller
             'action_note' => 'Updating of _AssetAccount entry in database.',
             'action_type' => 'entry_update',
             'entry_table' => '__asset_accounts',
-            'entry_uid' => $element->user_username,
+            'entry_uid' => $element->id,
             'batch_code' => $request->batch_code,
             'entry_update_result'=> $log_entry_update_result,
         ]));
