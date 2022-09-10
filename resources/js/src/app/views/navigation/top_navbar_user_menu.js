@@ -21,8 +21,8 @@ export const top_navbar_user_menu = {
         },
         {
             title: 'Admin Area',
-            path: '/admin_dashboard/daily_users',
-            required_active_user_group_membership_slugs: ['system_administrators', 'business_administrators', 'user_administrators', 'platform_moderators'],
+            path: '/admin_dashboard/home',
+            required_active_user_group_membership_slugs: ['administrators', 'platform_moderators'],
         },
         {
             has_divider_above: true,

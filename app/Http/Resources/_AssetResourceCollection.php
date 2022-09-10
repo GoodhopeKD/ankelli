@@ -20,6 +20,7 @@ class _AssetResourceCollection extends ResourceCollection
                     is_array($_this->resource) ? $_this->resource: $_this->resource->toArray(), [
                     'creator_username' => null,
                     'created_datetime' => null,
+                    'updated_datetime' => null,
                 ]), static function($var){ return $var !== null;} );
             }),
         ];

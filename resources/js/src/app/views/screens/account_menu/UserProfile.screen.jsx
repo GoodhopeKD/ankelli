@@ -3,9 +3,13 @@ import { connect } from 'react-redux'
 
 import SideBar from 'app/views/components/SideBar'
 
-import { _User } from 'app/controller'
+import { _User, _Session } from 'app/controller'
 
 class UserProfileScreen extends React.Component {
+
+    componentDidMount = () => {
+        _Session.refresh()
+    }
 
     render() {
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
@@ -15,7 +19,7 @@ class UserProfileScreen extends React.Component {
                         <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'account_menu')]} />
                     </div>
                     <div className="col-10">
-                        <h4>My asset accounts</h4>
+                        <h4>My asset wallets</h4>
                         <table className="table">
                             <thead>
                                 <tr>
@@ -24,10 +28,10 @@ class UserProfileScreen extends React.Component {
                                 </tr>
                             </thead>
                             <tbody>
-                                {this.props.auth_user.asset_accounts.map((asset_account, index) => {
+                                {this.props.auth_user.asset_wallets.map((asset_wallet, index) => {
                                     return <tr key={index} >
-                                        <td className="align-middle">{asset_account.asset_code}</td>
-                                        <td className="align-middle">{asset_account.asset_value}</td>
+                                        <td className="align-middle">{asset_wallet.asset_code}</td>
+                                        <td className="align-middle">{asset_wallet.asset_value}</td>
                                     </tr>
                                 })}
                             </tbody>
@@ -41,7 +45,7 @@ class UserProfileScreen extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_accounts']) : null,
+        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_wallets']) : null,
     }
 }
 

@@ -8,7 +8,7 @@ use Illuminate\Validation\Rule;
 
 use App\Models\_BuyerExtension;
 use App\Models\_SellerExtension;
-use App\Models\_AssetAccount;
+use App\Models\_AssetWallet;
 use App\Models\_PrefItem;
 use App\Models\_Offer;
 
@@ -136,44 +136,30 @@ class _TradeController extends Controller
         }
 
         // Lock seller asset in escrow
-        $seller_asset_account = _AssetAccount::firstWhere([
+        $seller_asset_wallet = _AssetWallet::firstWhere([
             'user_username' => $seller_username,
             'asset_code' => $offer->asset_code
         ]);
 
-        if ( !$seller_asset_account ){ return abort(422, 'Current ' . $offer->asset_code . ' balance insufficient for transaction.'); }
-        if ( $seller_asset_account->_status == 'frozen' ){ return abort(422, 'Selected asset is frozen.'); }
+        if ( !$seller_asset_wallet ){ return abort(422, 'Current ' . $offer->asset_code . ' balance insufficient for transaction.'); }
+        if ( $seller_asset_wallet->_status == 'frozen' ){ return abort(422, 'Selected asset is frozen.'); }
 
         $validated_data['was_offer_to'] = $offer->offer_to;
         $validated_data['offer_creator_username'] = $offer->creator_username;
         $validated_data['ref_code'] = random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
-        $seller_new_asset_value = $seller_asset_account->asset_value - $validated_data['asset_value_escrowed'];
+        $seller_new_asset_value = $seller_asset_wallet->asset_value - $validated_data['asset_value_escrowed'];
 
         if ( $seller_new_asset_value < 0 ){ return abort(422, 'Current ' . $offer->asset_code . ' balance insufficient for transaction.'); }
         
-        $silent_lock_in_escrow = false;
-        if ($silent_lock_in_escrow) {
-            (new _AssetAccountController)->update( new Request([
-                'asset_value' => $seller_new_asset_value
-            ]), $seller_asset_account->id );
-
-            $escrow_asset_account = _AssetAccount::firstOrCreate([
-                'user_username' => 'escrow',
-                'asset_code' => $offer->asset_code
-            ]);
-            (new _AssetAccountController)->update( new Request([
-                'asset_value' => $escrow_asset_account->asset_value + $validated_data['asset_value_escrowed'],
-            ]), $escrow_asset_account->id );
-        } else {
-            (new _TransactionController)->store( new Request([
-                'description' => 'Lock asset in escrow for trade "' . $validated_data['ref_code'] . '"',
-                'type' => 'escrow_asset_lock',
-                'source_user_username' => $seller_username, 
-                'destination_user_username' => 'escrow', 
-                'asset_code' => $offer->asset_code,
-                'transfer_value' => $validated_data['asset_value_escrowed'],
-            ]));
-        }
+        $validated_data['escrow_lock_transaction_ref_code'] = (new _TransactionController)->store( new Request([
+            'description' => 'Lock asset in escrow for trade "' . $validated_data['ref_code'] . '"',
+            'tr_type' => 'escrow_asset_lock',
+            'source_user_username' => $seller_username, 
+            'destination_user_username' => 'escrow', 
+            'asset_code' => $offer->asset_code,
+            'transfer_value' => $validated_data['asset_value_escrowed'],
+        ]))->getData()->ref_code;
+        
         sleep(1);
         // End lock in escrow
 
@@ -257,39 +243,24 @@ class _TradeController extends Controller
             $seller_username = $element->was_offer_to == 'buy' ? $element->creator_username : $element->offer_creator_username;
             $buyer_username = $element->was_offer_to == 'sell' ? $element->creator_username : $element->offer_creator_username;
             
-            $silent_lock_in_escrow = false;
-            if ($silent_lock_in_escrow){
-                $seller_asset_account = _AssetAccount::firstWhere([
-                    'user_username' => $seller_username, 
-                    'asset_code' => $element->asset_code,
-                ]);
-                (new _AssetAccountController)->update( new Request([
-                    'asset_value' => $seller_asset_account->asset_value + $element->asset_value_escrowed
-                ]), $seller_asset_account->id );
-
-                $escrow_asset_account = _AssetAccount::firstWhere([
-                    'user_username' => 'escrow',
-                    'asset_code' => $element->asset_code,
-                ]);
-                (new _AssetAccountController)->update( new Request([
-                    'asset_value' => $escrow_asset_account->asset_value - $element->asset_value_escrowed
-                ]), $escrow_asset_account->id );
-            } else {
-                (new _TransactionController)->store( new Request([
-                    'description' => 'Unlock asset from escrow for trade "' . $ref_code . '"',
-                    'type' => 'escrow_asset_unlock',
-                    'source_user_username' => 'escrow', 
-                    'destination_user_username' => $seller_username, 
-                    'asset_code' => $element->asset_code,
-                    'transfer_value' => $element->asset_value_escrowed,
-                ]));
+            $escrow_unlock_transaction_ref_code = (new _TransactionController)->store( new Request([
+                'description' => 'Unlock asset from escrow for trade "' . $ref_code . '"',
+                'tr_type' => 'escrow_asset_unlock',
+                'source_user_username' => 'escrow', 
+                'destination_user_username' => $seller_username, 
+                'asset_code' => $element->asset_code,
+                'transfer_value' => $element->asset_value_escrowed,
+            ]))->getData()->ref_code;
+            $escrow_lock_transaction_ref_code = $element->escrow_lock_transaction_ref_code;
+            foreach ([$escrow_unlock_transaction_ref_code, $escrow_lock_transaction_ref_code] as $escrow_transaction_ref_code) {
+                (new _TransactionController)->destroy( $escrow_transaction_ref_code );
             }
             sleep(1);
             // End unlock asset from escrow
             
             (new _TransactionController)->store( new Request([
                 'description' => 'Asset release for trade "' . $ref_code . '"',
-                'type' => 'trade_asset_release',
+                'tr_type' => 'trade_asset_release',
                 'source_user_username' => $seller_username, 
                 'destination_user_username' => $buyer_username, 
                 'asset_code' => $element->asset_code,

@@ -23,9 +23,8 @@ Route::post('', 'App\Http\Controllers\API\__AuxController@default_route')->name(
 
 Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_token}' ], function() {
 
-    Route::post('load_factory_data', 'App\Http\Controllers\API\__AuxController@load_factory_data')->name('load_factory_data');
     Route::post('load_test_data', 'App\Http\Controllers\API\__AuxController@load_test_data')->name('load_test_data');
-    //Route::apiResource('asset_accounts', '_AssetAccountController')->parameter('asset_accounts', 'id');
+    //Route::apiResource('asset_wallets', '_AssetWalletController')->parameter('asset_wallets', 'id');
     
     // User authentication routes
     Route::post('users/signup', '_UserController@store')->name('users.signup');

@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom';
 import _ from 'lodash'
 
-import { _User, _Offer, _Notification, _DateTime } from 'app/controller'
+import { _User, _Offer, _Notification, _DateTime, _Session } from 'app/controller'
 
 import withRouter from 'app/views/navigation/withRouter'
 
@@ -66,9 +66,11 @@ class OffersSingleViewScreen extends React.Component {
                 this.currencyToAsset(this.props.params.currency_amount ?? (offer.offer_to == 'buy' ? offer.min_purchase_amount : offer.offer_price * offer.min_sell_value))
                 this.currencyToAsset(offer.offer_to == 'buy' ? offer.min_purchase_amount : offer.offer_price * offer.min_sell_value, 'min_')
                 this.currencyToAsset(offer.offer_to == 'buy' ? offer.max_purchase_amount : offer.offer_price * offer.max_sell_value, 'max_')
-                this.setState({ focused_offer_loaded: true, input: { pymt_details: offer.pymt_method_slug == 'cash_in_person' || offer.offer_to == 'buy' ? _.cloneDeep(this.props.datalists.active_pymt_methods[offer.pymt_method_slug].details_required) : {} } })
+                const returnObj = (arr) => { const obj = {}; arr.forEach(arr_i => obj[arr_i] = ''); return obj; }
+                this.setState({ focused_offer_loaded: true, input: { pymt_details: offer.pymt_method_slug == 'cash_in_person' || offer.offer_to == 'buy' ? returnObj(this.props.datalists.active_pymt_methods[offer.pymt_method_slug].details_required) : {} } })
             })
             .catch(e => console.log(e))
+            .finally(() => _Session.refresh())
     }
 
     handleSubmit = async () => {
@@ -96,7 +98,7 @@ class OffersSingleViewScreen extends React.Component {
                     <div className="row">
                         <div className="col">
                             <p>Asset you'll sell: {asset.name} ({asset.code})</p>
-                            {this.props.auth_user !== null && <p>Your current {asset.code} balance: {window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value, asset)}</p>}
+                            {this.props.auth_user !== null && <p>Your current {asset.code} balance: {window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value, asset)}</p>}
                             <p>Currency : {currency.name} ({currency.code}) </p>
                             <p>{this.focused_offer.offer_to == 'buy' ? 'Purchase' : 'Sell'} price : {window.currencyAmountString(this.focused_offer.offer_price, currency)}</p>
                             {this.focused_offer.offer_to == 'buy' && <p>Purchase limits : {window.currencyAmountString(this.focused_offer.min_purchase_amount, currency)} - {window.currencyAmountString(this.focused_offer.max_purchase_amount, currency)}</p>}
@@ -118,7 +120,7 @@ class OffersSingleViewScreen extends React.Component {
                                             {this.focused_offer.offer_to == 'buy' && <input
                                                 type="number" className="form-control" id="input_asset_value"
                                                 min={parseFloat(window.assetValueString(this.state.min_asset_value, asset, false))}
-                                                max={parseFloat(window.assetValueString(Math.min(this.state.max_asset_value, (this.props.auth_user ? (this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value : this.state.max_asset_value)), asset, false))}
+                                                max={parseFloat(window.assetValueString(Math.min(this.state.max_asset_value, (this.props.auth_user ? (this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value : this.state.max_asset_value)), asset, false))}
                                                 step={asset.smallest_display_unit}
                                                 value={parseFloat(window.assetValueString(this.state.asset_value, asset, false))}
                                                 onChange={el => this.assetToCurrency(el.target.value)}
@@ -206,7 +208,7 @@ const mapStateToProps = (state) => {
     return {
         datalists: state.datalists_data,
         sysconfig_params: state.sysconfig_params_data,
-        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_accounts']) : null,
+        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_wallets']) : null,
     }
 }
 

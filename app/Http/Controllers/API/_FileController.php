@@ -130,7 +130,7 @@ class _FileController extends Controller
 
         $element = _File::findOrFail($id);
         $element->update($validated_data);
-        return response()->json( (new _FileResource( _File::findOrFail( $id ) )) );
+        return response()->json( (new _FileResource( _File::find( $id ) )) );
     }
 
     /**

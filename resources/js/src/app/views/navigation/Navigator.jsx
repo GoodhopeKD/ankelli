@@ -72,11 +72,11 @@ function Navigator(props) {
             const disabled_i = nav_menus[i].disabled !== undefined ? nav_menus[i].disabled : null
             const show_in_menu_i = nav_menus[i].show_in_menu !== undefined ? nav_menus[i].show_in_menu : false
             const show_when_auth_state_is_i = nav_menus[i].show_when_auth_state_is !== undefined ? nav_menus[i].show_when_auth_state_is : null
-            let required_params_passed_i = true
-            if (nav_menus[i].required_active_user_group_membership_slugs) {
+            let required_params_passed_i = ( !auth_user || auth_user.isInUserGroup('developers') || !( auth_user.isInUserGroup('default_users') && nav_menus[i].restricted_for_default_users ))
+            if (required_params_passed_i && nav_menus[i].required_active_user_group_membership_slugs) {
                 required_params_passed_i = false
                 nav_menus[i].required_active_user_group_membership_slugs.forEach(user_group_membership_slug => {
-                    if (auth_user && (auth_user.active_user_group_membership_slugs.includes(user_group_membership_slug) || auth_user.active_user_group_membership_slugs.includes('developers'))) {
+                    if (auth_user && (auth_user.isInUserGroup(user_group_membership_slug) || auth_user.isInUserGroup('developers'))) {
                         required_params_passed_i = true
                     }
                 });
@@ -90,11 +90,11 @@ function Navigator(props) {
                     const disabled_j = nav_menus[i].menu_items[j].disabled !== undefined ? nav_menus[i].menu_items[j].disabled : disabled_i
                     const show_in_menu_j = nav_menus[i].menu_items[j].show_in_menu !== undefined ? nav_menus[i].menu_items[j].show_in_menu : show_in_menu_i
                     const show_when_auth_state_is_j = nav_menus[i].menu_items[j].show_when_auth_state_is !== undefined ? nav_menus[i].menu_items[j].show_when_auth_state_is : show_when_auth_state_is_i
-                    let required_params_passed_j = true
-                    if (nav_menus[i].menu_items[j].required_active_user_group_membership_slugs) {
+                    let required_params_passed_j = ( !auth_user || auth_user.isInUserGroup('developers') || !( auth_user.isInUserGroup('default_users') && nav_menus[i].menu_items[j].restricted_for_default_users ))
+                    if (required_params_passed_j && nav_menus[i].menu_items[j].required_active_user_group_membership_slugs) {
                         required_params_passed_j = false
                         nav_menus[i].menu_items[j].required_active_user_group_membership_slugs.forEach(user_group_membership_slug => {
-                            if (auth_user && (auth_user.active_user_group_membership_slugs.includes(user_group_membership_slug) || auth_user.active_user_group_membership_slugs.includes('developers'))) {
+                            if (auth_user && (auth_user.isInUserGroup(user_group_membership_slug) || auth_user.isInUserGroup('developers'))) {
                                 required_params_passed_j = true
                             }
                         });
@@ -117,11 +117,11 @@ function Navigator(props) {
                             const disabled_k = nav_menus[i].menu_items[j].children[k].disabled !== undefined ? nav_menus[i].menu_items[j].children[k].disabled : disabled_j
                             const show_in_menu_k = nav_menus[i].menu_items[j].children[k].show_in_menu !== undefined ? nav_menus[i].menu_items[j].children[k].show_in_menu : show_in_menu_j
                             const show_when_auth_state_is_k = nav_menus[i].menu_items[j].children[k].show_when_auth_state_is !== undefined ? nav_menus[i].menu_items[j].children[k].show_when_auth_state_is : show_when_auth_state_is_j
-                            let required_params_passed_k = true
-                            if (nav_menus[i].menu_items[j].children[k].required_active_user_group_membership_slugs) {
+                            let required_params_passed_k = ( !auth_user || auth_user.isInUserGroup('developers') || !( auth_user.isInUserGroup('default_users') && nav_menus[i].menu_items[j].children[k].restricted_for_default_users ))
+                            if (required_params_passed_k && nav_menus[i].menu_items[j].children[k].required_active_user_group_membership_slugs) {
                                 required_params_passed_k = false
                                 nav_menus[i].menu_items[j].children[k].required_active_user_group_membership_slugs.forEach(user_group_membership_slug => {
-                                    if (auth_user && (auth_user.active_user_group_membership_slugs.includes(user_group_membership_slug) || auth_user.active_user_group_membership_slugs.includes('developers'))) {
+                                    if (auth_user && (auth_user.isInUserGroup(user_group_membership_slug) || auth_user.isInUserGroup('developers'))) {
                                         required_params_passed_k = true
                                     }
                                 });

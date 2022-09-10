@@ -5,6 +5,10 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Models\_UserGroup;
+use App\Http\Resources\_UserGroupResource;
+use App\Http\Resources\_UserGroupResourceCollection;
+
 class _UserGroupController extends Controller
 {
     /**
@@ -14,7 +18,20 @@ class _UserGroupController extends Controller
      */
     public function index()
     {
-        //
+        $result = null;
+
+        if ( $result === null ){
+            $simple_query_args = [];
+
+            if ( request()->_status && request()->_status !== 'all' ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => request()->_status ]); }
+            if ( !isset(request()->_status) ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => 'active' ]); }
+
+            $eloquent_query = _UserGroup::where($simple_query_args);
+
+            $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->paginate(request()->per_page ?? count($eloquent_query->get()))->withQueryString();
+        }
+
+        return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _UserGroupResource::collection( $result ) : new _UserGroupResourceCollection( $result ) ) : null;
     }
 
     /**
@@ -31,12 +48,13 @@ class _UserGroupController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  string $slug
      * @return \Illuminate\Http\Response
      */
-    public function show(int $id)
+    public function show(string $slug)
     {
-        //
+        $element = _UserGroup::firstWhere('slug',$slug);
+        return response()->json( new _UserGroupResource( $element ) );
     }
 
     /**

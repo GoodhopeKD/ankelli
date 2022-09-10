@@ -2,10 +2,12 @@ import React from "react"
 import { connect } from 'react-redux'
 import _ from 'lodash'
 
-import { _User, _Input, _Notification, _Offer } from 'app/controller';
+import { _User, _Input, _Notification, _Offer, _Session } from 'app/controller';
 
 import withRouter from 'app/views/navigation/withRouter'
 import CustomSelect from 'app/views/components/CustomSelect'
+
+const returnObj = (arr) => { const obj = {}; arr.forEach(arr_i => obj[arr_i] = ''); return obj; }
 
 class OffersCreateNewScreen extends React.Component {
 
@@ -14,7 +16,7 @@ class OffersCreateNewScreen extends React.Component {
 
         country_name: 'Zimbabwe',
         pymt_method_slug: 'cash_in_person',
-        pymt_details: _.cloneDeep(this.props.datalists.active_pymt_methods['cash_in_person'].details_required),
+        pymt_details: returnObj(this.props.datalists.active_pymt_methods['cash_in_person'].details_required),
         location: new _Input('Harare CBD'),
 
         asset_code: 'USDT',
@@ -85,6 +87,10 @@ class OffersCreateNewScreen extends React.Component {
         }
     }
 
+    componentDidMount = () => {
+        _Session.refresh()
+    }
+
     render() {
         const all_disabled = this.props.auth_user == null
 
@@ -125,7 +131,7 @@ class OffersCreateNewScreen extends React.Component {
         const currency = this.props.datalists.active_currencies[this.state.input.currency_code]
         const pymt_method = this.props.datalists.active_pymt_methods[this.state.input.pymt_method_slug]
 
-        const max_offerable_asset_value = this.props.auth_user == null ? null : (1 - this.props.sysconfig_params.platform_charge_asset_factor) * parseFloat(window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value), asset, false)
+        const max_offerable_asset_value = this.props.auth_user == null ? null : (1 - this.props.sysconfig_params.platform_charge_asset_factor) * parseFloat(window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value), asset, false)
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container py-4 ">
@@ -171,7 +177,7 @@ class OffersCreateNewScreen extends React.Component {
                                     has_none_option={false}
                                     max_shown_options_count={5}
                                     selected_option_value={this.state.input.pymt_method_slug}
-                                    onChange={pymt_method_slug => { this.handleInputChange('pymt_method_slug', pymt_method_slug, true); this.handleInputChange('pymt_details', _.cloneDeep(this.props.datalists.active_pymt_methods[pymt_method_slug].details_required), true); }}
+                                    onChange={pymt_method_slug => { this.handleInputChange('pymt_method_slug', pymt_method_slug, true); this.handleInputChange('pymt_details', returnObj(this.props.datalists.active_pymt_methods[pymt_method_slug].details_required), true); }}
                                 />
                             </div>
 
@@ -236,7 +242,7 @@ class OffersCreateNewScreen extends React.Component {
                                             </div>
                                             {!all_disabled && <div className="col">
                                                 <label htmlFor="output_current_balance" className="form-label">Current balance</label>
-                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value, asset)}</span>
+                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value, asset)}</span>
                                             </div>}
                                         </div>
 
@@ -374,7 +380,7 @@ const mapStateToProps = (state) => {
     return {
         datalists: state.datalists_data,
         sysconfig_params: state.sysconfig_params_data,
-        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_accounts']) : null,
+        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_wallets']) : null,
     }
 }
 

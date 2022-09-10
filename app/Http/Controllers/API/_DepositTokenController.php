@@ -98,7 +98,7 @@ class _DepositTokenController extends Controller
             'asset_code' => ['required', 'exists:__assets,code', 'string'],
         ]);
 
-        $element = _DepositToken::findOrFail($token);
+        $element = _DepositToken::find($token);
 
         if (!$element){
             return abort(422,"Token not valid.");
@@ -117,7 +117,7 @@ class _DepositTokenController extends Controller
 
         (new _TransactionController)->store( new Request([
             'description' => 'Wallet topup using deposit token "' . $token . '"',
-            'type' => 'deposit_token_topup',
+            'tr_type' => 'deposit_token_topup',
             'source_user_username' => 'reserves', 
             'destination_user_username' => $validated_data['user_username'], 
             'asset_code' => $element->asset_code,

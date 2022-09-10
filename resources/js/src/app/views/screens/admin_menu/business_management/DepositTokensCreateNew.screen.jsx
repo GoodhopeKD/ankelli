@@ -19,7 +19,7 @@ class DepositTokensCreateNewScreen extends React.Component {
     state = {
         btn_create_deposit_token_working: false,
         input: _.cloneDeep(this.default_input),
-        ankelli_reserves_user_asset_accounts: [],
+        ankelli_reserves_user_asset_wallets: [],
         errors: [],
     }
 
@@ -42,6 +42,9 @@ class DepositTokensCreateNewScreen extends React.Component {
         const errors = []
         const input = this.state.input
 
+        if (!(input.asset_value > 0)) { errors.push('Asset value invalid') }
+        if (!input.asset_value.isValid('number', 0, (this.state.ankelli_reserves_user_asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value)) { errors.push("Asset value not within bounds") }
+
         if (errors.length === 0) {
             this.setState({ errors }) // Remove input error indicators under text inputs
             let _input = Object.assign(Object.create(Object.getPrototypeOf(input)), input) // Dereference input object
@@ -59,7 +62,7 @@ class DepositTokensCreateNewScreen extends React.Component {
 
     componentDidMount = async () => {
         await _User.getOne({ username: 'reserves' })
-            .then(ankelli_reserves_user => this.setState({ ankelli_reserves_user_asset_accounts: ankelli_reserves_user.asset_accounts }))
+            .then(ankelli_reserves_user => this.setState({ ankelli_reserves_user_asset_wallets: ankelli_reserves_user.asset_wallets }))
             .catch(e => console.log(e))
     }
 
@@ -136,8 +139,8 @@ class DepositTokensCreateNewScreen extends React.Component {
                                                 />
                                             </div>
                                             <div className="col">
-                                                <label htmlFor="output_current_balance" className="form-label">Current balance</label>
-                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.state.ankelli_reserves_user_asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value, asset)}</span>
+                                                <label htmlFor="output_current_balance" className="form-label">Reserves balance</label>
+                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.state.ankelli_reserves_user_asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value, asset)}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -146,8 +149,9 @@ class DepositTokensCreateNewScreen extends React.Component {
                                         <input type="number" className="form-control" id={'input_asset_value'}
                                             required
                                             value={this.state.input.asset_value}
-                                            max={window.assetValueString((this.state.ankelli_reserves_user_asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value, asset, false)}
-                                            onChange={e => this.handleInputChange('asset_value', e.target.value, true)}
+                                            min={0}
+                                            max={window.assetValueString((this.state.ankelli_reserves_user_asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value, asset, false)}
+                                            onChange={e => this.handleInputChange('asset_value', e.target.value)}
                                         />
                                     </div>
 

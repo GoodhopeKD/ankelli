@@ -32,6 +32,7 @@ import _Permission, { _PermissionRespObj } from 'app/controller/wrappers/systool
 import _PermissionInstance, { _PermissionInstanceRespObj } from 'app/controller/wrappers/addons/_PermissionInstance'
 import _UserGroup, { _UserGroupRespObj } from 'app/controller/wrappers/systools/_UserGroup'
 import _UserGroupMembership, { _UserGroupMembershipRespObj } from 'app/controller/wrappers/addons/_UserGroupMembership'
+import _Exportable, { _ExportableRespObj } from 'app/controller/wrappers/systools/_Exportable'
 // user
 import _AdminExtension, { _AdminExtensionRespObj } from 'app/controller/wrappers/user/_AdminExtension'
 import _SellerExtension, { _SellerExtensionRespObj } from 'app/controller/wrappers/user/_SellerExtension'
@@ -76,6 +77,7 @@ export {
     _PermissionInstance, _PermissionInstanceRespObj,
     _UserGroup, _UserGroupRespObj,
     _UserGroupMembership, _UserGroupMembershipRespObj,
+    _Exportable, _ExportableRespObj,
     // user
     _AdminExtension, _AdminExtensionRespObj,
     _SellerExtension, _SellerExtensionRespObj,

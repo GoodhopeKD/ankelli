@@ -105,7 +105,7 @@ class _SessionController extends Controller
             ],
         ]));
         // End _Log Handling
-        //return response()->json( new _SessionResource( _Session::findOrFail( $element->token ) ) );
+        return response()->json( new _SessionResource( _Session::find( $element->token ) ) );
     }
 
     public function _signUserOut(Request $request)
@@ -142,7 +142,7 @@ class _SessionController extends Controller
         Auth::user()->token()->revoke();
         session()->flush();
         session()->put( 'utc_offset', $utc_offset );
-        return response()->json( new _SessionResource( _Session::findOrFail( $element->token )  ) );
+        return response()->json( new _SessionResource( _Session::find( $element->token )  ) );
     }
 
     public function _end(Request $request)
@@ -175,7 +175,7 @@ class _SessionController extends Controller
             ],
         ]));
         // End _Log Handling
-        return response()->json( new _SessionResource( _Session::findOrFail( $element->token ) ) );
+        return response()->json( new _SessionResource( _Session::find( $element->token ) ) );
     }
 
     /**

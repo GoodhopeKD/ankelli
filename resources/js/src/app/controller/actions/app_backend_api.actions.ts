@@ -6,13 +6,11 @@ export const connectivityBoot = () => {
     return (dispatch: (args: any) => Promise<any>) => {
         dispatch({ type: 'APP_INSTANCE_STATE_RESET_CONNECTIVITY_INDICATORS' })
 
-            dispatch({ type: 'APP_BACKEND_API_CALL', method: 'POST', endpoint: '' })
-                .then(() => { dispatch({ type: 'APP_INSTANCE_STATE_SET_APP_BACKEND_API_CONNECTIVITY_INDICATOR', app_backend_api_connectivity_indicator: true }) })
-                .catch((e: any) => {
-                    dispatch({ type: 'APP_INSTANCE_STATE_SET_APP_BACKEND_API_CONNECTIVITY_INDICATOR', app_backend_api_connectivity_indicator: false })
-                })
-
-        
+        dispatch({ type: 'APP_BACKEND_API_CALL', method: 'POST', endpoint: '' })
+            .then(() => { dispatch({ type: 'APP_INSTANCE_STATE_SET_APP_BACKEND_API_CONNECTIVITY_INDICATOR', app_backend_api_connectivity_indicator: true }) })
+            .catch((e: any) => {
+                dispatch({ type: 'APP_INSTANCE_STATE_SET_APP_BACKEND_API_CONNECTIVITY_INDICATOR', app_backend_api_connectivity_indicator: false })
+            })
     }
 }
 
@@ -36,7 +34,7 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
     }
 
     if (action.type === 'APP_BACKEND_API_CALL' || action.type === 'APP_BACKEND_API_CALL_WITH_FILES') {
-        return store.dispatch((dispatch: any, getState: any, { app_backend_api }: any) => {
+        return store.dispatch((dispatch: (args: any) => Promise<any>, getState: any, { app_backend_api }: any) => {
 
             if (!app_backend_api.config.accepted_methods.some((x: string) => x.toLowerCase() === action.method.toLowerCase())) {
                 return Promise.reject({
@@ -118,38 +116,38 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
             return app_backend_api.handle(request_object)
                 .then((resp: any) => {
                     batch(() => {
-                        if ((action.endpoint === '' && active_session_data.auth_token && !(resp.data.active_session_data && resp.data.auth_user_data)) || (action.endpoint === 'users/signout' && !resp.data.auth_user_data))
+                        if ((action.endpoint === '' && active_session_data.auth_token && !resp.data.auth_user_data) || (action.endpoint === 'users/signout' && !resp.data.auth_user_data))
                             dispatch({ type: 'AUTH_DATA_CLEAR_ALL' })
 
-                        if (app_backend_api.config.endpoint_filtering.auth_token_returning_endpoints.some((x: string) => x.toLowerCase() === action.endpoint.toLowerCase()) && resp.data.auth_token){
+                        if (app_backend_api.config.endpoint_filtering.auth_token_returning_endpoints.some((x: string) => x.toLowerCase() === action.endpoint.toLowerCase()) && resp.data.auth_token) {
                             dispatch({ type: 'ACTIVE_SESSION_DATA_SET_AUTH_TOKEN', auth_token: resp.data.auth_token })
                             delete resp.data.auth_token
                         }
 
-                        if (resp.data.auth_user_data){
+                        if (resp.data.auth_user_data) {
                             dispatch({ type: 'AUTH_USER_DATA_UPDATE', auth_user_data: resp.data.auth_user_data })
                             delete resp.data.auth_user_data
                         }
 
-                        if (resp.data.sysconfig_params_data){
+                        if (resp.data.sysconfig_params_data) {
                             dispatch({ type: 'SYSCONFIG_PARAMS_DATA_UPDATE', sysconfig_params_data: resp.data.sysconfig_params_data })
                             delete resp.data.sysconfig_params_data
                         }
 
-                        if (resp.data.active_session_data){
+                        if (resp.data.active_session_data) {
                             dispatch({ type: 'ACTIVE_SESSION_DATA_UPDATE', active_session_data: resp.data.active_session_data })
                             delete resp.data.active_session_data
                         }
                     })
                     return Promise.resolve(resp.data)
                 })
-                .catch((e: any) => {
+                .catch(async (e: any) => {
                     var error = {} as any
                     if (e.resp) {
                         // client received an error resp (5xx, 4xx)
                         error = {
-                            _status: e.resp._status ? e.resp._status : '',
-                            message: e.resp._statusText ? e.resp._statusText : e.resp.data ? e.resp.data.message : '',
+                            _status: e.resp._status ?? '',
+                            message: e.resp.statusText ?? (e.resp.data ? e.resp.data.message : ''),
                             data: e.resp.data ? e.resp.data : {},
                             page: e.resp.config ? e.resp.config.url.replace(active_session_data.token + '/', '') : ''
                         }
@@ -158,18 +156,17 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
                         error = {
                             message: e.message,
                             request: {
-                                _status: e.request._status,
-                                _url: e.request._url,
-                                _response: typeof e.request._response === 'string' && e.request._response.length < 500 ? e.request._response : null,
-                                _method: e.request._method,
+                                _status: e.request.status,
+                                _url: e.request.url ?? e.request.responseURL,
+                                _response: typeof e.request.response === 'string' && e.request.response.length < 500 ? e.request.response : undefined,
+                                _method: e.request.method,
                             },
                             response: e.response.data ? {
                                 message: e.response.data.message,
                                 file: e.response.data.file,
                                 line: e.response.data.line,
-                            } : null
+                            } : undefined,
                         }
-
                         if (error.message.includes('Request failed with status code') && error.response) {
                             error.message = error.response.message
                         }
@@ -177,6 +174,10 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
                         error = {
                             message: e.message
                         }
+                    }
+                    if (error.response && error.response.message == 'Session ended or session token invalid') {
+                        await dispatch({ type: 'APP_BACKEND_API_CALL', method: 'POST', endpoint: '' })
+                        return dispatch(action)
                     }
                     console.log(error)
                     return Promise.reject(error)

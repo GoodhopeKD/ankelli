@@ -34,6 +34,13 @@ return new class extends Migration
 
         DB::table('__user_groups')->insert([
             [
+                'name' => 'Default Users',
+                'slug' => 'default_users',
+                'description' => 'Group for Default User accounts created on system initialization and factory_data loading. 
+New users cannot be added to this group.',
+                'creator_username' => 'system',
+            ],
+            [
                 'name' => 'Administrators',
                 'slug' => 'administrators',
                 'description' => 'Automatically joined group (Users with active Admin Extension). 
@@ -43,7 +50,7 @@ Members can be added to other admin groups.',
             [
                 'name' => 'Developers',
                 'slug' => 'developers',
-                'description' => 'Group for unrestricted system users. 
+                'description' => 'Admin group for unrestricted system users. 
 Members have access to all features and OTP access to account named "developer". 
 Only "developer" account can add members to this group.
 Group used for System Development and Maintenance.',
@@ -61,7 +68,7 @@ Only "sysadmin" account can add members to this group.',
             [
                 'name' => 'Business Administrators',
                 'slug' => 'business_administrators',
-                'description' => 'Admin group for Business Intelligence.
+                'description' => 'Admin group for Business Administrators.
 Members have access to business related features.
 Members have OTP access to accounts named "reserves" and "busadmin".
 Only "busadmin" account can add members to this group.',
@@ -78,7 +85,7 @@ Members can manage other users and user related queries.',
                 'name' => 'Platform moderators',
                 'slug' => 'platform_moderators',
                 'description' => 'Group for Platform moderators. 
-Members can respond in the customer service chat module, handle flagged business elems, manage daily updates.',
+Members can respond in the customer service chat module, handle flagged business elements, manage daily updates.',
                 'creator_username' => 'system',
             ],
             [

@@ -3,6 +3,7 @@ import _DateTime from 'app/controller/wrappers/auxilliary/_DateTime'
 /* Parent Class import */
 import _Wrapper_ from 'app/controller/wrappers/_Wrapper_'
 /* Actions, Configs imports */
+import { mainLaravelDBRestAPICallWrapper } from 'app/controller/actions/rest_api.actions'
 import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend_api.actions'
 
 /*
@@ -77,6 +78,10 @@ export default class _Session extends _Wrapper_ implements Omit<typeof _SessionR
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
         return this._mainLaravelDBAPIGetCollection('sessions', params, page_select, per_page)
+    }
+
+    public static refresh() {
+        mainLaravelDBRestAPICallWrapper.dispatch({ type: 'APP_BACKEND_API_CALL', method: 'POST', endpoint: '' })
     }
 
     /* Updaters */

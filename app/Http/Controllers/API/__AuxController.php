@@ -54,7 +54,7 @@ class __AuxController extends Controller
             $active_session_data = $request->active_session_data;
             if ( $active_session_data){
                 $active_session_data['request_location'] = Location::get() ? (array)(Location::get()) : [ 'ip' => $request->ip() ];
-                if ( isset($active_session_data['token']) && _Session::where('token', $active_session_data['token'] )->exists() && _Session::findOrFail($active_session_data['token'])['_status'] !== 'ended' ){
+                if ( isset($active_session_data['token']) && _Session::where('token', $active_session_data['token'] )->exists() && _Session::find($active_session_data['token'])['_status'] !== 'ended' ){
                     $active_session_data['default_route'] = true;
                     $response['active_session_data'] = ( new _SessionController )->update( new Request( array_filter( $active_session_data) ), $active_session_data['token'] )->getData();
                 } else {
@@ -70,11 +70,23 @@ class __AuxController extends Controller
         }
     }
 
+    public function platform_dashboard()
+    {
+        $platform_charge_stats_start_date = request()->platform_charge_stats_start_date;
+        $platform_charge_stats = [
+            'start_date' => now()->toDateTimeString(),
+            'end_date' => now()->toDateTimeString(),
+            'daily_totals' => [
+                'USDT' => [
+                    [ now()->toDateTimeString() => 100 ],
+                ],
+            ],
+        ];
+    }
+
     public function reserved_usernames()
     {
-        $load_factory_data = session()->get('load_factory_data');
-        $load_factory_data = isset($load_factory_data) ? (boolean)$load_factory_data : null;
-        return $load_factory_data ? [] : ['ankelli', 'admin', 'system', 'root', 'user'];
+        return session()->get('active_session_token') == 'FACTORY_SESSION' ? [] : ['ankelli', 'admin', 'system', 'root', 'user'];
     }
 
     public function availability_check(Request $request)
@@ -199,11 +211,6 @@ class __AuxController extends Controller
         return response()->json( (new _PrefItemController)->index( new Request(['parent_uid' =>'system']) ));
     }
 
-    public function active_assets()
-    {
-        return response()->json( (new _AssetController)->index( new Request(['_status' =>'active']) ));
-    }
-
     public function datalists()
     {
         return response()->json([
@@ -216,8 +223,18 @@ class __AuxController extends Controller
 
     public function load_factory_data()
     {
-        session()->put('load_factory_data', 'true');
-        session()->put('active_session_token', request()->segments()[env('API_URL')?0:1] );
+        session()->put('active_session_token', 'FACTORY_SESSION' );
+        session()->put('api_auth_user_username', 'system');
+
+        $token_reg_pref_item = _PrefItem::firstWhere('key_slug', 'token_reg_enabled');
+        if ($token_reg_pref_item->value_f()){
+            (new _PrefItemController)->update( new Request([
+                'update_note' => 'Temporarily disabling for factory users.',
+                'value' => false,
+                'value_type' => 'boolean',
+            ]), $token_reg_pref_item->id);
+            $token_reg_changed = true;
+        }
         
         // user:developer
         (new _UserController)->store( new Request([
@@ -225,7 +242,10 @@ class __AuxController extends Controller
             'email_address' => 'developer.ankelli@gmail.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
-        session()->put('api_auth_user_username', 'system');
+        (new _UserGroupMembershipController)->store( new Request([
+            'user_username' => 'developer',
+            'user_group_slug' => 'default_users',
+        ]));
         (new _AdminExtensionController)->store( new Request([
             'user_username' => 'developer',
             'post_title' => 'Default Developer',
@@ -241,7 +261,10 @@ class __AuxController extends Controller
             'email_address' => 'sysadmin@ankelli.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
-        session()->put('api_auth_user_username', 'system');
+        (new _UserGroupMembershipController)->store( new Request([
+            'user_username' => 'sysadmin',
+            'user_group_slug' => 'default_users',
+        ]));
         (new _AdminExtensionController)->store( new Request([
             'user_username' => 'sysadmin',
             'post_title' => 'Default System Administrator',
@@ -265,10 +288,13 @@ class __AuxController extends Controller
             'email_address' => 'reserves@ankelli.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
-        session()->put('api_auth_user_username', 'system');
+        (new _UserGroupMembershipController)->store( new Request([
+            'user_username' => 'reserves',
+            'user_group_slug' => 'default_users',
+        ]));
         (new _AdminExtensionController)->store( new Request([
             'user_username' => 'reserves',
-            'post_title' => 'Asset Reserves',
+            'post_title' => 'Ankelli Asset Reserves',
         ]));
         (new _BuyerExtensionController)->store( new Request([
             'user_username' => 'reserves',
@@ -289,7 +315,10 @@ class __AuxController extends Controller
             'email_address' => 'busadmin@ankelli.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
-        session()->put('api_auth_user_username', 'system');
+        (new _UserGroupMembershipController)->store( new Request([
+            'user_username' => 'busadmin',
+            'user_group_slug' => 'default_users',
+        ]));
         (new _AdminExtensionController)->store( new Request([
             'user_username' => 'busadmin',
             'post_title' => 'Default Business Administrator',
@@ -307,18 +336,33 @@ class __AuxController extends Controller
             'user_group_slug' => 'business_administrators',
         ]));
 
-        session()->forget('load_factory_data');
+        if ($token_reg_changed){
+            (new _PrefItemController)->update( new Request([
+                'update_note' => 'Resetting to default value.',
+                'value' => $token_reg_pref_item->value_f(),
+                'value_type' => 'boolean',
+            ]), $token_reg_pref_item->id);
+        }
+
         session()->forget('active_session_token');
+        session()->forget('api_auth_user_username');
     }
 
     public function load_test_data()
     {
-        (new __AuxController)->load_factory_data();
-        
-        session()->put('load_factory_data', 'true');
         session()->put('active_session_token', request()->segments()[env('API_URL')?0:1] );
-
         session()->put('api_auth_user_username', 'system');
+
+        $token_reg_pref_item = _PrefItem::firstWhere('key_slug', 'token_reg_enabled');
+        if ($token_reg_pref_item->value_f()){
+            (new _PrefItemController)->update( new Request([
+                'update_note' => 'Temporarily disabling for test users.',
+                'value' => false,
+                'value_type' => 'boolean',
+            ]), $token_reg_pref_item->id);
+            $token_reg_changed = true;
+        }
+
         (new _RegTokenController)->store( new Request([]));
 
         // user:guddaz
@@ -328,7 +372,7 @@ class __AuxController extends Controller
         ]));
         session()->put('api_auth_user_username', 'system');
         (new _AdminExtensionController)->store( new Request([
-            'user_username' => 'guddaz', 'post_title' => 'Head system developer',
+            'user_username' => 'guddaz', 'post_title' => 'Head System Developer',
         ]));
         (new _UserGroupMembershipController)->store( new Request([
             'user_username' => 'guddaz',
@@ -342,7 +386,7 @@ class __AuxController extends Controller
         ]));
         session()->put('api_auth_user_username', 'system');
         (new _AdminExtensionController)->store( new Request([
-            'user_username' => 'lodza', 'post_title' => 'Business Intelligence HOD',
+            'user_username' => 'lodza', 'post_title' => 'Head Business Administrator',
         ]));
         (new _UserGroupMembershipController)->store( new Request([
             'user_username' => 'lodza', 'user_group_slug' => 'system_administrators',
@@ -378,7 +422,7 @@ class __AuxController extends Controller
             session()->put('api_auth_user_username', $internalisation[0]);
             (new _TransactionController)->store( new Request([
                 'description' => $internalisation[2],
-                'type' => 'internalisation',
+                'tr_type' => 'internalisation',
                 'destination_user_username' => $internalisation[0], 
                 'asset_code' => 'USDT',
                 'transfer_value' => $internalisation[1],
@@ -414,7 +458,6 @@ class __AuxController extends Controller
         session()->put('api_auth_user_username', 'ross');
         $offer = (new _OfferController)->store( new Request([
             'country_name' => 'Zimbabwe',
-            'location' => 'Chitungwiza', 
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
@@ -473,7 +516,6 @@ class __AuxController extends Controller
         session()->put('api_auth_user_username', 'raymond');
         $offer = (new _OfferController)->store( new Request([
             'country_name' => 'Zimbabwe',
-            'location' => 'Chitungwiza', 
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
@@ -495,7 +537,6 @@ class __AuxController extends Controller
         session()->put('api_auth_user_username', 'keith');
         $offer = (new _OfferController)->store( new Request([
             'country_name' => 'Zimbabwe',
-            'location' => 'Kadoma', 
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
@@ -517,7 +558,6 @@ class __AuxController extends Controller
         session()->put('api_auth_user_username', 'jimmy');
         $offer = (new _OfferController)->store( new Request([
             'country_name' => 'Zambia',
-            'location' => 'Lusaka CBD', 
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
@@ -563,14 +603,14 @@ class __AuxController extends Controller
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
-            'offer_price' => 0.95,
-            'min_purchase_amount' => 200,
-            'max_purchase_amount' => 1000,
+            'offer_price' => 13.3,
+            'min_purchase_amount' => 2800,
+            'max_purchase_amount' => 14000,
             'pymt_method_slug' => 'cash_in_person',
             'pymt_details' => [ 'fullname' => 'Mulenga Mwamba', 'phone_no' => 'mulenga@example.com', ],
         ]))->getData();
         session()->put('api_auth_user_username', 'keith');
-        $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 200, ]))->getData();
+        $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 2800, ]))->getData();
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', 'lodza');
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, ]), $trade->ref_code );
@@ -580,7 +620,6 @@ class __AuxController extends Controller
         session()->put('api_auth_user_username', 'peter');
         $offer = (new _OfferController)->store( new Request([
             'country_name' => 'Zimbabwe',
-            'location' => 'Nyanga', 
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
@@ -601,18 +640,17 @@ class __AuxController extends Controller
         session()->put('api_auth_user_username', 'flint');
         $offer = (new _OfferController)->store( new Request([
             'country_name' => 'South Africa',
-            'location' => 'Pretoria CBD', 
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
-            'currency_code' => 'USD',
-            'offer_price' => 0.96,
-            'min_purchase_amount' => 100,
-            'max_purchase_amount' => 180,
+            'currency_code' => 'ZAR',
+            'offer_price' => 15.36,
+            'min_purchase_amount' => 1500,
+            'max_purchase_amount' => 2500,
             'pymt_method_slug' => 'fnb_bank',
             'pymt_details' => [ 'fullname' => 'William Mbeki', 'account_no' => '6557890898', ],
         ]))->getData();
         session()->put('api_auth_user_username', 'keith');
-        $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 180, ]))->getData();
+        $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 2500, ]))->getData();
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', 'flint');
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, ]), $trade->ref_code );
@@ -622,18 +660,17 @@ class __AuxController extends Controller
         session()->put('api_auth_user_username', 'lodza');
         $offer = (new _OfferController)->store( new Request([
             'country_name' => 'South Africa',
-            'location' => 'Pretoria CBD', 
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
-            'currency_code' => 'USD',
-            'offer_price' => 0.95,
-            'min_purchase_amount' => 40,
-            'max_purchase_amount' => 200,
+            'currency_code' => 'ZAR',
+            'offer_price' => 15.2,
+            'min_purchase_amount' => 700,
+            'max_purchase_amount' => 3000,
             'pymt_method_slug' => 'fnb_bank',
             'pymt_details' => [ 'fullname' => 'William Mbeki', 'account_no' => '6557890898', ],
         ]))->getData();
         session()->put('api_auth_user_username', 'jimmy');
-        $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 180, ]))->getData();
+        $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 2800, ]))->getData();
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', 'lodza');
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, ]), $trade->ref_code );
@@ -643,7 +680,6 @@ class __AuxController extends Controller
         session()->put('api_auth_user_username', 'raymond');
         $offer = (new _OfferController)->store( new Request([
             'country_name' => 'Italy',
-            'location' => 'Rome', 
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
             'currency_code' => 'EUR',
@@ -664,7 +700,6 @@ class __AuxController extends Controller
         session()->put('api_auth_user_username', 'nassim');
         $offer = (new _OfferController)->store( new Request([
             'country_name' => 'Algeria',
-            'location' => 'Oran', 
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
             'currency_code' => 'DZD',
@@ -706,7 +741,6 @@ class __AuxController extends Controller
         session()->put('api_auth_user_username', 'peter');
         $offer = (new _OfferController)->store( new Request([
             'country_name' => 'Algeria',
-            'location' => 'Constantine', 
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
             'currency_code' => 'DZD',
@@ -723,7 +757,14 @@ class __AuxController extends Controller
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, ]), $trade->ref_code );
         sleep(1);
 
-        session()->forget('load_factory_data');
+        if ($token_reg_changed){
+            (new _PrefItemController)->update( new Request([
+                'update_note' => 'Resetting to default value.',
+                'value' => $token_reg_pref_item->value_f(),
+                'value_type' => 'boolean',
+            ]), $token_reg_pref_item->id);
+        }
+
         session()->forget('active_session_token');
         session()->forget('api_auth_user_username');
     }

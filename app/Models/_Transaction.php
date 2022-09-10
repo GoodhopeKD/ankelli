@@ -3,11 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class _Transaction extends Model
 {
+    use SoftDeletes;
+
     const CREATED_AT = 'transfer_datetime';
     const UPDATED_AT = NULL;
+    const DELETED_AT = 'deleted_datetime';
 
     /**
      * The attributes that are mass assignable.
@@ -18,7 +22,7 @@ class _Transaction extends Model
         'ref_code',
         'session_token',
         'description',
-        'type',
+        'tr_type',
         'source_user_username',
         'destination_user_username',
         'asset_code',

@@ -1,7 +1,7 @@
 import React from "react"
 import { connect } from 'react-redux'
 
-import { _User, _Trade, _Notification, _DateTime } from 'app/controller'
+import { _User, _Trade, _Notification, _DateTime, _Session } from 'app/controller'
 import withRouter from 'app/views/navigation/withRouter'
 import DisplayPhoto from "app/assets/img/user_avatar/025.png";
 
@@ -34,6 +34,7 @@ class TradesSingleViewScreen extends React.Component {
                 this.setState({ focused_trade_loaded: true, input: { pymt_details: trade.pymt_details } })
             })
             .catch(e => console.log(e))
+            .finally(() => _Session.refresh())
     }
 
     render() {
@@ -110,14 +111,6 @@ class TradesSingleViewScreen extends React.Component {
                                         </button>
                                     </>}
 
-                                    {this.focused_trade._status != 'flagged' && (this.focused_trade.pymt_declared_datetime == null || !(new _DateTime(this.focused_trade.pymt_confirmed_datetime)).isAfter('10 minutes')) && <>
-                                        <p>You can raise flag to invite platform moderators to referee trade in the event of abuse.</p>
-                                        <button className="w-100 mb-3 btn rounded-3 btn-danger" disabled={this.state.btn_flag_trade_working}
-                                            onClick={() => { this.setState({ btn_flag_trade_working: true }, () => this.focused_trade.flag().catch(e => console.log(e)).finally(() => this.setState({ btn_flag_trade_working: false }, () => _Notification.flash({ message: 'Trade flagged', duration: 2000 })))) }}  >
-                                            {this.state.btn_flag_trade_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Flag trade</>}
-                                        </button>
-                                    </>}
-
                                     {auth_user_is_buyer && this.focused_trade._status != 'completed' && <>
                                         <button className="w-100 mb-3 btn rounded-3 btn-danger" disabled={this.state.btn_cancel_trade_working}
                                             onClick={() => { this.setState({ btn_cancel_trade_working: true }, () => this.focused_trade.cancel().catch(e => console.log(e)).finally(() => this.setState({ btn_cancel_trade_working: false }, () => _Notification.flash({ message: 'Trade cancelled', duration: 2000 })))) }} >
@@ -151,6 +144,14 @@ class TradesSingleViewScreen extends React.Component {
                                         <button className="w-100 mb-3 btn rounded-3 btn-warning" disabled={this.state.btn_set_offer_creator_visibility_working}
                                             onClick={() => { this.setState({ btn_set_offer_creator_visibility_working: true }, () => this.focused_trade.offerCreatorHide().catch(e => console.log(e)).finally(() => this.setState({ btn_set_offer_creator_visibility_working: false }, () => { _Notification.flash({ message: 'Trade hidden', duration: 2000 }); this.props.navigate(-1) }))) }} >
                                             {this.state.btn_set_offer_creator_visibility_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Hide from trades list</>}
+                                        </button>
+                                    </>}
+
+                                    {this.focused_trade._status != 'flagged' && (this.focused_trade.pymt_declared_datetime == null || !(new _DateTime(this.focused_trade.pymt_confirmed_datetime)).isAfter('10 minutes')) && <>
+                                        <p>You can raise flag to invite platform moderators to referee trade in the event of abuse.</p>
+                                        <button className="w-100 mb-3 btn rounded-3 btn-danger" disabled={this.state.btn_flag_trade_working}
+                                            onClick={() => { this.setState({ btn_flag_trade_working: true }, () => this.focused_trade.flag().catch(e => console.log(e)).finally(() => this.setState({ btn_flag_trade_working: false }, () => _Notification.flash({ message: 'Trade flagged', duration: 2000 })))) }}  >
+                                            {this.state.btn_flag_trade_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Flag trade</>}
                                         </button>
                                     </>}
                                 </div>
@@ -214,7 +215,7 @@ const mapStateToProps = (state) => {
     return {
         datalists: state.datalists_data,
         sysconfig_params: state.sysconfig_params_data,
-        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_accounts']) : null,
+        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_wallets']) : null,
     }
 }
 

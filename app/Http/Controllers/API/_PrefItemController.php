@@ -65,7 +65,41 @@ class _PrefItemController extends Controller
      */
     public function update(Request $request, int $id)
     {
-        //
+        $validated_data = $request->validate([
+            'update_note' => ['required', 'string', 'max:255'],
+            'value' => ['required'],
+            'value_type' => ['required', 'string', 'max:64'],
+        ]);
+
+        $element = _PrefItem::findOrFail($id);
+        if ($element->value_type !== $validated_data['value_type']){
+            abort(422, 'Value type mismatch');
+        }
+
+        // Handle _Log
+        $log_entry_update_result = [];
+        foreach ( $validated_data as $key => $value ) {
+            if ( $element->{$key} != $value ){
+                array_push( $log_entry_update_result, [
+                    'field_name' => $key,
+                    'old_value' => $element->{$key},
+                    'new_value' => $value,
+                ]);
+            }
+        }
+        (new _LogController)->store( new Request([
+            'action_note' => $request->update_note,
+            'action_type' => 'entry_update',
+            'entry_table' => $element->getTable(),
+            'entry_uid' => $element->id,
+            'batch_code' => $request->batch_code,
+            'entry_update_result'=> $log_entry_update_result,
+        ]));
+        // End _Log Handling
+
+        $element->update($validated_data);
+
+        return response()->json( new _PrefItemResource( $element ) );
     }
 
     /**

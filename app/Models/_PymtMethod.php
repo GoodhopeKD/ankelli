@@ -23,6 +23,7 @@ class _PymtMethod extends Model
     protected $fillable = [
         'name',
         'slug',
+        'choice_currency_codes',
         'details_required',
         'hex_color',
         '_status',
@@ -35,6 +36,7 @@ class _PymtMethod extends Model
      * @var array
      */
     protected $casts = [
+        'choice_currency_codes' => 'array',
         'details_required' => 'array',
     ];
 

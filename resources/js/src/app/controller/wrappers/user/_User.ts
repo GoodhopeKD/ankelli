@@ -10,7 +10,7 @@ import _Session, { _SessionRespObj } from 'app/controller/wrappers/addons/_Sessi
 import _Notification, { _NotificationRespObj } from 'app/controller/wrappers/addons/_Notification'
 import _PrefItem, { _PrefItemRespObj } from 'app/controller/wrappers/addons/_PrefItem'
 import _UserGroupMembership, { _UserGroupMembershipRespObj } from 'app/controller/wrappers/addons/_UserGroupMembership'
-import _AssetAccount, { _AssetAccountRespObj } from 'app/controller/wrappers/applet_element/_AssetAccount'
+import _AssetWallet, { _AssetWalletRespObj } from 'app/controller/wrappers/applet_element/_AssetWallet'
 import _Transaction, { _TransactionRespObj } from 'app/controller/wrappers/applet_element/_Transaction'
 import _AdminExtension, { _AdminExtensionRespObj } from 'app/controller/wrappers/user/_AdminExtension'
 import _SellerExtension, { _SellerExtensionRespObj } from 'app/controller/wrappers/user/_SellerExtension'
@@ -25,7 +25,7 @@ import { _dataless_resource_collection_wrapper } from 'app/controller/redux_redu
 /*
 	Type Definitions
 */
-type casts_t = 'asset_accounts' | 'pref_items' | 'last_active_datetime' | 'created_datetime' | 'updated_datetime' | 'deleted_datetime'
+type casts_t = 'asset_wallets' | 'pref_items' | 'last_active_datetime' | 'created_datetime' | 'updated_datetime' | 'deleted_datetime'
 type _status_t = 'active' | 'inactive' | 'suspended' | 'deactivated' | 'deleted'
 type addable_addon_args_t = typeof _EmailAddressRespObj | typeof _PhoneNoRespObj | typeof _UserGroupMembershipRespObj
 type extension_args_t = typeof _AdminExtensionRespObj | typeof _SellerExtensionRespObj | typeof _BuyerExtensionRespObj
@@ -77,7 +77,7 @@ export const _UserRespObj = {
 	email_addresses: undefined as undefined | null | typeof _EmailAddressRespObj[],
 	phone_nos: undefined as undefined | null | typeof _PhoneNoRespObj[],
 
-	asset_accounts: undefined as undefined | null | typeof _AssetAccountRespObj[],
+	asset_wallets: undefined as undefined | null | typeof _AssetWalletRespObj[],
 	// Extensions
 	..._UserExtensionsRespObj,
 
@@ -135,7 +135,7 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 	email_addresses: _EmailAddress[] = []
 	phone_nos: _PhoneNo[] = []
 
-	asset_accounts: _AssetAccount[] = []
+	asset_wallets: _AssetWallet[] = []
 
 	admin_extension: _AdminExtension | null = null
 	seller_extension: _SellerExtension | null = null
@@ -170,7 +170,7 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 		// Clear Loaded properties
 		this.email_addresses = []
 		this.phone_nos = []
-		this.asset_accounts = []
+		this.asset_wallets = []
 		this.pref_items = []
 
 		// Load Array AddonProps
@@ -184,9 +184,9 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 				this.phone_nos.push(new _PhoneNo(element))
 			})
 		}
-		if ((loader && loader.length && loader.includes('asset_accounts')) && args.asset_accounts && args.asset_accounts.length) {
-			args.asset_accounts.forEach((element: typeof _AssetAccountRespObj) => {
-				this.asset_accounts.push(new _AssetAccount(element))
+		if ((loader && loader.length && loader.includes('asset_wallets')) && args.asset_wallets && args.asset_wallets.length) {
+			args.asset_wallets.forEach((element: typeof _AssetWalletRespObj) => {
+				this.asset_wallets.push(new _AssetWallet(element))
 			})
 		}
 		if ((loader && loader.length && (loader.includes('pref_items') || loader.includes('prefs'))) && args.pref_items && args.pref_items.length) {
@@ -217,6 +217,10 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 	}
 
 	/* Readers */
+
+	public async read() {
+		return this._mainLaravelDBAPIRead('users/' + this.username)
+	}
 
 	public static async getOne(params: { username: string }) {
 		return this._mainLaravelDBAPIGetOne('users/' + params.username)

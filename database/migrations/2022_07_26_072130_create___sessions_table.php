@@ -30,6 +30,35 @@ return new class extends Migration
             $table->timestamp('signin_datetime')->nullable();
             $table->timestamp('signout_datetime')->nullable();
         });
+
+        DB::table('__sessions')->insert([
+            [
+                'token' => 'FACTORY_SESSION',
+                'user_username' => 'system',
+                'device_info' => json_encode([
+                    'name' => 'Factory device',
+                    'version' => 1.0,
+                ]),
+                'agent_app_info' => json_encode([
+                    'name' => 'Factory agent app',
+                    'version' => 1.0,
+                ]),
+                '_status' => 'ended',
+            ],
+            [
+                'token' => 'TEST_SESSION',
+                'user_username' => null,
+                'device_info' => json_encode([
+                    'name' => 'Factory device',
+                    'version' => 1.0,
+                ]),
+                'agent_app_info' => json_encode([
+                    'name' => 'Factory agent app',
+                    'version' => 1.0,
+                ]),
+                '_status' => 'active',
+            ],
+        ]);
     }
 
     /**

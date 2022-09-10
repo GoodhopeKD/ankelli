@@ -18,12 +18,12 @@ class EnsureSessionTokenIsValid
     public function handle(Request $request, Closure $next)
     {
         if (( !env('API_URL') && $request->path() == "api" ) || ( env('API_URL') && $request->path() == "/")) return $next($request);
-        $session = _Session::findOrFail( $request->segments()[env('API_URL')?0:1] );
+        $session = _Session::find( $request->segments()[env('API_URL')?0:1] );
         if ( $session && $session['_status'] !== "ended" ){
             $request->route()->forgetParameter('session_token');
             return $next($request);
         } else {
-            return abort(403);
+            return abort(403,'Session ended or session token invalid');
         }
     }
 }

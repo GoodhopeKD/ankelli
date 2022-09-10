@@ -67,17 +67,15 @@ class _UserController extends Controller
     public function store(Request $request)
     {
         $token_reg_enabled = (boolean)_PrefItem::firstWhere('key_slug', 'token_reg_enabled')->value;
-        $load_factory_data = session()->get('load_factory_data');
-        $load_factory_data = isset($load_factory_data) ? (boolean)$load_factory_data : null;
         // Request Validation
         $validated_data = $request->validate([
-            'reg_token' => [ $token_reg_enabled && !$load_factory_data ? 'required' : 'sometimes', 'string', 'max:16'],
+            'reg_token' => [ $token_reg_enabled ? 'required' : 'sometimes', 'string', 'max:16'],
             'username' => ['required', 'string', 'min:4', 'max:64'],
             'email_address' => ['required', 'string', 'email', 'max:64'],
             'password' => ['required', 'string', 'min:8', 'max:32', 'confirmed'],
         ]);
 
-        if ( $token_reg_enabled && !$load_factory_data ){
+        if ( $token_reg_enabled ){
             $reg_token_check = (array)(new __AuxController)->availability_check( new Request([ 'check_param_name' => 'reg_token', 'check_param_value' => $validated_data['reg_token'] ]) )->getData();
             if ( !$reg_token_check['usable']){
                 return abort(422, $reg_token_check['message']);
@@ -103,8 +101,6 @@ class _UserController extends Controller
 
         $validated_data['password'] = bcrypt($request->password);
         $api_auth_user = _User::create($validated_data);
-
-        session()->put( 'action_user_username', $validated_data['username'] );
 
         // Initialise _Log Batch Handling
         $log_batch_code = random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
@@ -145,7 +141,7 @@ class _UserController extends Controller
         ]));
         // End Create notification to verify email
 
-        if ( !$load_factory_data){
+        if ( !( session()->get('active_session_token') && in_array(session()->get('active_session_token'), ['FACTORY_SESSION', 'TEST_SESSION']) )){
             // Handle _Session
             $active_session_data = $request->active_session_data;
             $active_session_data['user_username'] = $api_auth_user->username;
@@ -233,7 +229,7 @@ class _UserController extends Controller
     {
         switch ($request->check_param_name) {
             case 'reg_token':
-                $reg_token = _RegToken::findOrFail( $request->check_param_value );
+                $reg_token = _RegToken::find( $request->check_param_value );
                 $usable = $reg_token && $reg_token->_status === 'active' && count(_User::where('reg_token', $request->check_param_value)->get()) <= (integer)_PrefItem::firstWhere('key_slug', 'reg_token_max_use_count')->value;
                 $message = $usable ? 'Reg token available for use.' : ($reg_token ? ($reg_token->_status === 'available' ? 'Reg token used up.' : 'Reg token has _status "'.$reg_token->_status.'".') : 'Reg token not found.');
                 break;

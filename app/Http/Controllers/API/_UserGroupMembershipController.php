@@ -21,7 +21,21 @@ class _UserGroupMembershipController extends Controller
      */
     public function index()
     {
-        //
+        $result = null;
+
+        if ( $result === null ){
+            $simple_query_args = [];
+
+            if ( request()->user_group_slug ){ $simple_query_args = array_merge( $simple_query_args, [ 'user_group_slug' => request()->user_group_slug ]); }
+            if ( request()->_status && request()->_status !== 'all' ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => request()->_status ]); }
+            if ( !isset(request()->_status) ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => 'active' ]); }
+
+            $eloquent_query = _UserGroupMembership::where($simple_query_args);
+
+            $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) ASC')->paginate(request()->per_page)->withQueryString();
+        }
+
+        return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _UserGroupMembershipResource::collection( $result ) : new _UserGroupMembershipResourceCollection( $result ) ) : null;
     }
 
     /**

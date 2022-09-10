@@ -14,7 +14,8 @@ class TransactionsListViewScreen extends React.Component {
     working = false
 
     default_input = {
-        tr_type: undefined,
+        focused_user_username: this.props.auth_user.username,
+        focused_user_username_tag: 'user_username',
         asset_code: undefined,
     }
 
@@ -65,7 +66,7 @@ class TransactionsListViewScreen extends React.Component {
             })
             setTimeout(
                 () => {
-                    _Type.getCollection({ ...input, user_username: this.props.auth_user.username }, page_select, per_page)
+                    _Type.getCollection(input, page_select, per_page)
                         .then(({ collection }) => {
                             if (!collection.data) return Promise.resolve();
                             let update_object = {
@@ -98,7 +99,7 @@ class TransactionsListViewScreen extends React.Component {
 
     populateScreenWithItems = async (show_list_refreshing_loader = true) => {
         this.setState({ list_refreshing: show_list_refreshing_loader });
-        await this.universalGetCollection(_Transaction, 'transactions_list_loaded', JSON.parse(JSON.stringify(this.state.input)), this.state.page_select, this.state.per_page)
+        await this.universalGetCollection(_Transaction, 'transactions_list_loaded', JSON.parse(JSON.stringify({ ...this.state.input, focused_user_username: undefined, focused_user_username_tag: undefined, [this.state.input.focused_user_username_tag]: this.state.input.focused_user_username })), this.state.page_select, this.state.per_page)
         if (show_list_refreshing_loader) this.setState({ list_refreshing: false })
     };
 
@@ -153,10 +154,11 @@ class TransactionsListViewScreen extends React.Component {
                                 />
                             </div>
                             <div className="col">
-                                <label htmlFor="input_tr_type" className="form-label">Type</label>
-                                <select className="form-select" id="input_tr_type" value={this.state.input.tr_type} onChange={rr => this.handleInputChange('tr_type', rr.target.value, true)} >
-                                    <option value="debit">Debit</option>
-                                    <option value="credit" >Credit</option>
+                                <label htmlFor="input_focused_user_username_tag" className="form-label">Type</label>
+                                <select className="form-select" id="input_focused_user_username_tag" value={this.state.input.focused_user_username_tag} onChange={rr => this.handleInputChange('focused_user_username_tag', rr.target.value, true)} >
+                                    <option value="user_username" >All</option>
+                                    <option value="source_user_username" >Debit</option>
+                                    <option value="destination_user_username" >Credit</option>
                                 </select>
                             </div>
 
@@ -199,12 +201,12 @@ class TransactionsListViewScreen extends React.Component {
                                         {this.state.list.map((transaction, index) => {
                                             const asset = this.props.datalists.active_assets[transaction.asset_code]
                                             const debit = transaction.source_user_username == this.props.auth_user.username
-                                            const tr_type = debit ? 'Debit' : 'Credit'
+                                            const tr_group = debit ? 'Debit' : 'Credit'
                                             return <tr key={index} >
                                                 <td className="align-middle">{transaction.ref_code}</td>
-                                                <td className="align-middle">{tr_type}</td>
+                                                <td className="align-middle">{tr_group}</td>
                                                 <td className="align-middle">{window.assetValueString(transaction.transfer_value, asset)}</td>
-                                                <td className="align-middle">{transaction.description}</td>
+                                                <td className="align-middle">{transaction.tr_type == 'trade_asset_release' ? (debit ? 'Outbound ' : 'Inbound ') : ''}{transaction.description}</td>
                                                 <td className="align-middle">{window.ucfirst(new _DateTime(transaction.transfer_datetime).prettyDatetime())}</td>
                                                 <td className="align-middle">{window.assetValueString(transaction.transfer_result.find(tr => tr.user_username == this.props.auth_user.username).new_asset_value, asset)}</td>
                                             </tr>

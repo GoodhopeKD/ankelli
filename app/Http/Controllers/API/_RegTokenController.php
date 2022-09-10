@@ -50,9 +50,7 @@ class _RegTokenController extends Controller
             '_status' => ['sometimes', 'string', Rule::in(['active', 'suspended', 'used_up'])],
         ]);
 
-        $load_factory_data = session()->get('load_factory_data');
-        $load_factory_data = isset($load_factory_data) ? (boolean)$load_factory_data : null;
-        $validated_data['token'] = $load_factory_data ? '1234567890' : random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
+        $validated_data['token'] = session()->get('active_session_token') == 'TEST_SESSION' ? '1234567890' : random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
         $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
 
         $element = _RegToken::create($validated_data);

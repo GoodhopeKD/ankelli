@@ -21,29 +21,34 @@ export const top_navbar_menu = {
             path: '/offers/:ref_code',
             path_alias: '/offers/:ref_code/:currency_amount',
             element: (props) => <OffersSingleViewScreen {...props} />,
+            restricted_for_default_users: true,
             show_in_menu: false
         },
         {
             title: 'Create an Offer',
             path: '/offers/new',
             element: (props) => <OffersCreateNewScreen {...props} />,
+            restricted_for_default_users: true,
         },
         {
             title: 'Learn',
             path: '/learn',
             element: (props) => <LearnScreen {...props} />,
+            restricted_for_default_users: true,
         },
         {
             title: 'Trades',
             path: '/trades',
             element: (props) => <TradesListViewScreen {...props} />,
             show_when_auth_state_is: true,
+            restricted_for_default_users: true,
         },
         {
             title: 'View Trade',
             path: '/trades/:ref_code',
             element: (props) => <TradesSingleViewScreen {...props} />,
             show_when_auth_state_is: true,
+            restricted_for_default_users: true,
             show_in_menu: false
         },
         {
@@ -51,12 +56,14 @@ export const top_navbar_menu = {
             path: '/my-offers',
             show_when_auth_state_is: true,
             element: (props) => <OffersListViewScreen {...props} screen_mode="my-offers" />,
+            restricted_for_default_users: true,
         },
         {
             title: 'View Offer',
             path: '/my-offers/:ref_code',
             element: (props) => <OffersSingleViewScreen {...props} screen_mode="my-offers" />,
             show_when_auth_state_is: true,
+            restricted_for_default_users: true,
             show_in_menu: false
         },
     ]

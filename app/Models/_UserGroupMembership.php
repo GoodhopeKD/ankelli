@@ -28,4 +28,17 @@ class _UserGroupMembership extends Model
     {
         return $this->belongsTo( _UserGroup::class , 'user_group_slug', 'slug' );
     }
+
+    /**
+     * Get the admin_extension associated with the user.
+     */
+    public function admin_extension()
+    {
+        return $this->belongsTo( _AdminExtension::class , 'user_username', 'user_username' );
+    }
+
+    public function post_title_f()
+    {
+        return $this->admin_extension ? $this->admin_extension->post_title : null;
+    }
 }

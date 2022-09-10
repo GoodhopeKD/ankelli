@@ -165,10 +165,10 @@ class OffersListViewScreen extends React.Component {
                     <div className="row">
                         {(this.props.sysconfig_params.offer_to_buy_enabled && this.props.sysconfig_params.offer_to_sell_enabled) &&
                             <div className="col">
-                                <label htmlFor="input_offer_to" className="form-label">Offers to</label>
+                                <label htmlFor="input_offer_to" className="form-label">I wish to</label>
                                 <select className="form-select" id="input_offer_to" value={this.state.input.offer_to} onChange={rr => this.handleInputChange('offer_to', rr.target.value, true)} >
-                                    <option value="buy">Buy</option>
-                                    <option value="sell" >Sell</option>
+                                    <option value="buy">Sell</option>
+                                    <option value="sell" >Buy</option>
                                 </select>
                             </div>
                         }

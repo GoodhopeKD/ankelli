@@ -16,19 +16,13 @@ class _PymtMethodResourceCollection extends ResourceCollection
     {
         return [
             'data' => $this->collection->transform(function($_this){
-                return array_filter([
-                    'id' => $_this->id,
-                    'name' => $_this->name,
-                    'slug' => $_this->slug,
-                    'details_required' => $_this->details_required,
-                    'hex_color' => $_this->hex_color,
+                return array_filter(array_merge(
+                    is_array($_this->resource) ? $_this->resource: $_this->resource->toArray(), [
                     'icon' => $_this->icon_f(),
-                    '_status' => $_this->_status,
-                    
-                    //'creator_username'      => $_this->creator_username,
-                    //'created_datetime'      => $_this->created_datetime,
-                    //'updated_datetime'      => $_this->updated_datetime,
-                ], static function($var){ return $var !== null;} );
+                    'creator_username' => null,
+                    'created_datetime' => null,
+                    'updated_datetime' => null,
+                ]), static function($var){ return $var !== null;} );
             }),
         ];
     }
