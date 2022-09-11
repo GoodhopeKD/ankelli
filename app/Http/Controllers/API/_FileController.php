@@ -38,30 +38,25 @@ class _FileController extends Controller
 
         $validated_data = $request->validate([
             'files' => ['required', 'array'],
-            //'files.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
+            'files.*' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:4096',
         ]);
 
         $response = ['files' => []];
 
-        if($request->has('files')) {
-            foreach( $request->file('files') as $file ) {
-                $filegroup = $request->filegroup;
-                $parent_table = $request->parent_table;
-                $filename = substr(md5(microtime()),rand(0,9),20).'.'.$file->extension();
-                $upload_dir_path = 'public/' . $filegroup . '/' . ltrim( $parent_table, '__' );
-                $path = $file->storeAs( $upload_dir_path , $filename );
-                $file_data = [];
-                $file_data['filesize'] = $file->getSize();
-                $file_data['original_filename'] = $file->getClientOriginalName();
-                $file_data['uri'] = 'https://ankelli.com' . Storage::url( $upload_dir_path . '/' . $filename );
-                array_push( $response['files'], $file_data );
-            }
-            $response["success"] = true;
-            $response["message"] = "Success! file(s) uploaded";
-        } else {
-            $response["success"] = false;
-            $response["message"] = "Failed! file(s) not uploaded";
+        foreach( $request->file('files') as $file ) {
+            $filegroup = $request->filegroup;
+            $parent_table = $request->parent_table;
+            $filename = substr(md5(microtime()),rand(0,9),20).'.'.$file->extension();
+            $upload_dir_path = 'public/' . $filegroup . '/' . ltrim( $parent_table, '__' );
+            $path = $file->storeAs( $upload_dir_path , $filename );
+            $file_data = [];
+            $file_data['filesize'] = $file->getSize();
+            $file_data['original_filename'] = $file->getClientOriginalName();
+            $file_data['uri'] = 'https://ankelli.test' . Storage::url( $upload_dir_path . '/' . $filename );
+            array_push( $response['files'], $file_data );
         }
+        $response["success"] = true;
+        $response["message"] = "Success! file(s) uploaded";
         return response()->json($response);
     }
 

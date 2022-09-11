@@ -109,7 +109,7 @@ export default class _File extends _Wrapper_ implements Omit<typeof _FileRespObj
         if (!files) {
             return Promise.reject({ message: 'An error occured' })
         }
-        return this._mainLaravelDBAPICreate('files', files[0])
+        return this._mainLaravelDBAPICreate('files', { ...files[0], type: files[0].type })
     }
 
     static async upload(files: typeof _FileRespObj[], filegroup: filegroup_t, parent_table: parent_table_t) {

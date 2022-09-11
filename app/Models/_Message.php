@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\Http\Resources\_FileResourceCollection;
+
 class _Message extends Model
 {
     const CREATED_AT = 'created_datetime';
@@ -33,4 +35,19 @@ class _Message extends Model
     protected $casts = [
         'read_datetime' => 'datetime',
     ];
+
+    public function creator_avatar_image_id_f()
+    {
+        return _User::firstWhere('username',$this->creator_username)->avatar_image_id;
+    }
+
+    public function attachement()
+    {
+        return $this->hasOne( _File::class, 'parent_uid' )->where(['parent_table' => '__messages', 'tag' => 'message_attachement']);
+    }
+
+    public function attachement_f()
+    {
+        return $this->attachement ? json_decode(( new _FileResourceCollection( [$this->attachement] ))->toJson(),true)['data'][0] : NULL;
+    }
 }

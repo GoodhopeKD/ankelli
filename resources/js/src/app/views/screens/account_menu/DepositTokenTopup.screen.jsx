@@ -41,7 +41,7 @@ class DepositTokenTopupScreen extends React.Component {
 
         if (errors.length === 0) {
             this.setState({ errors }) // Remove input error indicators under text inputs
-            let _input = Object.assign(Object.create(Object.getPrototypeOf(input)), input) // Dereference input object
+            const _input = Object.assign(Object.create(Object.getPrototypeOf(input)), input) // Dereference input object
             Object.keys(_input).forEach(key => { if (_input[key] instanceof _Input) _input[key] = _input[key] + "" }) // convert _Input instances to Text
 
             _DepositToken.use(_input).then(() => { _Notification.flash({ message: 'Deposit successful', duration: 2000 }); this.setState({ btn_attempt_token_topup_working, input: _.cloneDeep(this.default_input) }) })

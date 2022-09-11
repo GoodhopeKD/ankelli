@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import withRouter from 'app/views/navigation/withRouter'
 
 import Logo from "app/assets/img/logo/logo.jpeg";
-import DisplayPhoto from "app/assets/img/user_avatar/025.png";
 
 export default withRouter(class TopNavbar extends React.Component {
 
@@ -32,7 +31,7 @@ export default withRouter(class TopNavbar extends React.Component {
                         {this.props.curr_auth_state ?
                             <div className="col-md-3 dropdown text-end">
                                 <a href="#" className="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <img src={DisplayPhoto} alt="mdo" width="32" height="32" className="rounded-circle" />
+                                    <img src={require("app/assets/img/user_avatar/" + (window.padNumber(this.props.auth_user.avatar_image_id ?? '0')) + ".png").default} alt="User avatar" width="32" height="32" className="rounded-circle" />
                                 </a>
                                 <ul className="dropdown-menu text-small dropdown-menu-end">
                                     <li><i className="dropdown-header">@{this.props.auth_user.username}</i></li>

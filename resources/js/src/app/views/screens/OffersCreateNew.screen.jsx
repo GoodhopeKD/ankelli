@@ -59,7 +59,7 @@ class OffersCreateNewScreen extends React.Component {
 
         if (errors.length === 0) {
             this.setState({ errors }) // Remove input error indicators under text inputs
-            let _input = Object.assign(Object.create(Object.getPrototypeOf(input)), input) // Dereference input object
+            const _input = Object.assign(Object.create(Object.getPrototypeOf(input)), input) // Dereference input object
             Object.keys(_input).forEach(key => { if (_input[key] instanceof _Input) _input[key] = _input[key] + "" }) // convert _Input instances to Text
 
             if (_input.pymt_method_slug != 'cash_in_person') {

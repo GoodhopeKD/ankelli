@@ -30,10 +30,11 @@ class _MessageController extends Controller
      */
     public function store(Request $request)
     {
+        if (!isset($request->has_attachement)) $request->has_attachement = false;
         $validated_data = $request->validate([
             'parent_table' => ['sometimes', 'string', Rule::in(['__chats', '__trades'])],
             'parent_uid' => ['required', 'exists:' . $request->parent_table . ','.($request->parent_table=='__chats'?'id':'ref_code').''],
-            'body' => ['required', 'string'],
+            'body' => ['required_if:has_attachement,==,false', 'nullable', 'string'],
         ]);
 
         $validated_data['id'] = random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));

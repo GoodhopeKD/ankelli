@@ -60,11 +60,23 @@ class _TransactionController extends Controller
             'description' => ['required', 'string'],
             'tr_type' => ['required', 'string'],
             'source_user_username' => ['sometimes', 'exists:__users,username', 'string'],
+            'source_user_password' => ['sometimes', 'string', 'min:8', 'max:32'],
             'destination_user_username' => ['sometimes', 'exists:__users,username', 'string'],
             'asset_code' => ['required', 'exists:__assets,code', 'string'],
             'transfer_value' => ['required', 'numeric'],
             'platform_charge_asset_factor' => ['sometimes', 'numeric'],
+            'is_recon' => ['sometimes', 'boolean'],
+            'blockchain_txid' => ['required_if:is_recon,==,true', 'string'],
+            'transfer_datetime' => ['required_if:is_recon,==,true', 'date:Y-m-d H:i:s'],
         ]);
+
+        if (isset($validated_data['source_user_username']) && !in_array($validated_data['source_user_username'], ['reserves', 'escrow']) ){
+            if (isset($validated_data['source_user_password'])){
+                // Validate $validated_data['source_user_password']
+            } else {
+                return abort(403, 'Source user password required to authorize transaction');
+            }
+        }
 
         // Create uid
         $validated_data['ref_code'] = random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
@@ -73,9 +85,7 @@ class _TransactionController extends Controller
         $validated_data['transfer_result'] = [];
 
         $platform_charge_asset_factor = $validated_data['platform_charge_asset_factor'] ?? (float)_PrefItem::firstWhere('key_slug', 'platform_charge_asset_factor')->value;
-        $validated_data['platform_charge_asset_value'] = (!isset($validated_data['source_user_username']) || $validated_data['source_user_username'] == 'reserves' || $validated_data['source_user_username'] == 'escrow' || $validated_data['destination_user_username'] == 'reserves' || $validated_data['destination_user_username'] == 'escrow') ? 0 : $validated_data['transfer_value'] * $platform_charge_asset_factor;
-
-        $saving_platform_charge_as_transaction = true;
+        $validated_data['platform_charge_asset_value'] = (!isset($validated_data['source_user_username']) || in_array($validated_data['destination_user_username'], ['reserves', 'escrow']) || in_array($validated_data['source_user_username'], ['reserves', 'escrow']) ) ? 0 : $validated_data['transfer_value'] * $platform_charge_asset_factor;
 
         if (isset($validated_data['source_user_username'])){
             if ( isset($validated_data['destination_user_username']) && $validated_data['source_user_username'] == $validated_data['destination_user_username']){
@@ -93,21 +103,6 @@ class _TransactionController extends Controller
             $new_asset_value = $old_asset_value - $validated_data['transfer_value'];
 
             if ( $new_asset_value < 0 ){ return abort(422, 'Current ' . $validated_data['asset_code'] . ' balance for ' . $validated_data['source_user_username'] . ' insufficient for transaction.'); }
-
-            if ( $validated_data['platform_charge_asset_value'] && !$saving_platform_charge_as_transaction ){
-                $ankelli_reserves_asset_wallet = _AssetWallet::firstOrCreate([
-                    'user_username' => 'reserves', 
-                    'asset_code' => $validated_data['asset_code']
-                ]);
-                array_push( $validated_data['transfer_result'], [
-                    'user_username' => 'reserves',
-                    'old_asset_value' => $ankelli_reserves_asset_wallet->asset_value,
-                    'new_asset_value' => $ankelli_reserves_asset_wallet->asset_value + $validated_data['platform_charge_asset_value'],
-                ]);
-                (new _AssetWalletController)->update( new Request([
-                    'asset_value' => $ankelli_reserves_asset_wallet->asset_value + $validated_data['platform_charge_asset_value'],
-                ]), $ankelli_reserves_asset_wallet->id );
-            }
 
             array_push( $validated_data['transfer_result'], [
                 'user_username' => $validated_data['source_user_username'],
@@ -147,14 +142,24 @@ class _TransactionController extends Controller
             ]), $destination_user_asset_wallet->id );
         }
 
+        if ( (!isset($validated_data['is_recon']) || (isset($validated_data['is_recon']) && !$validated_data['is_recon'])) && _PrefItem::firstWhere('key_slug', 'use_tatum_crypto_asset_engine')->value_f() ){
+            $tatum_element = (new __TatumAPIController)->createTransaction(new Request([
+                'source_user_username' => $validated_data['source_user_username'], 
+                'destination_user_username' => $validated_data['destination_user_username'], 
+                'asset_code' => $validated_data['asset_code'],
+                'transfer_value' => $validated_data['transfer_value'],
+            ]))->getData();
+            $validated_data['blockchain_txid'] = $tatum_element->txId;
+        }
         $element = _Transaction::create($validated_data);
 
-        if ( isset($validated_data['source_user_username']) && $validated_data['platform_charge_asset_value'] && $saving_platform_charge_as_transaction ){
+        if ( isset($validated_data['source_user_username']) && $validated_data['platform_charge_asset_value'] ){
             sleep(1);
             (new _TransactionController)->store( new Request([
                 'description' => 'Platform charge for transaction "' . $element->ref_code . '"',
                 'tr_type' => 'platform_charge',
                 'source_user_username' => $validated_data['source_user_username'],
+                'source_user_password' => $validated_data['source_user_password'],
                 'destination_user_username' => 'reserves',
                 'asset_code' => $validated_data['asset_code'],
                 'transfer_value' => $validated_data['platform_charge_asset_value'],

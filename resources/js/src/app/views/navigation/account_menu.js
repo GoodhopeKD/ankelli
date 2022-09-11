@@ -36,12 +36,12 @@ export const account_menu = {
             element: (props) => <UserProfileScreen {...props} />,
         },
         {
-            title: 'Deposit',
+            title: 'Deposits',
             path: '/account/deposits',
             children: [
                 {
-                    title: 'Internalisations',
-                    path: '/account/deposits/internalisations',
+                    title: 'Receive funds',
+                    path: '/account/deposits/receive-funds',
                     element: (props) => <ExampleElement {...props} />,
                 },
                 {
@@ -53,12 +53,12 @@ export const account_menu = {
             ]
         },
         {
-            title: 'Withdraw',
+            title: 'Withdrawals',
             path: '/account/withdrawals',
             children: [
                 {
-                    title: 'Externalisations',
-                    path: '/account/withdrawals/externalisations',
+                    title: 'Send funds',
+                    path: '/account/withdrawals/send-funds',
                     element: (props) => <ExampleElement {...props} />,
                 },
                 {

@@ -4,6 +4,7 @@ import _DateTime from 'app/controller/wrappers/auxilliary/_DateTime'
 import _Wrapper_ from 'app/controller/wrappers/_Wrapper_'
 /* Element Imports */
 import _Message, { _MessageRespObj } from 'app/controller/wrappers/addons/_Message'
+import _File, { _FileRespObj } from 'app/controller/wrappers/addons/_File'
 /* Logger Imports */
 import _Log, { _LogRespObj } from 'app/controller/wrappers/addons/_Log'
 /* Actions, Configs imports */
@@ -114,7 +115,7 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
         this.pymt_confirmed_datetime = args.pymt_confirmed_datetime && typeof args.pymt_confirmed_datetime === 'string' ? new _DateTime(args.pymt_confirmed_datetime) : null
         this.created_datetime = args.created_datetime && typeof args.created_datetime === 'string' ? new _DateTime(args.created_datetime) : null
         this.updated_datetime = args.updated_datetime && typeof args.updated_datetime === 'string' ? new _DateTime(args.updated_datetime) : null
-        
+
         if (this.created_datetime)
             this.progress = 25
         if (this.pymt_declared_datetime)
@@ -208,5 +209,22 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
         } else {
             return Promise.reject({ message: 'Addon not recognized' })
         }
+    }
+
+    public async sendMessage(args: { message_body: string, message_attachement: any }) {
+        return this.addAddonProp('messages', { body: args.message_body, has_attachement: args.message_attachement !== undefined } as any)
+            .then(async resp => {
+                if (args.message_attachement) {
+                    args.message_attachement.filegroup = 'images'
+                    args.message_attachement.parent_table = '__messages'
+                    args.message_attachement.parent_uid = resp.id
+                    args.message_attachement.title = 'Message "' + resp.id + '" attachement'
+                    args.message_attachement.tag = 'message_attachement'
+                    const attachement = await _File.create(args.message_attachement)
+                    return Promise.resolve({ ...resp, attachement });
+                }
+                return Promise.resolve(resp);
+            })
+            .catch((e: any) => { return Promise.reject(e); })
     }
 }

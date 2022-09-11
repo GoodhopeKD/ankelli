@@ -22,7 +22,7 @@ class _FileResourceCollection extends ResourceCollection
                     //'parent_uid'            => $_this->parent_uid,
                     //'filegroup'             => $_this->filegroup,
                     //'tag'                   => $_this->tag,
-                    //'title'                 => $_this->title,
+                    'title'                 => $_this->title,
                     'width'                 => $_this->width,
                     'height'                => $_this->height,
                     'uri'                   => $_this->uri,

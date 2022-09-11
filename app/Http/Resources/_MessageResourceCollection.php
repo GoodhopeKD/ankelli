@@ -18,10 +18,10 @@ class _MessageResourceCollection extends ResourceCollection
             'data' => $this->collection->transform(function($_this){
                 return array_filter(array_merge(
                     is_array($_this->resource) ? $_this->resource: $_this->resource->toArray(), [
+                    'creator_avatar_image_id' => $_this->creator_avatar_image_id_f(),
+                    'attachement' => $_this->attachement_f(),
                     'parent_table' => null,
                     'parent_uid' => null,
-                    //'created_datetime'      => null,
-                    //'updated_datetime'      => null,
                 ]), static function($var){ return $var !== null;} );
             }),
         ];

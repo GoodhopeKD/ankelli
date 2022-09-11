@@ -15,6 +15,8 @@ return new class extends Migration
     {
         Schema::create('__assets', function (Blueprint $table) {
             $table->id();
+            $table->string('tatum_mnemonic', 255)->nullable();
+            $table->string('tatum_xpub', 255)->nullable();
             $table->string('name', 64)->unique();
             $table->string('code', 64)->unique();
             $table->string('smallest_display_unit', 32); // unsignedDecimal
@@ -29,15 +31,6 @@ return new class extends Migration
             $table->timestamp('created_datetime')->useCurrent();
             $table->timestamp('updated_datetime')->nullable()->useCurrentOnUpdate();
         });
-
-        DB::table('__assets')->insert([
-            [
-                'name' => 'Tether USD',
-                'code' => 'USDT',
-                'smallest_display_unit' => 0.0001,
-                'creator_username' => 'system',
-            ],
-        ]);
     }
 
     /**

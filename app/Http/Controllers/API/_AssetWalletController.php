@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
+use App\Models\_PrefItem;
+
 use App\Models\_AssetWallet;
 use App\Http\Resources\_AssetWalletResource;
 use App\Http\Resources\_AssetWalletResourceCollection;
@@ -37,6 +39,15 @@ class _AssetWalletController extends Controller
         ]);
 
         $element = _AssetWallet::create($validated_data);
+        if ( _PrefItem::firstWhere('key_slug', 'use_tatum_crypto_asset_engine')->value_f() ){
+            $tatum_element = (new __TatumAPIController)->createAssetWallet(new Request(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']]))->getData();
+            $validated_data = [];
+            $validated_data['tatum_customer_id'] = $tatum_element->customerId;
+            $validated_data['blockchain_id'] = $tatum_element->id;
+            $tatum_element = (new __TatumAPIController)->createAssetWalletAddress(new Request(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']]))->getData();
+            $validated_data['blockchain_address'] = $tatum_element->address;
+            $element->update($validated_data);
+        }
         $element = _AssetWallet::find($element->id);
         
         // Handle _Log

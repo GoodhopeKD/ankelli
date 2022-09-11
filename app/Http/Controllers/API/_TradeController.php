@@ -68,6 +68,7 @@ class _TradeController extends Controller
         $validated_data = $request->validate([
             'offer_ref_code' => ['required', 'exists:__offers,ref_code', 'string'],
             'currency_amount' => ['required', 'numeric'],
+            'source_user_password' => ['sometimes', 'string', 'min:8', 'max:32'],
             'pymt_details' => ['sometimes', 'array'],
             'pymt_details.physical_address' => ['sometimes', 'string', 'max:255'],
             'pymt_details.email_address' => ['sometimes', 'string', 'email', 'max:64'],
@@ -151,14 +152,15 @@ class _TradeController extends Controller
 
         if ( $seller_new_asset_value < 0 ){ return abort(422, 'Current ' . $offer->asset_code . ' balance insufficient for transaction.'); }
         
-        $validated_data['escrow_lock_transaction_ref_code'] = (new _TransactionController)->store( new Request([
+        $validated_data['escrow_lock_transaction_ref_code'] = (new _TransactionController)->store( new Request(array_filter([
             'description' => 'Lock asset in escrow for trade "' . $validated_data['ref_code'] . '"',
             'tr_type' => 'escrow_asset_lock',
-            'source_user_username' => $seller_username, 
+            'source_user_username' => $seller_username,
+            'source_user_password' => isset($validated_data['source_user_password']) ? $validated_data['source_user_password'] : null,
             'destination_user_username' => 'escrow', 
             'asset_code' => $offer->asset_code,
             'transfer_value' => $validated_data['asset_value_escrowed'],
-        ]))->getData()->ref_code;
+        ])))->getData()->ref_code;
         
         sleep(1);
         // End lock in escrow
@@ -209,6 +211,7 @@ class _TradeController extends Controller
         $validated_data = $request->validate([
             'pymt_declared' => ['sometimes', 'boolean'],
             'pymt_confirmed' => ['sometimes', 'boolean'],
+            'source_user_password' => ['sometimes', 'string', 'min:8', 'max:32'],
             'visible_to_creator' => ['sometimes', 'boolean'],
             'visible_to_offer_creator' => ['sometimes', 'boolean'],
             '_status' => ['sometimes', 'string', Rule::in(['active', 'cancelled', 'flagged', 'completed'])],
@@ -229,6 +232,13 @@ class _TradeController extends Controller
         }
 
         if (isset($validated_data['pymt_confirmed']) && $validated_data['pymt_confirmed'] == true){
+
+            if (isset($validated_data['source_user_password'])){
+                // Validate $validated_data['source_user_password']
+            } else {
+                return abort(403, 'Source user password required to authorize trade transaction');
+            }
+
             $validated_data['pymt_confirmed_datetime'] = now()->toDateTimeString();
             $validated_data['_status'] = 'active';
             session()->put('api_auth_user_username', 'system');
@@ -262,6 +272,7 @@ class _TradeController extends Controller
                 'description' => 'Asset release for trade "' . $ref_code . '"',
                 'tr_type' => 'trade_asset_release',
                 'source_user_username' => $seller_username, 
+                'source_user_password' => $validated_data['source_user_password'],
                 'destination_user_username' => $buyer_username, 
                 'asset_code' => $element->asset_code,
                 'transfer_value' => $element->asset_value,

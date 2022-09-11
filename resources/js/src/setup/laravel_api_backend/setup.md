@@ -119,7 +119,8 @@ In the **`app/Providers/RouteServiceProvider`** file
 Create and modify the controllers
 
 ```properties
-php artisan make:controller API/__AuxController --api
+php artisan make:controller API/__AuxController
+php artisan make:controller API/__TatumAPIController
 
 php artisan make:controller API/_UserController --api
 php artisan make:controller API/_SessionController --api

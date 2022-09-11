@@ -15,11 +15,23 @@ class _Asset extends Model
      * @var array
      */
     protected $fillable = [
+        'tatum_mnemonic',
+        'tatum_xpub',
         'name',
         'code',
         'smallest_display_unit',
         '_status',
         'creator_username',
+    ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'tatum_mnemonic',
+        'tatum_xpub',
     ];
 
     /**

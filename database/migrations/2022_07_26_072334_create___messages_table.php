@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('id', 16)->primary();
             $table->enum('parent_table', ['__chats', '__trades']);
             $table->string('parent_uid', 64)->nullable();
-            $table->mediumText('body');
+            $table->mediumText('body')->nullable();
 
             $table->string('creator_username', 64)->nullable();
             $table->foreign('creator_username')

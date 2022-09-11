@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('__transactions', function (Blueprint $table) {
             $table->string('ref_code', 16)->primary();
+            $table->string('blockchain_txid', 255)->nullable();
             $table->string('session_token', 16)->nullable();
             $table->foreign('session_token')
                     ->references('token')

@@ -18,6 +18,16 @@ window.ucfirst = function (s) {
 	return s && s.length ? s[0].toUpperCase() + s.slice(1) : ''
 }
 
+
+window.padNumber = (number = undefined) => {
+    if (!number) return undefined
+    switch ((number + '').length) {
+        case 1: return '00' + number
+        case 2: return '0' + number
+        default: return number
+    }
+}
+
 window.currencyAmountString = (amount, currency) => {
 	currency = currency ?? { symbol: '' }
 	return (currency.symbol_before_number ? currency.symbol : '') + (Math.round((parseFloat(amount) + Number.EPSILON) * 100) / 100).toLocaleString('zw-ZW') + (currency.symbol_before_number ? '' : currency.symbol)

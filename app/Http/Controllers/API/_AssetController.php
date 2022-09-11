@@ -4,6 +4,9 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+
+use App\Models\_PrefItem;
 
 use App\Models\_Asset;
 use App\Http\Resources\_AssetResource;
@@ -42,7 +45,35 @@ class _AssetController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated_data = $request->validate([
+            'name' => ['required', 'string', 'max:64'],
+            'code' => ['required', 'string', 'max:64'],
+            'smallest_display_unit' => ['required', 'numeric'],
+            '_status' => ['sometimes', 'string', Rule::in(['active', 'frozen'])],
+        ]);
+
+        $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+
+        $element = _Asset::create($validated_data);
+        if ( _PrefItem::firstWhere('key_slug', 'use_tatum_crypto_asset_engine')->value_f() ){
+            $tatum_element = (new __TatumAPIController)->createAsset(new Request(['code' => $validated_data['code']]))->getData();
+            $validated_data = [];
+            $validated_data['tatum_mnemonic'] = $tatum_element->mnemonic;
+            $validated_data['tatum_xpub'] = $tatum_element->xpub;
+            $element->update($validated_data);
+        }
+        $element = _Asset::find($element->id);
+        
+        // Handle _Log
+        (new _LogController)->store( new Request([
+            'action_note' => 'Addition of _Asset entry to database.',
+            'action_type' => 'entry_create',
+            'entry_table' => $element->getTable(),
+            'entry_uid' => $element->id,
+            'batch_code' => $request->batch_code,
+        ]));
+        // End _Log Handling
+        return response()->json( new _AssetResource( $element ) );
     }
 
     /**

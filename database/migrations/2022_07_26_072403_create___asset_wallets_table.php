@@ -15,6 +15,10 @@ return new class extends Migration
     {
         Schema::create('__asset_wallets', function (Blueprint $table) {
             $table->id();
+            $table->string('blockchain_id', 255)->nullable();
+            $table->string('blockchain_address', 255)->nullable();
+            $table->string('blockchain_private_key', 255)->nullable();
+            $table->string('tatum_customer_id', 255)->nullable();
             $table->string('user_username', 64)->nullable();
             $table->foreign('user_username')
                     ->references('username')

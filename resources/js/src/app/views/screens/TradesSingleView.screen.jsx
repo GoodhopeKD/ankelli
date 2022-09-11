@@ -1,15 +1,19 @@
 import React from "react"
 import { connect } from 'react-redux'
 
-import { _User, _Trade, _Notification, _DateTime, _Session } from 'app/controller'
+import { _User, _Trade, _Notification, _DateTime, _Session, _Input } from 'app/controller'
 import withRouter from 'app/views/navigation/withRouter'
-import DisplayPhoto from "app/assets/img/user_avatar/025.png";
 
 class TradesSingleViewScreen extends React.Component {
 
+    default_input = {
+        message_body: new _Input(),
+        message_attachement: undefined,
+    }
+
     state = {
         focused_trade_loaded: false,
-        input: {},
+        input: _.cloneDeep(this.default_input),
         errors: [],
     }
 
@@ -27,11 +31,45 @@ class TradesSingleViewScreen extends React.Component {
         this.setState({ input })
     }
 
+    handleSubmit = async () => {
+        this.setState({ btn_send_message_working: true })
+
+        const btn_send_message_working = false
+        const errors = []
+        const input = this.state.input
+
+        if (input.message_attachement) {
+            input.message_attachement.uri = URL.createObjectURL(input.message_attachement)
+            input.message_attachement.original_filename = input.message_attachement.name
+            if ((input.message_body + '').length)
+                if (!(input.message_body.isSafeText(1))) { errors.push('Message body invalid') }
+        } else {
+            if (!(input.message_body.isSafeText(1))) { errors.push('Message body invalid') }
+        }
+
+        delete input.pymt_details
+
+        if (errors.length === 0) {
+            this.setState({ errors }) // Remove input error indicators under text inputs
+            const _input = Object.assign(Object.create(Object.getPrototypeOf(input)), input) // Dereference input object
+            Object.keys(_input).forEach(key => { if (_input[key] instanceof _Input) _input[key] = _input[key] + "" }) // convert _Input instances to Text
+
+            this.focused_trade.sendMessage(_input).then(() => { _Notification.flash({ message: 'Message sent', duration: 2000 }); this.componentDidMount(); this.setState({ btn_send_message_working, errors, input: _.cloneDeep(this.default_input) }) })
+                .catch((error) => {
+                    errors.push(error.message)
+                    this.setState({ btn_send_message_working, errors })
+                })
+        } else {
+            this.setState({ btn_send_message_working, errors, input })
+        }
+    }
+
     componentDidMount = () => {
         _Trade.getOne({ ref_code: this.props.params.ref_code })
             .then(trade => {
                 this.focused_trade = new _Trade(trade)
-                this.setState({ focused_trade_loaded: true, input: { pymt_details: trade.pymt_details } })
+                this.handleInputChange('pymt_details', trade.pymt_details, true)
+                this.setState({ focused_trade_loaded: true })
             })
             .catch(e => console.log(e))
             .finally(() => _Session.refresh())
@@ -174,9 +212,10 @@ class TradesSingleViewScreen extends React.Component {
                                             </div>
                                         if (message.creator_username !== this.props.auth_user.username)
                                             return <div key={index} className="d-flex pt-2 border my-1">
-                                                <img src={DisplayPhoto} alt="mdo" width="32" height="32" className="bd-placeholder-img flex-shrink-0 mx-2 my-1 rounded" />
+                                                <img src={require("app/assets/img/user_avatar/" + (window.padNumber(message.creator_avatar_image_id ?? '0')) + ".png").default} alt="User avater image" width="32" height="32" className="bd-placeholder-img flex-shrink-0 mx-2 my-1 rounded" />
                                                 <p className="pb-2 mb-0 lh-sm ">
                                                     <i className="d-flex text-muted small">@{message.creator_username} - {window.ucfirst((new _DateTime(message.created_datetime)).prettyDatetime())}</i>
+                                                    {message.attachement !== undefined && <><img src={message.attachement.uri} alt={message.attachement.title} height="300" className="bd-placeholder-img flex-shrink-0 my-1" /><br /></>}
                                                     <span style={{ whiteSpace: 'pre-wrap' }}>{message.body}</span>
                                                 </p>
                                             </div>
@@ -186,17 +225,57 @@ class TradesSingleViewScreen extends React.Component {
                                                 <p className="mb-0 lh-sm text-end">
                                                     <i className="text-muted small text-end">You - {window.ucfirst((new _DateTime(message.created_datetime)).prettyDatetime())}</i>
                                                 </p>
-                                                <p className="ms-2 pb-2 mb-0 lh-sm text-end"><span style={{ whiteSpace: 'pre-wrap' }}>{message.body}</span></p>
+                                                <p className="ms-2 pb-2 mb-0 lh-sm text-end">
+                                                    {message.attachement !== undefined && <><img src={message.attachement.uri} alt={message.attachement.title} height="300" className="bd-placeholder-img flex-shrink-0 my-1" /><br /></>}
+                                                    <span style={{ whiteSpace: 'pre-wrap' }}>{message.body}</span>
+                                                </p>
                                             </div>
-                                            <img src={DisplayPhoto} alt="mdo" width="32" height="32" className="bd-placeholder-img flex-shrink-0 mx-2 my-1 rounded" />
+                                            <img src={require("app/assets/img/user_avatar/" + (window.padNumber(message.creator_avatar_image_id ?? '0')) + ".png").default} alt="User avater image" width="32" height="32" className="bd-placeholder-img flex-shrink-0 mx-2 my-1 rounded" />
                                         </div>
                                     })}
                                 </div>
                                 <div className="card-footer">
-                                    <div className="input-group">
-                                        <textarea className="form-control" aria-label="With textarea"></textarea>
-                                        <span className="input-group-text">Send</span>
-                                    </div>
+                                    {this.state.errors.length !== 0 && <div className="mb-2">
+                                        {this.state.errors.map((error, key) => (
+                                            <div key={key}>• <span style={{ color: 'red' }}>{error}</span></div>
+                                        ))}
+                                    </div>}
+                                    <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
+                                        <div className="input-group">
+
+                                            <span className="input-group-text d-block p-0">
+                                                <label className="btn btn-secondary w-100" style={{ borderBottomLeftRadius: this.state.input.message_attachement ? 0 : undefined, borderBottomRightRadius: 0, borderTopRightRadius: 0 }} type="submit" htmlFor="message_attachement_upload" >
+                                                    Attach<br />Image
+                                                <input
+                                                        type="file"
+                                                        id="message_attachement_upload"
+                                                        className="form-control d-none"
+                                                        accept="image/*"
+                                                        onChange={e => this.handleInputChange('message_attachement', e.target.files[0], true)}
+                                                    />
+                                                </label>
+                                                {this.state.input.message_attachement !== undefined && <>
+                                                    <br />
+                                                    <button className="btn btn-danger w-100" onClick={e => this.handleInputChange('message_attachement', undefined, true)} style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0, borderBottomRightRadius: 0 }} type="submit" >Remove</button>
+                                                </>}
+                                            </span>
+
+
+                                            {this.state.input.message_attachement !== undefined && <span className="input-group-text p-1">
+                                                <img src={URL.createObjectURL(this.state.input.message_attachement)} alt="Attachement" height="92" />
+                                            </span>}
+
+                                            <textarea
+                                                className="form-control"
+                                                onChange={e => this.handleInputChange('message_body', e.target.value)}
+                                                value={this.state.input.message_body + ''}
+                                            >
+                                            </textarea>
+                                            <button className="btn btn-primary" type="submit" disabled={this.state.btn_send_message_working}>
+                                                {this.state.btn_send_message_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Send</>}
+                                            </button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>

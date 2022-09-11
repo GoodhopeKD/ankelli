@@ -20,6 +20,7 @@ class _Transaction extends Model
      */
     protected $fillable = [
         'ref_code',
+        'blockchain_txid',
         'session_token',
         'description',
         'tr_type',
@@ -28,10 +29,20 @@ class _Transaction extends Model
         'asset_code',
         'transfer_value',
         'transfer_result',
+        'transfer_datetime',
     ];
     public $incrementing = false;
     protected $primaryKey = 'ref_code';
     protected $keyType = 'string';
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'blockchain_txid',
+    ];
     
     /**
      * The attributes that should be cast to native types.

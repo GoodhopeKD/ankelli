@@ -74,15 +74,16 @@ Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_
     // Auth:true accessible routes
     Route::group(['middleware' => 'auth:api'], function () {
         Route::post('files/upload', '_FileController@upload')->name('files.upload');
-        Route::apiResource('files', '_FileController')->only(['show', 'update', 'destroy'])->parameter('files', 'id');
+        Route::apiResource('files', '_FileController')->except(['index'])->parameter('files', 'id');
         Route::apiResource('email_addresses', '_EmailAddressController')->only(['store', 'index', 'destroy'])->parameter('email_addresses', 'id');
         Route::apiResource('feedback_reports', '_FeedbackReportController')->parameter('feedback_reports', 'uid');
         Route::apiResource('offers', '_OfferController')->only(['store', 'update', 'destroy'])->parameter('offers', 'ref_code');
-        Route::apiResource('trades', '_TradeController')->parameter('trades', 'ref_code');
-        Route::apiResource('transactions', '_TransactionController')->parameter('transactions', 'ref_code');
+        Route::apiResource('trades', '_TradeController')->except(['destroy'])->parameter('trades', 'ref_code');
+        Route::apiResource('transactions', '_TransactionController')->only(['index'])->parameter('transactions', 'ref_code');
         Route::post('deposit_tokens/use/{token}', '_DepositTokenController@use')->name('use_deposit_token');
         Route::apiResource('deposit_tokens', '_DepositTokenController')->parameter('deposit_tokens', 'token');
         Route::apiResource('phone_nos', '_PhoneNoController')->parameter('phone_nos', 'id');
+        Route::apiResource('messages', '_MessageController')->only(['index', 'store'])->parameter('messages', 'id');
         Route::apiResource('pinnings', '_PinningController')->only(['store', 'update', 'destroy'])->parameter('pinnings', 'id');
         Route::apiResource('pref_items', '_PrefItemController')->parameter('pref_items', 'id');
         Route::apiResource('logs', '_LogController')->only(['index'])->parameter('logs', 'id');
