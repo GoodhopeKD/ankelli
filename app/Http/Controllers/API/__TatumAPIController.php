@@ -120,7 +120,7 @@ class __TatumAPIController extends Controller
             'asset_code' => ['required', 'exists:__assets,code', 'string'],
         ]);
 
-        $asset_wallet = _AssetWallet::firstWhere($validated_data)->makeVisible(['blockchain_id']);
+        $asset_wallet = _AssetWallet::firstWhere($validated_data)->makeVisible(['blockchain_account_id','tatum_derivation_key']);
 
         $curl = curl_init();
         $payload = [
@@ -133,7 +133,53 @@ class __TatumAPIController extends Controller
                 "x-api-key: " . $this->x_api_key,
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/offchain/account/" . $asset_wallet->blockchain_id . "/address",
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/offchain/account/" . $asset_wallet->blockchain_account_id . "/address",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "POST",
+        ]);
+
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($error) {
+            return abort($error->statusCode, $error->message);
+        } else {
+            return response()->json( json_decode($response) );
+        }
+    }
+
+
+    /**
+     * Create a new asset wallet private key on the tatum platform.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function createAssetWalletPrivateKey(Request $request)
+    {
+        $validated_data = $request->validate([
+            'user_username' => ['required', 'exists:__users,username', 'string'],
+            'asset_code' => ['required', 'exists:__assets,code', 'string'],
+        ]);
+
+        $asset = _Asset::firstWhere('code',$validated_data['asset_code'])->makeVisible(['tatum_mnemonic']);
+        $asset_wallet = _AssetWallet::firstWhere($validated_data)->makeVisible(['blockchain_account_id', 'tatum_derivation_key']);
+
+        $curl = curl_init();
+        $payload = [
+            'index' => 0,
+            'mnemonic' => $asset->tatum_mnemonic,
+        ];
+          
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json",
+                "x-api-key: " . $this->x_api_key,
+            ],
+            CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/offchain/account/" . $asset_wallet->blockchain_account_id . "/address",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);

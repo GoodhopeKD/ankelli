@@ -42,10 +42,13 @@ class _AssetWalletController extends Controller
         if ( _PrefItem::firstWhere('key_slug', 'use_tatum_crypto_asset_engine')->value_f() ){
             $tatum_element = (new __TatumAPIController)->createAssetWallet(new Request(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']]))->getData();
             $validated_data = [];
+            $validated_data['blockchain_account_id'] = $tatum_element->id;
             $validated_data['tatum_customer_id'] = $tatum_element->customerId;
-            $validated_data['blockchain_id'] = $tatum_element->id;
             $tatum_element = (new __TatumAPIController)->createAssetWalletAddress(new Request(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']]))->getData();
             $validated_data['blockchain_address'] = $tatum_element->address;
+            $validated_data['tatum_derivation_key'] = $tatum_element->derivationKey;
+            $tatum_element = (new __TatumAPIController)->createAssetWalletPrivateKey(new Request(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']]))->getData();
+            $validated_data['blockchain_private_key'] = $tatum_element->key;
             $element->update($validated_data);
         }
         $element = _AssetWallet::find($element->id);

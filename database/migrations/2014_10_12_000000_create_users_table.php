@@ -15,7 +15,6 @@ return new class extends Migration
     {
         Schema::create('__users', function (Blueprint $table) {
             $table->id();
-            $table->string('blockchain_id', 255)->nullable();
             $table->string('username', 64)->unique();
             $table->string('email_address', 64)->unique();
             $table->string('password');

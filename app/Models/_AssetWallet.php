@@ -15,10 +15,11 @@ class _AssetWallet extends Model
      * @var array
      */
     protected $fillable = [
-        'blockchain_id',
+        'blockchain_account_id',
         'blockchain_address',
         'blockchain_private_key',
         'tatum_customer_id',
+        'tatum_derivation_key',
         'user_username',
         'asset_code',
         'asset_value',
@@ -31,10 +32,11 @@ class _AssetWallet extends Model
      * @var array
      */
     protected $hidden = [
-        'blockchain_id',
+        'blockchain_account_id',
         'blockchain_address',
         'blockchain_private_key',
         'tatum_customer_id',
+        'tatum_derivation_key',
     ];
 
     /**
