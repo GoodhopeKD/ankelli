@@ -76,19 +76,19 @@ class _UserController extends Controller
         ]);
 
         if ( $token_reg_enabled ){
-            $reg_token_check = (array)(new __AuxController)->availability_check( new Request([ 'check_param_name' => 'reg_token', 'check_param_value' => $validated_data['reg_token'] ]) )->getData();
+            $reg_token_check = (array)(new __AuxController)->usability_check( new Request([ 'check_param_name' => 'reg_token', 'check_param_value' => $validated_data['reg_token'] ]) )->getData();
             if ( !$reg_token_check['usable']){
                 return abort(422, $reg_token_check['message']);
             }
         }
 
         $username_check = (array)(new __AuxController)->availability_check( new Request([ 'check_param_name' => 'username', 'check_param_value' => $validated_data['username'] ]) )->getData();
-        if ( !$username_check['usable']){
+        if ( !$username_check['available']){
             return abort(422, $username_check['message']);
         }
 
         $email_address_check = (array)(new __AuxController)->availability_check( new Request([ 'check_param_name' => 'email_address', 'check_param_value' => $validated_data['email_address'] ]) )->getData();
-        if ( !$email_address_check['usable']){
+        if ( !$email_address_check['available']){
             return abort(422, $email_address_check['message']);
         }
 
@@ -225,58 +225,55 @@ class _UserController extends Controller
         return response()->json( $response );
     }
 
-    public function check(Request $request)
-    {
-        switch ($request->check_param_name) {
-            case 'reg_token':
-                $reg_token = _RegToken::find( $request->check_param_value );
-                $usable = $reg_token && $reg_token->_status === 'active' && count(_User::where('reg_token', $request->check_param_value)->get()) <= (integer)_PrefItem::firstWhere('key_slug', 'reg_token_max_use_count')->value;
-                $message = $usable ? 'Reg token available for use.' : ($reg_token ? ($reg_token->_status === 'available' ? 'Reg token used up.' : 'Reg token has _status "'.$reg_token->_status.'".') : 'Reg token not found.');
-                break;
-
-            case 'username':
-                $reserved_usernames = ['ankelli', 'goodhope', 'admin', 'administrator', 'sysadmin', 'system'];
-                $usable = !_User::where('username', $request->check_param_value )->exists() && !in_array( $request->check_param_value , $reserved_usernames );
-                $message = $usable ? 'Username available for use.' : ( in_array( $request->check_param_value , $reserved_usernames ) ? 'Chosen username is reserved word and can\'t be used.' : 'Username already in use in the system.');
-                break;
-
-            case 'email_address':
-                $usable = !(_User::where('email_address', $request->check_param_value )->exists() || _EmailAddress::where('email_address', $request->check_param_value )->exists());
-                $message = $usable ? 'Email address available for use.' : 'Email address already exists in database.';
-                break;
-            
-            default:
-                $usable = null;
-                $message = 'Check param not recognized.';
-                break;
-        }
-
-        $response = [
-            "usable" => $usable,
-            "message" => $message,
-        ];
-        return response()->json( $response );
-    }
-
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  string  $username
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request, string $username)
     {
-        //
+        $validated_data = $request->validate([
+            'tatum_customer_id' => ['sometimes', 'string', 'max:24'],
+            'avatar_image_id' => ['sometimes', 'integer'],
+        ]);
+
+        $element = _User::where(['username' => $username])->firstOrFail();
+
+        // Handle _Log
+        $log_entry_update_result = [];
+        foreach ( $validated_data as $key => $value ) {
+            if ( $element->{$key} != $value ){
+                array_push( $log_entry_update_result, [
+                    'field_name' => $key,
+                    'old_value' => $element->{$key},
+                    'new_value' => $value,
+                ]);
+            }
+        }
+        (new _LogController)->store( new Request([
+            'action_note' => 'Updating of _User entry in database.',
+            'action_type' => 'entry_update',
+            'entry_table' => $element->getTable(),
+            'entry_uid' => $element->username,
+            'batch_code' => $request->batch_code,
+            'entry_update_result'=> $log_entry_update_result,
+        ]));
+        // End _Log Handling
+
+        $element->update($validated_data);
+
+        return response()->json( (new _UserResource( $element )) );
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  string  $username
      * @return \Illuminate\Http\Response
      */
-    public function destroy(int $id)
+    public function destroy(string $username)
     {
         //
     }

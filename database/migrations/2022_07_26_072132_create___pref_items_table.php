@@ -190,7 +190,7 @@ return new class extends Migration
             [
                 'key_name' => 'Offers to sell enabled',
                 'key_slug' => 'offer_to_sell_enabled',
-                'value' => true,
+                'value' => false,
                 'value_type' => 'boolean',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',

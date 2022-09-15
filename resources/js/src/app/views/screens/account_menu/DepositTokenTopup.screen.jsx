@@ -47,7 +47,7 @@ class DepositTokenTopupScreen extends React.Component {
             _DepositToken.use(_input).then(() => { _Notification.flash({ message: 'Deposit successful', duration: 2000 }); this.setState({ btn_attempt_token_topup_working, input: _.cloneDeep(this.default_input) }) })
                 .catch((error) => {
                     errors.push(error.message)
-                    this.setState({ btn_attempt_token_topup_working, errors, input: _.cloneDeep(this.default_input) })
+                    this.setState({ btn_attempt_token_topup_working, errors })
                 })
         } else {
             this.setState({ btn_attempt_token_topup_working, errors, input })
@@ -96,7 +96,7 @@ class DepositTokenTopupScreen extends React.Component {
                                         </div>
                                         <div className="col">
                                             <label htmlFor="output_current_balance" className="form-label">Current balance</label>
-                                            <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value, asset)}</span>
+                                            <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
                                         </div>
                                     </div>
                                     <div className="mb-3">
@@ -132,7 +132,7 @@ class DepositTokenTopupScreen extends React.Component {
 const mapStateToProps = (state) => {
     return {
         datalists: state.datalists_data,
-        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_wallets']) : null,
+        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_accounts']) : null,
     }
 }
 

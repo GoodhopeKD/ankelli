@@ -12,6 +12,7 @@ export default class RegTokensListViewScreen extends React.Component {
 
     default_input = {
         creator_username: undefined,
+        token: new _Input(),
         _status: undefined,
     }
 
@@ -23,11 +24,14 @@ export default class RegTokensListViewScreen extends React.Component {
         list_refreshing: false,
         _collecion: { meta: {}, links: {} },
 
-        input: _.cloneDeep(this.default_input),
         page_select: {
             page: 1,
         },
-        per_page: 10
+        per_page: 10,
+
+        btn_create_reg_token_working: false,
+        input: _.cloneDeep(this.default_input),
+        errors: [],
     };
 
     should_load_items = true
@@ -94,9 +98,42 @@ export default class RegTokensListViewScreen extends React.Component {
 
     populateScreenWithItems = async (show_list_refreshing_loader = true) => {
         this.setState({ list_refreshing: show_list_refreshing_loader });
-        await this.universalGetCollection(_RegToken, 'reg_tokens_list_loaded', JSON.parse(JSON.stringify(this.state.input)), this.state.page_select, this.state.per_page)
+        await this.universalGetCollection(_RegToken, 'reg_tokens_list_loaded', JSON.parse(JSON.stringify({ ...this.state.input, token: undefined })), this.state.page_select, this.state.per_page)
         if (show_list_refreshing_loader) this.setState({ list_refreshing: false })
     };
+
+    handleSubmit = async () => {
+        this.setState({ btn_create_reg_token_working: true })
+
+        const btn_create_reg_token_working = false
+        const errors = []
+        const input = { token: this.state.input.token }
+
+        if ((input.token + '').length) {
+            if (!input.token.isValid('reg_token')) { errors.push("Invalid token") }
+
+            await input.token.async_checkIfAvailable('reg_token').then((resp) => {
+                if (!input.token.isAvailable('reg_token')) { errors.push(resp.message) }
+            }).catch(() => { errors.push("Could not check if token is available for use.") })
+        } else {
+            delete input.token
+        }
+
+        if (errors.length === 0) {
+            this.setState({ errors }) // Remove input error indicators under text inputs
+            const _input = Object.assign(Object.create(Object.getPrototypeOf(input)), input) // Dereference input object
+            Object.keys(_input).forEach(key => { if (_input[key] instanceof _Input) _input[key] = _input[key] + "" }) // convert _Input instances to Text
+
+            const add_new_reg_token_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#add_new_reg_token_modal'));
+            _RegToken.create(_input).then(() => { add_new_reg_token_modal.hide(); this.should_load_items = true; this.populateScreenWithItems(); _Notification.flash({ message: 'Reg token created', duration: 2000 }); })
+                .catch((error) => {
+                    errors.push(error.message)
+                    this.setState({ btn_create_reg_token_working, errors, input: _.cloneDeep(this.default_input) })
+                })
+        } else {
+            this.setState({ btn_create_reg_token_working, errors, input })
+        }
+    }
 
     componentDidMount() {
         const bgTask = () => this.populateScreenWithItems(false)
@@ -215,7 +252,43 @@ export default class RegTokensListViewScreen extends React.Component {
                                     </div>
 
                                     <div>
-                                        <Link to={'/user_management/reg_tokens/new'} className='btn btn-success' >Create new</Link>
+
+                                        <button type="button" className='btn btn-success' data-bs-toggle="modal" data-bs-target="#add_new_reg_token_modal">Create new</button>
+
+                                        <div className="modal fade" id="add_new_reg_token_modal" tabIndex="-1" >
+                                            <div className="modal-dialog modal-dialog-centered">
+                                                <div className="modal-content">
+                                                    <div className="modal-header">
+                                                        <h5 className="modal-title" >Create new reg token</h5>
+                                                        <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div className="modal-body">
+
+                                                        <div className="form-floating mb-3">
+                                                            <input
+                                                                type='text'
+                                                                className={"form-control rounded-3 " + (this.state.input.token.hasError() ? 'is-invalid' : '')}
+                                                                id="input_token"
+                                                                value={this.state.input.token + ''}
+                                                                onChange={e => this.handleInputChange('token', e.target.value)}
+                                                                placeholder="Reg token"
+                                                            />
+                                                            <label htmlFor="input_token">Reg token (Leave empty to generate)</label>
+                                                        </div>
+
+                                                        <div className="mb-3">
+                                                            {this.state.errors.map((error, key) => (
+                                                                <div key={key}>• <span style={{ color: 'red' }}>{error}</span></div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                    <div className="modal-footer">
+                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                                        <button type="button" className="btn btn-primary" onClick={this.handleSubmit}>Save or Generate</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

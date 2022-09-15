@@ -1,6 +1,6 @@
 import React from "react"
 
-import UserProfileScreen from 'app/views/screens/account_menu/UserProfile.screen'
+import AccountDashboardScreen from 'app/views/screens/account_menu/AccountDashboard.screen'
 import DepositTokenTopupScreen from 'app/views/screens/account_menu/DepositTokenTopup.screen'
 import WithdrawalsScreen from 'app/views/screens/account_menu/Withdrawals.screen'
 import TransactionsListViewScreen from 'app/views/screens/account_menu/TransactionsListView.screen'
@@ -33,7 +33,7 @@ export const account_menu = {
         {
             title: 'Dashboard',
             path: '/account/dashboard',
-            element: (props) => <UserProfileScreen {...props} />,
+            element: (props) => <AccountDashboardScreen {...props} />,
         },
         {
             title: 'Deposits',
@@ -46,7 +46,7 @@ export const account_menu = {
                 },
                 {
                     title: 'Token topup',
-                    path: '/account/deposits/token-toput',
+                    path: '/account/deposits/token-topup',
                     element: (props) => <DepositTokenTopupScreen {...props} />,
                     restricted_for_default_users: true,
                 },

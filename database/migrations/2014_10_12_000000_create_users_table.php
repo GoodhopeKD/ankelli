@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('reg_token', 16)->nullable();
             $table->unsignedTinyInteger('avatar_image_id')->nullable();
+            $table->string('tatum_customer_id', 24)->nullable();
             
             $table->enum('_status', ['active', 'inactive', 'suspended', 'deactivated'])->default('active');
             $table->timestamp('created_datetime')->useCurrent();
@@ -32,11 +33,6 @@ return new class extends Migration
             [
                 'username' => 'system',
                 'email_address' => 'system',
-                'password' => '',
-            ],
-            [
-                'username' => 'escrow',
-                'email_address' => 'escrow',
                 'password' => '',
             ],
         ]);

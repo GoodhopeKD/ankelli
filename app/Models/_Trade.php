@@ -32,7 +32,6 @@ class _Trade extends Model
         'platform_charge_asset_factor',
         'currency_amount',
         'offer_price',
-        'escrow_lock_transaction_ref_code',
         'pymt_method_slug',
         'pymt_details',
         'pymt_declared_datetime',

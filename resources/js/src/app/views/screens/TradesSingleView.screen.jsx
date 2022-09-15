@@ -7,12 +7,14 @@ import withRouter from 'app/views/navigation/withRouter'
 class TradesSingleViewScreen extends React.Component {
 
     default_input = {
+        source_user_password: new _Input('Def-Pass#123'),
         message_body: new _Input(),
         message_attachement: undefined,
     }
 
     state = {
         focused_trade_loaded: false,
+        source_user_password_prompt_open: false,
         input: _.cloneDeep(this.default_input),
         errors: [],
     }
@@ -61,6 +63,27 @@ class TradesSingleViewScreen extends React.Component {
                 })
         } else {
             this.setState({ btn_send_message_working, errors, input })
+        }
+    }
+
+    handleSubmit2 = async () => {
+        this.setState({ btn_confirm_pymt_working: true })
+        const errors = []
+        const input = this.state.input
+        if (!input.source_user_password.isValid('password')) { errors.push("Invalid password") }
+        if (errors.length === 0) {
+            this.setState({ errors }) // Remove input error indicators under text inputs
+            const _input = Object.assign(Object.create(Object.getPrototypeOf(input)), input) // Dereference input object
+            Object.keys(_input).forEach(key => { if (_input[key] instanceof _Input) _input[key] = _input[key] + "" }) // convert _Input instances to Text
+            const password_confirmation_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#password_confirmation_modal'));
+            this.focused_trade.confirmPymt(_input.source_user_password)
+                .then(() => { password_confirmation_modal.hide(); this.setState({ btn_confirm_pymt_working: false }); _Notification.flash({ message: 'Payment confirmed.', duration: 2000 }); })
+                .catch((error) => {
+                    errors.push(error.message)
+                    this.setState({ btn_confirm_pymt_working: false, errors })
+                })
+        } else {
+            this.setState({ btn_confirm_pymt_working: false, errors, input })
         }
     }
 
@@ -159,10 +182,48 @@ class TradesSingleViewScreen extends React.Component {
                                     {auth_user_is_seller && this.focused_trade.pymt_confirmed_datetime == null && <>
                                         <p>As the seller, when the payment has been processed, you should confirm it with the button below</p>
                                         <button className="w-100 mb-3 btn rounded-3 btn-success" disabled={this.state.btn_confirm_pymt_working}
-                                            onClick={() => { this.setState({ btn_confirm_pymt_working: true }, () => this.focused_trade.confirmPymt().catch(e => console.log(e)).finally(() => this.setState({ btn_confirm_pymt_working: false }, () => _Notification.flash({ message: 'Payment confirmed', duration: 2000 })))) }}  >
+                                            onClick={() => bootstrap.Modal.getOrCreateInstance(document.querySelector('#password_confirmation_modal')).show()}  >
                                             {this.state.btn_confirm_pymt_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Confirm payment</>}
                                         </button>
                                     </>}
+
+                                    <div className="modal fade" id="password_confirmation_modal" tabIndex="-1" >
+                                        <div className="modal-dialog modal-dialog-centered">
+                                            <div className="modal-content">
+                                                <div className="modal-header">
+                                                    <h5 className="modal-title" >Password confirmation</h5>
+                                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div className="modal-body">
+                                                    <p>Funds are about to be released from your account. Confirm.</p>
+                                                    <div className="form-floating mb-3">
+                                                        <input
+                                                            type="password"
+                                                            className={"form-control rounded-3 " + (this.state.input.source_user_password.hasError() ? 'is-invalid' : '')}
+                                                            id="input_source_user_password"
+                                                            value={this.state.input.source_user_password + ''}
+                                                            onChange={e => this.handleInputChange('source_user_password', e.target.value)}
+                                                            required={this.state.source_user_password_prompt_open}
+                                                            placeholder="Pasword"
+                                                        />
+                                                        <label htmlFor="input_source_user_password">Password</label>
+                                                    </div>
+
+                                                    <div className="mb-1">
+                                                        {this.state.errors.map((error, key) => (
+                                                            <div key={key}>• <span style={{ color: 'red' }}>{error}</span></div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <div className="modal-footer">
+                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
+                                                    <button className="btn btn-primary" disabled={this.state.btn_confirm_pymt_working} type="button" onClick={this.handleSubmit2} >
+                                                        {this.state.btn_confirm_pymt_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Confirm payment</>}
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
 
                                     {auth_user_is_seller && this.focused_trade._status == 'flagged' && <>
                                         <button className="w-100 mb-3 btn rounded-3 btn-primary" disabled={this.state.btn_flag_trade_working}
@@ -294,7 +355,7 @@ const mapStateToProps = (state) => {
     return {
         datalists: state.datalists_data,
         sysconfig_params: state.sysconfig_params_data,
-        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_wallets']) : null,
+        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_accounts']) : null,
     }
 }
 

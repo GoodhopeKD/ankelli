@@ -33,7 +33,7 @@
     <meta name="twitter:image"            content="{{ asset('images/logo.jpeg') }}" />
   </head>
   <body class="h-100">
-    
+
     <div id="app_root" class="h-100 d-flex flex-column">
 <?php $scaffolding_app_enabled_pref_item = App\Models\_PrefItem::firstWhere('key_slug', 'scaffolding_app_enabled');
 if ( $scaffolding_app_enabled_pref_item && !$scaffolding_app_enabled_pref_item->value ){ ?>
@@ -61,7 +61,7 @@ if ( $scaffolding_app_enabled_pref_item && !$scaffolding_app_enabled_pref_item->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
   @endif
 <?php $scaffolding_app_enabled_pref_item = App\Models\_PrefItem::firstWhere('key_slug', 'scaffolding_app_enabled');
-if ( $scaffolding_app_enabled_pref_item && $scaffolding_app_enabled_pref_item->value ){ ?>
+if ( $scaffolding_app_enabled_pref_item && $scaffolding_app_enabled_pref_item->value_f() ){ ?>
   <script src="{{ asset('js/app.js') }}" ></script>
 <?php } ?>
 

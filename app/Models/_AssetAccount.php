@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class _AssetWallet extends Model
+class _AssetAccount extends Model
 {
     const CREATED_AT = 'created_datetime';
     const UPDATED_AT = 'updated_datetime';
@@ -15,14 +15,11 @@ class _AssetWallet extends Model
      * @var array
      */
     protected $fillable = [
-        'blockchain_account_id',
-        'blockchain_address',
-        'blockchain_private_key',
-        'tatum_customer_id',
-        'tatum_derivation_key',
+        'tatum_virtual_account_id',
         'user_username',
         'asset_code',
-        'asset_value',
+        'usable_balance_asset_value',
+        'total_balance_asset_value',
         '_status',
     ];
 
@@ -32,11 +29,7 @@ class _AssetWallet extends Model
      * @var array
      */
     protected $hidden = [
-        'blockchain_account_id',
-        'blockchain_address',
-        'blockchain_private_key',
-        'tatum_customer_id',
-        'tatum_derivation_key',
+        'tatum_virtual_account_id',
     ];
 
     /**
@@ -45,7 +38,8 @@ class _AssetWallet extends Model
      * @var array
      */
     protected $casts = [
-        'asset_value' => 'float',
+        'usable_balance_asset_value' => 'float',
+        'total_balance_asset_value' => 'float',
     ];
 
     /**
@@ -53,6 +47,6 @@ class _AssetWallet extends Model
      */
     public function logs()
     {
-        return $this->hasMany( _Log::class, 'entry_uid' )->where('entry_table', '__asset_wallets');
+        return $this->hasMany( _Log::class, 'entry_uid' )->where('entry_table', '__asset_accounts');
     }
 }

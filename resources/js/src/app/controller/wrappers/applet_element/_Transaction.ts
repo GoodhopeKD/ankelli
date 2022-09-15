@@ -31,7 +31,7 @@ export const _TransactionRespObj = {
     source_user_username: undefined as undefined | null | string,
     destination_user_username: undefined as undefined | null | string,
     asset_code: undefined as undefined | null | string,
-    transfer_value: undefined as undefined | null | number,
+    transfer_asset_value: undefined as undefined | null | number,
     transfer_result: undefined as undefined | null | transfer_result_t,
     transfer_datetime: undefined as undefined | null | string,
 }
@@ -46,7 +46,7 @@ export default class _Transaction extends _Wrapper_ implements Omit<typeof _Tran
     source_user_username: string | null = null
     destination_user_username: string | null = null
     asset_code: string | null = null
-    transfer_value: number | null = null
+    transfer_asset_value: number | null = null
     transfer_result: transfer_result_t | null = null
     transfer_datetime: _DateTime | null = null
 

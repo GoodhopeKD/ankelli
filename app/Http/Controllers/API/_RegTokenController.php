@@ -47,10 +47,11 @@ class _RegTokenController extends Controller
     public function store(Request $request)
     {
         $validated_data = $request->validate([
+            'token' => ['sometimes', 'string', 'min:5', 'max:16', 'unique:__reg_tokens'],
             '_status' => ['sometimes', 'string', Rule::in(['active', 'suspended', 'used_up'])],
         ]);
 
-        $validated_data['token'] = session()->get('active_session_token') == 'TEST_SESSION' ? '1234567890' : random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
+        $validated_data['token'] = isset($validated_data['token']) ? $validated_data['token'] : random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
         $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
 
         $element = _RegToken::create($validated_data);

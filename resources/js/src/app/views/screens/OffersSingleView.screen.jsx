@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { Link } from 'react-router-dom';
 import _ from 'lodash'
 
-import { _User, _Offer, _Notification, _DateTime, _Session } from 'app/controller'
+import { _User, _Offer, _Notification, _DateTime, _Session, _Input } from 'app/controller'
 
 import withRouter from 'app/views/navigation/withRouter'
 
@@ -20,8 +20,11 @@ class OffersSingleViewScreen extends React.Component {
         min_currency_amount: 0,
         max_currency_amount: 0,
 
-        btn_proceed_working: false,
-        input: { pymt_details: {} },
+        source_user_password_prompt_open: false,
+        input: {
+            source_user_password: new _Input('Def-Pass#123'),
+            pymt_details: {}
+        },
         errors: [],
     }
 
@@ -66,23 +69,59 @@ class OffersSingleViewScreen extends React.Component {
                 this.currencyToAsset(this.props.params.currency_amount ?? (offer.offer_to == 'buy' ? offer.min_purchase_amount : offer.offer_price * offer.min_sell_value))
                 this.currencyToAsset(offer.offer_to == 'buy' ? offer.min_purchase_amount : offer.offer_price * offer.min_sell_value, 'min_')
                 this.currencyToAsset(offer.offer_to == 'buy' ? offer.max_purchase_amount : offer.offer_price * offer.max_sell_value, 'max_')
-                const returnObj = (arr) => { const obj = {}; arr.forEach(arr_i => obj[arr_i] = ''); return obj; }
-                this.setState({ focused_offer_loaded: true, input: { pymt_details: offer.pymt_method_slug == 'cash_in_person' || offer.offer_to == 'buy' ? returnObj(this.props.datalists.active_pymt_methods[offer.pymt_method_slug].details_required) : {} } })
+                const returnObj = (arr) => { const obj = {}; arr.forEach(arr_i => obj[arr_i] = 'SSDSD'); return obj; }
+                this.setState({
+                    focused_offer_loaded: true,
+                    input: { source_user_password: new _Input('Def-Pass#123'), pymt_details: offer.offer_to == 'buy' ? returnObj(this.props.datalists.active_pymt_methods[offer.pymt_method_slug].details_required) : {} }
+                })
             })
             .catch(e => console.log(e))
             .finally(() => _Session.refresh())
     }
 
     handleSubmit = async () => {
+        if (this.focused_offer.offer_to == 'sell') this.setState({ btn_proceed_working: true })
+        const errors = []
+        const input = {}
+        input.pymt_details = this.focused_offer.offer_to == 'buy' ? this.state.input.pymt_details : undefined
+        if (errors.length === 0) {
+            this.setState({ errors, source_user_password_prompt_open: true }) // Remove input error indicators under text inputs
+            if (this.focused_offer.offer_to == 'buy') {
+                bootstrap.Modal.getOrCreateInstance(document.querySelector('#password_confirmation_modal')).show();
+            } else {
+                this.handleSubmit2()
+            }
+        } else {
+            if (!input.pymt_details) input.pymt_details = {}
+            this.setState({ btn_proceed_working: false, errors, input })
+        }
+    }
+
+    handleSubmit2 = async () => {
         this.setState({ btn_proceed_working: true })
         const errors = []
-        const pymt_details = this.focused_offer.pymt_method_slug == 'cash_in_person' || this.focused_offer.offer_to == 'buy' ? this.state.input.pymt_details : undefined
-        this.focused_offer.accept(this.state.currency_amount, pymt_details)
-            .then(() => { _Notification.flash({ message: 'Trade initiated.', duration: 2000 }); this.props.navigate('/trades') })
-            .catch((error) => {
-                errors.push(error.message)
-                this.setState({ btn_proceed_working: false, errors })
-            })
+        const input = {}
+        input.pymt_details = this.focused_offer.offer_to == 'buy' ? this.state.input.pymt_details : undefined
+        input.source_user_password = this.focused_offer.offer_to == 'buy' ? this.state.input.source_user_password : undefined
+        if (input.source_user_password) {
+            if (!input.source_user_password.isValid('password')) { errors.push("Invalid password") }
+        }
+        if (errors.length === 0) {
+            this.setState({ errors }) // Remove input error indicators under text inputs
+            const _input = Object.assign(Object.create(Object.getPrototypeOf(input)), input) // Dereference input object
+            Object.keys(_input).forEach(key => { if (_input[key] instanceof _Input) _input[key] = _input[key] + "" }) // convert _Input instances to Text
+            const password_confirmation_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#password_confirmation_modal'));
+            this.focused_offer.accept(this.state.currency_amount, _input.pymt_details, _input.source_user_password)
+                .then(() => { password_confirmation_modal.hide(); _Notification.flash({ message: 'Trade initiated.', duration: 2000 }); this.props.navigate('/trades') })
+                .catch((error) => {
+                    errors.push(error.message)
+                    this.setState({ btn_proceed_working: false, errors })
+                })
+        } else {
+            if (!input.pymt_details) input.pymt_details = {}
+            if (!input.source_user_password) input.source_user_password = new _Input()
+            this.setState({ btn_proceed_working: false, errors, input })
+        }
     }
 
     render() {
@@ -98,7 +137,7 @@ class OffersSingleViewScreen extends React.Component {
                     <div className="row">
                         <div className="col">
                             <p>Asset you'll sell: {asset.name} ({asset.code})</p>
-                            {this.props.auth_user !== null && <p>Your current {asset.code} balance: {window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value, asset)}</p>}
+                            {this.props.auth_user !== null && <p>Your current usable {asset.code} balance: {window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</p>}
                             <p>Currency : {currency.name} ({currency.code}) </p>
                             <p>{this.focused_offer.offer_to == 'buy' ? 'Purchase' : 'Sell'} price : {window.currencyAmountString(this.focused_offer.offer_price, currency)}</p>
                             {this.focused_offer.offer_to == 'buy' && <p>Purchase limits : {window.currencyAmountString(this.focused_offer.min_purchase_amount, currency)} - {window.currencyAmountString(this.focused_offer.max_purchase_amount, currency)}</p>}
@@ -120,7 +159,7 @@ class OffersSingleViewScreen extends React.Component {
                                             {this.focused_offer.offer_to == 'buy' && <input
                                                 type="number" className="form-control" id="input_asset_value"
                                                 min={parseFloat(window.assetValueString(this.state.min_asset_value, asset, false))}
-                                                max={parseFloat(window.assetValueString(Math.min(this.state.max_asset_value, (this.props.auth_user ? (this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value : this.state.max_asset_value)), asset, false))}
+                                                max={parseFloat(window.assetValueString(Math.min(this.state.max_asset_value, (this.props.auth_user ? (this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value : this.state.max_asset_value)), asset, false))}
                                                 step={asset.smallest_display_unit}
                                                 value={parseFloat(window.assetValueString(this.state.asset_value, asset, false))}
                                                 onChange={el => this.assetToCurrency(el.target.value)}
@@ -186,12 +225,49 @@ class OffersSingleViewScreen extends React.Component {
                             ))}
                         </div>
 
-                        {this.props.auth_user == null && <Link className="btn btn-primary" to={('/signin?rdr=/offers/' + this.props.params.ref_code + '/' + this.state.currency_amount)}>
+                        <button className="btn btn-primary" disabled={this.state.btn_proceed_working} type={this.props.auth_user == null ? "button" : "submit"} data-bs-toggle={this.props.auth_user == null ? "modal" : undefined} data-bs-target={this.props.auth_user == null ? "#signin_modal" : undefined} >
                             {this.state.btn_proceed_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Proceed to {this.focused_offer.offer_to == 'buy' ? 'Sell' : 'Buy'} {this.focused_offer.asset_code}</>}
-                        </Link>}
-                        {this.props.auth_user != null && <button className="btn btn-primary" disabled={this.state.btn_proceed_working} type="submit" >
-                            {this.state.btn_proceed_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Proceed to {this.focused_offer.offer_to == 'buy' ? 'Sell' : 'Buy'} {this.focused_offer.asset_code}</>}
-                        </button>}
+                        </button>
+
+                        {this.focused_offer.offer_to == 'buy' &&
+                            <div className="modal fade" id="password_confirmation_modal" tabIndex="-1" >
+                                <div className="modal-dialog modal-dialog-centered">
+                                    <div className="modal-content">
+                                        <div className="modal-header">
+                                            <h5 className="modal-title" >Password confirmation</h5>
+                                            <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div className="modal-body">
+                                            <p>Funds are about to be locked inside your account until trade is complete. Confirm.</p>
+                                            <div className="form-floating mb-3">
+                                                <input
+                                                    type="password"
+                                                    className={"form-control rounded-3 " + (this.state.input.source_user_password.hasError() ? 'is-invalid' : '')}
+                                                    id="input_source_user_password"
+                                                    value={this.state.input.source_user_password + ''}
+                                                    onChange={e => this.handleInputChange('source_user_password', e.target.value)}
+                                                    required={this.state.source_user_password_prompt_open}
+                                                    placeholder="Pasword"
+                                                />
+                                                <label htmlFor="input_source_user_password">Password</label>
+                                            </div>
+
+                                            <div className="mb-1">
+                                                {this.state.errors.map((error, key) => (
+                                                    <div key={key}>• <span style={{ color: 'red' }}>{error}</span></div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                        <div className="modal-footer">
+                                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
+                                            <button className="btn btn-primary" disabled={this.state.btn_proceed_working} type="button" onClick={this.handleSubmit2} >
+                                                {this.state.btn_proceed_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Proceed to {this.focused_offer.offer_to == 'buy' ? 'Sell' : 'Buy'} {this.focused_offer.asset_code}</>}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
 
                     </form>
                 </> :
@@ -208,7 +284,7 @@ const mapStateToProps = (state) => {
     return {
         datalists: state.datalists_data,
         sysconfig_params: state.sysconfig_params_data,
-        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_wallets']) : null,
+        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_accounts']) : null,
     }
 }
 

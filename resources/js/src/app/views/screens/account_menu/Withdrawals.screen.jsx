@@ -16,7 +16,7 @@ class WithdrawalsScreen extends React.Component {
                     </div>
                     <div className="col-10">
                         Withdrawal Options Appear here
-                </div>
+                    </div>
                 </div>
             </div>
         </this.props.PageWrapper>

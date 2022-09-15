@@ -18,7 +18,7 @@ use App\Http\Resources\_AdminExtensionResourceCollection;
 use App\Http\Resources\_SellerExtensionResourceCollection;
 use App\Http\Resources\_BuyerExtensionResourceCollection;
 use App\Http\Resources\_PrefItemResourceCollection;
-use App\Http\Resources\_AssetWalletResourceCollection;
+use App\Http\Resources\_AssetAccountResourceCollection;
 use App\Http\Resources\_UserGroupMembershipResourceCollection;
 
 class _User extends Authenticatable
@@ -40,6 +40,7 @@ class _User extends Authenticatable
         'password',
         'reg_token',
         'avatar_image_id',
+        'tatum_customer_id',
         '_status',
     ];
 
@@ -51,6 +52,7 @@ class _User extends Authenticatable
     protected $hidden = [
         'password',
         'reg_token',
+        'tatum_customer_id',
     ];
 
     /**
@@ -141,11 +143,11 @@ class _User extends Authenticatable
     }
 
     /**
-     * Get the asset_wallets associated with the user.
+     * Get the asset_accounts associated with the user.
      */
-    public function asset_wallets()
+    public function asset_accounts()
     {
-        return $this->hasMany( _AssetWallet::class, 'user_username', 'username');
+        return $this->hasMany( _AssetAccount::class, 'user_username', 'username');
     }
 
     /**
@@ -226,9 +228,9 @@ class _User extends Authenticatable
         return count($this->pref_items) ? json_decode(( new _PrefItemResourceCollection( $this->pref_items ))->toJson(),true)['data']: [];
     }
 
-    public function asset_wallets_f()
+    public function asset_accounts_f()
     {
-        return count($this->asset_wallets) ? json_decode(( new _AssetWalletResourceCollection( $this->asset_wallets ))->toJson(),true)['data']: [];
+        return count($this->asset_accounts) ? json_decode(( new _AssetAccountResourceCollection( $this->asset_accounts ))->toJson(),true)['data']: [];
     }
 
     private function _set_user_group_memberships_info()

@@ -15,7 +15,9 @@ return new class extends Migration
     {
         Schema::create('__transactions', function (Blueprint $table) {
             $table->string('ref_code', 16)->primary();
+            $table->enum('context', ['onchain', 'offchain']);
             $table->string('blockchain_txid', 255)->nullable();
+            $table->string('tatum_reference', 255)->nullable();
             $table->string('session_token', 16)->nullable();
             $table->foreign('session_token')
                     ->references('token')
@@ -23,7 +25,7 @@ return new class extends Migration
                     ->onUpdate('cascade')
                     ->onDelete('set null');
             $table->string('description', 255);
-            $table->string('tr_type', 64);
+            $table->string('operation_slug', 64);
             $table->string('source_user_username', 64)->nullable(); 
             $table->foreign('source_user_username')
                     ->references('username')
@@ -42,7 +44,7 @@ return new class extends Migration
                     ->on('__assets')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->string('transfer_value', 32)->nullable(); // unsignedDecimal
+            $table->string('transfer_asset_value', 32)->nullable(); // unsignedDecimal
             $table->text('transfer_result');
             $table->timestamp('transfer_datetime')->useCurrent()->nullable();
             $table->softDeletes('deleted_datetime');

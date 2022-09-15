@@ -106,39 +106,6 @@ class TradesListViewScreen extends React.Component {
 
     render() {
 
-        const country_options = [];
-        Object.keys(this.props.datalists.active_countries).forEach(country_name => { country_options.push({ value: country_name, searchable_text: country_name, output_element: () => country_name }) })
-
-        const pymt_method_options = [];
-        Object.keys(this.props.datalists.active_pymt_methods).forEach(pymt_method_slug => {
-            const pymt_method = this.props.datalists.active_pymt_methods[pymt_method_slug]
-            pymt_method_options.push({
-                value: pymt_method_slug,
-                searchable_text: pymt_method_slug + pymt_method.name + pymt_method.description,
-                output_element: () => <><span className="d-inline-block rounded-circle p-1 align-self-center" style={{ backgroundColor: '#' + pymt_method.hex_color }}></span>{pymt_method.name}</>
-            })
-        })
-
-        const asset_options = [];
-        Object.keys(this.props.datalists.active_assets).forEach(asset_code => {
-            const asset = this.props.datalists.active_assets[asset_code]
-            asset_options.push({
-                value: asset_code,
-                searchable_text: asset_code + asset.name + asset.description,
-                output_element: () => <>{asset.name} <i className="text-primary">{asset_code}</i></>
-            })
-        })
-
-        const currency_options = [];
-        Object.keys(this.props.datalists.active_currencies).forEach(currency_code => {
-            const currency = this.props.datalists.active_currencies[currency_code]
-            currency_options.push({
-                value: currency_code,
-                searchable_text: currency_code + currency.name + currency.description,
-                output_element: () => <><span className="d-inline-block rounded-circle align-self-center text-success" ><i><b>{currency.symbol}</b></i></span>{currency.name}<i className="text-success">{currency_code}</i></>
-            })
-        })
-
         const pagination_pages = [1]
         if (this.state._collecion.meta.last_page && this.state._collecion.meta.last_page !== 1) {
             for (let index = 2; index < this.state._collecion.meta.last_page + 1; index++) {

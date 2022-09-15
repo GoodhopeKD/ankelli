@@ -54,15 +54,12 @@ class _AssetController extends Controller
 
         $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
 
-        $element = _Asset::create($validated_data);
         if ( _PrefItem::firstWhere('key_slug', 'use_tatum_crypto_asset_engine')->value_f() ){
-            $tatum_element = (new __TatumAPIController)->createAsset(new Request(['code' => $validated_data['code']]))->getData();
-            $validated_data = [];
+            $tatum_element = (new __TatumAPIController)->getOrCreateBlockchainWallet(new Request(['asset_code' => $validated_data['code']]))->getData();
             $validated_data['tatum_mnemonic'] = $tatum_element->mnemonic;
             $validated_data['tatum_xpub'] = $tatum_element->xpub;
-            $element->update($validated_data);
         }
-        $element = _Asset::find($element->id);
+        $element = _Asset::create($validated_data);
         
         // Handle _Log
         (new _LogController)->store( new Request([

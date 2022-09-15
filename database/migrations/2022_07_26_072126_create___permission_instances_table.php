@@ -23,7 +23,7 @@ return new class extends Migration
                     ->on('__permissions')
                     ->onUpdate('cascade')
                     ->onDelete('cascade');
-            $table->unique(['parent_table', 'parent_uid', 'permission_slug'], '__permission_instances_parent_table_uid_permission_slug_unique');
+            $table->unique(['parent_table', 'parent_uid', 'permission_slug'], 'parent_table_parent_uid_permission_slug_unique');
             $table->enum('_status', ['active', 'revoked'])->default('active');
 
             $table->string('creator_username', 64)->nullable();

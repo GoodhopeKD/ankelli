@@ -93,9 +93,8 @@ class __AuxController extends Controller
     {
         switch ($request->check_param_name) {
             case 'reg_token':
-                $reg_token = _RegToken::find( $request->check_param_value );
-                $usable = $reg_token && $reg_token->_status === 'active' && count(_User::where('reg_token', $request->check_param_value)->get()) <= _PrefItem::firstWhere('key_slug', 'reg_token_max_use_count')->value_f();
-                $message = $usable ? 'Reg token available for use.' : ($reg_token ? ($reg_token->_status === 'available' ? 'Reg token used up.' : 'Reg token has _status "'.$reg_token->_status.'".') : 'Reg token not found.');
+                $available = !_RegToken::where('token', $request->check_param_value )->exists();
+                $message = $available ? 'Reg token available for use.' : 'Reg token already exists in database.';
                 break;
 
             case 'username':
@@ -108,13 +107,35 @@ class __AuxController extends Controller
                         $regex_failed_username = $reserved_username;
                     }
                 }
-                $usable = !_User::where('username', $request->check_param_value )->exists() && !in_array( $request->check_param_value , $reserved_usernames ) && $regex_passes;
-                $message = $usable ? 'Username available for use.' : ( in_array( $request->check_param_value , $reserved_usernames ) ? 'Chosen username is reserved word and can\'t be used.' : ( !$regex_passes ? 'Username contains "' . $regex_failed_username . '" which is a reserved word' : 'Username already in use in the system.' ) );
+                $available = !_User::where('username', $request->check_param_value )->exists() && !in_array( $request->check_param_value , $reserved_usernames ) && $regex_passes;
+                $message = $available ? 'Username available for use.' : ( in_array( $request->check_param_value , $reserved_usernames ) ? 'Chosen username is reserved word and can\'t be used.' : ( !$regex_passes ? 'Username contains "' . $regex_failed_username . '" which is a reserved word' : 'Username already in use in the system.' ) );
                 break;
 
             case 'email_address':
-                $usable = !(_User::where('email_address', $request->check_param_value )->exists() || _EmailAddress::where('email_address', $request->check_param_value )->exists());
-                $message = $usable ? 'Email address available for use.' : 'Email address already exists in database.';
+                $available = !(_User::where('email_address', $request->check_param_value )->exists() || _EmailAddress::where('email_address', $request->check_param_value )->exists());
+                $message = $available ? 'Email address available for use.' : 'Email address already exists in database.';
+                break;
+            
+            default:
+                $available = null;
+                $message = 'Check param not recognized.';
+                break;
+        }
+
+        $response = [
+            "available" => $available,
+            "message" => $message,
+        ];
+        return response()->json( $response );
+    }
+
+    public function usability_check(Request $request)
+    {
+        switch ($request->check_param_name) {
+            case 'reg_token':
+                $reg_token = _RegToken::find( $request->check_param_value );
+                $usable = $reg_token && $reg_token->_status === 'usable' && count(_User::where('reg_token', $request->check_param_value)->get()) <= _PrefItem::firstWhere('key_slug', 'reg_token_max_use_count')->value_f();
+                $message = $usable ? 'Reg token is usable.' : ($reg_token ? ($reg_token->_status === 'used_up' ? 'Reg token used up.' : 'Reg token has _status "'.$reg_token->_status.'".') : 'Reg token not found.');
                 break;
             
             default:
@@ -223,6 +244,12 @@ class __AuxController extends Controller
 
     public function load_factory_data()
     {
+        if ( _PrefItem::firstWhere('key_slug', 'use_tatum_crypto_asset_engine')->value_f() ){
+            foreach ((new __TatumAPIController)->getVirtualAccounts(new Request())->getData() as $account) {
+                (new __TatumAPIController)->deactivateVirtualAccount(new Request(['virtual_account_id' => $account->id]));
+            }
+        }
+
         session()->put('active_session_token', 'FACTORY_SESSION' );
         session()->put('api_auth_user_username', 'system');
 
@@ -294,6 +321,11 @@ class __AuxController extends Controller
             'email_address' => 'reserves@ankelli.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
+        (new _AssetAccountController)->store( new Request([
+            'asset_code' => 'USDT',
+            'user_username' => 'reserves',
+            'tatum_derivation_key' => 1,
+        ]));
         (new _UserGroupMembershipController)->store( new Request([
             'user_username' => 'reserves',
             'user_group_slug' => 'default_users',
@@ -350,6 +382,8 @@ class __AuxController extends Controller
             ]), $token_reg_enabled_pref_item->id);
         }
 
+        (new _RegTokenController)->store( new Request(['token' => '1234567890']));
+
         session()->forget('active_session_token');
         session()->forget('api_auth_user_username');
     }
@@ -368,8 +402,6 @@ class __AuxController extends Controller
             ]), $token_reg_enabled_pref_item->id);
             $token_reg_changed = true;
         }
-
-        (new _RegTokenController)->store( new Request([]));
 
         // user:guddaz
         (new _UserController)->store( new Request([
@@ -416,22 +448,24 @@ class __AuxController extends Controller
         // Internalisation transactions
 
         $internalisations = [
-            ['reserves', 3000, 'Transfer from Coinbase wallet to Ankelli Reserves Wallet.'],
-            ['guddaz', 218.87587867, 'Transfer from Coinbase wallet to Ankelli wallet.'],
-            ['lodza', 967.86579, 'Transfer from Ledger wallet to Ankelli wallet.'],
-            ['flint', 400, 'Transfer from Coinbase wallet to Ankelli wallet.'],
-            ['guddaz', 98.9012, 'Transfer from Exodus wallet to Ankelli wallet.'],
-            ['lodza', 106.76, 'Transfer from Coinbase wallet to Ankelli wallet.'],
+            ['reserves', 3000, 'Transfer from Coinbase wallet to Ankelli Reserves Wallet.', 'c83f8818db43d9ba4accfe454aa44fc33123d47a4f89d47b314d6748eb0e9bc9'],
+            ['guddaz', 218.87587867, 'Transfer from Coinbase wallet to Ankelli wallet.', '62BD544D1B9031EFC330A3E855CC3A0D51CA5131455C1AB3BCAC6D243F65460D'],
+            ['lodza', 967.86579, 'Transfer from Ledger wallet to Ankelli wallet.', '62BD544D1B9031EFC330A3E855CC3A0D51CA5131455C1AB3BCAC6D243F65460D'],
+            ['flint', 400, 'Transfer from Coinbase wallet to Ankelli wallet.', 'c83f8818db43d9ba4accfe454aa44fc33123d47a4f89d47b314d6748eb0e9bc9'],
+            ['guddaz', 98.9012, 'Transfer from Exodus wallet to Ankelli wallet.', 'c83f8818db43d9ba4accfe454aa44fc33123d47a4f89d47b314d6748eb0e9bc9'],
+            ['lodza', 106.76, 'Transfer from Coinbase wallet to Ankelli wallet.', 'c83f8818db43d9ba4accfe454aa44fc33123d47a4f89d47b314d6748eb0e9bc9'],
         ];
 
         foreach ($internalisations as $key => $internalisation) {
             session()->put('api_auth_user_username', $internalisation[0]);
             (new _TransactionController)->store( new Request([
+                'context' => 'onchain',
+                'blockchain_txid' => $internalisation[3],
                 'description' => $internalisation[2],
-                'tr_type' => 'internalisation',
+                'operation_slug' => 'internalisation',
                 'destination_user_username' => $internalisation[0], 
                 'asset_code' => 'USDT',
-                'transfer_value' => $internalisation[1],
+                'transfer_asset_value' => $internalisation[1],
             ]));
             sleep(1);
         }

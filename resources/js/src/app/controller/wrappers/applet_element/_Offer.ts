@@ -105,9 +105,8 @@ export default class _Offer extends _Wrapper_ implements Omit<typeof _OfferRespO
         return this._mainLaravelDBAPIGetCollection('offers', params, page_select, per_page)
     }
 
-    public async accept(currency_amount: number, pymt_details: any = undefined) {
-        console.log(pymt_details)
-        return _Trade.create({ offer_ref_code: this.ref_code as string, currency_amount, pymt_details })
+    public async accept(currency_amount: number, pymt_details?: any, source_user_password?: string) {
+        return _Trade.create({ offer_ref_code: this.ref_code as string, currency_amount, pymt_details, source_user_password })
     }
 
     /* Updaters */

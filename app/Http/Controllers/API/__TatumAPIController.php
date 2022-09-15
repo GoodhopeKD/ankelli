@@ -5,6 +5,9 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Models\_Asset;
+use App\Models\_AssetAccount;
+
 class __TatumAPIController extends Controller
 {
     private $testnet_api_key = '18f7cff7-3990-4ce7-b504-d67143bc9832';
@@ -14,27 +17,183 @@ class __TatumAPIController extends Controller
 
     private $supported_assets = [
         'USDT' => [
-            'asset_generate_url' => 'https://api-eu1.tatum.io/v3/ethereum/wallet',
-            'private_key_generate_url' => 'https://api-eu1.tatum.io/v3/ethereum/wallet/priv',
-            'transaction_url' => 'https://api-eu1.tatum.io/v3/ethereum/transaction',
+            'base_chain' => 'ETH',
+            'api_code' => 'USDT',
+
+            'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent',
+            'xpub' => 'xpub6ERKWaEy6mLBzYWoo5P19QTexUufpijY5qod5xaH2ksiYtekeFYAoT3JoK87XKULgG7g3yvvxKwsGEVdkTqcC3BFjthMtJendsN1WH9nHoX',
+
+            'blockchain_wallet_generate_url'    => 'https://api-eu1.tatum.io/v3/ethereum/wallet?type=testnet',
+            'blockchain_transfer_to_url'        => 'https://api-eu1.tatum.io/v3/offchain/ethereum/erc20/transfer?type=testnet',
         ],
     ];
 
+    private function call_tail($curl)
+    {
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        $error_code = 422;
+        if ($error) $error_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $error_code = $error_code !== 0 ? $error_code : 422;
+
+        curl_close($curl);
+
+        if ($error) {
+            return abort($error_code, $error);
+        } else {
+            $decoded_response = json_decode($response);
+            if ( isset($decoded_response->statusCode) && $decoded_response->statusCode !== 200 )
+                return abort($decoded_response->statusCode, $decoded_response->message);
+            return response()->json( $decoded_response );
+        }
+    }
+
     /**
-     * Create a new asset on the tatum platform.
+     * Generate Ethereum wallet
+     * https://apidoc.tatum.io/tag/Ethereum
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function createAsset(Request $request)
+    public function getOrCreateBlockchainWallet(Request $request)
     {
         $validated_data = $request->validate([
-            'code' => ['required', 'string', 'max:64'],
+            'asset_code' => ['required', 'string', 'max:64'],
         ]);
 
-        if (!in_array($validated_data['code'], array_keys($this->supported_assets))){
+        if (!in_array($validated_data['asset_code'], array_keys($this->supported_assets))){
             return abort(422, 'Asset code not yet supported');
         }
+
+        $wallet_config = $this->supported_assets[$validated_data['asset_code']];
+        
+        if ( isset( $wallet_config['mnemonic'] ) && strlen( $wallet_config['mnemonic'] ) && isset( $wallet_config['xpub'] ) && strlen( $wallet_config['xpub'] ) )
+        {
+            $response = json_encode([
+                'mnemonic' => $wallet_config['mnemonic'],
+                'xpub' => $wallet_config['xpub'],
+            ]);
+            $error = null;
+        } else {
+            $curl = curl_init();
+
+            curl_setopt_array($curl, [
+                CURLOPT_HTTPHEADER => [
+                    "x-api-key: " . $this->x_api_key,
+                ],
+                CURLOPT_URL => $wallet_config['blockchain_wallet_generate_url'],
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_CUSTOMREQUEST => "GET",
+            ]);
+
+            $response = curl_exec($curl);
+            $error = curl_error($curl);
+
+            $error_code = 422;
+            if ($error) $error_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+            $error_code = $error_code !== 0 ? $error_code : 422;
+
+            curl_close($curl);
+        }
+
+        if ($error) {
+            return abort($error_code, $error);
+        } else {
+            $decoded_response = json_decode($response);
+            if ( isset($decoded_response->statusCode) && $decoded_response->statusCode !== 200 )
+                return abort($decoded_response->statusCode, $decoded_response->message);
+            return response()->json( $decoded_response );
+        }
+    }
+
+
+    /**
+     * List all accounts
+     * https://apidoc.tatum.io/tag/Account#operation/getAccounts
+     * 
+     * List all customer accounts
+     * https://apidoc.tatum.io/tag/Account#operation/getAccountsByCustomerId
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getVirtualAccounts(Request $request)
+    {
+        $validated_data = $request->validate([
+            'customer_id' => ['sometimes', 'string'],
+        ]);
+
+        $curl = curl_init();
+
+        if (isset($validated_data['customer_id'])){
+            curl_setopt_array($curl, [
+                CURLOPT_HTTPHEADER => [
+                    "Content-Type: application/json",
+                    "x-api-key: " . $this->x_api_key,
+                ],
+                CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/customer/" . $validated_data['customer_id'] . "?" . http_build_query(['type' => 'testnet', 'pageSize' => 50]),
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_CUSTOMREQUEST => "GET",
+            ]);
+        } else {
+            curl_setopt_array($curl, [
+                CURLOPT_HTTPHEADER => [
+                    "x-api-key: " . $this->x_api_key,
+                ],
+                CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account",
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_CUSTOMREQUEST => "GET",
+            ]);
+        }
+
+        return $this->call_tail($curl);
+    }
+
+
+    /**
+     * List all accounts
+     * https://apidoc.tatum.io/tag/Account#operation/getAccounts
+     * 
+     * List all customer accounts
+     * https://apidoc.tatum.io/tag/Account#operation/getAccountsByCustomerId
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getCustomers(Request $request)
+    {
+        $validated_data = $request->validate([
+            'customer_id' => ['sometimes', 'string'],
+        ]);
+       
+        $curl = curl_init();
+        
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "x-api-key: " . $this->x_api_key,
+            ],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/customer?" . http_build_query(['type' => 'testnet', 'pageSize' => 50]),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+
+        return $this->call_tail($curl);
+    }
+
+
+    /**
+     * Deactivate account
+     * https://apidoc.tatum.io/tag/Account#operation/deactivateAccount
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function deactivateVirtualAccount(Request $request)
+    {
+        $validated_data = $request->validate([
+            'virtual_account_id' => ['required', 'string'],
+        ]);
 
         $curl = curl_init();
 
@@ -42,31 +201,23 @@ class __TatumAPIController extends Controller
             CURLOPT_HTTPHEADER => [
                 "x-api-key: " . $this->x_api_key,
             ],
-            CURLOPT_URL => $this->supported_assets[$validated_data['code']]['asset_generate_url'],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/" . $validated_data['virtual_account_id'] . "/deactivate",
             CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_CUSTOMREQUEST => "PUT",
         ]);
 
-        $response = curl_exec($curl);
-        $error = curl_error($curl);
-
-        curl_close($curl);
-
-        if ($error) {
-            return abort($error->statusCode, $error->message);
-        } else {
-            return response()->json( json_decode($response) );
-        }
+        return $this->call_tail($curl);
     }
 
 
     /**
      * Create a new asset wallet on the tatum platform.
+     * https://apidoc.tatum.io/tag/Account#operation/createAccount
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function createAssetWallet(Request $request)
+    public function createVirtualAccountXpub(Request $request)
     {
         $validated_data = $request->validate([
             'user_username' => ['required', 'exists:__users,username', 'string'],
@@ -77,100 +228,177 @@ class __TatumAPIController extends Controller
 
         $curl = curl_init();
         $payload = [
-            "currency" => $validated_data['asset_code'],
+            "currency" => $this->supported_assets[$validated_data['asset_code']]['base_chain'],
             "xpub" => $asset->tatum_xpub,
             "customer" => [
                 "externalId" => $validated_data['user_username'],
+                "accountingCurrency" => "USD",
             ],
+            "accountingCurrency" => "USD",
         ];
-          
+
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
                 "x-api-key: " . $this->x_api_key,
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account",
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account?type=testnet",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);
 
-        $response = curl_exec($curl);
-        $error = curl_error($curl);
-
-        curl_close($curl);
-
-        if ($error) {
-            return abort($error->statusCode, $error->message);
-        } else {
-            return response()->json( json_decode($response) );
-        }
+        return $this->call_tail($curl);
     }
 
+
     /**
-     * Create a new asset wallet address on the tatum platform.
+     * Block an amount in an account
+     * https://apidoc.tatum.io/tag/Account#operation/blockAmount
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function createAssetWalletAddress(Request $request)
+    public function blockAmountInAccount(Request $request)
     {
         $validated_data = $request->validate([
-            'user_username' => ['required', 'exists:__users,username', 'string'],
-            'asset_code' => ['required', 'exists:__assets,code', 'string'],
+            'virtual_account_id' => ['required', 'string'],
+            'amount' => ['required', 'numeric'],
+            'type' => ['required', 'string'],
         ]);
-
-        $asset_wallet = _AssetWallet::firstWhere($validated_data)->makeVisible(['blockchain_account_id','tatum_derivation_key']);
 
         $curl = curl_init();
         $payload = [
-            
+            'amount' => $validated_data['amount'],
+            'type' => $validated_data['type'],
         ];
-          
+
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
                 "x-api-key: " . $this->x_api_key,
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/offchain/account/" . $asset_wallet->blockchain_account_id . "/address",
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/block/" . $validated_data['virtual_account_id'],
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);
 
-        $response = curl_exec($curl);
-        $error = curl_error($curl);
-
-        curl_close($curl);
-
-        if ($error) {
-            return abort($error->statusCode, $error->message);
-        } else {
-            return response()->json( json_decode($response) );
-        }
+        return $this->call_tail($curl);
     }
 
-
     /**
-     * Create a new asset wallet private key on the tatum platform.
+     * Unblock a blocked amount in an account
+     * https://apidoc.tatum.io/tag/Account#operation/deleteBlockAmount
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function createAssetWalletPrivateKey(Request $request)
+    public function unblockAmountInAccount(Request $request)
     {
         $validated_data = $request->validate([
-            'user_username' => ['required', 'exists:__users,username', 'string'],
-            'asset_code' => ['required', 'exists:__assets,code', 'string'],
+            'block_id' => ['required', 'string'],
         ]);
 
+        $curl = curl_init();
+
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json",
+                "x-api-key: " . $this->x_api_key,
+            ],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/block/" . $validated_data['block_id'],
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "DELETE",
+        ]);
+
+        return $this->call_tail($curl);
+    }
+
+    /**
+     * Create a deposit address for a virtual account.
+     * https://apidoc.tatum.io/tag/Blockchain-addresses#operation/generateDepositAddress
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getVirtualAccountDepositAddresses(Request $request)
+    {
+        $validated_data = $request->validate([
+            'virtual_account_id' => ['required', 'string']
+        ]);
+
+        $curl = curl_init();
+          
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json",
+                "x-api-key: " . $this->x_api_key,
+            ],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/offchain/account/" . $validated_data['virtual_account_id'] . "/address?type=testnet",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+
+        return $this->call_tail($curl);
+    }
+
+    /**
+     * Create a deposit address for a virtual account.
+     * https://apidoc.tatum.io/tag/Blockchain-addresses#operation/generateDepositAddress
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function createVirtualAccountDepositAddress(Request $request)
+    {
+        $validated_data = $request->validate([
+            'virtual_account_id' => ['required', 'string']
+        ]);
+
+        $curl = curl_init();
+          
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json",
+                "x-api-key: " . $this->x_api_key,
+            ],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/offchain/account/" . $validated_data['virtual_account_id'] . "/address?type=testnet",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "POST",
+        ]);
+
+        return $this->call_tail($curl);
+    }
+
+
+    /**
+     * Send ETH from a virtual account to the blockchain
+     * https://apidoc.tatum.io/tag/Blockchain-operations#operation/EthTransfer
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function transferAssetValueFromVirtualAccountToBlockchain(Request $request)
+    {
+        $validated_data = $request->validate([
+            'asset_code' => ['required', 'exists:__assets,code', 'string'],
+            'address' => ['required', 'string'],
+            'amount' => ['required', 'string'],
+            'index' => ['required', 'integer'],
+            'senderAccountId' => ['required', 'string'],
+        ]);
+
+        $wallet_config = $this->supported_assets[$validated_data['asset_code']];
         $asset = _Asset::firstWhere('code',$validated_data['asset_code'])->makeVisible(['tatum_mnemonic']);
-        $asset_wallet = _AssetWallet::firstWhere($validated_data)->makeVisible(['blockchain_account_id', 'tatum_derivation_key']);
 
-        $curl = curl_init();
         $payload = [
-            'index' => 0,
-            'mnemonic' => $asset->tatum_mnemonic,
+            "currency" => $this->supported_assets[$validated_data['asset_code']]['currency'],
+            "address" => $validated_data['address'],
+            "amount" => $validated_data['amount'],
+            "index" => $validated_data['index'],
+            "mnemonic" => $asset->tatum_mnemonic,
+            "senderAccountId" => $validated_data['senderAccountId']
         ];
           
         curl_setopt_array($curl, [
@@ -179,49 +407,31 @@ class __TatumAPIController extends Controller
                 "x-api-key: " . $this->x_api_key,
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/offchain/account/" . $asset_wallet->blockchain_account_id . "/address",
+            CURLOPT_URL => $wallet_config['blockchain_transfer_to_url'],
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);
 
-        $response = curl_exec($curl);
-        $error = curl_error($curl);
-
-        curl_close($curl);
-
-        if ($error) {
-            return abort($error->statusCode, $error->message);
-        } else {
-            return response()->json( json_decode($response) );
-        }
+        return $this->call_tail($curl);
     }
 
 
     /**
-     * Transfer asset value on the tatum platform.
+     * Send payment
+     * https://apidoc.tatum.io/tag/Transaction#operation/sendTransaction
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function createTransaction(Request $request)
+    public function transferAssetValueOffchain(Request $request)
     {
         $validated_data = $request->validate([
-            'source_user_username' => ['sometimes', 'exists:__users,username', 'string'],
-            'destination_user_username' => ['sometimes', 'exists:__users,username', 'string'],
-            'asset_code' => ['required', 'exists:__assets,code', 'string'],
-            'transfer_value' => ['required', 'numeric'],
+            'senderAccountId' => ['required', 'string'],
+            'recipientAccountId' => ['required', 'string'],
+            'amount' => ['required', 'string'],
         ]);
 
-        $source_user_asset_wallet = _AssetWallet::firstWhere(['user_username' => $validated_data['source_user_username'], 'asset_code' => $validated_data['asset_code']])->makeVisible(['blockchain_private_key']);
-        $destination_user_asset_wallet = _AssetWallet::firstWhere(['user_username' => $validated_data['destination_user_username'], 'asset_code' => $validated_data['asset_code']])->makeVisible(['blockchain_address']);
-
-        $curl = curl_init();
-        $payload = [
-            "to" => $destination_user_asset_wallet->blockchain_address,
-            "currency" => $validated_data['asset_code'],
-            "amount" => $validated_data['transfer_value'],
-            "fromPrivateKey" => $source_user_asset_wallet->blockchain_private_key,
-        ];
+        $payload = $validated_data;
           
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
@@ -229,22 +439,11 @@ class __TatumAPIController extends Controller
                 "x-api-key: " . $this->x_api_key,
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
-            CURLOPT_URL => $this->supported_assets[$validated_data['code']]['transaction_url'],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/transaction?type=testnet",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);
 
-        $response = curl_exec($curl);
-        $error = curl_error($curl);
-
-        curl_close($curl);
-
-        if ($error) {
-            return abort($error->statusCode, $error->message);
-        } else {
-            return response()->json( json_decode($response) );
-        }
+        return $this->call_tail($curl);
     }
-
-    
 }

@@ -21,43 +21,45 @@ Create the models with their migration files
 Change User to _User (__User) accross all files,
 
 ```properties
-php artisan make:model _Session -m
-php artisan make:model _EmailAddress -m
-php artisan make:model _PrefItem -m
-php artisan make:model _Notification -m
-php artisan make:model _VerifToken -m
-php artisan make:model _RegToken -m
-
-php artisan make:model _PhoneNo -m
-php artisan make:model _File -m
-php artisan make:model _Log -m
-php artisan make:model _Message -m
-
-php artisan make:model _Asset -m
-php artisan make:model _Currency -m
-php artisan make:model _PymtMethod -m
-php artisan make:model _City -m
-php artisan make:model _Country -m
+php artisan make:model _AdminExtension -m
+php artisan make:model _BuyerExtension -m
+php artisan make:model _SellerExtension -m
 
 php artisan make:model _UserGroup -m
 php artisan make:model _UserGroupMembership -m
 php artisan make:model _Permission -m
 php artisan make:model _PermissionInstance -m
+
+php artisan make:model _Session -m
+php artisan make:model _Notification -m
+php artisan make:model _PrefItem -m
+php artisan make:model _RegToken -m
+php artisan make:model _VerifToken -m
+
+php artisan make:model _EmailAddress -m
+php artisan make:model _PhoneNo -m
+php artisan make:model _File -m
+
+php artisan make:model _FeedbackReport -m
+php artisan make:model _Post -m
+
+php artisan make:model _Asset -m
+php artisan make:model _AssetAccount -m
+php artisan make:model _AssetAccountAddress -m
+php artisan make:model _Currency -m
+php artisan make:model _PymtMethod -m
+php artisan make:model _Country -m
 php artisan make:model _Exportable -m
 
-php artisan make:model _AssetWallet -m
-php artisan make:model _Chat -m
 php artisan make:model _DepositToken -m
-php artisan make:model _FeedbackReport -m
 php artisan make:model _Offer -m
-php artisan make:model _Pinning -m
-php artisan make:model _Post -m
-php artisan make:model _Transaction -m
 php artisan make:model _Trade -m
+php artisan make:model _Chat -m
+php artisan make:model _Message -m
+php artisan make:model _Pinning -m
+php artisan make:model _Transaction -m
 
-php artisan make:model _AdminExtension -m
-php artisan make:model _BuyerExtension -m
-php artisan make:model _SellerExtension -m
+php artisan make:model _Log -m
 
 ```
 
@@ -147,7 +149,8 @@ php artisan make:controller API/_PermissionController --api
 php artisan make:controller API/_PermissionInstanceController --api
 php artisan make:controller API/_ExportableController --api
 
-php artisan make:controller API/_AssetWalletController --api
+php artisan make:controller API/_AssetAccountController --api
+php artisan make:controller API/_AssetAccountAddressController --api
 php artisan make:controller API/_ChatController --api
 php artisan make:controller API/_DepositTokenController --api
 php artisan make:controller API/_FeedbackReportController --api
@@ -206,8 +209,10 @@ php artisan make:resource _PermissionInstanceResourceCollection --collection
 php artisan make:resource _ExportableResource
 php artisan make:resource _ExportableResourceCollection --collection
 
-php artisan make:resource _AssetWalletResource
-php artisan make:resource _AssetWalletResourceCollection --collection
+php artisan make:resource _AssetAccountResource
+php artisan make:resource _AssetAccountResourceCollection --collection
+php artisan make:resource _AssetAccountAddressResource
+php artisan make:resource _AssetAccountAddressResourceCollection --collection
 php artisan make:resource _ChatResource
 php artisan make:resource _ChatResourceCollection --collection
 php artisan make:resource _DepositTokenResource

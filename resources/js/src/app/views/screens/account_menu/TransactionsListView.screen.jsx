@@ -205,10 +205,10 @@ class TransactionsListViewScreen extends React.Component {
                                             return <tr key={index} >
                                                 <td className="align-middle">{transaction.ref_code}</td>
                                                 <td className="align-middle">{tr_group}</td>
-                                                <td className="align-middle">{window.assetValueString(transaction.transfer_value, asset)}</td>
-                                                <td className="align-middle">{transaction.tr_type == 'trade_asset_release' ? (debit ? 'Outbound ' : 'Inbound ') : ''}{transaction.description}</td>
+                                                <td className="align-middle">{window.assetValueString(transaction.transfer_asset_value, asset)}</td>
+                                                <td className="align-middle">{transaction.operation_slug == 'trade_asset_release' ? (debit ? 'Outbound ' : 'Inbound ') : ''}{transaction.description}</td>
                                                 <td className="align-middle">{window.ucfirst(new _DateTime(transaction.transfer_datetime).prettyDatetime())}</td>
-                                                <td className="align-middle">{window.assetValueString(transaction.transfer_result.find(tr => tr.user_username == this.props.auth_user.username).new_asset_value, asset)}</td>
+                                                <td className="align-middle">{window.assetValueString(transaction.transfer_result.find(tr => tr.user_username == this.props.auth_user.username).new_total_balance_asset_value, asset)}</td>
                                             </tr>
                                         })}
                                     </tbody>

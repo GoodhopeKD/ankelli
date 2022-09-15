@@ -5,11 +5,13 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash;
 
 use App\Models\_BuyerExtension;
 use App\Models\_SellerExtension;
-use App\Models\_AssetWallet;
+use App\Models\_AssetAccount;
 use App\Models\_PrefItem;
+use App\Models\_User;
 use App\Models\_Offer;
 
 use App\Models\_Trade;
@@ -90,6 +92,13 @@ class _TradeController extends Controller
             if (!($validated_data['currency_amount'] >= $offer->min_purchase_amount && $validated_data['currency_amount'] <= $offer->max_purchase_amount)){
                 return abort(422, 'Amount not within limits.');
             }
+            if (isset($validated_data['source_user_password'])){
+                if (!Hash::check($validated_data['source_user_password'], _User::firstWhere('username', session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null ))->makeVisible(['password'])->password)) {
+                    return abort(422, 'Password incorrect');
+                }
+            } else {
+                return abort(403, 'Source user password required to authorize trade transaction');
+            }
         } else {
             if (!($validated_data['asset_value_escrowed'] >= $offer->min_sell_value && $validated_data['asset_value_escrowed'] <= $offer->max_sell_value)){
                 return abort(422, 'Asset Value not within limits.');
@@ -137,30 +146,28 @@ class _TradeController extends Controller
         }
 
         // Lock seller asset in escrow
-        $seller_asset_wallet = _AssetWallet::firstWhere([
+        $seller_asset_account = _AssetAccount::firstWhere([
             'user_username' => $seller_username,
             'asset_code' => $offer->asset_code
         ]);
 
-        if ( !$seller_asset_wallet ){ return abort(422, 'Current ' . $offer->asset_code . ' balance insufficient for transaction.'); }
-        if ( $seller_asset_wallet->_status == 'frozen' ){ return abort(422, 'Selected asset is frozen.'); }
+        if ( !$seller_asset_account ){ return abort(422, 'Current ' . $offer->asset_code . ' balance insufficient for transaction.'); }
+        if ( $seller_asset_account->_status == 'frozen' ){ return abort(422, 'Selected asset is frozen.'); }
 
         $validated_data['was_offer_to'] = $offer->offer_to;
         $validated_data['offer_creator_username'] = $offer->creator_username;
         $validated_data['ref_code'] = random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
-        $seller_new_asset_value = $seller_asset_wallet->asset_value - $validated_data['asset_value_escrowed'];
+        $seller_new_usable_balance_asset_value = $seller_asset_account->usable_balance_asset_value - $validated_data['asset_value_escrowed'];
 
-        if ( $seller_new_asset_value < 0 ){ return abort(422, 'Current ' . $offer->asset_code . ' balance insufficient for transaction.'); }
+        if ( $seller_new_usable_balance_asset_value < 0 ){ return abort(422, 'Current ' . $offer->asset_code . ' balance insufficient for transaction.'); }
+
+        /*(new _AssetAccountController)->update( new Request([
+            'usable_balance_asset_value' => $seller_new_usable_balance_asset_value,
+        ]), $seller_asset_account->id );*/
         
-        $validated_data['escrow_lock_transaction_ref_code'] = (new _TransactionController)->store( new Request(array_filter([
-            'description' => 'Lock asset in escrow for trade "' . $validated_data['ref_code'] . '"',
-            'tr_type' => 'escrow_asset_lock',
-            'source_user_username' => $seller_username,
-            'source_user_password' => isset($validated_data['source_user_password']) ? $validated_data['source_user_password'] : null,
-            'destination_user_username' => 'escrow', 
-            'asset_code' => $offer->asset_code,
-            'transfer_value' => $validated_data['asset_value_escrowed'],
-        ])))->getData()->ref_code;
+        (new _AssetAccountController)->blockAssetValue( new Request([
+            'asset_value' => $validated_data['asset_value_escrowed'],
+        ]), $seller_asset_account->id );
         
         sleep(1);
         // End lock in escrow
@@ -234,7 +241,9 @@ class _TradeController extends Controller
         if (isset($validated_data['pymt_confirmed']) && $validated_data['pymt_confirmed'] == true){
 
             if (isset($validated_data['source_user_password'])){
-                // Validate $validated_data['source_user_password']
+                if (!Hash::check($validated_data['source_user_password'], _User::firstWhere('username', session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null ))->makeVisible(['password'])->password)) {
+                    return abort(422, 'Password incorrect');
+                }
             } else {
                 return abort(403, 'Source user password required to authorize trade transaction');
             }
@@ -252,30 +261,34 @@ class _TradeController extends Controller
             // Unlock asset from escrow
             $seller_username = $element->was_offer_to == 'buy' ? $element->creator_username : $element->offer_creator_username;
             $buyer_username = $element->was_offer_to == 'sell' ? $element->creator_username : $element->offer_creator_username;
-            
-            $escrow_unlock_transaction_ref_code = (new _TransactionController)->store( new Request([
-                'description' => 'Unlock asset from escrow for trade "' . $ref_code . '"',
-                'tr_type' => 'escrow_asset_unlock',
-                'source_user_username' => 'escrow', 
-                'destination_user_username' => $seller_username, 
+
+            $seller_asset_account = _AssetAccount::firstWhere([
+                'user_username' => $seller_username,
                 'asset_code' => $element->asset_code,
-                'transfer_value' => $element->asset_value_escrowed,
-            ]))->getData()->ref_code;
-            $escrow_lock_transaction_ref_code = $element->escrow_lock_transaction_ref_code;
-            foreach ([$escrow_unlock_transaction_ref_code, $escrow_lock_transaction_ref_code] as $escrow_transaction_ref_code) {
-                (new _TransactionController)->destroy( $escrow_transaction_ref_code );
-            }
+            ]);
+
+            $seller_new_usable_balance_asset_value = $seller_asset_account->usable_balance_asset_value + $element->asset_value_escrowed;
+
+            /*(new _AssetAccountController)->update( new Request([
+                'usable_balance_asset_value' => $seller_new_usable_balance_asset_value,
+            ]), $seller_asset_account->id );*/
+            
+            (new _AssetAccountController)->unblockAssetValue( new Request([
+                'asset_value' => $element->asset_value_escrowed,
+            ]), $seller_asset_account->id );
+
             sleep(1);
             // End unlock asset from escrow
             
             (new _TransactionController)->store( new Request([
+                'context' => 'offchain',
                 'description' => 'Asset release for trade "' . $ref_code . '"',
-                'tr_type' => 'trade_asset_release',
+                'operation_slug' => 'trade_asset_release',
                 'source_user_username' => $seller_username, 
                 'source_user_password' => $validated_data['source_user_password'],
                 'destination_user_username' => $buyer_username, 
                 'asset_code' => $element->asset_code,
-                'transfer_value' => $element->asset_value,
+                'transfer_asset_value' => $element->asset_value,
                 'platform_charge_asset_factor' => $element->platform_charge_asset_factor,
             ]));
         }

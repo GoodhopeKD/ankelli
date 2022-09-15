@@ -24,8 +24,10 @@ Route::post('', 'App\Http\Controllers\API\__AuxController@default_route')->name(
 Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_token}' ], function() {
 
     Route::post('load_test_data', 'App\Http\Controllers\API\__AuxController@load_test_data')->name('load_test_data');
-    //Route::apiResource('asset_wallets', '_AssetWalletController')->parameter('asset_wallets', 'id');
-    
+    Route::get('get_customers', 'App\Http\Controllers\API\_AssetAccountController@get_customers')->name('get_customers');
+    Route::get('get_accounts', 'App\Http\Controllers\API\_AssetAccountController@get_accounts')->name('get_accounts');
+    Route::get('get_addresses', 'App\Http\Controllers\API\_AssetAccountController@get_addresses')->name('get_addresses');
+
     // User authentication routes
     Route::post('users/signup', '_UserController@store')->name('users.signup');
     Route::post('users/signin', '_UserController@signin')->name('users.signin');
@@ -58,8 +60,11 @@ Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_
         Route::delete('users/{uid}/buyer_extension', '_SellerExtensionController@destroy')->name('users.delete_buyer_extension');
     });
 
+    Route::apiResource('asset_accounts', '_AssetAccountController')->only('store')->parameter('asset_accounts', 'id');
+
     // Auth:null accessible routes
     Route::get('availability_check/{check_param_name}/{check_param_value}', '__AuxController@availability_check')->name('availability_check');
+    Route::get('usability_check/{check_param_name}/{check_param_value}', '__AuxController@usability_check')->name('usability_check');
     Route::get('sysconfig_params', '__AuxController@sysconfig_params')->name('sysconfig_params');
     Route::get('datalists', '__AuxController@datalists')->name('datalists');
 
@@ -82,6 +87,7 @@ Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_
         Route::apiResource('transactions', '_TransactionController')->only(['index'])->parameter('transactions', 'ref_code');
         Route::post('deposit_tokens/use/{token}', '_DepositTokenController@use')->name('use_deposit_token');
         Route::apiResource('deposit_tokens', '_DepositTokenController')->parameter('deposit_tokens', 'token');
+        
         Route::apiResource('phone_nos', '_PhoneNoController')->parameter('phone_nos', 'id');
         Route::apiResource('messages', '_MessageController')->only(['index', 'store'])->parameter('messages', 'id');
         Route::apiResource('pinnings', '_PinningController')->only(['store', 'update', 'destroy'])->parameter('pinnings', 'id');

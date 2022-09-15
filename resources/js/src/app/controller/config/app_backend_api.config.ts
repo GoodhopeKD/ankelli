@@ -17,7 +17,8 @@ const strictly_auth_clear_endpoints = [
 const auth_clear_endpoints = [
     ...strictly_auth_clear_endpoints,
     '',
-    'availability_check/{check_param_name}/{check_param_value}', // checks username, email_address
+    'availability_check/{check_param_name}/{check_param_value}', // checks username, email_address, reg_token
+    'usability_check/{check_param_name}/{check_param_value}', // checks reg_token
 ]
 
 // Endpoints that require auth_token on all other methods except the GET method

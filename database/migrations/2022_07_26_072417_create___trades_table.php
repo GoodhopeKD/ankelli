@@ -42,12 +42,6 @@ return new class extends Migration
             $table->string('platform_charge_asset_factor', 32); // unsignedDecimal
             $table->unsignedBigInteger('currency_amount');
             $table->string('offer_price', 32)->nullable(); // unsignedDecimal
-            $table->string('escrow_lock_transaction_ref_code', 16)->nullable();
-            $table->foreign('escrow_lock_transaction_ref_code')
-                    ->references('ref_code')
-                    ->on('__transactions')
-                    ->onUpdate('cascade')
-                    ->onDelete('set null');
 
             $table->string('pymt_method_slug', 64)->nullable();
             $table->foreign('pymt_method_slug')

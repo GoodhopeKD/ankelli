@@ -20,14 +20,16 @@ class _Transaction extends Model
      */
     protected $fillable = [
         'ref_code',
+        'context',
         'blockchain_txid',
+        'tatum_reference',
         'session_token',
         'description',
-        'tr_type',
+        'operation_slug',
         'source_user_username',
         'destination_user_username',
         'asset_code',
-        'transfer_value',
+        'transfer_asset_value',
         'transfer_result',
         'transfer_datetime',
     ];
@@ -42,6 +44,7 @@ class _Transaction extends Model
      */
     protected $hidden = [
         'blockchain_txid',
+        'tatum_reference',
     ];
     
     /**
@@ -50,7 +53,7 @@ class _Transaction extends Model
      * @var array
      */
     protected $casts = [
-        'transfer_value' => 'float',
+        'transfer_asset_value' => 'float',
         'transfer_result' => 'array',
         'transfer_datetime' => 'datetime',
     ];

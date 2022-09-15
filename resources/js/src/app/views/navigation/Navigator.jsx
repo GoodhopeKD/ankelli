@@ -9,6 +9,9 @@ import ConnectionFailedScreen from 'app/views/screens/ConnectionFailed.screen'
 import TopNavbar from 'app/views/components/TopNavbar'
 import Footer from 'app/views/components/Footer'
 
+import SignInModal from 'app/views/components/SignIn.modal'
+import SignUpModal from 'app/views/components/SignUp.modal'
+
 // stack not in menues
 import { virtual_menu } from 'app/views/navigation/virtual_menu'
 // top_navbar
@@ -72,10 +75,11 @@ function Navigator(props) {
             const disabled_i = nav_menus[i].disabled !== undefined ? nav_menus[i].disabled : null
             const show_in_menu_i = nav_menus[i].show_in_menu !== undefined ? nav_menus[i].show_in_menu : false
             const show_when_auth_state_is_i = nav_menus[i].show_when_auth_state_is !== undefined ? nav_menus[i].show_when_auth_state_is : null
-            let required_params_passed_i = ( !auth_user || auth_user.isInUserGroup('developers') || !( auth_user.isInUserGroup('default_users') && nav_menus[i].restricted_for_default_users ))
-            if (required_params_passed_i && nav_menus[i].required_active_user_group_membership_slugs) {
+            const required_active_user_group_membership_slugs_i = nav_menus[i].required_active_user_group_membership_slugs
+            let required_params_passed_i = (!auth_user || auth_user.isInUserGroup('developers') || !(auth_user.isInUserGroup('default_users') && nav_menus[i].restricted_for_default_users))
+            if (required_params_passed_i && required_active_user_group_membership_slugs_i) {
                 required_params_passed_i = false
-                nav_menus[i].required_active_user_group_membership_slugs.forEach(user_group_membership_slug => {
+                required_active_user_group_membership_slugs_i.forEach(user_group_membership_slug => {
                     if (auth_user && (auth_user.isInUserGroup(user_group_membership_slug) || auth_user.isInUserGroup('developers'))) {
                         required_params_passed_i = true
                     }
@@ -90,10 +94,11 @@ function Navigator(props) {
                     const disabled_j = nav_menus[i].menu_items[j].disabled !== undefined ? nav_menus[i].menu_items[j].disabled : disabled_i
                     const show_in_menu_j = nav_menus[i].menu_items[j].show_in_menu !== undefined ? nav_menus[i].menu_items[j].show_in_menu : show_in_menu_i
                     const show_when_auth_state_is_j = nav_menus[i].menu_items[j].show_when_auth_state_is !== undefined ? nav_menus[i].menu_items[j].show_when_auth_state_is : show_when_auth_state_is_i
-                    let required_params_passed_j = ( !auth_user || auth_user.isInUserGroup('developers') || !( auth_user.isInUserGroup('default_users') && nav_menus[i].menu_items[j].restricted_for_default_users ))
-                    if (required_params_passed_j && nav_menus[i].menu_items[j].required_active_user_group_membership_slugs) {
+                    const required_active_user_group_membership_slugs_j = nav_menus[i].menu_items[j].required_active_user_group_membership_slugs ?? nav_menus[i].required_active_user_group_membership_slugs
+                    let required_params_passed_j = (!auth_user || auth_user.isInUserGroup('developers') || !(auth_user.isInUserGroup('default_users') && nav_menus[i].menu_items[j].restricted_for_default_users))
+                    if (required_params_passed_j && required_active_user_group_membership_slugs_j) {
                         required_params_passed_j = false
-                        nav_menus[i].menu_items[j].required_active_user_group_membership_slugs.forEach(user_group_membership_slug => {
+                        required_active_user_group_membership_slugs_j.forEach(user_group_membership_slug => {
                             if (auth_user && (auth_user.isInUserGroup(user_group_membership_slug) || auth_user.isInUserGroup('developers'))) {
                                 required_params_passed_j = true
                             }
@@ -117,16 +122,17 @@ function Navigator(props) {
                             const disabled_k = nav_menus[i].menu_items[j].children[k].disabled !== undefined ? nav_menus[i].menu_items[j].children[k].disabled : disabled_j
                             const show_in_menu_k = nav_menus[i].menu_items[j].children[k].show_in_menu !== undefined ? nav_menus[i].menu_items[j].children[k].show_in_menu : show_in_menu_j
                             const show_when_auth_state_is_k = nav_menus[i].menu_items[j].children[k].show_when_auth_state_is !== undefined ? nav_menus[i].menu_items[j].children[k].show_when_auth_state_is : show_when_auth_state_is_j
-                            let required_params_passed_k = ( !auth_user || auth_user.isInUserGroup('developers') || !( auth_user.isInUserGroup('default_users') && nav_menus[i].menu_items[j].children[k].restricted_for_default_users ))
-                            if (required_params_passed_k && nav_menus[i].menu_items[j].children[k].required_active_user_group_membership_slugs) {
+                            const required_active_user_group_membership_slugs_k = nav_menus[i].menu_items[j].children[k].required_active_user_group_membership_slugs ?? nav_menus[i].menu_items[j].required_active_user_group_membership_slugs
+                            let required_params_passed_k = (!auth_user || auth_user.isInUserGroup('developers') || !(auth_user.isInUserGroup('default_users') && nav_menus[i].menu_items[j].children[k].restricted_for_default_users))
+                            if (required_params_passed_k && required_active_user_group_membership_slugs_k) {
                                 required_params_passed_k = false
-                                nav_menus[i].menu_items[j].children[k].required_active_user_group_membership_slugs.forEach(user_group_membership_slug => {
+                                required_active_user_group_membership_slugs_k.forEach(user_group_membership_slug => {
                                     if (auth_user && (auth_user.isInUserGroup(user_group_membership_slug) || auth_user.isInUserGroup('developers'))) {
                                         required_params_passed_k = true
                                     }
                                 });
                             }
-
+                            
                             const nav_menus_filtered_element_menu_item_child = nav_menus_filtered_element_menu_item && show_in_menu_k && !disabled_k && required_params_passed_k && (show_when_auth_state_is_k === null || show_when_auth_state_is_k === curr_auth_state) ? nav_menus[i].menu_items[j].children[k] : null
 
                             if (nav_menus_filtered_element_menu_item_child) {
@@ -177,6 +183,14 @@ function Navigator(props) {
             </div>
             {/*<div style={{ minHeight: 379, zIndex: -2 }} />*/}
             <Footer footer_menu={nav_menus_filtered.find(menu => menu.slug === 'footer_menu')} />
+            {!curr_auth_state && <>
+                <div className="modal fade" id="signin_modal" tabIndex="-1" >
+                    <SignInModal />
+                </div>
+                <div className="modal fade" id="signup_modal" tabIndex="-1" >
+                    <SignUpModal />
+                </div>
+            </>}
         </React.Fragment>
     }
 

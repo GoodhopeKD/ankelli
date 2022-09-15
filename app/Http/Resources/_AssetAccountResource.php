@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class _AssetWalletResource extends JsonResource
+class _AssetAccountResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,7 +16,8 @@ class _AssetWalletResource extends JsonResource
     {
         return array_filter(array_merge(
             parent::toArray($request), [
-                'asset_value' => $this->asset_value,
+                'usable_balance_asset_value' => $this->usable_balance_asset_value,
+                'total_balance_asset_value' => $this->total_balance_asset_value,
                 '_status' => $this->_status,
             ]), static function($var){ return $var !== null;} );
     }

@@ -13,13 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('__asset_wallets', function (Blueprint $table) {
+        Schema::create('__asset_accounts', function (Blueprint $table) {
             $table->id();
-            $table->string('blockchain_account_id', 255)->nullable();
-            $table->string('blockchain_address', 255)->nullable();
-            $table->string('blockchain_private_key', 255)->nullable();
-            $table->string('tatum_customer_id', 255)->nullable();
-            $table->unsignedBigInteger('tatum_derivation_key')->nullable();
+            $table->string('tatum_virtual_account_id', 24)->nullable();
             $table->string('user_username', 64)->nullable();
             $table->foreign('user_username')
                     ->references('username')
@@ -32,7 +28,8 @@ return new class extends Migration
                     ->on('__assets')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->string('asset_value', 32)->default(0); // unsignedDecimal
+            $table->string('usable_balance_asset_value', 32)->default(0); // unsignedDecimal
+            $table->string('total_balance_asset_value', 32)->default(0); // unsignedDecimal
             $table->unique(['user_username', 'asset_code']);
             $table->enum('_status', ['active', 'frozen'])->default('active');
 
@@ -48,6 +45,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('__asset_wallets');
+        Schema::dropIfExists('__asset_accounts');
     }
 };

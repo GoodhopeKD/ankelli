@@ -6,12 +6,13 @@ import { mainLaravelDBRestAPICallWrapper } from 'app/controller/actions/rest_api
 	Type Definitions
 */
 type local_validation_param_type_t = 'email_address' | 'surname' | 'name_s' | 'name' | 'username' | 'password' | 'datetime' | 'number' | 'url' | 'passport_number' | 'reg_token'
-type usable_param_type_t = 'email_address' | 'username' | 'reg_token'
+type available_param_type_t = 'email_address' | 'username' | 'reg_token'
+type usable_param_type_t = 'reg_token'
 
 export const validation_param_lengths = {
 	reg_token: {
-		min_length: 4,
-		max_length: 20,
+		min_length: 5,
+		max_length: 16,
 	},
 	username: {
 		min_length: 4,
@@ -65,9 +66,11 @@ export default class _Input {
 	private _is_valid_name: boolean | null = null
 	private _is_valid_number: boolean | null = null
 
+	private _is_available_reg_token: boolean | null = null
+	private _is_available_username: boolean | null = null
+	private _is_available_email_address: boolean | null = null
+
 	private _is_usable_reg_token: boolean | null = null
-	private _is_usable_username: boolean | null = null
-	private _is_usable_email_address: boolean | null = null
 
 	private _has_error: boolean | null = null
 	private _has_check_error: boolean | null = null
@@ -168,7 +171,7 @@ export default class _Input {
 		return false
 	}
 
-	async async_checkIfUsable(resource_name: usable_param_type_t) {
+	async async_checkIfAvailable(resource_name: available_param_type_t) {
 		return await mainLaravelDBRestAPICallWrapper
 			.dispatch({
 				type: 'APP_BACKEND_API_CALL',
@@ -177,9 +180,35 @@ export default class _Input {
 				data: { check_param_name: resource_name, check_param_value: this._input }
 			})
 			.then((resp: any) => {
+				if (resource_name === 'reg_token') this._is_available_reg_token = resp.available === true
+				if (resource_name === 'username') this._is_available_username = resp.available === true
+				if (resource_name === 'email_address') this._is_available_email_address = resp.available === true
+				this._has_error = resp.available !== true
+				return Promise.resolve(resp)
+			})
+			.catch((e: any) => {
+				this._has_check_error = true
+				return Promise.reject(e)
+			})
+	}
+
+	isAvailable(resource_name: available_param_type_t): boolean {
+		if (resource_name === 'reg_token') return this._is_available_reg_token !== null ? this._is_available_reg_token : false
+		if (resource_name === 'username') return this._is_available_username !== null ? this._is_available_username : false
+		if (resource_name === 'email_address') return this._is_available_email_address !== null ? this._is_available_email_address : false
+		return false
+	}
+
+	async async_checkIfUsable(resource_name: usable_param_type_t) {
+		return await mainLaravelDBRestAPICallWrapper
+			.dispatch({
+				type: 'APP_BACKEND_API_CALL',
+				method: 'GET',
+				endpoint: 'usability_check/{check_param_name}/{check_param_value}',
+				data: { check_param_name: resource_name, check_param_value: this._input }
+			})
+			.then((resp: any) => {
 				if (resource_name === 'reg_token') this._is_usable_reg_token = resp.usable === true
-				if (resource_name === 'username') this._is_usable_username = resp.usable === true
-				if (resource_name === 'email_address') this._is_usable_email_address = resp.usable === true
 				this._has_error = resp.usable !== true
 				return Promise.resolve(resp)
 			})
@@ -191,8 +220,6 @@ export default class _Input {
 
 	isUsable(resource_name: usable_param_type_t): boolean {
 		if (resource_name === 'reg_token') return this._is_usable_reg_token !== null ? this._is_usable_reg_token : false
-		if (resource_name === 'username') return this._is_usable_username !== null ? this._is_usable_username : false
-		if (resource_name === 'email_address') return this._is_usable_email_address !== null ? this._is_usable_email_address : false
 		return false
 	}
 

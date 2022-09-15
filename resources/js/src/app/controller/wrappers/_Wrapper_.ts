@@ -42,7 +42,7 @@ export default class _Wrapper_ {
         // Dereference args object, Delete empty values and arrays, Load Inline
         args = JSON.parse(JSON.stringify(args))
         var key: keyof typeof args
-        for (key in args) { if (args.hasOwnProperty(key)) { if (!args[key] || (Array.isArray(args[key]) && !(args[key] as any).length)) delete args[key] } }
+        for (key in args) { if (args.hasOwnProperty(key)) { if (args[key] == null || args[key] == undefined || (Array.isArray(args[key]) && !(args[key] as any).length)) delete args[key] } }
         Object.assign(this, args)
     }
 

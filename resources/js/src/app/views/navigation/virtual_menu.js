@@ -1,12 +1,24 @@
 import React from 'react'
-import SignInScreen from 'app/views/screens/virtual_menu/SignIn.screen'
-import SignUpScreen from 'app/views/screens/virtual_menu/SignUp.screen'
+import SignInModal from 'app/views/components/SignIn.modal'
+import SignUpModal from 'app/views/components/SignUp.modal'
 
 class ExampleElement extends React.Component {
     render() {
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container-fluid py-3">
                 {this.props.title} Screen
+            </div>
+        </this.props.PageWrapper>
+    }
+}
+
+class ModalToScreenWrapper extends React.Component {
+    render() {
+        return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
+            <div className="container">
+                <div className="modal py-2 position-static d-block">
+                    {this.props.children}
+                </div>
             </div>
         </this.props.PageWrapper>
     }
@@ -29,13 +41,13 @@ export const virtual_menu = {
         {
             title: 'Sign In',
             path: '/signin',
-            element: (props) => <SignInScreen {...props} />,
+            element: (props) => <ModalToScreenWrapper {...props} ><SignInModal {...props} component_context="screen" /></ModalToScreenWrapper>,
             show_when_auth_state_is: false,
         },
         {
             title: 'Sign Up',
             path: '/signup',
-            element: (props) => <SignUpScreen {...props} />,
+            element: (props) => <ModalToScreenWrapper {...props} ><SignUpModal {...props} component_context="screen" /></ModalToScreenWrapper>,
             show_when_auth_state_is: false,
         },
         {

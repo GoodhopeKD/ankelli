@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
-class _AssetWalletResourceCollection extends ResourceCollection
+class _AssetAccountResourceCollection extends ResourceCollection
 {
     /**
      * Transform the resource collection into an array.
@@ -20,7 +20,8 @@ class _AssetWalletResourceCollection extends ResourceCollection
                     'id' => $_this->id,
                     'user_username' => $_this->user_username,
                     'asset_code' => $_this->asset_code,
-                    'asset_value' => $_this->asset_value,
+                    'usable_balance_asset_value' => $_this->usable_balance_asset_value,
+                    'total_balance_asset_value' => $_this->total_balance_asset_value,
                     '_status' => $_this->_status,
                     
                     //'created_datetime'      => $_this->created_datetime,

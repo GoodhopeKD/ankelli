@@ -90,7 +90,7 @@ return array(
     'GuzzleHttp\\' => array($vendorDir . '/guzzlehttp/guzzle/src'),
     'GrahamCampbell\\ResultType\\' => array($vendorDir . '/graham-campbell/result-type/src'),
     'GeoIp2\\' => array($vendorDir . '/geoip2/geoip2/src'),
-    'Fruitcake\\Cors\\' => array($vendorDir . '/fruitcake/php-cors/src', $vendorDir . '/fruitcake/laravel-cors/src'),
+    'Fruitcake\\Cors\\' => array($vendorDir . '/fruitcake/laravel-cors/src', $vendorDir . '/fruitcake/php-cors/src'),
     'Firebase\\JWT\\' => array($vendorDir . '/firebase/php-jwt/src'),
     'Faker\\' => array($vendorDir . '/fakerphp/faker/src/Faker'),
     'Facade\\IgnitionContracts\\' => array($vendorDir . '/facade/ignition-contracts/src'),

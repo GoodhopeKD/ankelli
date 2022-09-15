@@ -14,6 +14,7 @@ import _Offer, { _OfferRespObj } from 'app/controller/wrappers/applet_element/_O
 import _Trade, { _TradeRespObj } from 'app/controller/wrappers/applet_element/_Trade'
 import _Transaction, { _TransactionRespObj } from 'app/controller/wrappers/applet_element/_Transaction'
 import _DepositToken, { _DepositTokenRespObj } from 'app/controller/wrappers/applet_element/_DepositToken'
+import _AssetAccount, { _AssetAccountRespObj } from 'app/controller/wrappers/applet_element/_AssetAccount'
 // auxilliary
 import _Input from 'app/controller/wrappers/auxilliary/_Input'
 import _Date from 'app/controller/wrappers/auxilliary/_Date'
@@ -61,6 +62,7 @@ export {
     _Trade, _TradeRespObj,
     _Transaction, _TransactionRespObj,
     _DepositToken, _DepositTokenRespObj,
+    _AssetAccount, _AssetAccountRespObj,
     // auxilliary
     _Input, _Date, _DateTime,
     // datalist_element

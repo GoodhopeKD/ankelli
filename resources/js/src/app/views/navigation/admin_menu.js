@@ -2,7 +2,6 @@ import React from "react"
 import DepositTokensListViewScreen from 'app/views/screens/admin_menu/business_management/DepositTokensListView.screen'
 import DepositTokensCreateNewScreen from 'app/views/screens/admin_menu/business_management/DepositTokensCreateNew.screen'
 import RegTokensListViewScreen from 'app/views/screens/admin_menu/user_management/RegTokensListView.screen'
-import RegTokensCreateNewScreen from 'app/views/screens/admin_menu/user_management/RegTokensCreateNew.screen'
 import DatalistListViewScreen from "app/views/screens/admin_menu/datalists/DatalistListView.screen"
 import SysToolsListViewScreen from "app/views/screens/admin_menu/systools/SysToolsListView.screen"
 
@@ -137,24 +136,6 @@ export const admin_menu = {
                     path: '/user_management/reg_tokens',
                     element: (props) => <RegTokensListViewScreen {...props} />,
                     show_in_menu: true,
-                },
-                {
-                    title: 'View Registration Token',
-                    path: '/user_management/reg_tokens/:token',
-                    element: (props) => <ExampleElement {...props} />,
-                    show_in_menu: false,
-                },
-                {
-                    title: 'Edit Registration Token',
-                    path: '/user_management/reg_tokens/:token/edit',
-                    element: (props) => <ExampleElement {...props} />,
-                    show_in_menu: false,
-                },
-                {
-                    title: 'New Registration Token',
-                    path: '/user_management/reg_tokens/new',
-                    element: (props) => <RegTokensCreateNewScreen {...props} />,
-                    show_in_menu: false,
                 },
                 {
                     title: 'Users',

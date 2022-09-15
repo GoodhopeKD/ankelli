@@ -65,7 +65,7 @@ class OffersCreateNewScreen extends React.Component {
             if (_input.pymt_method_slug != 'cash_in_person') {
                 delete _input.location
             }
-            if (!(_input.offer_to == 'sell' || _input.pymt_method_slug == 'cash_in_person')) {
+            if (!(_input.offer_to == 'sell')) {
                 delete _input.pymt_details
             }
             if (_input.offer_to != 'buy') {
@@ -92,8 +92,6 @@ class OffersCreateNewScreen extends React.Component {
     }
 
     render() {
-        const all_disabled = this.props.auth_user == null
-
         const country_options = [];
         Object.keys(this.props.datalists.active_countries).forEach(country_name => { country_options.push({ value: country_name, searchable_text: country_name, output_element: () => country_name }) })
 
@@ -131,23 +129,17 @@ class OffersCreateNewScreen extends React.Component {
         const currency = this.props.datalists.active_currencies[this.state.input.currency_code]
         const pymt_method = this.props.datalists.active_pymt_methods[this.state.input.pymt_method_slug]
 
-        const max_offerable_asset_value = this.props.auth_user == null ? null : (1 - this.props.sysconfig_params.platform_charge_asset_factor) * parseFloat(window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value), asset, false)
+        const max_offerable_asset_value = this.props.auth_user == null ? null : (1 - this.props.sysconfig_params.platform_charge_asset_factor) * parseFloat(window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value), asset, false)
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container py-4 ">
                 <div className="d-flex justify-content-center">
                     <div className="col-lg-6">
 
-                        {all_disabled && <div className="mb-3">
-                            <div className="alert alert-warning">
-                                You must be logged in to be able to fill in this form
-                            </div>
-                        </div>}
-
                         {(this.props.sysconfig_params.offer_to_buy_enabled && this.props.sysconfig_params.offer_to_sell_enabled) &&
                             <div className="mb-3">
                                 <label htmlFor="input_offer_to" className="form-label">Offer to</label>
-                                <select disabled={all_disabled} className="form-select" id="input_offer_to" value={this.state.input.offer_to} onChange={rr => this.handleInputChange('offer_to', rr.target.value, true)} >
+                                <select className="form-select" id="input_offer_to" value={this.state.input.offer_to} onChange={rr => this.handleInputChange('offer_to', rr.target.value, true)} >
                                     <option value="buy">Buy</option>
                                     <option value="sell" >Sell</option>
                                 </select>
@@ -158,7 +150,7 @@ class OffersCreateNewScreen extends React.Component {
                             <div className="mb-3">
                                 <label htmlFor="input_country_name" className="form-label">Country</label>
                                 <CustomSelect
-                                    disabled={all_disabled}
+
                                     element_id="input_country_name"
                                     options={country_options}
                                     has_none_option={false}
@@ -171,7 +163,7 @@ class OffersCreateNewScreen extends React.Component {
                             <div className="mb-3">
                                 <label htmlFor="input_pymt_method_slug" className="form-label">Payment method</label>
                                 <CustomSelect
-                                    disabled={all_disabled}
+
                                     element_id="input_pymt_method_slug"
                                     options={pymt_method_options}
                                     has_none_option={false}
@@ -181,7 +173,7 @@ class OffersCreateNewScreen extends React.Component {
                                 />
                             </div>
 
-                            {(this.state.input.offer_to == 'sell' || this.state.input.pymt_method_slug == 'cash_in_person') && <>
+                            {(this.state.input.offer_to == 'sell') && <>
                                 <div className="card mb-3">
                                     <div className="card-header">
                                         {pymt_method.name} <img src={pymt_method.icon.uri} alt={pymt_method.name + " icon"} width="24" height="24" className="mx-2" /> Recepient details
@@ -189,7 +181,7 @@ class OffersCreateNewScreen extends React.Component {
                                     <div className="card-body py-0">
                                         {Object.keys(this.state.input.pymt_details).map((detail_key, index) => {
                                             return <div key={index} className="form-floating my-3">
-                                                <input disabled={all_disabled} type="text" className="form-control" id={'input_pymt_method_detail_' + detail_key}
+                                                <input type="text" className="form-control" id={'input_pymt_method_detail_' + detail_key}
                                                     required
                                                     value={this.state.input.pymt_details[detail_key]}
                                                     onChange={e => this.handleInputChange('pymt_details.' + detail_key, e.target.value, true)}
@@ -210,7 +202,6 @@ class OffersCreateNewScreen extends React.Component {
                                     <div className="input-group">
                                         <span className="input-group-text">#</span>
                                         <input
-                                            disabled={all_disabled}
                                             type="text" className="form-control" id="input_location"
                                             value={this.state.input.location + ''}
                                             required
@@ -231,7 +222,7 @@ class OffersCreateNewScreen extends React.Component {
                                             <div className="col">
                                                 <label htmlFor="input_asset_code" className="form-label">Asset</label>
                                                 <CustomSelect
-                                                    disabled={all_disabled}
+
                                                     element_id="input_asset_code"
                                                     options={asset_options}
                                                     has_none_option={false}
@@ -240,9 +231,9 @@ class OffersCreateNewScreen extends React.Component {
                                                     onChange={asset_code => this.handleInputChange('asset_code', asset_code, true)}
                                                 />
                                             </div>
-                                            {!all_disabled && <div className="col">
+                                            {this.props.auth_user != null && <div className="col">
                                                 <label htmlFor="output_current_balance" className="form-label">Current balance</label>
-                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value, asset)}</span>
+                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
                                             </div>}
                                         </div>
 
@@ -251,7 +242,6 @@ class OffersCreateNewScreen extends React.Component {
                                     <div className="mb-3">
                                         <label htmlFor="input_currency_code" className="form-label">Currency</label>
                                         <CustomSelect
-                                            disabled={all_disabled}
                                             element_id="input_currency_code"
                                             options={currency_options}
                                             has_none_option={false}
@@ -268,7 +258,7 @@ class OffersCreateNewScreen extends React.Component {
                                 <div className="input-group">
                                     {currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
                                     <input
-                                        disabled={all_disabled}
+
                                         type="number" className="form-control" id="input_offer_price"
                                         min="0"
                                         step="0.01"
@@ -286,7 +276,6 @@ class OffersCreateNewScreen extends React.Component {
                                     <div className="input-group">
                                         {currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
                                         <input
-                                            disabled={all_disabled}
                                             type="number" className="form-control" id="input_min_purchase_amount"
                                             min="0"
                                             value={this.state.input.min_purchase_amount + ''}
@@ -301,7 +290,6 @@ class OffersCreateNewScreen extends React.Component {
                                     <div className="input-group">
                                         {currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
                                         <input
-                                            disabled={all_disabled}
                                             type="number" className="form-control" id="input_max_purchase_amount"
                                             min={this.state.input.min_purchase_amount}
                                             value={this.state.input.max_purchase_amount + ''}
@@ -318,7 +306,6 @@ class OffersCreateNewScreen extends React.Component {
                                     <label htmlFor="input_min_sell_value" className="form-label">Minimum sell value</label>
                                     <div className="input-group">
                                         <input
-                                            disabled={all_disabled}
                                             type="number" className="form-control" id="input_min_sell_value"
                                             min="0"
                                             max={max_offerable_asset_value}
@@ -333,7 +320,6 @@ class OffersCreateNewScreen extends React.Component {
                                     <label htmlFor="input_max_sell_value" className="form-label">Maximum sell value</label>
                                     <div className="input-group">
                                         <input
-                                            disabled={all_disabled}
                                             type="number" className="form-control" id="input_max_sell_value"
                                             min={this.state.input.min_sell_value}
                                             max={max_offerable_asset_value}
@@ -356,12 +342,12 @@ class OffersCreateNewScreen extends React.Component {
 
                             <div className="row">
                                 <div className="col">
-                                    <button className="btn btn-info w-100" disabled={this.state.btn_post_offer_working || all_disabled} type="submit" >
+                                    <button className="btn btn-info w-100" disabled={this.state.btn_post_offer_working} type={this.props.auth_user == null ? "button" : "submit"} data-bs-toggle={this.props.auth_user == null ? "modal" : undefined} data-bs-target={this.props.auth_user == null ? "#signin_modal" : undefined} >
                                         {this.state.btn_post_offer_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Post offer</>}
                                     </button>
                                 </div>
                                 <div className="col">
-                                    <button type="button" disabled={all_disabled} onClick={() => this.setState({ input: _.cloneDeep(this.default_input) }, console.log("efjbk"))} className="btn btn-secondary w-100">Reset Form</button>
+                                    <button type="button" onClick={() => this.setState({ input: _.cloneDeep(this.default_input) })} className="btn btn-secondary w-100">Reset Form</button>
                                 </div>
                             </div>
 
@@ -380,7 +366,7 @@ const mapStateToProps = (state) => {
     return {
         datalists: state.datalists_data,
         sysconfig_params: state.sysconfig_params_data,
-        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_wallets']) : null,
+        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_accounts']) : null,
     }
 }
 

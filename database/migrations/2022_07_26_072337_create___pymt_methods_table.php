@@ -70,7 +70,7 @@ return new class extends Migration
                 'name' => 'Algérie Poste',
                 'slug' => 'algerie_poste',
                 'hex_color' => '01009a',
-                'details_required' => json_encode(['account_holder_name', 'account_no', 'account_key' ]),
+                'details_required' => json_encode(['account_holder_name', 'account_holder_address', 'account_no', 'account_key' ]),
                 'choice_currency_codes' => json_encode(['DZD']),
                 'creator_username' => 'system',
             ],
