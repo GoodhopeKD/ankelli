@@ -60,11 +60,9 @@ class SignUpScreen extends React.Component {
         }).catch(() => { errors.push("Could not check if email address is available for use.") })
 
         if (errors.length === 0) {
-            this.setState({ errors }) // Remove input error indicators under text inputs
-            const _input = Object.assign(Object.create(Object.getPrototypeOf(input)), input) // Dereference input object
-            Object.keys(_input).forEach(key => { if (_input[key] instanceof _Input) _input[key] = _input[key] + "" }) // convert _Input instances to Text
+            this.setState({ errors }) // Remove input error indicators under text inputs            
             const signup_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#signup_modal'));
-            _User.signUp(_input).then(() => { signup_modal.hide(); _Notification.flash({ message: 'Sign up successful!', duration: 750 }) })
+            _User.signUp(_Input.flatten(input)).then(() => { signup_modal.hide(); _Notification.flash({ message: 'Sign up successful!', duration: 750 }) })
                 .catch((error) => {
                     errors.push(error.message)
                     this.setState({ btn_signup_working, errors })
@@ -132,6 +130,7 @@ class SignUpScreen extends React.Component {
                                     required
                                     placeholder="Password"
                                 />
+                                <button className="btn" type="button" style={{ position: 'absolute', top: 10, right: 10 }} onClick={() => document.getElementById('input_password').setAttribute('type', document.getElementById('input_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
                                 <label htmlFor="input_password">Password</label>
                             </div>
                             <div className="form-floating mb-3">
@@ -144,6 +143,7 @@ class SignUpScreen extends React.Component {
                                     required
                                     placeholder="Password again"
                                 />
+                                <button className="btn" type="button" style={{ position: 'absolute', top: 10, right: 10 }} onClick={() => document.getElementById('input_password_confirmation').setAttribute('type', document.getElementById('input_password_confirmation').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
                                 <label htmlFor="input_password_confirmation">Password again</label>
                             </div>
 

@@ -69,7 +69,7 @@ class OffersSingleViewScreen extends React.Component {
                 this.currencyToAsset(this.props.params.currency_amount ?? (offer.offer_to == 'buy' ? offer.min_purchase_amount : offer.offer_price * offer.min_sell_value))
                 this.currencyToAsset(offer.offer_to == 'buy' ? offer.min_purchase_amount : offer.offer_price * offer.min_sell_value, 'min_')
                 this.currencyToAsset(offer.offer_to == 'buy' ? offer.max_purchase_amount : offer.offer_price * offer.max_sell_value, 'max_')
-                const returnObj = (arr) => { const obj = {}; arr.forEach(arr_i => obj[arr_i] = 'SSDSD'); return obj; }
+                const returnObj = (arr) => { const obj = {}; arr.forEach(arr_i => obj[arr_i] = ''); return obj; }
                 this.setState({
                     focused_offer_loaded: true,
                     input: { source_user_password: new _Input('Def-Pass#123'), pymt_details: offer.offer_to == 'buy' ? returnObj(this.props.datalists.active_pymt_methods[offer.pymt_method_slug].details_required) : {} }
@@ -85,7 +85,7 @@ class OffersSingleViewScreen extends React.Component {
         const input = {}
         input.pymt_details = this.focused_offer.offer_to == 'buy' ? this.state.input.pymt_details : undefined
         if (errors.length === 0) {
-            this.setState({ errors, source_user_password_prompt_open: true }) // Remove input error indicators under text inputs
+            this.setState({ errors, source_user_password_prompt_open: true }) // Remove input error indicators under text inputs            
             if (this.focused_offer.offer_to == 'buy') {
                 bootstrap.Modal.getOrCreateInstance(document.querySelector('#password_confirmation_modal')).show();
             } else {
@@ -107,9 +107,8 @@ class OffersSingleViewScreen extends React.Component {
             if (!input.source_user_password.isValid('password')) { errors.push("Invalid password") }
         }
         if (errors.length === 0) {
-            this.setState({ errors }) // Remove input error indicators under text inputs
-            const _input = Object.assign(Object.create(Object.getPrototypeOf(input)), input) // Dereference input object
-            Object.keys(_input).forEach(key => { if (_input[key] instanceof _Input) _input[key] = _input[key] + "" }) // convert _Input instances to Text
+            this.setState({ errors }) // Remove input error indicators under text inputs 
+            const _input = _Input.flatten(input)           
             const password_confirmation_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#password_confirmation_modal'));
             this.focused_offer.accept(this.state.currency_amount, _input.pymt_details, _input.source_user_password)
                 .then(() => { password_confirmation_modal.hide(); _Notification.flash({ message: 'Trade initiated.', duration: 2000 }); this.props.navigate('/trades') })
@@ -238,7 +237,7 @@ class OffersSingleViewScreen extends React.Component {
                                             <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div className="modal-body">
-                                            <p>Funds are about to be locked inside your account until trade is complete. Confirm.</p>
+                                            <p>{window.assetValueString(this.state.asset_value, asset)} is about to be locked in your account for this trade until it is complete. Enter password to confirm.</p>
                                             <div className="form-floating mb-3">
                                                 <input
                                                     type="password"
@@ -249,6 +248,7 @@ class OffersSingleViewScreen extends React.Component {
                                                     required={this.state.source_user_password_prompt_open}
                                                     placeholder="Pasword"
                                                 />
+                                                <button className="btn" type="button" style={{ position: 'absolute', top: 10, right: 10 }} onClick={() => document.getElementById('input_source_user_password').setAttribute('type', document.getElementById('input_source_user_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
                                                 <label htmlFor="input_source_user_password">Password</label>
                                             </div>
 

@@ -58,9 +58,8 @@ class OffersCreateNewScreen extends React.Component {
         const input = this.state.input
 
         if (errors.length === 0) {
-            this.setState({ errors }) // Remove input error indicators under text inputs
-            const _input = Object.assign(Object.create(Object.getPrototypeOf(input)), input) // Dereference input object
-            Object.keys(_input).forEach(key => { if (_input[key] instanceof _Input) _input[key] = _input[key] + "" }) // convert _Input instances to Text
+            this.setState({ errors }) // Remove input error indicators under text inputs            
+            const _input = _Input.flatten(input)
 
             if (_input.pymt_method_slug != 'cash_in_person') {
                 delete _input.location
@@ -232,7 +231,7 @@ class OffersCreateNewScreen extends React.Component {
                                                 />
                                             </div>
                                             {this.props.auth_user != null && <div className="col">
-                                                <label htmlFor="output_current_balance" className="form-label">Current balance</label>
+                                                <label htmlFor="output_current_balance" className="form-label">Current usable balance</label>
                                                 <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
                                             </div>}
                                         </div>

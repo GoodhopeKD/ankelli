@@ -121,11 +121,8 @@ export default class RegTokensListViewScreen extends React.Component {
 
         if (errors.length === 0) {
             this.setState({ errors }) // Remove input error indicators under text inputs
-            const _input = Object.assign(Object.create(Object.getPrototypeOf(input)), input) // Dereference input object
-            Object.keys(_input).forEach(key => { if (_input[key] instanceof _Input) _input[key] = _input[key] + "" }) // convert _Input instances to Text
-
             const add_new_reg_token_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#add_new_reg_token_modal'));
-            _RegToken.create(_input).then(() => { add_new_reg_token_modal.hide(); this.should_load_items = true; this.populateScreenWithItems(); _Notification.flash({ message: 'Reg token created', duration: 2000 }); })
+            _RegToken.create(_Input.flatten(input)).then(() => { add_new_reg_token_modal.hide(); this.should_load_items = true; this.populateScreenWithItems(); _Notification.flash({ message: 'Reg token created', duration: 2000 }); })
                 .catch((error) => {
                     errors.push(error.message)
                     this.setState({ btn_create_reg_token_working, errors, input: _.cloneDeep(this.default_input) })
@@ -214,7 +211,14 @@ export default class RegTokensListViewScreen extends React.Component {
                                     <tbody>
                                         {this.state.list.map((reg_token, index) => {
                                             return <tr key={index} >
-                                                <td className="align-middle">{reg_token.token}</td>
+                                                <td className="align-middle" style={{ maxWidth: 150 }}>
+                                                    <div className="input-group">
+                                                        <input type="text" className="form-control" value={reg_token.token} onChange={() => { }} />
+                                                        <span className="input-group-text p-0">
+                                                            <button className="btn btn-light" style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, border: 'none' }} onClick={() => { navigator.clipboard.writeText(reg_token.token); _Notification.flash({ message: 'Token copied to clipboard', duration: 2000 }); }} >📋</button>
+                                                        </span>
+                                                    </div>
+                                                </td>
                                                 <td className="align-middle">{reg_token.use_count}</td>
                                                 <td className="align-middle">{reg_token._status}</td>
                                                 <td className="align-middle">{reg_token.creator_username}</td>

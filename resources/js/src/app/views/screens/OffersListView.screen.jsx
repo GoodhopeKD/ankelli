@@ -39,7 +39,7 @@ class OffersListViewScreen extends React.Component {
         page_select: {
             page: 1,
         },
-        per_page: 5
+        per_page: 10
     };
 
     should_load_items = true

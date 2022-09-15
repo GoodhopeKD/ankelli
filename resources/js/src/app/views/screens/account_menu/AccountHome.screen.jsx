@@ -7,7 +7,7 @@ import { _User, _Session, _Input, _AssetAccount, _Notification } from 'app/contr
 
 import CustomSelect from 'app/views/components/CustomSelect'
 
-class AccountDashboardScreen extends React.Component {
+class AccountHomeScreen extends React.Component {
 
     default_input = {
         asset_code: 'USDT',
@@ -39,9 +39,7 @@ class AccountDashboardScreen extends React.Component {
         const input = this.state.input
 
         if (errors.length === 0) {
-            this.setState({ errors }) // Remove input error indicators under text inputs
-            const _input = Object.assign(Object.create(Object.getPrototypeOf(input)), input) // Dereference input object
-            Object.keys(_input).forEach(key => { if (_input[key] instanceof _Input) _input[key] = _input[key] + "" }) // convert _Input instances to Text
+            this.setState({ errors }) // Remove input error indicators under text inputs            
             const add_new_wallet_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#add_new_wallet_modal'));
             _AssetAccount.create({ ..._input, user_username: this.props.auth_user.username }).then(() => { add_new_wallet_modal.hide(); _Session.refresh(); _Notification.flash({ message: 'Asset wallet created', duration: 2000 }); this.setState({ btn_create_wallet_working, input: _.cloneDeep(this.default_input) }) })
                 .catch((error) => {
@@ -157,4 +155,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(AccountDashboardScreen)
+export default connect(mapStateToProps)(AccountHomeScreen)

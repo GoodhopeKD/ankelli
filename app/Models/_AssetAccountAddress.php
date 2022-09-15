@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class _AssetAccountAddress extends Model
 {
     const CREATED_AT = 'created_datetime';
-    const UPDATED_AT = 'updated_datetime';
+    const UPDATED_AT = null;
     const DELETED_AT = 'deleted_datetime';
 
     /**
@@ -20,5 +20,6 @@ class _AssetAccountAddress extends Model
         'asset_account_id',
         'blockchain_address',
         'tatum_derivation_key',
+        'last_active_datetime',
     ];
 }

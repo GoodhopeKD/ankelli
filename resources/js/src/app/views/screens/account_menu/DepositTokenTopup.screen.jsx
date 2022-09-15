@@ -41,10 +41,7 @@ class DepositTokenTopupScreen extends React.Component {
 
         if (errors.length === 0) {
             this.setState({ errors }) // Remove input error indicators under text inputs
-            const _input = Object.assign(Object.create(Object.getPrototypeOf(input)), input) // Dereference input object
-            Object.keys(_input).forEach(key => { if (_input[key] instanceof _Input) _input[key] = _input[key] + "" }) // convert _Input instances to Text
-
-            _DepositToken.use(_input).then(() => { _Notification.flash({ message: 'Deposit successful', duration: 2000 }); this.setState({ btn_attempt_token_topup_working, input: _.cloneDeep(this.default_input) }) })
+            _DepositToken.use(_Input.flatten(input)).then(() => { _Notification.flash({ message: 'Deposit successful', duration: 2000 }); this.setState({ btn_attempt_token_topup_working, input: _.cloneDeep(this.default_input) }) })
                 .catch((error) => {
                     errors.push(error.message)
                     this.setState({ btn_attempt_token_topup_working, errors })
@@ -95,8 +92,8 @@ class DepositTokenTopupScreen extends React.Component {
                                         />
                                         </div>
                                         <div className="col">
-                                            <label htmlFor="output_current_balance" className="form-label">Current balance</label>
-                                            <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
+                                            <label htmlFor="output_current_balance" className="form-label">Current total balance</label>
+                                            <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { total_balance_asset_value: 0 }).total_balance_asset_value, asset)}</span>
                                         </div>
                                     </div>
                                     <div className="mb-3">

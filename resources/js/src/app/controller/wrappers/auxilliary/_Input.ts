@@ -80,6 +80,14 @@ export default class _Input {
 		this._input = input ? input : ''
 	}
 
+	static flatten(input: object): object {
+		const flat_input = Object.assign(Object.create(Object.getPrototypeOf(input)), input) // Dereference input object
+		var key: keyof typeof flat_input
+		for (key in flat_input) { if (flat_input.hasOwnProperty(key)) { if (flat_input[key] == null || flat_input[key] == undefined || (Array.isArray(flat_input[key]) && !(flat_input[key] as any).length)) delete flat_input[key] } } // filter null and undefined
+		Object.keys(flat_input).forEach(key => { if (flat_input[key] instanceof _Input) flat_input[key] = flat_input[key] + "" }) // convert _Input instances to text
+		return flat_input
+	}
+
 	toString(): string {
 		return this._input
 	}

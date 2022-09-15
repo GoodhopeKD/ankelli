@@ -228,7 +228,14 @@ class DepositTokensListViewScreen extends React.Component {
                                             const currency = this.props.datalists.active_currencies[deposit_token.currency_code]
 
                                             return <tr key={index} >
-                                                <td className="align-middle">{deposit_token.token}</td>
+                                                <td className="align-middle" style={{ maxWidth: 200 }}>
+                                                    <div className="input-group">
+                                                        <input type="text" className="form-control" value={deposit_token.token} onChange={() => { }} />
+                                                        <span className="input-group-text p-0">
+                                                            <button className="btn btn-light" style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, border: 'none' }} onClick={() => { navigator.clipboard.writeText(deposit_token.token); _Notification.flash({ message: 'Token copied to clipboard', duration: 2000 }); }} >📋</button>
+                                                        </span>
+                                                    </div>
+                                                </td>
                                                 <td className="align-middle">{window.assetValueString(deposit_token.asset_value, asset)}</td>
                                                 <td className="align-middle">{window.currencyAmountString(deposit_token.currency_amount, currency)}</td>
                                                 <td className="align-middle">{deposit_token.creator_username}</td>

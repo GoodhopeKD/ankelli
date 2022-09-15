@@ -46,17 +46,14 @@ class TradesSingleViewScreen extends React.Component {
             if ((input.message_body + '').length)
                 if (!(input.message_body.isSafeText(1))) { errors.push('Message body invalid') }
         } else {
+            //delete input.message_attachement
             if (!(input.message_body.isSafeText(1))) { errors.push('Message body invalid') }
         }
 
-        delete input.pymt_details
-
         if (errors.length === 0) {
+            //delete input.pymt_details
             this.setState({ errors }) // Remove input error indicators under text inputs
-            const _input = Object.assign(Object.create(Object.getPrototypeOf(input)), input) // Dereference input object
-            Object.keys(_input).forEach(key => { if (_input[key] instanceof _Input) _input[key] = _input[key] + "" }) // convert _Input instances to Text
-
-            this.focused_trade.sendMessage(_input).then(() => { _Notification.flash({ message: 'Message sent', duration: 2000 }); this.componentDidMount(); this.setState({ btn_send_message_working, errors, input: _.cloneDeep(this.default_input) }) })
+            this.focused_trade.sendMessage(_Input.flatten(input)).then(() => { this.state.input.message_attachement = undefined; this.state.input.message_body = new _Input(); _Notification.flash({ message: 'Message sent', duration: 2000 }); this.componentDidMount(); this.setState({ btn_send_message_working, errors }) })
                 .catch((error) => {
                     errors.push(error.message)
                     this.setState({ btn_send_message_working, errors })
@@ -72,9 +69,8 @@ class TradesSingleViewScreen extends React.Component {
         const input = this.state.input
         if (!input.source_user_password.isValid('password')) { errors.push("Invalid password") }
         if (errors.length === 0) {
-            this.setState({ errors }) // Remove input error indicators under text inputs
-            const _input = Object.assign(Object.create(Object.getPrototypeOf(input)), input) // Dereference input object
-            Object.keys(_input).forEach(key => { if (_input[key] instanceof _Input) _input[key] = _input[key] + "" }) // convert _Input instances to Text
+            this.setState({ errors }) // Remove input error indicators under text inputs            
+            const _input = _Input.flatten(input)
             const password_confirmation_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#password_confirmation_modal'));
             this.focused_trade.confirmPymt(_input.source_user_password)
                 .then(() => { password_confirmation_modal.hide(); this.setState({ btn_confirm_pymt_working: false }); _Notification.flash({ message: 'Payment confirmed.', duration: 2000 }); })
@@ -105,7 +101,7 @@ class TradesSingleViewScreen extends React.Component {
         const asset = load_condition ? this.props.datalists.active_assets[this.focused_trade.asset_code] : null
         const currency = load_condition ? this.props.datalists.active_currencies[this.focused_trade.currency_code] : null
 
-        // User is seller
+        const trade_peer_username = load_condition ? (this.focused_trade.creator_username == this.props.auth_user.username ? this.focused_trade.offer_creator_username : this.focused_trade.creator_username) : null
         const auth_user_is_buyer = load_condition && ((this.focused_trade.was_offer_to == 'sell' && this.focused_trade.creator_username == this.props.auth_user.username) || (this.focused_trade.was_offer_to == 'buy' && this.focused_trade.offer_creator_username == this.props.auth_user.username))
         const auth_user_is_seller = load_condition && ((this.focused_trade.was_offer_to == 'buy' && this.focused_trade.creator_username == this.props.auth_user.username) || (this.focused_trade.was_offer_to == 'sell' && this.focused_trade.offer_creator_username == this.props.auth_user.username))
 
@@ -136,13 +132,15 @@ class TradesSingleViewScreen extends React.Component {
                                     <p>
                                         <>Asset value on sale: {window.assetValueString(this.focused_trade.currency_amount / this.focused_trade.offer_price, asset)} </>
                                     (@ {window.currencyAmountString(this.focused_trade.offer_price, currency)})
-                                </p>
+                                    </p>
+                                    <p>{auth_user_is_buyer ? <>Seller</> : <>Buyer</>}: @{trade_peer_username}</p>
                                     {this.focused_trade._status !== 'completed' && <>
                                         <p>{pymt_method.name} <img src={pymt_method.icon.uri} alt={pymt_method.name + " icon"} width="24" height="24" className="mx-2" /> payment details:</p>
                                         {Object.keys(this.state.input.pymt_details).map((detail_key, index) => {
                                             return <div key={index} className="input-group mb-3">
                                                 <div className="form-floating">
-                                                    <input type="password" className="form-control roundd-3" id={'input_pymt_method_detail_' + detail_key}
+                                                    <input
+                                                        type="password" className="form-control roundd-3" id={'input_pymt_method_detail_' + detail_key}
                                                         required
                                                         disabled
                                                         value={this.state.input.pymt_details[detail_key]}
@@ -150,9 +148,7 @@ class TradesSingleViewScreen extends React.Component {
                                                     />
                                                     <label htmlFor={'input_pymt_method_detail_' + detail_key} className="form-label">{detail_key.replace(/_/g, " ").capitalize()}</label>
                                                 </div>
-                                                <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => document.getElementById('input_pymt_method_detail_' + detail_key).setAttribute('type', document.getElementById('input_pymt_method_detail_' + detail_key).getAttribute('type') == 'text' ? 'password' : 'text')}>
-                                                    V/H
-                                            </button>
+                                                <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => document.getElementById('input_pymt_method_detail_' + detail_key).setAttribute('type', document.getElementById('input_pymt_method_detail_' + detail_key).getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
                                             </div>
                                         })}
                                     </>}
@@ -206,6 +202,7 @@ class TradesSingleViewScreen extends React.Component {
                                                             required={this.state.source_user_password_prompt_open}
                                                             placeholder="Pasword"
                                                         />
+                                                        <button className="btn" type="button" style={{ position: 'absolute', top: 10, right: 10 }} onClick={() => document.getElementById('input_source_user_password').setAttribute('type', document.getElementById('input_source_user_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
                                                         <label htmlFor="input_source_user_password">Password</label>
                                                     </div>
 

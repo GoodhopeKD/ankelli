@@ -642,7 +642,7 @@ class __AuxController extends Controller
             'location' => 'Lusaka CBD', 
             'offer_to' => 'buy',
             'asset_code' => 'USDT',
-            'currency_code' => 'USD',
+            'currency_code' => 'ZMW',
             'offer_price' => 13.3,
             'min_purchase_amount' => 2800,
             'max_purchase_amount' => 14000,

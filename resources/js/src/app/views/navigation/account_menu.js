@@ -1,6 +1,8 @@
 import React from "react"
 
-import AccountDashboardScreen from 'app/views/screens/account_menu/AccountDashboard.screen'
+import AccountHomeScreen from 'app/views/screens/account_menu/AccountHome.screen'
+import BCReceiveFundsScreen from "app/views/screens/account_menu/BCReceiveFunds.screen"
+import BCSendFundsScreen from "app/views/screens/account_menu/BCSendFunds.screen"
 import DepositTokenTopupScreen from 'app/views/screens/account_menu/DepositTokenTopup.screen'
 import WithdrawalsScreen from 'app/views/screens/account_menu/Withdrawals.screen'
 import TransactionsListViewScreen from 'app/views/screens/account_menu/TransactionsListView.screen'
@@ -31,9 +33,9 @@ export const account_menu = {
     show_in_menu: true,
     menu_items: [
         {
-            title: 'Dashboard',
-            path: '/account/dashboard',
-            element: (props) => <AccountDashboardScreen {...props} />,
+            title: 'Account Home',
+            path: '/account/home',
+            element: (props) => <AccountHomeScreen {...props} />,
         },
         {
             title: 'Deposits',
@@ -42,7 +44,7 @@ export const account_menu = {
                 {
                     title: 'Receive funds',
                     path: '/account/deposits/receive-funds',
-                    element: (props) => <ExampleElement {...props} />,
+                    element: (props) => <BCReceiveFundsScreen {...props} />,
                 },
                 {
                     title: 'Token topup',
@@ -59,7 +61,7 @@ export const account_menu = {
                 {
                     title: 'Send funds',
                     path: '/account/withdrawals/send-funds',
-                    element: (props) => <ExampleElement {...props} />,
+                    element: (props) => <BCSendFundsScreen {...props} />,
                 },
                 {
                     title: 'Assisted withdrawal',

@@ -54,11 +54,9 @@ export default withRouter(class SignInModal extends React.Component {
 
         if (errors.length === 0) {
 
-            this.setState({ errors }) // Remove input error indicators under text inputs
-            const _input = Object.assign(Object.create(Object.getPrototypeOf(input)), input) // Dereference input object
-            Object.keys(_input).forEach(key => { if (_input[key] instanceof _Input) _input[key] = _input[key] + "" }) // convert _Input instances to Text
+            this.setState({ errors }) // Remove input error indicators under text inputs            
             const signin_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#signin_modal'));
-            _User.signIn(_input).then(() => { signin_modal.hide(); _Notification.flash({ message: 'Sign in successful!', duration: 750 }) })
+            _User.signIn(_Input.flatten(input)).then(() => { signin_modal.hide(); _Notification.flash({ message: 'Sign in successful!', duration: 750 }) })
                 .catch((error) => {
                     errors.push(error.message)
                     this.setState({ btn_signin_working, errors })
@@ -97,7 +95,9 @@ export default withRouter(class SignInModal extends React.Component {
                                 onChange={e => this.handleInputChange('password', e.target.value)}
                                 required
                                 placeholder="Password"
+                                style={{ paddingRight: 70 }}
                             />
+                            <button className="btn" type="button" style={{ position: 'absolute', top: 10, right: 10 }} onClick={() => document.getElementById('input_password').setAttribute('type', document.getElementById('input_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
                             <label htmlFor="input_password">Password</label>
                         </div>
                         <div className="text-center mb-3">
