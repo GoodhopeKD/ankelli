@@ -107,8 +107,8 @@ class OffersSingleViewScreen extends React.Component {
             if (!input.source_user_password.isValid('password')) { errors.push("Invalid password") }
         }
         if (errors.length === 0) {
-            this.setState({ errors }) // Remove input error indicators under text inputs 
-            const _input = _Input.flatten(input)           
+            this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs 
+            const _input = _Input.flatten(input)
             const password_confirmation_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#password_confirmation_modal'));
             this.focused_offer.accept(this.state.currency_amount, _input.pymt_details, _input.source_user_password)
                 .then(() => { password_confirmation_modal.hide(); _Notification.flash({ message: 'Trade initiated.', duration: 2000 }); this.props.navigate('/trades') })
@@ -227,28 +227,30 @@ class OffersSingleViewScreen extends React.Component {
                         <button className="btn btn-primary" disabled={this.state.btn_proceed_working} type={this.props.auth_user == null ? "button" : "submit"} data-bs-toggle={this.props.auth_user == null ? "modal" : undefined} data-bs-target={this.props.auth_user == null ? "#signin_modal" : undefined} >
                             {this.state.btn_proceed_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Proceed to {this.focused_offer.offer_to == 'buy' ? 'Sell' : 'Buy'} {this.focused_offer.asset_code}</>}
                         </button>
+                    </form>
 
-                        {this.focused_offer.offer_to == 'buy' &&
-                            <div className="modal fade" id="password_confirmation_modal" tabIndex="-1" >
-                                <div className="modal-dialog modal-dialog-centered">
-                                    <div className="modal-content">
-                                        <div className="modal-header">
-                                            <h5 className="modal-title" >Password confirmation</h5>
-                                            <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
-                                        </div>
+                    {this.focused_offer.offer_to == 'buy' &&
+                        <div className="modal fade" id="password_confirmation_modal" tabIndex="-1" >
+                            <div className="modal-dialog modal-dialog-centered">
+                                <div className="modal-content">
+                                    <div className="modal-header">
+                                        <h5 className="modal-title" >Password confirmation</h5>
+                                        <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <form onSubmit={e => { e.preventDefault(); this.handleSubmit2() }}>
                                         <div className="modal-body">
                                             <p>{window.assetValueString(this.state.asset_value, asset)} is about to be locked in your account for new trade until it is complete. Enter password to continue.</p>
                                             <div className="form-floating mb-3">
                                                 <input
                                                     type="password"
-                                                    className={"form-control rounded-3 " + (this.state.input.source_user_password.hasError() ? 'is-invalid' : '')}
+                                                    className={"form-control rounded-3" + (this.state.input.source_user_password.failedValidation() ? ' is-invalid' : '')}
                                                     id="input_source_user_password"
                                                     value={this.state.input.source_user_password + ''}
                                                     onChange={e => this.handleInputChange('source_user_password', e.target.value)}
                                                     required={this.state.source_user_password_prompt_open}
                                                     placeholder="Pasword"
                                                 />
-                                                <button className="btn" type="button" style={{ position: 'absolute', top: 10, right: 10 }} onClick={() => document.getElementById('input_source_user_password').setAttribute('type', document.getElementById('input_source_user_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
+                                                <button className="btn btn-sm" type="button" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_source_user_password').setAttribute('type', document.getElementById('input_source_user_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
                                                 <label htmlFor="input_source_user_password">Password</label>
                                             </div>
 
@@ -258,18 +260,17 @@ class OffersSingleViewScreen extends React.Component {
                                                 ))}
                                             </div>
                                         </div>
-                                        <div className="modal-footer">
-                                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
-                                            <button className="btn btn-primary" disabled={this.state.btn_proceed_working} type="button" onClick={this.handleSubmit2} >
+                                        <div className="modal-footer justify-content-between">
+                                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" >Cancel</button>
+                                            <button type="submit" className="btn btn-primary" disabled={this.state.btn_proceed_working} >
                                                 {this.state.btn_proceed_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Proceed to {this.focused_offer.offer_to == 'buy' ? 'Sell' : 'Buy'} {this.focused_offer.asset_code}</>}
                                             </button>
                                         </div>
-                                    </div>
+                                    </form>
                                 </div>
                             </div>
-                        }
-
-                    </form>
+                        </div>
+                    }
                 </> :
                     <div style={{ alignItems: 'center', padding: 40 }} className='d-grid'>
                         <div className="spinner-grow text-danger" style={{ justifySelf: 'center', width: 50, height: 50 }}></div>

@@ -120,12 +120,12 @@ export default class RegTokensListViewScreen extends React.Component {
         }
 
         if (errors.length === 0) {
-            this.setState({ errors }) // Remove input error indicators under text inputs
+            this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
             const add_new_reg_token_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#add_new_reg_token_modal'));
-            _RegToken.create(_Input.flatten(input)).then(() => { add_new_reg_token_modal.hide(); this.should_load_items = true; this.populateScreenWithItems(); _Notification.flash({ message: 'Reg token created', duration: 2000 }); })
+            _RegToken.create(_Input.flatten(input)).then(() => { add_new_reg_token_modal.hide(); this.setState({ btn_create_reg_token_working, errors, input: _.cloneDeep(this.default_input) }); this.should_load_items = true; this.populateScreenWithItems(); _Notification.flash({ message: 'Reg token created', duration: 2000 }); })
                 .catch((error) => {
                     errors.push(error.message)
-                    this.setState({ btn_create_reg_token_working, errors, input: _.cloneDeep(this.default_input) })
+                    this.setState({ btn_create_reg_token_working, errors })
                 })
         } else {
             this.setState({ btn_create_reg_token_working, errors, input })
@@ -135,6 +135,9 @@ export default class RegTokensListViewScreen extends React.Component {
     componentDidMount() {
         const bgTask = () => this.populateScreenWithItems(false)
         try { BgTaskHandler.runInBackground(() => bgTask()) } catch (e) { bgTask() }
+        document.getElementById('add_new_reg_token_modal').addEventListener('hidden.bs.modal', () => {
+            this.setState({ errors: [], input: _.cloneDeep(this.default_input) })
+        })
     }
 
     render() {
@@ -196,23 +199,24 @@ export default class RegTokensListViewScreen extends React.Component {
 
                         <hr />
 
-                        {this.state.list_loaded ? (
-                            <div>
-                                <table className="table">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Token</th>
-                                            <th scope="col">Use count</th>
-                                            <th scope="col">Status</th>
-                                            <th scope="col">Creator</th>
-                                            <th scope="col">Created datetime</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {this.state.list.map((reg_token, index) => {
+
+                        <div>
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Token</th>
+                                        <th scope="col">Use count</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Creator</th>
+                                        <th scope="col">Created datetime</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {this.state.list_loaded ? (
+                                        this.state.list.map((reg_token, index) => {
                                             return <tr key={index} >
                                                 <td className="align-middle" style={{ maxWidth: 150 }}>
-                                                    <div className="input-group">
+                                                    <div className="input-group input-group-sm">
                                                         <input type="text" className="form-control" value={reg_token.token} onChange={() => { }} />
                                                         <span className="input-group-text p-0">
                                                             <button className="btn btn-light" style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, border: 'none' }} onClick={() => { navigator.clipboard.writeText(reg_token.token); _Notification.flash({ message: 'Token copied to clipboard', duration: 2000 }); }} >📋</button>
@@ -224,83 +228,76 @@ export default class RegTokensListViewScreen extends React.Component {
                                                 <td className="align-middle">{reg_token.creator_username}</td>
                                                 <td className="align-middle">{window.ucfirst(new _DateTime(reg_token.created_datetime).prettyDatetime())}</td>
                                             </tr>
-                                        })}
-                                    </tbody>
-                                </table>
-                                <div className="d-flex gap-2" >
+                                        })
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="20">
+                                                <div style={{ alignItems: 'center' }} className='d-grid'>
+                                                    <div className="spinner-grow text-danger" style={{ justifySelf: 'center', width: 38, height: 38 }}></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                            <div className="d-flex gap-2" >
 
-                                    <div>
-                                        <nav aria-label="Standard pagination example">
-                                            <ul className="pagination">
-                                                <li className={"page-item " + (this.state._collecion.meta.current_page == 1 ? 'disabled' : '')}>
-                                                    <a className="page-link" href="#" aria-label="Previous"
-                                                        onClick={() => this.setState({ page_select: { page: 1, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })}
-                                                    >
-                                                        <span aria-hidden="true">«</span>
-                                                    </a>
-                                                </li>
-                                                {pagination_pages.map(page => <li key={page} className={"page-item " + (this.state._collecion.meta.current_page == page ? 'active' : '')}
-                                                    onClick={() => this.setState({ page_select: { page } }, () => { this.should_load_items = true; this.populateScreenWithItems() })}
-                                                ><a className="page-link" href="#">{page}</a></li>
-                                                )}
+                                <div>
+                                    <nav>
+                                        <ul className="pagination">
+                                            <li className={"page-item" + ((this.state._collecion.meta.current_page == 1 || !this.state.list_loaded) ? ' disabled' : '')}>
+                                                <a className="page-link" href="#" aria-label="Previous" onClick={() => this.setState({ page_select: { page: 1, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} > <span aria-hidden="true">«</span> </a>
+                                            </li>
+                                            {pagination_pages.map(page => <li key={page} className={"page-item" + (this.state._collecion.meta.current_page == page ? ' active' : '') + (!this.state.list_loaded ? ' disabled' : '')} onClick={() => this.setState({ page_select: { page } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} ><a className="page-link" href="#">{page}</a> </li>)}
+                                            <li className={"page-item" + ((this.state._collecion.meta.current_page == this.state._collecion.meta.last_page || !this.state.list_loaded) ? ' disabled' : '')}>
+                                                <a className="page-link" href="#" aria-label="Next" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.last_page, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} > <span aria-hidden="true">»</span> </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
 
-                                                <li className={"page-item " + (this.state._collecion.meta.current_page == this.state._collecion.meta.last_page ? 'disabled' : '')}>
-                                                    <a className="page-link" href="#" aria-label="Next"
-                                                        onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.last_page, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })}
-                                                    >
-                                                        <span aria-hidden="true">»</span>
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </nav>
-                                    </div>
-
-                                    <div>
-
-                                        <button type="button" className='btn btn-success' data-bs-toggle="modal" data-bs-target="#add_new_reg_token_modal">Create new</button>
-
-                                        <div className="modal fade" id="add_new_reg_token_modal" tabIndex="-1" >
-                                            <div className="modal-dialog modal-dialog-centered">
-                                                <div className="modal-content">
-                                                    <div className="modal-header">
-                                                        <h5 className="modal-title" >Create new reg token</h5>
-                                                        <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
-                                                    </div>
+                                <div>
+                                    <button type="button" className='btn btn-success' data-bs-toggle="modal" data-bs-target="#add_new_reg_token_modal" disabled={this.state.btn_create_reg_token_working}>Create new</button>
+                                    <div className="modal fade" id="add_new_reg_token_modal" tabIndex="-1" >
+                                        <div className="modal-dialog modal-dialog-centered">
+                                            <div className="modal-content">
+                                                <div className="modal-header">
+                                                    <h5 className="modal-title" >Create new reg token</h5>
+                                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
                                                     <div className="modal-body">
-
-                                                        <div className="form-floating mb-3">
+                                                        <div className="form-floating">
                                                             <input
                                                                 type='text'
-                                                                className={"form-control rounded-3 " + (this.state.input.token.hasError() ? 'is-invalid' : '')}
+                                                                className={"form-control rounded-3" + (this.state.input.token.failedValidation() ? ' is-invalid' : '')}
                                                                 id="input_token"
                                                                 value={this.state.input.token + ''}
                                                                 onChange={e => this.handleInputChange('token', e.target.value)}
                                                                 placeholder="Reg token"
                                                             />
-                                                            <label htmlFor="input_token">Reg token (Leave empty to generate)</label>
+                                                            <label htmlFor="input_token">Reg token (Leave empty to let system generate)</label>
                                                         </div>
-
-                                                        <div className="mb-3">
+                                                        {this.state.errors.length > 0 && (<div className="mt-3">
                                                             {this.state.errors.map((error, key) => (
                                                                 <div key={key}>• <span style={{ color: 'red' }}>{error}</span></div>
                                                             ))}
-                                                        </div>
+                                                        </div>)}
                                                     </div>
-                                                    <div className="modal-footer">
-                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                        <button type="button" className="btn btn-primary" onClick={this.handleSubmit}>Save or Generate</button>
+                                                    <div className="modal-footer justify-content-between">
+                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="submit" className="btn btn-primary" disabled={this.state.btn_create_reg_token_working} >
+                                                            {this.state.btn_create_reg_token_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <span>Save or Generate</span>}
+                                                        </button>
                                                     </div>
-                                                </div>
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
-                        ) : (
-                            <div style={{ alignItems: 'center', padding: 40 }} className='d-grid'>
-                                <div className="spinner-grow text-danger" style={{ justifySelf: 'center', width: 50, height: 50 }}></div>
-                            </div>
-                        )}
+                        </div>
                     </div>
                 </div>
             </div>

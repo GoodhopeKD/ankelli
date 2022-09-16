@@ -58,7 +58,7 @@ class OffersCreateNewScreen extends React.Component {
         const input = this.state.input
 
         if (errors.length === 0) {
-            this.setState({ errors }) // Remove input error indicators under text inputs            
+            this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
             const _input = _Input.flatten(input)
 
             if (_input.pymt_method_slug != 'cash_in_person') {

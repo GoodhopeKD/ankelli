@@ -29,7 +29,7 @@ class EditSysConfigParamsScreen extends React.Component {
                         <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'admin_menu')]} />
                     </div>
                     <div className="col-10">
-                        {(this.state.sysconfig_params.length > 0 && this.state.sysconfig_params_enum_options.length > 0) && <>
+                        {(this.state.sysconfig_params.length > 0 && this.state.sysconfig_params_enum_options.length > 0) ? (
                             <table className="table">
                                 <thead>
                                     <tr>
@@ -66,7 +66,7 @@ class EditSysConfigParamsScreen extends React.Component {
                                                     <div className="modal-dialog modal-dialog-centered">
                                                         <div className="modal-content">
                                                             <div className="modal-header">
-                                                                <h5 className="modal-title" >Modify param</h5>
+                                                                <h5 className="modal-title" >Modify system param</h5>
                                                                 <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
                                                             </div>
                                                             <div className="modal-body">
@@ -102,7 +102,7 @@ class EditSysConfigParamsScreen extends React.Component {
                                                                         <label htmlFor={"input_param_" + index}>{param.key_name}</label>
                                                                         <input
                                                                             type='number'
-                                                                            className="form-control rounded-3"
+                                                                            className="form-control"
                                                                             id={"input_param_" + index}
                                                                             //value={this.state.input.token + ''}
                                                                             //onChange={e => this.handleInputChange('token', e.target.value)}
@@ -114,7 +114,7 @@ class EditSysConfigParamsScreen extends React.Component {
                                                                     <label htmlFor={"input_password_" + index}>Enter your password to confirm update</label>
                                                                     <input
                                                                         type="password"
-                                                                        className={"form-control rounded-3"}
+                                                                        className={"form-control"}
                                                                         id={"input_password_" + index}
                                                                         //value={this.state.input.password + ''}
                                                                         //onChange={e => this.handleInputChange('password', e.target.value)}
@@ -125,9 +125,9 @@ class EditSysConfigParamsScreen extends React.Component {
                                                                     <button className="btn d-none" type="button" style={{ position: 'absolute', top: 10, right: 10 }} onClick={() => document.getElementById("input_password_" + index).setAttribute('type', document.getElementById("input_password_" + index).getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
                                                                 </div>
                                                             </div>
-                                                            <div className="modal-footer">
-                                                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                                                <button type="button" className="btn btn-primary" onClick={this.handleSubmit}>Save</button>
+                                                            <div className="modal-footer justify-content-between">
+                                                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                <button type="button" className="btn btn-primary" onClick={() => { }}>Save</button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -137,7 +137,11 @@ class EditSysConfigParamsScreen extends React.Component {
                                     })}
                                 </tbody>
                             </table>
-                        </>}
+                        ) : (
+                            <div style={{ alignItems: 'center', padding: 40 }} className='d-grid'>
+                                <div className="spinner-grow text-danger" style={{ justifySelf: 'center', width: 50, height: 50 }}></div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

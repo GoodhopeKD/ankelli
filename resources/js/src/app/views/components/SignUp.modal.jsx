@@ -42,29 +42,34 @@ class SignUpScreen extends React.Component {
         const input = this.state.input
 
         if (this.props.sysconfig_params_data.token_reg_enabled) if (!input.reg_token.isValid('reg_token')) { errors.push("Invalid registration token") }
-        if (!input.username.isValid('username')) { errors.push("Invalid username") }
-        if (!input.email_address.isValid('email_address')) { errors.push("Invalid email address") }
-        if (!input.password.isValid('password')) { errors.push("Password should have: at least 8 characters; at least 1 of: numbers, uppercase, lowercase characters") }
-        if (!input.password_confirmation.matches(input.password.toString())) { errors.push("Passwords Mismatch") }
-
         if (this.props.sysconfig_params_data.token_reg_enabled) await input.reg_token.async_checkIfUsable('reg_token').then(resp => {
             if (!input.reg_token.isUsable('reg_token')) { errors.push(resp.message) }
         }).catch(() => { errors.push("Could not check if registration token is usable.") })
 
+        if (!input.username.isValid('username')) { errors.push("Invalid username") }
         await input.username.async_checkIfAvailable('username').then((resp) => {
             if (!input.username.isAvailable('username')) { errors.push(resp.message) }
         }).catch(() => { errors.push("Could not check if username is available for use.") })
 
+        if (!input.email_address.isValid('email_address')) { errors.push("Invalid email address") }
         await input.email_address.async_checkIfAvailable('email_address').then(resp => {
             if (!input.email_address.isAvailable('email_address')) { errors.push(resp.message) }
         }).catch(() => { errors.push("Could not check if email address is available for use.") })
 
+        if (!input.password.isValid('password')) { errors.push("Password should have: at least 8 characters; at least 1 of: numbers, uppercase, lowercase characters") }
+        if (!input.password_confirmation.matches(input.password.toString())) { errors.push("Passwords Mismatch") }
+
         if (errors.length === 0) {
-            this.setState({ errors }) // Remove input error indicators under text inputs            
+            this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
             const signup_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#signup_modal'));
             _User.signUp(_Input.flatten(input)).then(() => { signup_modal.hide(); _Notification.flash({ message: 'Sign up successful!', duration: 750 }) })
                 .catch((error) => {
                     errors.push(error.message)
+                    input.reg_token.clearValidation()
+                    input.username.clearValidation()
+                    input.email_address.clearValidation()
+                    input.password.clearValidation()
+                    input.password_confirmation.clearValidation()
                     this.setState({ btn_signup_working, errors })
                 })
         } else {
@@ -85,8 +90,10 @@ class SignUpScreen extends React.Component {
                                 <div className="form-floating mb-3">
                                     <input
                                         type='text'
-                                        className={"form-control rounded-3 " + (this.state.input.reg_token.hasError() ? 'is-invalid' : '')}
+                                        className={"form-control" + (this.state.input.reg_token.failedValidation() ? ' is-invalid' : '') + (this.state.input.reg_token.passedValidation() ? ' is-valid' : '')}
                                         id="input_reg_token"
+                                        minLength={_Input.validation_param_lengths.reg_token.min_length}
+                                        maxLength={_Input.validation_param_lengths.reg_token.max_length}
                                         value={this.state.input.reg_token + ''}
                                         onChange={e => this.handleInputChange('reg_token', e.target.value)}
                                         required={!this.props.sysconfig_params_data.open_reg_enabled}
@@ -99,8 +106,10 @@ class SignUpScreen extends React.Component {
                             <div className="form-floating mb-3">
                                 <input
                                     type='text'
-                                    className={"form-control rounded-3 " + (this.state.input.username.hasError() ? 'is-invalid' : '')}
+                                    className={"form-control" + (this.state.input.username.failedValidation() ? ' is-invalid' : '') + (this.state.input.username.passedValidation() ? ' is-valid' : '')}
                                     id="input_username"
+                                    minLength={_Input.validation_param_lengths.username.min_length}
+                                    maxLength={_Input.validation_param_lengths.username.max_length}
                                     value={this.state.input.username + ''}
                                     onChange={e => this.handleInputChange('username', e.target.value)}
                                     required
@@ -111,8 +120,10 @@ class SignUpScreen extends React.Component {
                             <div className="form-floating mb-3">
                                 <input
                                     type='email'
-                                    className={"form-control rounded-3 " + (this.state.input.email_address.hasError() ? 'is-invalid' : '')}
+                                    className={"form-control" + (this.state.input.email_address.failedValidation() ? ' is-invalid' : '') + (this.state.input.email_address.passedValidation() ? ' is-valid' : '')}
                                     id="input_email_address"
+                                    minLength={_Input.validation_param_lengths.email_address.min_length}
+                                    maxLength={_Input.validation_param_lengths.email_address.max_length}
                                     value={this.state.input.email_address + ''}
                                     onChange={e => this.handleInputChange('email_address', e.target.value)}
                                     required
@@ -123,27 +134,33 @@ class SignUpScreen extends React.Component {
                             <div className="form-floating mb-3">
                                 <input
                                     type="password"
-                                    className={"form-control rounded-3 " + (this.state.input.password.hasError() ? 'is-invalid' : '')}
+                                    className={"form-control" + (this.state.input.password.failedValidation() ? ' is-invalid' : '') + (this.state.input.password.passedValidation() ? ' is-valid' : '')}
                                     id="input_password"
+                                    minLength={_Input.validation_param_lengths.password.min_length}
+                                    maxLength={_Input.validation_param_lengths.password.max_length}
                                     value={this.state.input.password + ''}
                                     onChange={e => this.handleInputChange('password', e.target.value)}
                                     required
                                     placeholder="Password"
+                                    style={{ paddingRight: 40 }}
                                 />
-                                <button className="btn" type="button" style={{ position: 'absolute', top: 10, right: 10 }} onClick={() => document.getElementById('input_password').setAttribute('type', document.getElementById('input_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
+                                <button className="btn btn-sm" type="button" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_password').setAttribute('type', document.getElementById('input_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
                                 <label htmlFor="input_password">Password</label>
                             </div>
                             <div className="form-floating mb-3">
                                 <input
                                     type="password"
-                                    className={"form-control rounded-3 " + (this.state.input.password_confirmation.hasError() ? 'is-invalid' : '')}
+                                    className={"form-control" + (this.state.input.password_confirmation.failedValidation() ? ' is-invalid' : '') + (this.state.input.password_confirmation.passedValidation() ? ' is-valid' : '')}
                                     id="input_password_confirmation"
+                                    minLength={_Input.validation_param_lengths.password.min_length}
+                                    maxLength={_Input.validation_param_lengths.password.max_length}
                                     value={this.state.input.password_confirmation + ''}
                                     onChange={e => this.handleInputChange('password_confirmation', e.target.value)}
                                     required
                                     placeholder="Password again"
+                                    style={{ paddingRight: 40 }}
                                 />
-                                <button className="btn" type="button" style={{ position: 'absolute', top: 10, right: 10 }} onClick={() => document.getElementById('input_password_confirmation').setAttribute('type', document.getElementById('input_password_confirmation').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
+                                <button className="btn btn-sm" type="button" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_password_confirmation').setAttribute('type', document.getElementById('input_password_confirmation').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
                                 <label htmlFor="input_password_confirmation">Password again</label>
                             </div>
 
@@ -152,7 +169,7 @@ class SignUpScreen extends React.Component {
                                     <div key={key}>• <span style={{ color: 'red' }}>{error}</span></div>
                                 ))}
                             </div>
-                            
+
                             <button className="w-100 mb-2 btn btn-lg rounded-3 btn-primary" disabled={this.state.btn_signup_working} type="submit" >
                                 {this.state.btn_signup_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <span>Sign up</span>}
                             </button>

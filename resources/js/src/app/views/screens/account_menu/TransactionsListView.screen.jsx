@@ -136,12 +136,6 @@ class TransactionsListViewScreen extends React.Component {
                     <div className="col-10">
 
                         <div className="row">
-                            <div className="col">
-                                <label htmlFor="input_per_page" className="form-label">Items</label>
-                                <select className="form-select" id="input_per_page" value={this.state.per_page} onChange={element => this.setState({ per_page: parseInt(element.target.value) }, () => { this.should_load_items = true; this.populateScreenWithItems() })} >
-                                    {[5, 10, 25, 50, 100].map((per_page, index) => <option key={index} value={per_page} >{per_page}</option>)}
-                                </select>
-                            </div>
 
                             <div className="col">
                                 <label htmlFor="input_asset_code" className="form-label">Asset</label>
@@ -184,21 +178,22 @@ class TransactionsListViewScreen extends React.Component {
 
                         <hr />
 
-                        {this.state.list_loaded ? (
-                            <div>
-                                <table className="table">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Ref Code</th>
-                                            <th scope="col">Type</th>
-                                            <th scope="col">Asset Value</th>
-                                            <th scope="col">Description</th>
-                                            <th scope="col">Datetime</th>
-                                            <th scope="col">New balance</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {this.state.list.map((transaction, index) => {
+
+                        <div>
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Ref Code</th>
+                                        <th scope="col">Type</th>
+                                        <th scope="col">Asset Value</th>
+                                        <th scope="col">Description</th>
+                                        <th scope="col">Datetime</th>
+                                        <th scope="col">New balance</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {this.state.list_loaded ? (
+                                        this.state.list.map((transaction, index) => {
                                             const asset = this.props.datalists.active_assets[transaction.asset_code]
                                             const debit = transaction.source_user_username == this.props.auth_user.username
                                             const tr_group = debit ? 'Debit' : 'Credit'
@@ -210,42 +205,47 @@ class TransactionsListViewScreen extends React.Component {
                                                 <td className="align-middle">{window.ucfirst(new _DateTime(transaction.transfer_datetime).prettyDatetime())}</td>
                                                 <td className="align-middle">{window.assetValueString(transaction.transfer_result.find(tr => tr.user_username == this.props.auth_user.username).new_total_balance_asset_value, asset)}</td>
                                             </tr>
-                                        })}
-                                    </tbody>
-                                </table>
-                                <div className="row" >
-                                    <div className="col">
-                                        <nav aria-label="Standard pagination example">
-                                            <ul className="pagination">
-                                                <li className={"page-item " + (this.state._collecion.meta.current_page == 1 ? 'disabled' : '')}>
-                                                    <a className="page-link" href="#" aria-label="Previous"
-                                                        onClick={() => this.setState({ page_select: { page: 1, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })}
-                                                    >
-                                                        <span aria-hidden="true">«</span>
-                                                    </a>
-                                                </li>
-                                                {pagination_pages.map(page => <li key={page} className={"page-item " + (this.state._collecion.meta.current_page == page ? 'active' : '')}
-                                                    onClick={() => this.setState({ page_select: { page } }, () => { this.should_load_items = true; this.populateScreenWithItems() })}
-                                                ><a className="page-link" href="#">{page}</a></li>
-                                                )}
+                                        })
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="20">
+                                                <div style={{ alignItems: 'center' }} className='d-grid'>
+                                                    <div className="spinner-grow text-danger" style={{ justifySelf: 'center', width: 38, height: 38 }}></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
 
-                                                <li className={"page-item " + (this.state._collecion.meta.current_page == this.state._collecion.meta.last_page ? 'disabled' : '')}>
-                                                    <a className="page-link" href="#" aria-label="Next"
-                                                        onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.last_page, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })}
-                                                    >
-                                                        <span aria-hidden="true">»</span>
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </nav>
+                            <div className="d-flex gap-2" >
+
+                                <div>
+                                    <div className="d-flex gap-2">
+                                        <label htmlFor="input_per_page" className="align-self-center">Items</label>
+                                        <select className="form-select" id="input_per_page" value={this.state.per_page} onChange={element => this.setState({ per_page: parseInt(element.target.value) }, () => { this.should_load_items = true; this.populateScreenWithItems() })} >
+                                            {[5, 10, 25, 50, 100].map((per_page, index) => <option key={index} value={per_page} >{per_page}</option>)}
+                                        </select>
                                     </div>
                                 </div>
+
+                                <div>
+                                    <nav>
+                                        <ul className="pagination">
+                                            <li className={"page-item" + ((this.state._collecion.meta.current_page == 1 || !this.state.list_loaded) ? ' disabled' : '')}>
+                                                <a className="page-link" href="#" aria-label="Previous" onClick={() => this.setState({ page_select: { page: 1, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} > <span aria-hidden="true">«</span> </a>
+                                            </li>
+                                            {pagination_pages.map(page => <li key={page} className={"page-item" + (this.state._collecion.meta.current_page == page ? ' active' : '') + (!this.state.list_loaded ? ' disabled' : '')} onClick={() => this.setState({ page_select: { page } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} ><a className="page-link" href="#">{page}</a> </li>)}
+                                            <li className={"page-item" + ((this.state._collecion.meta.current_page == this.state._collecion.meta.last_page || !this.state.list_loaded) ? ' disabled' : '')}>
+                                                <a className="page-link" href="#" aria-label="Next" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.last_page, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} > <span aria-hidden="true">»</span> </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+
                             </div>
-                        ) : (
-                            <div style={{ alignItems: 'center', padding: 40 }} className='d-grid'>
-                                <div className="spinner-grow text-danger" style={{ justifySelf: 'center', width: 50, height: 50 }}></div>
-                            </div>
-                        )}
+
+                        </div>
                     </div>
                 </div>
             </div>

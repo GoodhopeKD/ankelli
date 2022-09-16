@@ -39,7 +39,7 @@ class AccountHomeScreen extends React.Component {
         const input = this.state.input
 
         if (errors.length === 0) {
-            this.setState({ errors }) // Remove input error indicators under text inputs            
+            this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
             const add_new_wallet_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#add_new_wallet_modal'));
             _AssetAccount.create({ ..._input, user_username: this.props.auth_user.username }).then(() => { add_new_wallet_modal.hide(); _Session.refresh(); _Notification.flash({ message: 'Asset wallet created', duration: 2000 }); this.setState({ btn_create_wallet_working, input: _.cloneDeep(this.default_input) }) })
                 .catch((error) => {
@@ -133,8 +133,8 @@ class AccountHomeScreen extends React.Component {
                                                     ))}
                                                 </div>
                                             </div>
-                                            <div className="modal-footer">
-                                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
+                                            <div className="modal-footer justify-content-between">
+                                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" >Cancel</button>
                                             </div>
                                         </div>
                                     </div>

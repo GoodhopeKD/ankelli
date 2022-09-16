@@ -90,10 +90,13 @@ class BCReceiveFundsScreen extends React.Component {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {[{ address: 'fhjmzhaezihafosqmn,sfjisbl', tx_count: 4, created_datetime: '2022-09-15 04:48:27', last_active_datetime: '2022-09-15 05:10:27' }].map((asset_account_address, index) => {
+                                    {[
+                                        { address: 'ab378dfeca6793dcab572d57ae2b79adc79e682', tx_count: 4, created_datetime: '2022-09-15 04:48:27', last_active_datetime: '2022-09-15 05:10:27' },
+                                        { address: '46fc578ca892cdb898feac562beaf6783cab67e', tx_count: 2, created_datetime: '2022-09-15 07:29:27', last_active_datetime: '2022-09-16 08:30:27' },
+                                    ].map((asset_account_address, index) => {
                                         return <tr key={index} >
-                                            <td className="align-middle" style={{ maxWidth: 250 }}>
-                                                <div className="input-group">
+                                            <td className="align-middle" style={{ maxWidth: 300 }}>
+                                                <div className="input-group input-group-sm">
                                                     <input type="text" className="form-control" value={asset_account_address.address} onChange={() => { }} />
                                                     <span className="input-group-text p-0">
                                                         <button className="btn btn-light" style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, border: 'none' }} onClick={() => { navigator.clipboard.writeText(asset_account_address.address); _Notification.flash({ message: 'Address copied to clipboard', duration: 2000 }); }} >📋</button>
@@ -101,8 +104,8 @@ class BCReceiveFundsScreen extends React.Component {
                                                 </div>
                                             </td>
                                             <td className="align-middle">{asset_account_address.tx_count}</td>
-                                            <td className="align-middle">{(new _DateTime(asset_account_address.created_datetime).prettyDatetime())}</td>
-                                            <td className="align-middle">{asset_account_address.last_active_datetime !== undefined ? (new _DateTime(asset_account_address.last_active_datetime).prettyDatetime()) : '-'}</td>
+                                            <td className="align-middle">{window.ucfirst(new _DateTime(asset_account_address.created_datetime).prettyDatetime())}</td>
+                                            <td className="align-middle">{asset_account_address.last_active_datetime !== undefined ? window.ucfirst(new _DateTime(asset_account_address.last_active_datetime).prettyDatetime()) : '-'}</td>
                                         </tr>
                                     })}
                                 </tbody>

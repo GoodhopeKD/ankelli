@@ -52,7 +52,7 @@ class TradesSingleViewScreen extends React.Component {
 
         if (errors.length === 0) {
             //delete input.pymt_details
-            this.setState({ errors }) // Remove input error indicators under text inputs
+            this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
             this.focused_trade.sendMessage(_Input.flatten(input)).then(() => { this.state.input.message_attachment = undefined; this.state.input.message_body = new _Input(); _Notification.flash({ message: 'Message sent', duration: 2000 }); this.componentDidMount(); this.setState({ btn_send_message_working, errors }) })
                 .catch((error) => {
                     errors.push(error.message)
@@ -69,7 +69,7 @@ class TradesSingleViewScreen extends React.Component {
         const input = this.state.input
         if (!input.source_user_password.isValid('password')) { errors.push("Invalid password") }
         if (errors.length === 0) {
-            this.setState({ errors }) // Remove input error indicators under text inputs            
+            this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
             const _input = _Input.flatten(input)
             const password_confirmation_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#password_confirmation_modal'));
             this.focused_trade.confirmPymt(_input.source_user_password)
@@ -195,14 +195,14 @@ class TradesSingleViewScreen extends React.Component {
                                                     <div className="form-floating mb-3">
                                                         <input
                                                             type="password"
-                                                            className={"form-control rounded-3 " + (this.state.input.source_user_password.hasError() ? 'is-invalid' : '')}
+                                                            className={"form-control" + (this.state.input.source_user_password.failedValidation() ? ' is-invalid' : '')}
                                                             id="input_source_user_password"
                                                             value={this.state.input.source_user_password + ''}
                                                             onChange={e => this.handleInputChange('source_user_password', e.target.value)}
                                                             required={this.state.source_user_password_prompt_open}
                                                             placeholder="Pasword"
                                                         />
-                                                        <button className="btn" type="button" style={{ position: 'absolute', top: 10, right: 10 }} onClick={() => document.getElementById('input_source_user_password').setAttribute('type', document.getElementById('input_source_user_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
+                                                        <button className="btn btn-sm" type="button" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_source_user_password').setAttribute('type', document.getElementById('input_source_user_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
                                                         <label htmlFor="input_source_user_password">Password</label>
                                                     </div>
 
@@ -212,9 +212,9 @@ class TradesSingleViewScreen extends React.Component {
                                                         ))}
                                                     </div>
                                                 </div>
-                                                <div className="modal-footer">
-                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
-                                                    <button className="btn btn-primary" disabled={this.state.btn_confirm_pymt_working} type="button" onClick={this.handleSubmit2} >
+                                                <div className="modal-footer justify-content-between">
+                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" >Cancel</button>
+                                                    <button className="btn btn-primary" disabled={this.state.btn_confirm_pymt_working} onClick={this.handleSubmit2} >
                                                         {this.state.btn_confirm_pymt_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Confirm payment</>}
                                                     </button>
                                                 </div>

@@ -11,9 +11,10 @@ class DepositTokensCreateNewScreen extends React.Component {
 
     default_input = {
         asset_code: 'USDT',
-        asset_value: new _Input(100),
+        asset_value: new _Input(),
         currency_code: 'USD',
-        currency_amount: new _Input(101),
+        currency_amount: new _Input(),
+        source_user_password: new _Input()
     }
 
     state = {
@@ -36,17 +37,33 @@ class DepositTokensCreateNewScreen extends React.Component {
     }
 
     handleSubmit = async () => {
+        const errors = []
+        const input = this.state.input
+
+        const asset = this.props.datalists.active_assets[this.state.input.asset_code]
+
+        if (!(input.asset_value > 0)) { errors.push('Asset value invalid') }
+        if (!input.asset_value.isValid('number', 0, (this.state.ankelli_reserves_user_asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value)) { errors.push("Asset value not within bounds") }
+
+        if (errors.length === 0) {
+            this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
+            bootstrap.Modal.getOrCreateInstance(document.querySelector('#password_confirmation_modal')).show();
+        } else {
+            this.setState({ errors, input })
+        }
+    }
+
+    handleSubmit2 = async () => {
         this.setState({ btn_create_deposit_token_working: true })
 
         const btn_create_deposit_token_working = false
         const errors = []
         const input = this.state.input
 
-        if (!(input.asset_value > 0)) { errors.push('Asset value invalid') }
-        if (!input.asset_value.isValid('number', 0, (this.state.ankelli_reserves_user_asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value)) { errors.push("Asset value not within bounds") }
+        if (!input.source_user_password.isValid('password')) { errors.push("Invalid password") }
 
         if (errors.length === 0) {
-            this.setState({ errors }) // Remove input error indicators under text inputs
+            this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
             _DepositToken.create(_Input.flatten(input)).then(() => { _Notification.flash({ message: 'Deposit token created', duration: 2000 }); this.props.navigate(-1) })
                 .catch((error) => {
                     errors.push(error.message)
@@ -161,9 +178,51 @@ class DepositTokensCreateNewScreen extends React.Component {
                                     </div>
 
                                     <button className="btn btn-info w-100" disabled={this.state.btn_create_deposit_token_working} type="submit" >
-                                        {this.state.btn_create_deposit_token_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Topup</>}
+                                        {this.state.btn_create_deposit_token_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Create token</>}
                                     </button>
                                 </form>
+
+                                <div className="modal fade" id="password_confirmation_modal" tabIndex="-1" >
+                                    <div className="modal-dialog modal-dialog-centered">
+                                        <div className="modal-content">
+                                            <div className="modal-header">
+                                                <h5 className="modal-title" >Password confirmation</h5>
+                                                <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <form onSubmit={e => { e.preventDefault(); this.handleSubmit2() }}>
+                                                <div className="modal-body">
+                                                    <p>{window.assetValueString(this.state.input.asset_value, asset)} is about to be released from the reserves account. Enter password to continue.</p>
+                                                    <div className="form-floating mb-3">
+                                                        <input
+                                                            type="password"
+                                                            className={"form-control rounded-3" + (this.state.input.source_user_password.failedValidation() ? ' is-invalid' : '')}
+                                                            id="input_source_user_password"
+                                                            value={this.state.input.source_user_password + ''}
+                                                            onChange={e => this.handleInputChange('source_user_password', e.target.value)}
+                                                            required={this.state.source_user_password_prompt_open}
+                                                            placeholder="Pasword"
+                                                        />
+                                                        <button className="btn btn-sm" type="button" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_source_user_password').setAttribute('type', document.getElementById('input_source_user_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
+                                                        <label htmlFor="input_source_user_password">Password</label>
+                                                    </div>
+
+                                                    <div className="mb-1">
+                                                        {this.state.errors.map((error, key) => (
+                                                            <div key={key}>• <span style={{ color: 'red' }}>{error}</span></div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                                <div className="modal-footer justify-content-between">
+                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" >Cancel</button>
+                                                    <button type="submit" className="btn btn-primary" disabled={this.state.btn_create_deposit_token_working} >
+                                                        {this.state.btn_create_deposit_token_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Create token</>}
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>

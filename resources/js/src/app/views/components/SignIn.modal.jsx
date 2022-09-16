@@ -53,13 +53,14 @@ export default withRouter(class SignInModal extends React.Component {
         if (!input.password.isValid('password')) { errors.push("Invalid password") }
 
         if (errors.length === 0) {
-
-            this.setState({ errors }) // Remove input error indicators under text inputs            
+            this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
             const signin_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#signin_modal'));
             _User.signIn(_Input.flatten(input)).then(() => { signin_modal.hide(); _Notification.flash({ message: 'Sign in successful!', duration: 750 }) })
                 .catch((error) => {
                     errors.push(error.message)
-                    this.setState({ btn_signin_working, errors })
+                    input.username.clearValidation()
+                    input.password.clearValidation()
+                    this.setState({ btn_signin_working, errors, input })
                 })
         } else {
             this.setState({ btn_signin_working, errors, input })
@@ -77,8 +78,10 @@ export default withRouter(class SignInModal extends React.Component {
                         <div className="form-floating mb-3">
                             <input
                                 type='text'
-                                className={"form-control rounded-3 " + (this.state.input.username.hasError() ? 'is-invalid' : '')}
+                                className={"form-control" + (this.state.input.username.failedValidation() ? ' is-invalid' : '') + (this.state.input.username.passedValidation() ? ' is-valid' : '')}
                                 id="input_username"
+                                minLength={_Input.validation_param_lengths.username.min_length}
+                                maxLength={_Input.validation_param_lengths.username.max_length}
                                 value={this.state.input.username + ''}
                                 onChange={e => this.handleInputChange('username', e.target.value)}
                                 required
@@ -89,15 +92,17 @@ export default withRouter(class SignInModal extends React.Component {
                         <div className="form-floating mb-3">
                             <input
                                 type="password"
-                                className={"form-control rounded-3 " + (this.state.input.password.hasError() ? 'is-invalid' : '')}
+                                className={"form-control" + (this.state.input.password.failedValidation() ? ' is-invalid' : '') + (this.state.input.password.passedValidation() ? ' is-valid' : '')}
                                 id="input_password"
+                                minLength={_Input.validation_param_lengths.password.min_length}
+                                maxLength={_Input.validation_param_lengths.password.max_length}
                                 value={this.state.input.password + ''}
                                 onChange={e => this.handleInputChange('password', e.target.value)}
                                 required
                                 placeholder="Password"
-                                style={{ paddingRight: 70 }}
+                                style={{ paddingRight: 40 }}
                             />
-                            <button className="btn" type="button" style={{ position: 'absolute', top: 10, right: 10 }} onClick={() => document.getElementById('input_password').setAttribute('type', document.getElementById('input_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
+                            <button className="btn btn-sm" type="button" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_password').setAttribute('type', document.getElementById('input_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
                             <label htmlFor="input_password">Password</label>
                         </div>
                         <div className="text-center mb-3">
