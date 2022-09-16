@@ -66,6 +66,7 @@ Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_
     Route::get('availability_check/{check_param_name}/{check_param_value}', '__AuxController@availability_check')->name('availability_check');
     Route::get('usability_check/{check_param_name}/{check_param_value}', '__AuxController@usability_check')->name('usability_check');
     Route::get('sysconfig_params', '__AuxController@sysconfig_params')->name('sysconfig_params');
+    Route::get('sysconfig_params_enum_options', '__AuxController@sysconfig_params_enum_options')->name('sysconfig_params_enum_options');
     Route::get('datalists', '__AuxController@datalists')->name('datalists');
 
     Route::apiResource('datalists/assets', '_AssetController')->only(['index'])->parameter('assets', 'id');

@@ -154,76 +154,64 @@ class __AuxController extends Controller
     public function sysconfig_params_enum_options()
     {
         return response()->json([
-            [
-                'slug' => 'scaffolding_apps',
-                'name' => 'Frontend scaffolding apps',
-                'options' => [
-                    [
-                        'slug' => 'react',
-                        'name' => 'React',
-                    ],
-                    [
-                        'slug' => 'none',
-                        'name' => 'None',
-                    ],
-                ],
-            ],
-            [
-                'slug' => 'langs',
-                'name' => 'Display Languages',
-                'options' => [
-                    [
-                        'slug' => 'en',
-                        'name' => 'English',
-                    ],
-                    [
-                        'slug' => 'fr',
-                        'name' => 'French',
+            'data' => [
+                [
+                    'slug' => 'langs',
+                    'name' => 'Display Languages',
+                    'options' => [
+                        [
+                            'slug' => 'en',
+                            'name' => 'English',
+                        ],
+                        [
+                            'slug' => 'fr',
+                            'name' => 'French',
+                        ],
                     ],
                 ],
-            ],
-            [
-                'slug' => 'themes',
-                'name' => 'Display Themes',
-                'options' => [
-                    [
-                        'slug' => 'light',
-                        'name' => 'Light',
-                    ],
-                    [
-                        'slug' => 'dark',
-                        'name' => 'Dark',
-                    ],
-                ],
-            ],
-            [
-                'slug' => 'file_storage_drivers',
-                'name' => 'File Storage drivers',
-                'options' => [
-                    [
-                        'slug' => 'lavarel_file_storage',
-                        'name' => 'Laravel file storage',
-                    ],
-                    [
-                        'slug' => 'firebase_cloud_storage',
-                        'name' => 'Firebase cloud storage',
+                [
+                    'slug' => 'themes',
+                    'name' => 'Display Themes',
+                    'options' => [
+                        [
+                            'slug' => 'light',
+                            'name' => 'Light',
+                        ],
+                        [
+                            'slug' => 'dark',
+                            'name' => 'Dark',
+                        ],
                     ],
                 ],
-            ],
-            [
-                'slug' => 'db_drivers',
-                'name' => 'Database drivers',
-                'options' => [
-                    [
-                        'slug' => 'lavarel_mysql_db',
-                        'name' => 'Laravel MYSQL Database',
-                    ],
-                    [
-                        'slug' => 'firebase_cloud_firestore',
-                        'name' => 'Firebase cloud firestore',
+                [
+                    'slug' => 'file_storage_drivers',
+                    'name' => 'File Storage drivers',
+                    'options' => [
+                        [
+                            'slug' => 'lavarel_file_storage',
+                            'name' => 'Laravel file storage',
+                        ],
+                        [
+                            'slug' => 'firebase_cloud_storage',
+                            'name' => 'Firebase cloud storage',
+                        ],
                     ],
                 ],
-            ],
+                [
+                    'slug' => 'db_drivers',
+                    'name' => 'Database drivers',
+                    'options' => [
+                        [
+                            'slug' => 'lavarel_mysql_db',
+                            'name' => 'Laravel MYSQL Database',
+                        ],
+                        [
+                            'slug' => 'firebase_cloud_firestore',
+                            'name' => 'Firebase cloud firestore',
+                        ],
+                    ],
+                ],
+            ]
         ]);
     }
 

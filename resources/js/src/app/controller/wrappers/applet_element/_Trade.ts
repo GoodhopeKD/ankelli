@@ -192,11 +192,11 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
         return this.update({ _status: 'active' }, 'Set _Offer _status to active')
     }
 
-    public async creatorHide() {
+    public async creatorArchive() {
         return this.update({ visible_to_creator: false }, 'Set _Offer visible_to_creator to false')
     }
 
-    public async offerCreatorHide() {
+    public async offerCreatorArchive() {
         return this.update({ visible_to_offer_creator: false }, 'Set _Offer visible_to_offer_creator to false')
     }
 
@@ -212,17 +212,17 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
         }
     }
 
-    public async sendMessage(args: { message_body: string, message_attachement: any }) {
-        return this.addAddonProp('messages', { body: args.message_body, has_attachement: args.message_attachement !== undefined } as any)
+    public async sendMessage(args: { message_body: string, message_attachment: any }) {
+        return this.addAddonProp('messages', { body: args.message_body, has_attachment: args.message_attachment !== undefined } as any)
             .then(async resp => {
-                if (args.message_attachement) {
-                    args.message_attachement.filegroup = 'images'
-                    args.message_attachement.parent_table = '__messages'
-                    args.message_attachement.parent_uid = resp.id
-                    args.message_attachement.title = 'Message "' + resp.id + '" attachement'
-                    args.message_attachement.tag = 'message_attachement'
-                    const attachement = await _File.create(args.message_attachement)
-                    return Promise.resolve({ ...resp, attachement });
+                if (args.message_attachment) {
+                    args.message_attachment.filegroup = 'images'
+                    args.message_attachment.parent_table = '__messages'
+                    args.message_attachment.parent_uid = resp.id
+                    args.message_attachment.title = 'Message "' + resp.id + '" attachment'
+                    args.message_attachment.tag = 'message_attachment'
+                    const attachment = await _File.create(args.message_attachment)
+                    return Promise.resolve({ ...resp, attachment });
                 }
                 return Promise.resolve(resp);
             })

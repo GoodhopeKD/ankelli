@@ -88,7 +88,7 @@ return new class extends Migration
                 'parent_uid' => 'system',
                 'creator_username' => 'system',
             ],
-            [
+            /*[
                 'key_name' => 'Logs database driver',
                 'key_slug' => 'logs_db_driver',
                 'value' => 'lavarel_mysql_db',
@@ -141,6 +141,15 @@ return new class extends Migration
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
                 'creator_username' => 'system',
+            ],*/
+            [
+                'key_name' => 'Open Registration enabled',
+                'key_slug' => 'open_reg_enabled',
+                'value' => false,
+                'value_type' => 'boolean',
+                'parent_table' => '__users',
+                'parent_uid' => 'system',
+                'creator_username' => 'system',
             ],
             [
                 'key_name' => 'Token registration enabled',
@@ -156,15 +165,6 @@ return new class extends Migration
                 'key_slug' => 'reg_token_max_use_count',
                 'value' => 10,
                 'value_type' => 'integer',
-                'parent_table' => '__users',
-                'parent_uid' => 'system',
-                'creator_username' => 'system',
-            ],
-            [
-                'key_name' => 'Open Registration enabled',
-                'key_slug' => 'open_reg_enabled',
-                'value' => false,
-                'value_type' => 'boolean',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
                 'creator_username' => 'system',
@@ -199,7 +199,7 @@ return new class extends Migration
             [
                 'key_name' => 'Use development crypto asset engine',
                 'key_slug' => 'use_dev_crypto_asset_engine',
-                'value' => true,
+                'value' => false,
                 'value_type' => 'boolean',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
@@ -215,18 +215,9 @@ return new class extends Migration
                 'creator_username' => 'system',
             ],
             [
-                'key_name' => 'Value charged by platform on transactions',
+                'key_name' => 'Factor of value charged by platform on transactions',
                 'key_slug' => 'platform_charge_asset_factor',
                 'value' => 0.01,
-                'value_type' => 'float',
-                'parent_table' => '__users',
-                'parent_uid' => 'system',
-                'creator_username' => 'system',
-            ],
-            [
-                'key_name' => 'Minimum allowed price per unit currency on offers',
-                'key_slug' => 'min_offer_purchase_price',
-                'value' => 0.5,
                 'value_type' => 'float',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',

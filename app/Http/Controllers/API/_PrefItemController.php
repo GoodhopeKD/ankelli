@@ -28,7 +28,7 @@ class _PrefItemController extends Controller
 
             $eloquent_query = _PrefItem::where($simple_query_args);
 
-            $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->get(); 
+            $result = $eloquent_query->orderByDesc('created_datetime')->get(); 
         }
 
         return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _PrefItemResource::collection( $result ) : new _PrefItemResourceCollection( $result ) ) : null;

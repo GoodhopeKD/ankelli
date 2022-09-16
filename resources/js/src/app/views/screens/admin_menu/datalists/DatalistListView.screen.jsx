@@ -205,8 +205,8 @@ export default class DatalistListViewScreen extends React.Component {
                                                 {this.props.title == 'Payment Methods List' && <>
                                                     <td className="align-middle">{datalist_item.name}</td>
                                                     <td className="align-middle">{datalist_item.slug}</td>
-                                                    <td className="align-middle">{JSON.stringify(datalist_item.choice_currency_codes)}</td>
-                                                    <td className="align-middle">{JSON.stringify(datalist_item.details_required)}</td>
+                                                    <td className="align-middle">{JSON.stringify(datalist_item.choice_currency_codes, null, 2)}</td>
+                                                    <td className="align-middle">{JSON.stringify(datalist_item.details_required, null, 2)}</td>
                                                     <td className="align-middle"><button className="btn btn-sm" style={{ backgroundColor: '#' + datalist_item.hex_color }}>{datalist_item.hex_color}</button></td>
                                                     <td className="align-middle"><img src={datalist_item.icon.uri} alt={datalist_item.name + " icon"} width="40" height="40" className="rounded-1 me-2" /></td>
                                                     <td className="align-middle">{datalist_item._status}</td>
@@ -214,9 +214,9 @@ export default class DatalistListViewScreen extends React.Component {
                                                 {this.props.title == 'Countries List' && <>
                                                     <td className="align-middle">{datalist_item.name}</td>
                                                     <td className="align-middle">{datalist_item.code}</td>
-                                                    <td className="align-middle">{JSON.stringify(datalist_item.choice_pymt_method_slugs)}</td>
-                                                    <td className="align-middle">{JSON.stringify(datalist_item.choice_currency_codes)}</td>
-                                                    <td className="align-middle">{JSON.stringify(datalist_item.allowed_asset_codes)}</td>
+                                                    <td className="align-middle">{JSON.stringify(datalist_item.choice_pymt_method_slugs, null, 2)}</td>
+                                                    <td className="align-middle">{JSON.stringify(datalist_item.choice_currency_codes, null, 2)}</td>
+                                                    <td className="align-middle">{JSON.stringify(datalist_item.allowed_asset_codes, null, 2)}</td>
                                                     <td className="align-middle">{datalist_item._status}</td>
                                                 </>}
                                             </tr>

@@ -2,12 +2,22 @@
 import _DateTime from 'app/controller/wrappers/auxilliary/_DateTime'
 /* Parent Class import */
 import _Wrapper_ from 'app/controller/wrappers/_Wrapper_'
+/* Actions, Configs imports */
+import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend_api.actions'
+import { mainLaravelDBRestAPICallWrapper } from 'app/controller/actions/rest_api.actions'
+
 
 /*
     Type Definitions
 */
 type casts_t = 'created_datetime' | 'updated_datetime'
 type parent_table_t = '__users' | '__stores' | '__email_addresses'
+type get_collection_params = {
+    get_with_meta?: boolean,
+    parent_table?: string,
+    parent_uid?: string | number,
+}
+
 
 /* 
     RespObj Export
@@ -55,5 +65,37 @@ export default class _PrefItem extends _Wrapper_ implements Omit<typeof _PrefIte
 
     public static async create(args: typeof _PrefItemRespObj) {
         return this._mainLaravelDBAPICreate('pref_items', args)
+    }
+
+    /* Readers */
+
+    public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
+        return this._mainLaravelDBAPIGetCollection('pref_items', params, page_select, per_page)
+    }
+
+    public static async getSysConfigParams() {
+        return mainLaravelDBRestAPICallWrapper
+            .dispatch({
+                type: 'APP_BACKEND_API_CALL',
+                method: 'GET',
+                endpoint: 'sysconfig_params',
+            })
+            .then((collection: any) => {
+                return Promise.resolve(collection);
+            })
+            .catch((e: any) => { return Promise.reject(e); })
+    }
+
+    public static async getSysConfigParamsEnumOptions() {
+        return mainLaravelDBRestAPICallWrapper
+            .dispatch({
+                type: 'APP_BACKEND_API_CALL',
+                method: 'GET',
+                endpoint: 'sysconfig_params_enum_options',
+            })
+            .then((collection: any) => {
+                return Promise.resolve(collection);
+            })
+            .catch((e: any) => { return Promise.reject(e); })
     }
 }

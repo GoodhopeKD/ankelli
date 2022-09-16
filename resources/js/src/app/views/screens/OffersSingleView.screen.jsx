@@ -237,7 +237,7 @@ class OffersSingleViewScreen extends React.Component {
                                             <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
                                         </div>
                                         <div className="modal-body">
-                                            <p>{window.assetValueString(this.state.asset_value, asset)} is about to be locked in your account for this trade until it is complete. Enter password to confirm.</p>
+                                            <p>{window.assetValueString(this.state.asset_value, asset)} is about to be locked in your account for new trade until it is complete. Enter password to continue.</p>
                                             <div className="form-floating mb-3">
                                                 <input
                                                     type="password"

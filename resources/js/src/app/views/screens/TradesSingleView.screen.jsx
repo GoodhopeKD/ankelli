@@ -9,7 +9,7 @@ class TradesSingleViewScreen extends React.Component {
     default_input = {
         source_user_password: new _Input('Def-Pass#123'),
         message_body: new _Input(),
-        message_attachement: undefined,
+        message_attachment: undefined,
     }
 
     state = {
@@ -40,20 +40,20 @@ class TradesSingleViewScreen extends React.Component {
         const errors = []
         const input = this.state.input
 
-        if (input.message_attachement) {
-            input.message_attachement.uri = URL.createObjectURL(input.message_attachement)
-            input.message_attachement.original_filename = input.message_attachement.name
+        if (input.message_attachment) {
+            input.message_attachment.uri = URL.createObjectURL(input.message_attachment)
+            input.message_attachment.original_filename = input.message_attachment.name
             if ((input.message_body + '').length)
                 if (!(input.message_body.isSafeText(1))) { errors.push('Message body invalid') }
         } else {
-            //delete input.message_attachement
+            //delete input.message_attachment
             if (!(input.message_body.isSafeText(1))) { errors.push('Message body invalid') }
         }
 
         if (errors.length === 0) {
             //delete input.pymt_details
             this.setState({ errors }) // Remove input error indicators under text inputs
-            this.focused_trade.sendMessage(_Input.flatten(input)).then(() => { this.state.input.message_attachement = undefined; this.state.input.message_body = new _Input(); _Notification.flash({ message: 'Message sent', duration: 2000 }); this.componentDidMount(); this.setState({ btn_send_message_working, errors }) })
+            this.focused_trade.sendMessage(_Input.flatten(input)).then(() => { this.state.input.message_attachment = undefined; this.state.input.message_body = new _Input(); _Notification.flash({ message: 'Message sent', duration: 2000 }); this.componentDidMount(); this.setState({ btn_send_message_working, errors }) })
                 .catch((error) => {
                     errors.push(error.message)
                     this.setState({ btn_send_message_working, errors })
@@ -128,12 +128,12 @@ class TradesSingleViewScreen extends React.Component {
                                         <div className={"progress-bar bg-" + btn_class + " w-" + this.focused_trade.progress} role="progressbar" aria-valuenow={this.focused_trade.progress} aria-valuemin="0" aria-valuemax="100">{this.focused_trade.progress}%</div>
                                     </div>
                                     <p>Status: {window.ucfirst(this.focused_trade._status)}</p>
+                                    <p>{auth_user_is_buyer ? <>Seller</> : <>Buyer</>}: @{trade_peer_username}</p>
                                     <p>{this.focused_trade.was_offer_to == 'buy' && <>Purchase</>} {this.focused_trade.was_offer_to == 'sell' && <>Sale</>} amount: {window.currencyAmountString(this.focused_trade.currency_amount, currency)} ({currency.code})</p>
                                     <p>
                                         <>Asset value on sale: {window.assetValueString(this.focused_trade.currency_amount / this.focused_trade.offer_price, asset)} </>
                                     (@ {window.currencyAmountString(this.focused_trade.offer_price, currency)})
                                     </p>
-                                    <p>{auth_user_is_buyer ? <>Seller</> : <>Buyer</>}: @{trade_peer_username}</p>
                                     {this.focused_trade._status !== 'completed' && <>
                                         <p>{pymt_method.name} <img src={pymt_method.icon.uri} alt={pymt_method.name + " icon"} width="24" height="24" className="mx-2" /> payment details:</p>
                                         {Object.keys(this.state.input.pymt_details).map((detail_key, index) => {
@@ -231,15 +231,15 @@ class TradesSingleViewScreen extends React.Component {
 
                                     {this.focused_trade.visible_to_creator && this.focused_trade.creator_username == this.props.auth_user.username && this.focused_trade._status == 'completed' && <>
                                         <button className="w-100 mb-3 btn rounded-3 btn-warning" disabled={this.state.btn_set_creator_visibility_working}
-                                            onClick={() => { this.setState({ btn_set_creator_visibility_working: true }, () => this.focused_trade.creatorHide().catch(e => console.log(e)).finally(() => this.setState({ btn_set_creator_visibility_working: false }, () => { _Notification.flash({ message: 'Trade hidden', duration: 2000 }); this.props.navigate(-1) }))) }} >
-                                            {this.state.btn_set_creator_visibility_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Hide from trades list</>}
+                                            onClick={() => { this.setState({ btn_set_creator_visibility_working: true }, () => this.focused_trade.creatorArchive().catch(e => console.log(e)).finally(() => this.setState({ btn_set_creator_visibility_working: false }, () => { _Notification.flash({ message: 'Trade archived', duration: 2000 }); this.props.navigate(-1) }))) }} >
+                                            {this.state.btn_set_creator_visibility_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Archive trade</>}
                                         </button>
                                     </>}
 
                                     {this.focused_trade.visible_to_offer_creator && this.focused_trade.offer_creator_username == this.props.auth_user.username && this.focused_trade._status == 'completed' && <>
                                         <button className="w-100 mb-3 btn rounded-3 btn-warning" disabled={this.state.btn_set_offer_creator_visibility_working}
-                                            onClick={() => { this.setState({ btn_set_offer_creator_visibility_working: true }, () => this.focused_trade.offerCreatorHide().catch(e => console.log(e)).finally(() => this.setState({ btn_set_offer_creator_visibility_working: false }, () => { _Notification.flash({ message: 'Trade hidden', duration: 2000 }); this.props.navigate(-1) }))) }} >
-                                            {this.state.btn_set_offer_creator_visibility_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Hide from trades list</>}
+                                            onClick={() => { this.setState({ btn_set_offer_creator_visibility_working: true }, () => this.focused_trade.offerCreatorArchive().catch(e => console.log(e)).finally(() => this.setState({ btn_set_offer_creator_visibility_working: false }, () => { _Notification.flash({ message: 'Trade archived', duration: 2000 }); this.props.navigate(-1) }))) }} >
+                                            {this.state.btn_set_offer_creator_visibility_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Archive trade</>}
                                         </button>
                                     </>}
 
@@ -273,7 +273,7 @@ class TradesSingleViewScreen extends React.Component {
                                                 <img src={require("app/assets/img/user_avatar/" + (window.padNumber(message.creator_avatar_image_id ?? '0')) + ".png").default} alt="User avater image" width="32" height="32" className="bd-placeholder-img flex-shrink-0 mx-2 my-1 rounded" />
                                                 <p className="pb-2 mb-0 lh-sm ">
                                                     <i className="d-flex text-muted small">@{message.creator_username} - {window.ucfirst((new _DateTime(message.created_datetime)).prettyDatetime())}</i>
-                                                    {message.attachement !== undefined && <><img src={message.attachement.uri} alt={message.attachement.title} height="300" className="bd-placeholder-img flex-shrink-0 my-1" /><br /></>}
+                                                    {message.attachment !== undefined && <><img src={message.attachment.uri} alt={message.attachment.title} height="300" className="bd-placeholder-img flex-shrink-0 my-1" /><br /></>}
                                                     <span style={{ whiteSpace: 'pre-wrap' }}>{message.body}</span>
                                                 </p>
                                             </div>
@@ -284,7 +284,7 @@ class TradesSingleViewScreen extends React.Component {
                                                     <i className="text-muted small text-end">You - {window.ucfirst((new _DateTime(message.created_datetime)).prettyDatetime())}</i>
                                                 </p>
                                                 <p className="ms-2 pb-2 mb-0 lh-sm text-end">
-                                                    {message.attachement !== undefined && <><img src={message.attachement.uri} alt={message.attachement.title} height="300" className="bd-placeholder-img flex-shrink-0 my-1" /><br /></>}
+                                                    {message.attachment !== undefined && <><img src={message.attachment.uri} alt={message.attachment.title} height="300" className="bd-placeholder-img flex-shrink-0 my-1" /><br /></>}
                                                     <span style={{ whiteSpace: 'pre-wrap' }}>{message.body}</span>
                                                 </p>
                                             </div>
@@ -302,25 +302,26 @@ class TradesSingleViewScreen extends React.Component {
                                         <div className="input-group">
 
                                             <span className="input-group-text d-block p-0">
-                                                <label className="btn btn-secondary w-100" style={{ borderBottomLeftRadius: this.state.input.message_attachement ? 0 : undefined, borderBottomRightRadius: 0, borderTopRightRadius: 0 }} type="submit" htmlFor="message_attachement_upload" >
-                                                    Attach<br />Image
-                                                <input
+                                                <label className={"btn btn-dark w-100 d-flex align-items-center " + (this.state.input.message_attachment == undefined ? "h-100" : "h-50")} style={{ borderBottomLeftRadius: this.state.input.message_attachment ? 0 : undefined, borderBottomRightRadius: 0, borderTopRightRadius: 0 }} type="submit" htmlFor="message_attachment_upload" >
+                                                    📎
+                                                    <input
                                                         type="file"
-                                                        id="message_attachement_upload"
+                                                        id="message_attachment_upload"
                                                         className="form-control d-none"
                                                         accept="image/*"
-                                                        onChange={e => this.handleInputChange('message_attachement', e.target.files[0], true)}
+                                                        onChange={e => this.handleInputChange('message_attachment', e.target.files[0], true)}
                                                     />
                                                 </label>
-                                                {this.state.input.message_attachement !== undefined && <>
-                                                    <br />
-                                                    <button className="btn btn-danger w-100" onClick={e => this.handleInputChange('message_attachement', undefined, true)} style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0, borderBottomRightRadius: 0 }} type="submit" >Remove</button>
+                                                {this.state.input.message_attachment !== undefined && <>
+                                                    <button className="btn btn-danger w-100 h-50" onClick={e => this.handleInputChange('message_attachment', undefined, true)} style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0, borderBottomRightRadius: 0 }} type="submit" >
+                                                        🗑️
+                                                    </button>
                                                 </>}
                                             </span>
 
 
-                                            {this.state.input.message_attachement !== undefined && <span className="input-group-text p-1">
-                                                <img src={URL.createObjectURL(this.state.input.message_attachement)} alt="Attachement" height="92" />
+                                            {this.state.input.message_attachment !== undefined && <span className="input-group-text p-1">
+                                                <img src={URL.createObjectURL(this.state.input.message_attachment)} alt="Attachement" height="92" />
                                             </span>}
 
                                             <textarea

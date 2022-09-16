@@ -5,6 +5,8 @@ import RegTokensListViewScreen from 'app/views/screens/admin_menu/user_managemen
 import DatalistListViewScreen from "app/views/screens/admin_menu/datalists/DatalistListView.screen"
 import SysToolsListViewScreen from "app/views/screens/admin_menu/systools/SysToolsListView.screen"
 
+import EditSysConfigParamsScreen from "app/views/screens/admin_menu/sysconfig/EditSysConfigParams.screen"
+
 import SideBar from 'app/views/components/SideBar'
 
 class ExampleElement extends React.Component {
@@ -36,7 +38,7 @@ export const admin_menu = {
             path: '/admin_dashboard',
             children: [
                 {
-                    title: 'Admin Dashboard Home',
+                    title: 'Admin Dashboard',
                     path: '/admin_dashboard/home',
                     element: (props) => <ExampleElement {...props} />,
                     show_in_menu: true,
@@ -181,9 +183,9 @@ export const admin_menu = {
             required_active_user_group_membership_slugs: ['system_administrators'],
             children: [
                 {
-                    title: 'Edit system configuration params',
+                    title: 'Edit SysConfig params',
                     path: '/sysconfig/edit',
-                    element: (props) => <ExampleElement {...props} />,
+                    element: (props) => <EditSysConfigParamsScreen {...props} />,
                     show_in_menu: true,
                 },
             ]

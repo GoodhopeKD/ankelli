@@ -8,7 +8,7 @@ import _File, { _FileRespObj } from 'app/controller/wrappers/addons/_File'
 /*
     Type Definitions
 */
-type casts_t = 'attachement' | 'created_datetime' | 'read_datetime'
+type casts_t = 'attachment' | 'created_datetime' | 'read_datetime'
 type parent_table_t = '__chats' | '__trades'
 
 /*  
@@ -19,7 +19,7 @@ export const _MessageRespObj = {
     parent_table: undefined as undefined | null | parent_table_t,
     parent_uid: undefined as undefined | null | string,
     body: undefined as undefined | null | string,
-    attachement: undefined as undefined | null | typeof _FileRespObj,
+    attachment: undefined as undefined | null | typeof _FileRespObj,
 
     creator_username: undefined as undefined | null | string,
     created_datetime: undefined as undefined | null | string,
@@ -34,7 +34,7 @@ export default class _Message extends _Wrapper_ implements Omit<typeof _MessageR
     parent_table: parent_table_t | null = null
     parent_uid: string | null = null
     body: string | null = null
-    attachement: _File | null = null
+    attachment: _File | null = null
 
     creator_username: string | null = null
     created_datetime: _DateTime | null = null
@@ -45,7 +45,7 @@ export default class _Message extends _Wrapper_ implements Omit<typeof _MessageR
 
     protected populate(args: typeof _MessageRespObj) {
         this._populate(args)
-        this.attachement = args.attachement && typeof args.attachement === typeof _FileRespObj ? new _File(args.attachement) : null
+        this.attachment = args.attachment && typeof args.attachment === typeof _FileRespObj ? new _File(args.attachment) : null
         this.created_datetime = new _DateTime(args.created_datetime)
         this.read_datetime = args.read_datetime && typeof args.read_datetime === 'string' ? new _DateTime(args.read_datetime) : null
     }
