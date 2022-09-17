@@ -26,12 +26,10 @@ export default class DatalistListViewScreen extends React.Component {
         list_full: false,
         list_refreshing: false,
         _collecion: { meta: {}, links: {} },
+        page_select: { page: 1, },
+        per_page: undefined,
 
         input: _.cloneDeep(this.default_input),
-        page_select: {
-            page: 1,
-        },
-        per_page: undefined
     };
 
     should_load_items = true
@@ -131,60 +129,51 @@ export default class DatalistListViewScreen extends React.Component {
                         <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'admin_menu')]} />
                     </div>
                     <div className="col-10">
-                        <div className='row'>
-                            <div className="col">
-                                <label htmlFor="input_per_page" className="form-label">Items</label>
-                                <select className="form-select" id="input_per_page" value={this.state.per_page} onChange={element => this.setState({ per_page: parseInt(element.target.value) }, () => { this.should_load_items = true; this.populateScreenWithItems() })} >
-                                    {[undefined, 5, 10, 25, 50, 100].map((per_page, index) => <option key={index} value={per_page} >{per_page}</option>)}
-                                </select>
-                            </div>
-
-                        </div>
-
+                        <h5>{this.props.title}</h5>
                         <hr />
 
-                        {this.state.list_loaded ? (
-                            <div>
-                                <table className="table">
-                                    <thead>
-                                        <tr>
-                                            {this.props.title == 'Assets List' && <>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Code</th>
-                                                <th scope="col">Smallest Display Unit</th>
-                                                <th scope="col">Status</th>
-                                            </>}
-                                            {this.props.title == 'Currencies List' && <>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Code</th>
-                                                <th scope="col">Symbol</th>
-                                                <th scope="col">Symbol Located</th>
-                                                <th scope="col">USD rate</th>
-                                                <th scope="col">Min transactable cash amount</th>
-                                                <th scope="col">Smallest transactable cash denomination amount</th>
-                                                <th scope="col">Status</th>
-                                            </>}
-                                            {this.props.title == 'Payment Methods List' && <>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Slug</th>
-                                                <th scope="col">Choice currencies</th>
-                                                <th scope="col">Details required</th>
-                                                <th scope="col">Hex color</th>
-                                                <th scope="col">Icon</th>
-                                                <th scope="col">Status</th>
-                                            </>}
-                                            {this.props.title == 'Countries List' && <>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Code</th>
-                                                <th scope="col">Choice payment methods</th>
-                                                <th scope="col">Choice currencies</th>
-                                                <th scope="col">Allowed assets</th>
-                                                <th scope="col">Status</th>
-                                            </>}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {this.state.list.map((datalist_item, index) => {
+                        <div>
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        {this.props.title == 'Assets List' && <>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Code</th>
+                                            <th scope="col">Smallest Display Unit</th>
+                                            <th scope="col">Status</th>
+                                        </>}
+                                        {this.props.title == 'Currencies List' && <>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Code</th>
+                                            <th scope="col">Symbol</th>
+                                            <th scope="col">Symbol Located</th>
+                                            <th scope="col">USD rate</th>
+                                            <th scope="col">Min transactable cash amount</th>
+                                            <th scope="col">Smallest transactable cash denomination amount</th>
+                                            <th scope="col">Status</th>
+                                        </>}
+                                        {this.props.title == 'Payment Methods List' && <>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Slug</th>
+                                            <th scope="col">Choice currencies</th>
+                                            <th scope="col" style={{ width: 400 }}>Details required</th>
+                                            <th scope="col">Hex color</th>
+                                            <th scope="col">Icon</th>
+                                            <th scope="col">Status</th>
+                                        </>}
+                                        {this.props.title == 'Countries List' && <>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Code</th>
+                                            <th scope="col">Choice payment methods</th>
+                                            <th scope="col">Choice currencies</th>
+                                            <th scope="col">Allowed assets</th>
+                                            <th scope="col">Status</th>
+                                        </>}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {this.state.list_loaded ? (
+                                        this.state.list.map((datalist_item, index) => {
                                             return <tr key={index} >
                                                 {this.props.title == 'Assets List' && <>
                                                     <td className="align-middle">{datalist_item.name}</td>
@@ -220,31 +209,51 @@ export default class DatalistListViewScreen extends React.Component {
                                                     <td className="align-middle">{datalist_item._status}</td>
                                                 </>}
                                             </tr>
-                                        })}
-                                    </tbody>
-                                </table>
-                                <div className="d-flex gap-2" >
+                                        })
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="20">
+                                                <div style={{ alignItems: 'center' }} className='d-grid'>
+                                                    <div className="spinner-grow text-danger" style={{ justifySelf: 'center', width: 38, height: 38 }}></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
 
-                                    <div>
-                                        <nav>
-                                            <ul className="pagination">
-                                                <li className={"page-item" + ((this.state._collecion.meta.current_page == 1 || !this.state.list_loaded) ? ' disabled' : '')}>
-                                                    <a className="page-link" href="#" aria-label="Previous" onClick={() => this.setState({ page_select: { page: 1, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} > <span aria-hidden="true">«</span> </a>
-                                                </li>
-                                                {pagination_pages.map(page => <li key={page} className={"page-item" + (this.state._collecion.meta.current_page == page ? ' active' : '') + (!this.state.list_loaded ? ' disabled' : '')} onClick={() => this.setState({ page_select: { page } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} ><a className="page-link" href="#">{page}</a> </li>)}
-                                                <li className={"page-item" + ((this.state._collecion.meta.current_page == this.state._collecion.meta.last_page || !this.state.list_loaded) ? ' disabled' : '')}>
-                                                    <a className="page-link" href="#" aria-label="Next" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.last_page, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} > <span aria-hidden="true">»</span> </a>
-                                                </li>
-                                            </ul>
-                                        </nav>
+                            <div className="d-flex gap-2" >
+
+                                <div>
+                                    <button className='btn btn-success' >Add new</button>
+                                </div>
+
+                                <div>
+                                    <div className="d-flex gap-1">
+                                        <label htmlFor="input_per_page" className="align-self-center">Items</label>
+                                        <select className="form-select" id="input_per_page" value={this.state.per_page} onChange={element => this.setState({ per_page: parseInt(element.target.value) }, () => { this.should_load_items = true; this.populateScreenWithItems() })} >
+                                            {[5, 10, 25, 50, 100].map((per_page, index) => <option key={index} value={per_page} >{per_page}</option>)}
+                                        </select>
                                     </div>
                                 </div>
+
+                                <div>
+                                    <nav>
+                                        <ul className="pagination">
+                                            <li className={"page-item" + ((this.state._collecion.meta.current_page == 1 || !this.state.list_loaded) ? ' disabled' : '')}>
+                                                <a className="page-link" href="#" aria-label="Previous" onClick={() => this.setState({ page_select: { page: 1, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} > <span aria-hidden="true">«</span> </a>
+                                            </li>
+                                            {pagination_pages.map(page => <li key={page} className={"page-item" + (this.state._collecion.meta.current_page == page ? ' active' : '') + (!this.state.list_loaded ? ' disabled' : '')} onClick={() => this.setState({ page_select: { page } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} ><a className="page-link" href="#">{page}</a> </li>)}
+                                            <li className={"page-item" + ((this.state._collecion.meta.current_page == this.state._collecion.meta.last_page || !this.state.list_loaded) ? ' disabled' : '')}>
+                                                <a className="page-link" href="#" aria-label="Next" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.last_page, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} > <span aria-hidden="true">»</span> </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+
                             </div>
-                        ) : (
-                            <div style={{ alignItems: 'center', padding: 40 }} className='d-grid'>
-                                <div className="spinner-grow text-danger" style={{ justifySelf: 'center', width: 50, height: 50 }}></div>
-                            </div>
-                        )}
+
+                        </div>
                     </div>
                 </div>
             </div>

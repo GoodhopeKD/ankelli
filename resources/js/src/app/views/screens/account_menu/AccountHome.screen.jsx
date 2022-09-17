@@ -14,7 +14,6 @@ class AccountHomeScreen extends React.Component {
     }
 
     state = {
-        btn_create_wallet_working: false,
         input: _.cloneDeep(this.default_input),
         errors: [],
     }

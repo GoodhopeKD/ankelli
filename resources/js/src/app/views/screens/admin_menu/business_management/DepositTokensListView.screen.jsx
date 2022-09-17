@@ -26,12 +26,10 @@ class DepositTokensListViewScreen extends React.Component {
         list_full: false,
         list_refreshing: false,
         _collecion: { meta: {}, links: {} },
+        page_select: { page: 1, },
+        per_page: 10,
 
         input: _.cloneDeep(this.default_input),
-        page_select: {
-            page: 1,
-        },
-        per_page: 10
     };
 
     should_load_items = true
@@ -143,13 +141,8 @@ class DepositTokensListViewScreen extends React.Component {
                         <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'admin_menu')]} />
                     </div>
                     <div className="col-10">
+
                         <div className='row'>
-                            <div className="col">
-                                <label htmlFor="input_per_page" className="form-label">Items</label>
-                                <select className="form-select" id="input_per_page" value={this.state.per_page} onChange={element => this.setState({ per_page: parseInt(element.target.value) }, () => { this.should_load_items = true; this.populateScreenWithItems() })} >
-                                    {[5, 10, 25, 50, 100].map((per_page, index) => <option key={index} value={per_page} >{per_page}</option>)}
-                                </select>
-                            </div>
 
                             <div className="col">
                                 <label htmlFor="input__status" className="form-label">Status</label>
@@ -208,22 +201,23 @@ class DepositTokensListViewScreen extends React.Component {
 
                         <hr />
 
-                        {this.state.list_loaded ? (
-                            <div>
-                                <table className="table">
-                                    <thead>
-                                        <tr>
-                                            <th scope="col">Token</th>
-                                            <th scope="col">Asset</th>
-                                            <th scope="col">Purchase Amount</th>
-                                            <th scope="col">Creator</th>
-                                            <th scope="col">Created datetime</th>
-                                            {this.state.input._status != 'unused' && <th scope="col text-center">User</th>}
-                                            {this.state.input._status != 'unused' && <th scope="col text-center">Used datetime</th>}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {this.state.list.map((deposit_token, index) => {
+
+                        <div>
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Token</th>
+                                        <th scope="col">Asset</th>
+                                        <th scope="col">Purchase Amount</th>
+                                        <th scope="col">Creator</th>
+                                        <th scope="col">Created datetime</th>
+                                        {this.state.input._status != 'unused' && <th scope="col text-center">User</th>}
+                                        {this.state.input._status != 'unused' && <th scope="col text-center">Used datetime</th>}
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {this.state.list_loaded ? (
+                                        this.state.list.map((deposit_token, index) => {
                                             const asset = this.props.datalists.active_assets[deposit_token.asset_code]
                                             const currency = this.props.datalists.active_currencies[deposit_token.currency_code]
 
@@ -243,35 +237,51 @@ class DepositTokensListViewScreen extends React.Component {
                                                 {this.state.input._status != 'unused' && <td className="align-middle">{deposit_token.user_username ?? '-'}</td>}
                                                 {this.state.input._status != 'unused' && <td className="align-middle">{deposit_token.used_datetime ? window.ucfirst(new _DateTime(deposit_token.used_datetime).prettyDatetime()) : '-'}</td>}
                                             </tr>
-                                        })}
-                                    </tbody>
-                                </table>
-                                <div className="d-flex gap-2" >
+                                        })
+                                    ) : (
+                                        <tr>
+                                            <td colSpan="20">
+                                                <div style={{ alignItems: 'center' }} className='d-grid'>
+                                                    <div className="spinner-grow text-danger" style={{ justifySelf: 'center', width: 38, height: 38 }}></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
 
-                                    <div>
-                                        <nav>
-                                            <ul className="pagination">
-                                                <li className={"page-item" + ((this.state._collecion.meta.current_page == 1 || !this.state.list_loaded) ? ' disabled' : '')}>
-                                                    <a className="page-link" href="#" aria-label="Previous" onClick={() => this.setState({ page_select: { page: 1, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} > <span aria-hidden="true">«</span> </a>
-                                                </li>
-                                                {pagination_pages.map(page => <li key={page} className={"page-item" + (this.state._collecion.meta.current_page == page ? ' active' : '') + (!this.state.list_loaded ? ' disabled' : '')} onClick={() => this.setState({ page_select: { page } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} ><a className="page-link" href="#">{page}</a> </li>)}
-                                                <li className={"page-item" + ((this.state._collecion.meta.current_page == this.state._collecion.meta.last_page || !this.state.list_loaded) ? ' disabled' : '')}>
-                                                    <a className="page-link" href="#" aria-label="Next" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.last_page, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} > <span aria-hidden="true">»</span> </a>
-                                                </li>
-                                            </ul>
-                                        </nav>
-                                    </div>
+                            <div className="d-flex gap-2" >
 
-                                    <div>
-                                        <Link to={'/business_management/deposit_tokens/new'} className='btn btn-success' >Create new</Link>
+                                <div>
+                                    <Link to={'/business_management/deposit_tokens/new'} className='btn btn-success' >Create new</Link>
+                                </div>
+
+                                <div>
+                                    <div className="d-flex gap-1">
+                                        <label htmlFor="input_per_page" className="align-self-center">Items</label>
+                                        <select className="form-select" id="input_per_page" value={this.state.per_page} onChange={element => this.setState({ per_page: parseInt(element.target.value) }, () => { this.should_load_items = true; this.populateScreenWithItems() })} >
+                                            {[5, 10, 25, 50, 100].map((per_page, index) => <option key={index} value={per_page} >{per_page}</option>)}
+                                        </select>
                                     </div>
                                 </div>
+
+                                <div>
+                                    <nav>
+                                        <ul className="pagination">
+                                            <li className={"page-item" + ((this.state._collecion.meta.current_page == 1 || !this.state.list_loaded) ? ' disabled' : '')}>
+                                                <a className="page-link" href="#" aria-label="Previous" onClick={() => this.setState({ page_select: { page: 1, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} > <span aria-hidden="true">«</span> </a>
+                                            </li>
+                                            {pagination_pages.map(page => <li key={page} className={"page-item" + (this.state._collecion.meta.current_page == page ? ' active' : '') + (!this.state.list_loaded ? ' disabled' : '')} onClick={() => this.setState({ page_select: { page } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} ><a className="page-link" href="#">{page}</a> </li>)}
+                                            <li className={"page-item" + ((this.state._collecion.meta.current_page == this.state._collecion.meta.last_page || !this.state.list_loaded) ? ' disabled' : '')}>
+                                                <a className="page-link" href="#" aria-label="Next" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.last_page, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} > <span aria-hidden="true">»</span> </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+
                             </div>
-                        ) : (
-                            <div style={{ alignItems: 'center', padding: 40 }} className='d-grid'>
-                                <div className="spinner-grow text-danger" style={{ justifySelf: 'center', width: 50, height: 50 }}></div>
-                            </div>
-                        )}
+
+                        </div>
                     </div>
                 </div>
             </div>

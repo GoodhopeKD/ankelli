@@ -17,7 +17,19 @@ class _NotificationController extends Controller
      */
     public function index()
     {
-        //
+        $result = null;
+      
+        if ( $result === null ){
+            $simple_query_args = [];
+
+            if ( request()->user_username ){ $simple_query_args = array_merge( $simple_query_args, [ 'user_username' => request()->user_username ]); }
+
+            $eloquent_query = _Notification::where($simple_query_args);
+          
+            $result = $eloquent_query->orderByDesc('created_datetime')->paginate(request()->per_page)->withQueryString();
+        }
+
+        return $result ? _NotificationResource::collection( $result ) : null;
     }
 
     /**

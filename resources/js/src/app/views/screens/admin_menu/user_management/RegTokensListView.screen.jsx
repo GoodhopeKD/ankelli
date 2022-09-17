@@ -24,9 +24,7 @@ export default class RegTokensListViewScreen extends React.Component {
         list_refreshing: false,
         _collecion: { meta: {}, links: {} },
 
-        page_select: {
-            page: 1,
-        },
+        page_select: { page: 1, },
         per_page: 10,
 
         btn_create_reg_token_working: false,
@@ -156,15 +154,9 @@ export default class RegTokensListViewScreen extends React.Component {
                         <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'admin_menu')]} />
                     </div>
                     <div className="col-10">
-                        <div className='row'>
-                            <div className="col">
-                                <label htmlFor="input_per_page" className="form-label">Items</label>
-                                <select className="form-select" id="input_per_page" value={this.state.per_page} onChange={element => this.setState({ per_page: parseInt(element.target.value) }, () => { this.should_load_items = true; this.populateScreenWithItems() })} >
-                                    {[5, 10, 25, 50, 100].map((per_page, index) => <option key={index} value={per_page} >{per_page}</option>)}
-                                </select>
-                            </div>
+                        <div className="d-flex gap-2" >
 
-                            <div className="col">
+                            <div>
                                 <label htmlFor="input__status" className="form-label">Status</label>
                                 <select className="form-select" id="input__status" value={this.state.input._status} onChange={rr => {
                                     this.handleInputChange('_status', rr.target.value, true); setTimeout(() => {
@@ -179,7 +171,7 @@ export default class RegTokensListViewScreen extends React.Component {
 
                         </div>
 
-                        <div className="d-flex justify-content-between">
+                        <div className="d-flex justify-content-between d-none">
 
                             <button
                                 onClick={() => { if (this.state.page_select.page !== 1) { this.setState({ page_select: { page: 1 } }, () => { this.should_load_items = true; this.populateScreenWithItems() }) } else { this.populateScreenWithItems() } }}
@@ -240,21 +232,8 @@ export default class RegTokensListViewScreen extends React.Component {
                                     )}
                                 </tbody>
                             </table>
-                            <div className="d-flex gap-2" >
 
-                                <div>
-                                    <nav>
-                                        <ul className="pagination">
-                                            <li className={"page-item" + ((this.state._collecion.meta.current_page == 1 || !this.state.list_loaded) ? ' disabled' : '')}>
-                                                <a className="page-link" href="#" aria-label="Previous" onClick={() => this.setState({ page_select: { page: 1, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} > <span aria-hidden="true">«</span> </a>
-                                            </li>
-                                            {pagination_pages.map(page => <li key={page} className={"page-item" + (this.state._collecion.meta.current_page == page ? ' active' : '') + (!this.state.list_loaded ? ' disabled' : '')} onClick={() => this.setState({ page_select: { page } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} ><a className="page-link" href="#">{page}</a> </li>)}
-                                            <li className={"page-item" + ((this.state._collecion.meta.current_page == this.state._collecion.meta.last_page || !this.state.list_loaded) ? ' disabled' : '')}>
-                                                <a className="page-link" href="#" aria-label="Next" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.last_page, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} > <span aria-hidden="true">»</span> </a>
-                                            </li>
-                                        </ul>
-                                    </nav>
-                                </div>
+                            <div className="d-flex gap-2" >
 
                                 <div>
                                     <button type="button" className='btn btn-success' data-bs-toggle="modal" data-bs-target="#add_new_reg_token_modal" disabled={this.state.btn_create_reg_token_working}>Create new</button>
@@ -296,7 +275,31 @@ export default class RegTokensListViewScreen extends React.Component {
                                     </div>
                                 </div>
 
+                                <div>
+                                    <div className="d-flex gap-1">
+                                        <label htmlFor="input_per_page" className="align-self-center">Items</label>
+                                        <select className="form-select" id="input_per_page" value={this.state.per_page} onChange={element => this.setState({ per_page: parseInt(element.target.value) }, () => { this.should_load_items = true; this.populateScreenWithItems() })} >
+                                            {[5, 10, 25, 50, 100].map((per_page, index) => <option key={index} value={per_page} >{per_page}</option>)}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <nav>
+                                        <ul className="pagination">
+                                            <li className={"page-item" + ((this.state._collecion.meta.current_page == 1 || !this.state.list_loaded) ? ' disabled' : '')}>
+                                                <a className="page-link" href="#" aria-label="Previous" onClick={() => this.setState({ page_select: { page: 1, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} > <span aria-hidden="true">«</span> </a>
+                                            </li>
+                                            {pagination_pages.map(page => <li key={page} className={"page-item" + (this.state._collecion.meta.current_page == page ? ' active' : '') + (!this.state.list_loaded ? ' disabled' : '')} onClick={() => this.setState({ page_select: { page } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} ><a className="page-link" href="#">{page}</a> </li>)}
+                                            <li className={"page-item" + ((this.state._collecion.meta.current_page == this.state._collecion.meta.last_page || !this.state.list_loaded) ? ' disabled' : '')}>
+                                                <a className="page-link" href="#" aria-label="Next" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.last_page, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} > <span aria-hidden="true">»</span> </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+
                             </div>
+
                         </div>
                     </div>
                 </div>

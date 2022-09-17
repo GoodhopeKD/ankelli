@@ -26,12 +26,10 @@ class TransactionsListViewScreen extends React.Component {
         list_full: false,
         list_refreshing: false,
         _collecion: { meta: {}, links: {} },
+        page_select: { page: 1, },
+        per_page: 10,
 
         input: _.cloneDeep(this.default_input),
-        page_select: {
-            page: 1,
-        },
-        per_page: 10
     };
 
 
@@ -221,7 +219,7 @@ class TransactionsListViewScreen extends React.Component {
                             <div className="d-flex gap-2" >
 
                                 <div>
-                                    <div className="d-flex gap-2">
+                                    <div className="d-flex gap-1">
                                         <label htmlFor="input_per_page" className="align-self-center">Items</label>
                                         <select className="form-select" id="input_per_page" value={this.state.per_page} onChange={element => this.setState({ per_page: parseInt(element.target.value) }, () => { this.should_load_items = true; this.populateScreenWithItems() })} >
                                             {[5, 10, 25, 50, 100].map((per_page, index) => <option key={index} value={per_page} >{per_page}</option>)}

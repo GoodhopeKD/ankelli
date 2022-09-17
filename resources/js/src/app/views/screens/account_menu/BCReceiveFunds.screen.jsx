@@ -14,7 +14,16 @@ class BCReceiveFundsScreen extends React.Component {
     }
 
     state = {
-        btn_create_wallet_working: false,
+
+        trades_list_loaded: false,
+        list: [],
+        list_loaded: false,
+        list_full: false,
+        list_refreshing: false,
+        _collecion: { meta: {}, links: {} },
+        page_select: { page: 1, },
+        per_page: 10,
+
         input: _.cloneDeep(this.default_input),
         errors: [],
     }
@@ -51,6 +60,13 @@ class BCReceiveFundsScreen extends React.Component {
 
         const asset = this.props.datalists.active_assets[this.state.input.asset_code]
 
+        const pagination_pages = [1]
+        if (this.state._collecion.meta.last_page && this.state._collecion.meta.last_page !== 1) {
+            for (let index = 2; index < this.state._collecion.meta.last_page + 1; index++) {
+                pagination_pages.push(index)
+            }
+        }
+
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container-fluid py-3">
                 <div className="row">
@@ -59,10 +75,9 @@ class BCReceiveFundsScreen extends React.Component {
                     </div>
                     <div className="col-10">
                         {this.props.auth_user.asset_accounts.length !== 0 && <>
-                            <h5 className="mb-3">Select asset acccount you'd like to get addresses for</h5>
                             <div className="row">
                                 <div className="col">
-                                    <label htmlFor="input_asset_code" className="form-label">Target asset</label>
+                                    <label htmlFor="input_asset_code" className="form-label">Target asset account</label>
                                     <CustomSelect
                                         element_id="input_asset_code"
                                         options={asset_options}
@@ -111,9 +126,40 @@ class BCReceiveFundsScreen extends React.Component {
                                 </tbody>
                             </table>
 
-                            <button type="button" className='btn btn-success'>Generate new</button>
+                            <div className="d-flex gap-2" >
+
+                                <div>
+                                    <button type="button" className='btn btn-success'>Generate new</button>
+                                </div>
+
+                                <div>
+                                    <div className="d-flex gap-1">
+                                        <label htmlFor="input_per_page" className="align-self-center">Items</label>
+                                        <select className="form-select" id="input_per_page" value={this.state.per_page} onChange={element => this.setState({ per_page: parseInt(element.target.value) }, () => { this.should_load_items = true; this.populateScreenWithItems() })} >
+                                            {[5, 10, 25, 50, 100].map((per_page, index) => <option key={index} value={per_page} >{per_page}</option>)}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <nav>
+                                        <ul className="pagination">
+                                            <li className={"page-item" + ((this.state._collecion.meta.current_page == 1 || !this.state.list_loaded) ? ' disabled' : '')}>
+                                                <a className="page-link" href="#" aria-label="Previous" onClick={() => this.setState({ page_select: { page: 1, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} > <span aria-hidden="true">«</span> </a>
+                                            </li>
+                                            {pagination_pages.map(page => <li key={page} className={"page-item" + (this.state._collecion.meta.current_page == page ? ' active' : '') + (!this.state.list_loaded ? ' disabled' : '')} onClick={() => this.setState({ page_select: { page } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} ><a className="page-link" href="#">{page}</a> </li>)}
+                                            <li className={"page-item" + ((this.state._collecion.meta.current_page == this.state._collecion.meta.last_page || !this.state.list_loaded) ? ' disabled' : '')}>
+                                                <a className="page-link" href="#" aria-label="Next" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.last_page, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} > <span aria-hidden="true">»</span> </a>
+                                            </li>
+                                        </ul>
+                                    </nav>
+                                </div>
+
+                            </div>
+
+                            <hr />
                         </>}
-                        <h5 className="my-3">Go to <Link to='/account/home'>account home</Link> screen to create asset accounts</h5>
+                        <p className="my-3">Go to <Link to='/account/home'>account home</Link> screen to create asset accounts</p>
                     </div>
                 </div>
             </div>

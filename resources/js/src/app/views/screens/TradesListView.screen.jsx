@@ -12,23 +12,18 @@ class TradesListViewScreen extends React.Component {
 
     state = {
         trades_list_loaded: false,
+        // collection/list params
         list: [],
         list_loaded: false,
         list_full: false,
         list_refreshing: false,
         _collecion: { meta: {}, links: {} },
+        page_select: { page: 1, },
+        per_page: 10,
 
         input: {
             _status: 'all',
-            country_name: undefined,
-            currency_code: undefined,
-            asset_code: undefined,
-            pymt_method_slug: undefined,
         },
-        page_select: {
-            page: 1,
-        },
-        per_page: 10
     };
 
     should_load_items = true
@@ -116,7 +111,7 @@ class TradesListViewScreen extends React.Component {
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container py-3">
 
-                <div className="d-flex gap-2 justify-content-betwee">
+                <div className="d-flex gap-2">
                     <div className="d-flex gap-2 mt-3">
                         <label htmlFor="input__status" className="align-self-center">Status</label>
                         <select className="form-select" id="input__status" value={this.state.input._status} onChange={rr => { this.handleInputChange('_status', rr.target.value, true); this.should_load_items = true; this.populateScreenWithItems() }} >
@@ -129,7 +124,6 @@ class TradesListViewScreen extends React.Component {
                 </div>
 
                 <hr />
-
 
                 <div>
                     <table className="table">
@@ -195,7 +189,7 @@ class TradesListViewScreen extends React.Component {
                     <div className="d-flex gap-2" >
 
                         <div>
-                            <div className="d-flex gap-2">
+                            <div className="d-flex gap-1">
                                 <label htmlFor="input_per_page" className="align-self-center">Items</label>
                                 <select className="form-select" id="input_per_page" value={this.state.per_page} onChange={element => this.setState({ per_page: parseInt(element.target.value) }, () => { this.should_load_items = true; this.populateScreenWithItems() })} >
                                     {[5, 10, 25, 50, 100].map((per_page, index) => <option key={index} value={per_page} >{per_page}</option>)}

@@ -5,12 +5,19 @@ import _Wrapper_ from 'app/controller/wrappers/_Wrapper_'
 /* Element Imports */
 import { store } from 'app/controller/config/central_state.config'
 import { showFlashNotification } from 'app/controller/actions/flash_notification.actions'
+/* Actions, Configs imports */
+import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend_api.actions'
 
 /*
     Type Definitions
 */
 type casts_t = 'created_datetime' | 'read_datetime'
 type dest_t = 'flash' | 'alert' | 'push'
+type get_collection_params = {
+    get_with_meta?: boolean,
+    user_username?: string,
+    status?: 'all' | 'read' | 'unread',
+}
 
 /* 
     RespObj Export
@@ -82,5 +89,9 @@ export default class _Notification extends _Wrapper_ implements Omit<typeof _Not
 
     wasRead(): boolean {
         return this.read_datetime !== null
+    }
+
+    public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
+        return this._mainLaravelDBAPIGetCollection('notifications', params, page_select, per_page)
     }
 }

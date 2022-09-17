@@ -62,12 +62,9 @@ class BCSendFundsScreen extends React.Component {
                     <div className="col-10">
                         {this.props.auth_user.asset_accounts.length !== 0 && <>
                             <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
-
-                                <h5 className="my-3">Select asset account you'd like to send funds from.</h5>
-
                                 <div className="row mb-3">
                                     <div className="col">
-                                        <label htmlFor="input_asset_code" className="form-label">Source asset</label>
+                                        <label htmlFor="input_asset_code" className="form-label">Source asset account</label>
                                         <CustomSelect
                                             element_id="input_asset_code"
                                             options={asset_options}
@@ -116,7 +113,7 @@ class BCSendFundsScreen extends React.Component {
                             <hr />
 
                         </>}
-                        <h5 className="my-3">Go to <Link to='/account/home'>account home</Link> screen to create asset accounts</h5>
+                        <p className="my-3">Go to <Link to='/account/home'>account home</Link> screen to create asset accounts</p>
                     </div>
                 </div>
             </div>

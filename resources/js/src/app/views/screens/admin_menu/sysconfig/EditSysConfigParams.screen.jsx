@@ -29,17 +29,21 @@ class EditSysConfigParamsScreen extends React.Component {
                         <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'admin_menu')]} />
                     </div>
                     <div className="col-10">
-                        {(this.state.sysconfig_params.length > 0 && this.state.sysconfig_params_enum_options.length > 0) ? (
-                            <table className="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Param name</th>
-                                        <th scope="col">Current value</th>
-                                        <th scope="col">Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {this.state.sysconfig_params.map((param, index) => {
+
+                        <h5>Edit System Configuration parameters</h5>
+                        <hr />
+
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Param name</th>
+                                    <th scope="col">Current value</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {(this.state.sysconfig_params.length > 0 && this.state.sysconfig_params_enum_options.length > 0) ? (
+                                    this.state.sysconfig_params.map((param, index) => {
                                         return <tr key={index} >
                                             <td className="align-middle">{param.key_name}</td>
                                             <td className="align-middle">
@@ -72,16 +76,18 @@ class EditSysConfigParamsScreen extends React.Component {
                                                             <div className="modal-body">
                                                                 <div className="mb-3">
                                                                     {param.value_type == "boolean" && <>
-                                                                        <label htmlFor={"input_param_" + index}>{param.key_name}</label>
-                                                                        <div className="form-check form-switch d-flex justify-content-center">
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                className="form-check-input"
-                                                                                id={"input_param_" + index}
-                                                                                //checked={param.value}
-                                                                                //onChange={() => { }}
-                                                                                defaultChecked={param.value}
-                                                                            />
+                                                                        <div className="d-flex form-control">
+                                                                            <label htmlFor={"input_param_" + index} className="col">{param.key_name}</label>
+                                                                            <div className="col form-check form-switch d-flex justify-content-end">
+                                                                                <input
+                                                                                    type="checkbox"
+                                                                                    className="form-check-input"
+                                                                                    id={"input_param_" + index}
+                                                                                    //checked={param.value}
+                                                                                    //onChange={() => { }}
+                                                                                    defaultChecked={param.value}
+                                                                                />
+                                                                            </div>
                                                                         </div>
                                                                     </>}
                                                                     {param.value_type.includes('enum:') && <>
@@ -134,14 +140,18 @@ class EditSysConfigParamsScreen extends React.Component {
                                                 </div>
                                             </td>
                                         </tr>
-                                    })}
-                                </tbody>
-                            </table>
-                        ) : (
-                            <div style={{ alignItems: 'center', padding: 40 }} className='d-grid'>
-                                <div className="spinner-grow text-danger" style={{ justifySelf: 'center', width: 50, height: 50 }}></div>
-                            </div>
-                        )}
+                                    })
+                                ) : (
+                                    <tr>
+                                        <td colSpan="20">
+                                            <div style={{ alignItems: 'center' }} className='d-grid'>
+                                                <div className="spinner-grow text-danger" style={{ justifySelf: 'center', width: 38, height: 38 }}></div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
