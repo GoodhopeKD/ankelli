@@ -263,7 +263,7 @@ class OffersListViewScreen extends React.Component {
                                         <td className="align-middle">
                                             {(this.props.path == '/offers' || this.props.path == '/') && <i>@{offer.creator_username}</i>}
                                             {this.props.path == '/my-offers' && <i>Offer to: {offer.offer_to}</i>}
-                                            <br />In {offer.location !== null && <> #{offer.location} - </>} {offer.country_name}
+                                            <br />In {window.isset(offer.location) && <> #{offer.location} - </>} {offer.country_name}
                                         </td>
                                         {offer.offer_to === 'buy' ? <>
                                             <td className="align-middle"><b>{offer.asset_code}</b> <i>for</i> <b>{offer.currency_code}</b>

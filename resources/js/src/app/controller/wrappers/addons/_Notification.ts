@@ -87,8 +87,12 @@ export default class _Notification extends _Wrapper_ implements Omit<typeof _Not
 
     /* Readers */
 
+    public static async getOne(params: { id: string }) {
+        return this._mainLaravelDBAPIGetOne('notifications/{id}', params)
+    }
+
     wasRead(): boolean {
-        return this.read_datetime !== null
+        return (window as any).isset(this.read_datetime)
     }
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {

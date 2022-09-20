@@ -273,7 +273,7 @@ class TradesSingleViewScreen extends React.Component {
                                                 <img src={require("app/assets/img/user_avatar/" + (window.padNumber(message.creator_avatar_image_id ?? '0')) + ".png").default} alt="User avater image" width="32" height="32" className="bd-placeholder-img flex-shrink-0 mx-2 my-1 rounded" />
                                                 <p className="pb-2 mb-0 lh-sm ">
                                                     <i className="d-flex text-muted small">@{message.creator_username} - {window.ucfirst((new _DateTime(message.created_datetime)).prettyDatetime())}</i>
-                                                    {message.attachment !== undefined && <><img src={message.attachment.uri} alt={message.attachment.title} height="300" className="bd-placeholder-img flex-shrink-0 my-1" /><br /></>}
+                                                    {window.isset(message.attachment) && <><img src={message.attachment.uri} alt={message.attachment.title} height="300" className="bd-placeholder-img flex-shrink-0 my-1" /><br /></>}
                                                     <span style={{ whiteSpace: 'pre-wrap' }}>{message.body}</span>
                                                 </p>
                                             </div>
@@ -284,7 +284,7 @@ class TradesSingleViewScreen extends React.Component {
                                                     <i className="text-muted small text-end">You - {window.ucfirst((new _DateTime(message.created_datetime)).prettyDatetime())}</i>
                                                 </p>
                                                 <p className="ms-2 pb-2 mb-0 lh-sm text-end">
-                                                    {message.attachment !== undefined && <><img src={message.attachment.uri} alt={message.attachment.title} height="300" className="bd-placeholder-img flex-shrink-0 my-1" /><br /></>}
+                                                    {window.isset(message.attachment) && <><img src={message.attachment.uri} alt={message.attachment.title} height="300" className="bd-placeholder-img flex-shrink-0 my-1" /><br /></>}
                                                     <span style={{ whiteSpace: 'pre-wrap' }}>{message.body}</span>
                                                 </p>
                                             </div>
@@ -302,7 +302,7 @@ class TradesSingleViewScreen extends React.Component {
                                         <div className="input-group">
 
                                             <span className="input-group-text d-block p-0">
-                                                <label className={"btn btn-dark w-100 d-flex align-items-center " + (this.state.input.message_attachment == undefined ? "h-100" : "h-50")} style={{ borderBottomLeftRadius: this.state.input.message_attachment ? 0 : undefined, borderBottomRightRadius: 0, borderTopRightRadius: 0 }} type="submit" htmlFor="message_attachment_upload" >
+                                                <label className={"btn btn-dark w-100 d-flex align-items-center " + (window.isset(this.state.input.message_attachment) ? "h-50" : "h-100")} style={{ borderBottomLeftRadius: this.state.input.message_attachment ? 0 : undefined, borderBottomRightRadius: 0, borderTopRightRadius: 0 }} type="submit" htmlFor="message_attachment_upload" >
                                                     📎
                                                     <input
                                                         type="file"
@@ -312,7 +312,7 @@ class TradesSingleViewScreen extends React.Component {
                                                         onChange={e => this.handleInputChange('message_attachment', e.target.files[0], true)}
                                                     />
                                                 </label>
-                                                {this.state.input.message_attachment !== undefined && <>
+                                                {window.isset(this.state.input.message_attachment) && <>
                                                     <button className="btn btn-danger w-100 h-50" onClick={e => this.handleInputChange('message_attachment', undefined, true)} style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0, borderBottomRightRadius: 0 }} type="submit" >
                                                         🗑️
                                                     </button>
@@ -320,7 +320,7 @@ class TradesSingleViewScreen extends React.Component {
                                             </span>
 
 
-                                            {this.state.input.message_attachment !== undefined && <span className="input-group-text p-1">
+                                            {window.isset(this.state.input.message_attachment) && <span className="input-group-text p-1">
                                                 <img src={URL.createObjectURL(this.state.input.message_attachment)} alt="Attachement" height="92" />
                                             </span>}
 

@@ -46,7 +46,7 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
 
             const active_session_data = getState().active_session_data
 
-            if (app_backend_api.config.endpoint_filtering.strictly_auth_clear_endpoints.some((x: string) => x.toLowerCase() === action.endpoint.toLowerCase()) && active_session_data.auth_token !== null) {
+            if (app_backend_api.config.endpoint_filtering.strictly_auth_clear_endpoints.some((x: string) => x.toLowerCase() === action.endpoint.toLowerCase()) && (window as any).isset(active_session_data.auth_token)) {
                 return Promise.reject({
                     failed: true,
                     message: 'Action can\'t be performed with while logged in',

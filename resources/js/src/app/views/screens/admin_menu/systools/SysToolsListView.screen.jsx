@@ -140,7 +140,7 @@ export default withRouter(class SysToolsListViewScreen extends React.Component {
                         <h5>{this.props.title}</h5>
                         <hr />
 
-                        {this.props.title == 'View User Group Members' && this.focused_user_group !== null && <>
+                        {this.props.title == 'View User Group Members' && window.isset(this.focused_user_group) && <>
                             <p><b>Group name: {this.focused_user_group.name}</b></p>
                             <p style={{ whiteSpace: 'pre-wrap' }}><b>Description:</b><br />{this.focused_user_group.description}</p>
                             <hr />

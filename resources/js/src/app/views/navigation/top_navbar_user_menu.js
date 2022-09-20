@@ -1,4 +1,5 @@
 import UserNotificationsListViewScreen from 'app/views/screens/UserNotificationsListView.screen'
+import UserNotificationsSingleViewScreen from 'app/views/screens/UserNotificationsSingleView.screen'
 
 export const top_navbar_user_menu = {
     slug: 'top_navbar_user_menu',
@@ -10,6 +11,12 @@ export const top_navbar_user_menu = {
             title: 'Notifications',
             path: '/user_notifications',
             element: (props) => <UserNotificationsListViewScreen {...props} />,
+        },
+        {
+            title: 'Notification',
+            path: '/user_notifications/:id',
+            show_in_menu: false,
+            element: (props) => <UserNotificationsSingleViewScreen {...props} />,
         },
         {
             title: 'My Account',

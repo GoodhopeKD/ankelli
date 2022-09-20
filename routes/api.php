@@ -94,7 +94,7 @@ Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_
         Route::apiResource('pinnings', '_PinningController')->only(['store', 'update', 'destroy'])->parameter('pinnings', 'id');
         Route::apiResource('pref_items', '_PrefItemController')->parameter('pref_items', 'id');
         Route::apiResource('logs', '_LogController')->only(['index'])->parameter('logs', 'id');
-        Route::apiResource('notifications', '_NotificationController')->only(['index', 'update', 'destroy'])->parameter('notifications', 'token');
+        Route::apiResource('notifications', '_NotificationController')->only(['index', 'show'])->parameter('notifications', 'id');
 
         Route::apiResource('systools/exportables', '_ExportableController')->parameter('exportables', 'id');
         Route::apiResource('systools/reg_tokens', '_RegTokenController')->parameter('reg_tokens', 'token');

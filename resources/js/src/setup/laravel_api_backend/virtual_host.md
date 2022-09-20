@@ -59,6 +59,7 @@ Uncomment the following line in the **`httpd.conf`** file if not already uncomme
 
 ```properties
 Include etc/extra/httpd-vhosts.conf
+Include conf/extra/httpd-vhosts.conf
 ```
 
 On MacOS
@@ -180,31 +181,6 @@ mkcert -cert-file C:\xampp\htdocs\ankelli\.crt\ankelli.test.pem -key-file C:\xam
 mkcert -install
 ```
 
-On MacOS
-
-```properties
-# ankelli.test
-<VirtualHost *:80 *:443>
-	ServerName ankelli.test
-	ServerAlias *.ankelli.test
-	ServerAdmin webmaster@ankelli.test
-	DocumentRoot "/Applications/XAMPP/xamppfiles/htdocs/ankelli/public"
-	<Directory "/Applications/XAMPP/xamppfiles/htdocs/ankelli/public">
-		Options Indexes FollowSymLinks MultiViews
-		AllowOverride All
-		Order allow,deny
-		allow from all
-	</Directory>
-	ErrorLog "logs/ankelli.test-error_log"
-	CustomLog "logs/ankelli.test-access_log" common
-
-	# Site SSL configuration
-	SSLEngine on
-	SSLCertificateKeyFile /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/ankelli.test-key.pem
-	SSLCertificateFile /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/ankelli.test.pem
-	SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown
-</VirtualHost>
-```
 
 On MacOS
 

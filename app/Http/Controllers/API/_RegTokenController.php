@@ -47,7 +47,7 @@ class _RegTokenController extends Controller
     public function store(Request $request)
     {
         $validated_data = $request->validate([
-            'token' => ['sometimes', 'string', 'min:5', 'max:16', 'unique:__reg_tokens'],
+            'token' => ['sometimes', 'nullable', 'string', 'min:5', 'max:16', 'unique:__reg_tokens'],
             '_status' => ['sometimes', 'string', Rule::in(['active', 'suspended', 'used_up'])],
         ]);
 

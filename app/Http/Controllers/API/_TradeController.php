@@ -174,6 +174,17 @@ class _TradeController extends Controller
 
         $element = _Trade::create($validated_data);
 
+        // Create notification
+        (new _NotificationController)->store( new Request([
+            'user_username' => $validated_data['offer_creator_username'],
+            'content' => [
+                'title' => 'Trade initiated',
+                'subtitle' => 'Someone accepted your offer ref: '.$validated_data['offer_ref_code'].' for asset value '.$validated_data['asset_value'] . ' '.$validated_data['asset_code'],
+                'body' => 'Your offer '.$validated_data['offer_ref_code'].' has been accepted. Trade '.$validated_data['ref_code'].' initiated for asset value '.$validated_data['asset_value'] . ' '.$validated_data['asset_code'],
+            ],
+        ]));
+        // End Create notification
+
         session()->put('api_auth_user_username', 'system');
         (new _MessageController)->store( new Request([
             'parent_table' => '__trades',
@@ -282,7 +293,7 @@ class _TradeController extends Controller
             
             (new _TransactionController)->store( new Request([
                 'context' => 'offchain',
-                'description' => 'Asset release for trade "' . $ref_code . '"',
+                'description' => 'Asset release for trade ' . $ref_code . '',
                 'operation_slug' => 'trade_asset_release',
                 'source_user_username' => $seller_username, 
                 'source_user_password' => $validated_data['source_user_password'],

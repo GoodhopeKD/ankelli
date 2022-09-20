@@ -72,9 +72,9 @@ function Navigator(props) {
     if (nav_menus && nav_menus.length) {
         for (let i = 0; i < nav_menus.length; i++) {
 
-            const disabled_i = nav_menus[i].disabled !== undefined ? nav_menus[i].disabled : null
-            const show_in_menu_i = nav_menus[i].show_in_menu !== undefined ? nav_menus[i].show_in_menu : false
-            const show_when_auth_state_is_i = nav_menus[i].show_when_auth_state_is !== undefined ? nav_menus[i].show_when_auth_state_is : null
+            const disabled_i = window.isset(nav_menus[i].disabled) ? nav_menus[i].disabled : null
+            const show_in_menu_i = window.isset(nav_menus[i].show_in_menu) ? nav_menus[i].show_in_menu : false
+            const show_when_auth_state_is_i = window.isset(nav_menus[i].show_when_auth_state_is) ? nav_menus[i].show_when_auth_state_is : null
             const required_active_user_group_membership_slugs_i = nav_menus[i].required_active_user_group_membership_slugs
             let required_params_passed_i = (!auth_user || auth_user.isInUserGroup('developers') || !(auth_user.isInUserGroup('default_users') && nav_menus[i].restricted_for_default_users))
             if (required_params_passed_i && required_active_user_group_membership_slugs_i) {
@@ -91,9 +91,9 @@ function Navigator(props) {
             if (nav_menus[i] && nav_menus[i].menu_items) {
                 for (let j = 0; j < nav_menus[i].menu_items.length; j++) {
 
-                    const disabled_j = nav_menus[i].menu_items[j].disabled !== undefined ? nav_menus[i].menu_items[j].disabled : disabled_i
-                    const show_in_menu_j = nav_menus[i].menu_items[j].show_in_menu !== undefined ? nav_menus[i].menu_items[j].show_in_menu : show_in_menu_i
-                    const show_when_auth_state_is_j = nav_menus[i].menu_items[j].show_when_auth_state_is !== undefined ? nav_menus[i].menu_items[j].show_when_auth_state_is : show_when_auth_state_is_i
+                    const disabled_j = window.isset(nav_menus[i].menu_items[j].disabled) ? nav_menus[i].menu_items[j].disabled : disabled_i
+                    const show_in_menu_j = window.isset(nav_menus[i].menu_items[j].show_in_menu) ? nav_menus[i].menu_items[j].show_in_menu : show_in_menu_i
+                    const show_when_auth_state_is_j = window.isset(nav_menus[i].menu_items[j].show_when_auth_state_is) ? nav_menus[i].menu_items[j].show_when_auth_state_is : show_when_auth_state_is_i
                     const required_active_user_group_membership_slugs_j = nav_menus[i].menu_items[j].required_active_user_group_membership_slugs ?? nav_menus[i].required_active_user_group_membership_slugs
                     let required_params_passed_j = (!auth_user || auth_user.isInUserGroup('developers') || !(auth_user.isInUserGroup('default_users') && nav_menus[i].menu_items[j].restricted_for_default_users))
                     if (required_params_passed_j && required_active_user_group_membership_slugs_j) {
@@ -109,7 +109,7 @@ function Navigator(props) {
                         nav_list.push({ ...nav_menus[i].menu_items[j], children: undefined })
                         if (!disabled_j && required_params_passed_j && (show_when_auth_state_is_j === null || show_when_auth_state_is_j === curr_auth_state)) {
                             nav_list_filtered.push({ ...nav_menus[i].menu_items[j], path_alias: undefined, children: undefined })
-                            if (nav_menus[i].menu_items[j].path_alias !== undefined) {
+                            if (window.isset(nav_menus[i].menu_items[j].path_alias)) {
                                 nav_list_filtered.push({ ...nav_menus[i].menu_items[j], path: nav_menus[i].menu_items[j].path_alias, path_alias: undefined, children: undefined })
                             }
                         }
@@ -119,9 +119,9 @@ function Navigator(props) {
                     if (nav_menus[i].menu_items[j] && nav_menus[i].menu_items[j].children) {
                         for (let k = 0; k < nav_menus[i].menu_items[j].children.length; k++) {
 
-                            const disabled_k = nav_menus[i].menu_items[j].children[k].disabled !== undefined ? nav_menus[i].menu_items[j].children[k].disabled : disabled_j
-                            const show_in_menu_k = nav_menus[i].menu_items[j].children[k].show_in_menu !== undefined ? nav_menus[i].menu_items[j].children[k].show_in_menu : show_in_menu_j
-                            const show_when_auth_state_is_k = nav_menus[i].menu_items[j].children[k].show_when_auth_state_is !== undefined ? nav_menus[i].menu_items[j].children[k].show_when_auth_state_is : show_when_auth_state_is_j
+                            const disabled_k = window.isset(nav_menus[i].menu_items[j].children[k].disabled) ? nav_menus[i].menu_items[j].children[k].disabled : disabled_j
+                            const show_in_menu_k = window.isset(nav_menus[i].menu_items[j].children[k].show_in_menu) ? nav_menus[i].menu_items[j].children[k].show_in_menu : show_in_menu_j
+                            const show_when_auth_state_is_k = window.isset(nav_menus[i].menu_items[j].children[k].show_when_auth_state_is) ? nav_menus[i].menu_items[j].children[k].show_when_auth_state_is : show_when_auth_state_is_j
                             const required_active_user_group_membership_slugs_k = nav_menus[i].menu_items[j].children[k].required_active_user_group_membership_slugs ?? nav_menus[i].menu_items[j].required_active_user_group_membership_slugs
                             let required_params_passed_k = (!auth_user || auth_user.isInUserGroup('developers') || !(auth_user.isInUserGroup('default_users') && nav_menus[i].menu_items[j].children[k].restricted_for_default_users))
                             if (required_params_passed_k && required_active_user_group_membership_slugs_k) {
@@ -132,7 +132,7 @@ function Navigator(props) {
                                     }
                                 });
                             }
-                            
+
                             const nav_menus_filtered_element_menu_item_child = nav_menus_filtered_element_menu_item && show_in_menu_k && !disabled_k && required_params_passed_k && (show_when_auth_state_is_k === null || show_when_auth_state_is_k === curr_auth_state) ? nav_menus[i].menu_items[j].children[k] : null
 
                             if (nav_menus_filtered_element_menu_item_child) {
@@ -143,7 +143,7 @@ function Navigator(props) {
                                 nav_list.push(nav_menus[i].menu_items[j].children[k])
                                 if (!disabled_k && required_params_passed_k && (show_when_auth_state_is_k === null || show_when_auth_state_is_k === curr_auth_state)) {
                                     nav_list_filtered.push({ ...nav_menus[i].menu_items[j].children[k], path_alias: undefined })
-                                    if (nav_menus[i].menu_items[j].children[k].path_alias !== undefined) {
+                                    if (window.isset(nav_menus[i].menu_items[j].children[k].path_alias)) {
                                         nav_list_filtered.push({ ...nav_menus[i].menu_items[j].children[k], path: nav_menus[i].menu_items[j].children[k].path_alias, path_alias: undefined })
                                     }
                                 }

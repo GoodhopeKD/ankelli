@@ -120,7 +120,7 @@ class BCReceiveFundsScreen extends React.Component {
                                             </td>
                                             <td className="align-middle">{asset_account_address.tx_count}</td>
                                             <td className="align-middle">{window.ucfirst(new _DateTime(asset_account_address.created_datetime).prettyDatetime())}</td>
-                                            <td className="align-middle">{asset_account_address.last_active_datetime !== undefined ? window.ucfirst(new _DateTime(asset_account_address.last_active_datetime).prettyDatetime()) : '-'}</td>
+                                            <td className="align-middle">{window.isset(asset_account_address.last_active_datetime) ? window.ucfirst(new _DateTime(asset_account_address.last_active_datetime).prettyDatetime()) : '-'}</td>
                                         </tr>
                                     })}
                                 </tbody>

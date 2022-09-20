@@ -1,21 +1,19 @@
 # OSX
-#
 .DS_Store
+._*
 
 # Windows
-#
 Thumbs.db
 
 # local ssl
-#
-/.crt
+#/.crt
 
 /node_modules
 /public/build
 /public/hot
 #/public/storage
-/storage/*.key
-#/vendor
+#/storage/*.key
+/vendor
 #.env
 .env.backup
 .phpunit.result.cache

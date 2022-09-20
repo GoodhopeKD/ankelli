@@ -136,7 +136,7 @@ class OffersSingleViewScreen extends React.Component {
                     <div className="row">
                         <div className="col">
                             <p>Asset you'll sell: {asset.name} ({asset.code})</p>
-                            {this.props.auth_user !== null && <p>Your current usable {asset.code} balance: {window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</p>}
+                            {window.isset(this.props.auth_user) && <p>Your current usable {asset.code} balance: {window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</p>}
                             <p>Currency : {currency.name} ({currency.code}) </p>
                             <p>{this.focused_offer.offer_to == 'buy' ? 'Purchase' : 'Sell'} price : {window.currencyAmountString(this.focused_offer.offer_price, currency)}</p>
                             {this.focused_offer.offer_to == 'buy' && <p>Purchase limits : {window.currencyAmountString(this.focused_offer.min_purchase_amount, currency)} - {window.currencyAmountString(this.focused_offer.max_purchase_amount, currency)}</p>}

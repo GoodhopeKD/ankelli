@@ -154,7 +154,7 @@ class TradesListViewScreen extends React.Component {
                                     }
 
                                     return <tr key={index} >
-                                        <td className="align-middle"><i>@{trade.creator_username == this.props.auth_user.username ? trade.offer_creator_username : trade.creator_username}</i><br />In {trade.location !== null && <> #{trade.location} - </>} {trade.country_name}</td>
+                                        <td className="align-middle"><i>@{trade.creator_username == this.props.auth_user.username ? trade.offer_creator_username : trade.creator_username}</i><br />In {window.isset(trade.location) && <> #{trade.location} - </>} {trade.country_name}</td>
                                         <td className="align-middle"><b>{trade.asset_code}</b> <i>for</i> <b>{trade.currency_code}</b>
                                             <br /><small className="text-muted"><i>Last activity: {window.ucfirst(new _DateTime(trade.updated_datetime).prettyDatetime())}</i></small></td>
                                         <td className="align-middle">{window.currencyAmountString(trade.currency_amount, currency)}</td>

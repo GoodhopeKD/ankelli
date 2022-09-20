@@ -4,7 +4,7 @@ import { NavLink } from "react-router-dom";
 export default class Footer extends React.Component {
     render() {
         return <>
-            <footer className="fixed-botto" style={{ zIndex: -1 }}>
+            <footer className="fixed-botto" style={{ /*zIndex: -1 */ }}>
                 <div className="b-example-divider" style={{ height: 30 }}></div>
                 <div className="container pt-5" style={{ zIndex: 0 }}>
                     <div className="row">

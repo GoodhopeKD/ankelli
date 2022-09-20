@@ -105,7 +105,7 @@ export default class RegTokensListViewScreen extends React.Component {
 
         const btn_create_reg_token_working = false
         const errors = []
-        const input = { token: this.state.input.token }
+        const input = this.state.input
 
         if ((input.token + '').length) {
             if (!input.token.isValid('reg_token')) { errors.push("Invalid token") }
@@ -113,8 +113,6 @@ export default class RegTokensListViewScreen extends React.Component {
             await input.token.async_checkIfAvailable('reg_token').then((resp) => {
                 if (!input.token.isAvailable('reg_token')) { errors.push(resp.message) }
             }).catch(() => { errors.push("Could not check if token is available for use.") })
-        } else {
-            delete input.token
         }
 
         if (errors.length === 0) {
@@ -123,7 +121,7 @@ export default class RegTokensListViewScreen extends React.Component {
             _RegToken.create(_Input.flatten(input)).then(() => { add_new_reg_token_modal.hide(); this.setState({ btn_create_reg_token_working, errors, input: _.cloneDeep(this.default_input) }); this.should_load_items = true; this.populateScreenWithItems(); _Notification.flash({ message: 'Reg token created', duration: 2000 }); })
                 .catch((error) => {
                     errors.push(error.message)
-                    this.setState({ btn_create_reg_token_working, errors })
+                    this.setState({ btn_create_reg_token_working, errors, input })
                 })
         } else {
             this.setState({ btn_create_reg_token_working, errors, input })

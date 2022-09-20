@@ -133,8 +133,8 @@ class _UserController extends Controller
         (new _NotificationController)->store( new Request([
             'user_username' => $api_auth_user->username,
             'content' => [
-                'title' => 'Welcome Note.',
-                'subtitle' => 'Welcome to the Ankelli Crypto trading Platform',
+                'title' => 'Welcome Note',
+                'subtitle' => 'Welcome to the Ankelli Crypto trading Platform.',
                 'body' => "We as the Ankelli Team welcome you to our Crypto trading platform.\nPlease, enjoy the services we have prepared for you.\nTo get the most out of your experience here, start by verifying your email address."
             ],
             'batch_code' => $log_batch_code,

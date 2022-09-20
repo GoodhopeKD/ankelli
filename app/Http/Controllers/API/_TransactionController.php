@@ -85,6 +85,11 @@ class _TransactionController extends Controller
             }
         }
 
+        $source_user_new_total = 0;
+        $source_user_new_usable = 0;
+        $destination_user_new_total = 0;
+        $destination_user_new_usable = 0;
+
         // Create uid
         $validated_data['ref_code'] = random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
         $validated_data['session_token'] = session()->get('active_session_token', isset(request()->segments()[env('API_URL')?0:1]) ? request()->segments()[env('API_URL')?0:1] : null );
@@ -122,6 +127,9 @@ class _TransactionController extends Controller
                 'new_total_balance_asset_value' => $new_total_balance_asset_value,
             ]);
 
+            $source_user_new_total = $new_total_balance_asset_value;
+            $source_user_new_usable = $new_usable_balance_asset_value;
+
             (new _AssetAccountController)->update( new Request([
                 'usable_balance_asset_value' => $new_usable_balance_asset_value,
                 'total_balance_asset_value' => $new_total_balance_asset_value,
@@ -155,6 +163,9 @@ class _TransactionController extends Controller
                 'new_total_balance_asset_value' => $new_total_balance_asset_value,
             ]);
 
+            $destination_user_new_total = $new_total_balance_asset_value;
+            $destination_user_new_usable = $new_usable_balance_asset_value;
+
             (new _AssetAccountController)->update( new Request([
                 'usable_balance_asset_value' => $new_usable_balance_asset_value,
                 'total_balance_asset_value' => $new_total_balance_asset_value,
@@ -182,11 +193,37 @@ class _TransactionController extends Controller
         }
         $element = _Transaction::create($validated_data);
 
+        if ( isset($validated_data['source_user_username']) && !in_array($validated_data['source_user_username'], ['reserves']) ){
+            // Create notification
+            (new _NotificationController)->store( new Request([
+                'user_username' => $validated_data['source_user_username'],
+                'content' => [
+                    'title' => 'Debit Transaction',
+                    'subtitle' => $validated_data['transfer_asset_value'].' '.$validated_data['asset_code'].' has been debited from your account.',
+                    'body' => $validated_data['transfer_asset_value']." ".$validated_data["asset_code"]." has been debited from your account.\nTxn ref: ".$element->ref_code.".\nDescription: ".$validated_data["description"]."\nNew balances: Usable : ".$source_user_new_usable ." ".$validated_data["asset_code"].", Total : ".$source_user_new_total ." ".$validated_data["asset_code"],
+                ],
+            ]));
+            // End Create notification
+        }
+
+        if ( isset($validated_data['destination_user_username']) && !in_array($validated_data['destination_user_username'], ['reserves']) ){
+            // Create notification
+            (new _NotificationController)->store( new Request([
+                'user_username' => $validated_data['destination_user_username'],
+                'content' => [
+                    'title' => 'Credit Transaction',
+                    'subtitle' => $validated_data['transfer_asset_value'].' '.$validated_data['asset_code'].' has been credited into your account.',
+                    'body' => $validated_data['transfer_asset_value']." ".$validated_data["asset_code"]." has been credited into your account.\nTxn ref: ".$element->ref_code.".\nDescription: ".$validated_data["description"]."\nNew balances: Usable : ".$destination_user_new_usable ." ".$validated_data["asset_code"].", Total : ".$destination_user_new_total ." ".$validated_data["asset_code"],
+                ],
+            ]));
+            // End Create notification
+        }
+
         if ( isset($validated_data['source_user_username']) && $validated_data['platform_charge_asset_value'] ){
             sleep(1);
             (new _TransactionController)->store( new Request([
                 'context' => 'offchain',
-                'description' => 'Platform charge for transaction "' . $element->ref_code . '"',
+                'description' => 'Platform charge for transaction ' . $element->ref_code,
                 'operation_slug' => 'platform_charge',
                 'source_user_username' => $validated_data['source_user_username'],
                 'source_user_password' => $validated_data['source_user_password'],

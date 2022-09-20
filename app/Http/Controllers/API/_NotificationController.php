@@ -25,6 +25,9 @@ class _NotificationController extends Controller
             if ( request()->user_username ){ $simple_query_args = array_merge( $simple_query_args, [ 'user_username' => request()->user_username ]); }
 
             $eloquent_query = _Notification::where($simple_query_args);
+
+            if ( request()->_status && request()->_status == 'unread' ){ $eloquent_query->whereNull('read_datetime'); }
+            if ( request()->_status && request()->_status == 'read' ){ $eloquent_query->whereNotNull('read_datetime'); }
           
             $result = $eloquent_query->orderByDesc('created_datetime')->paginate(request()->per_page)->withQueryString();
         }
@@ -63,22 +66,26 @@ class _NotificationController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  string $id
      * @return \Illuminate\Http\Response
      */
-    public function show(int $id)
+    public function show(string $id)
     {
-        //
+        $element = _Notification::findOrFail($id);
+        if (!$element->read_datetime){
+            $element->update(['read_datetime' => now()->toDateTimeString()]);
+        }
+        return response()->json( new _NotificationResource( $element ) );
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  string  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, int $id)
+    public function update(Request $request, string $id)
     {
         //
     }
@@ -86,10 +93,10 @@ class _NotificationController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  string  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(int $id)
+    public function destroy(string $id)
     {
         //
     }

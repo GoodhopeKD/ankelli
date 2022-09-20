@@ -213,7 +213,7 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
     }
 
     public async sendMessage(args: { message_body: string, message_attachment: any }) {
-        return this.addAddonProp('messages', { body: args.message_body, has_attachment: args.message_attachment !== undefined } as any)
+        return this.addAddonProp('messages', { body: args.message_body, has_attachment: (window as any).isset(args.message_attachment) } as any)
             .then(async resp => {
                 if (args.message_attachment) {
                     args.message_attachment.filegroup = 'images'

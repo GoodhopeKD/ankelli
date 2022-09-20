@@ -133,7 +133,7 @@ class UserNotificationsListViewScreen extends React.Component {
                                     return <tr key={index} >
                                         <td className={"align-middle" + (notification.read_datetime ? '' : ' table-secondary')}>
                                             <Link to={'/user_notifications/' + notification.id} style={{ textDecoration: 'none' }} className="w-100" >
-                                                <i className="text-muted">{window.ucfirst(new _DateTime(notification.created_datetime).prettyDatetime())}</i> - {notification.content.subtitle}
+                                                <i className="text-muted">{window.ucfirst(new _DateTime(notification.created_datetime).prettyDatetime())}</i> - {notification.content.title}: {notification.content.subtitle}
                                             </Link>
                                         </td>
                                     </tr>
