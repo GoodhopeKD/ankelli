@@ -18,7 +18,7 @@ return new class extends Migration
             $table->enum('context', ['onchain', 'offchain']);
             $table->string('blockchain_txid', 255)->nullable();
             $table->string('tatum_reference', 255)->nullable();
-            $table->string('session_token', 16)->nullable();
+            $table->string('session_token', 17)->nullable();
             $table->foreign('session_token')
                     ->references('token')
                     ->on('__sessions')

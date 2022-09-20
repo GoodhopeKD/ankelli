@@ -15,13 +15,13 @@ return new class extends Migration
     {
         Schema::create('__assets', function (Blueprint $table) {
             $table->id();
-            $table->string('tatum_mnemonic', 255)->nullable();
-            $table->string('tatum_xpub', 255)->nullable();
             $table->string('name', 64)->unique();
             $table->string('code', 64)->unique();
-            $table->string('tatum_currency', 64)->nullable();
             $table->string('smallest_display_unit', 32); // unsignedDecimal
             $table->text('onchain_disclaimer');
+            $table->string('tatum_mnemonic', 255)->nullable();
+            $table->string('tatum_xpub', 255)->nullable();
+            $table->string('tatum_currency', 64)->nullable();
             $table->enum('_status', ['active', 'deactivated'])->default('active');
 
             $table->string('creator_username', 64)->nullable();

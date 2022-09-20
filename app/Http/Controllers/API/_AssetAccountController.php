@@ -38,7 +38,12 @@ class _AssetAccountController extends Controller
 
     public function get_addresses()
     {
-        return (new __TatumAPIController)->getVirtualAccountDepositAddresses(new Request(['virtual_account_id' => '63224675e12c3802b36f6782']))->getData();
+        return (new __TatumAPIController)->getVirtualAccountDepositAddresses(new Request(['virtual_account_id' => '632970417b09c5d6322bc225']))->getData();
+    }
+
+    public function get_transactions()
+    {
+        return (new __TatumAPIController)->getVirtualAccountTransactions(new Request(['virtual_account_id' => '632970417b09c5d6322bc225']))->getData();
     }
 
     /**

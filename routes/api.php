@@ -30,6 +30,7 @@ Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_
     Route::get('get_customers', 'App\Http\Controllers\API\_AssetAccountController@get_customers')->name('get_customers');
     Route::get('get_accounts', 'App\Http\Controllers\API\_AssetAccountController@get_accounts')->name('get_accounts');
     Route::get('get_addresses', 'App\Http\Controllers\API\_AssetAccountController@get_addresses')->name('get_addresses');
+    Route::get('get_transactions', 'App\Http\Controllers\API\_AssetAccountController@get_transactions')->name('get_transactions');
 
     // User authentication routes
     Route::post('users/signup', '_UserController@store')->name('users.signup');

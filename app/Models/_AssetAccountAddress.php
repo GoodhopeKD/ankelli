@@ -20,6 +20,7 @@ class _AssetAccountAddress extends Model
         'asset_account_id',
         'blockchain_address',
         'tatum_derivation_key',
+        'tx_count',
         'last_active_datetime',
     ];
 }

@@ -124,6 +124,36 @@ class __TatumAPIController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    public function getCustomers(Request $request)
+    {
+        $validated_data = $request->validate([
+            'customer_id' => ['sometimes', 'string'],
+        ]);
+       
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "x-api-key: " . $this->x_api_key,
+            ],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/customer?" . http_build_query(['type' => 'testnet', 'pageSize' => 50]),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+
+        return $this->call_tail($curl);
+    }
+
+
+    /**
+     * List all accounts
+     * https://apidoc.tatum.io/tag/Account#operation/getAccounts
+     * 
+     * List all customer accounts
+     * https://apidoc.tatum.io/tag/Account#operation/getAccountsByCustomerId
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function getVirtualAccounts(Request $request)
     {
         $validated_data = $request->validate([
@@ -195,63 +225,6 @@ class __TatumAPIController extends Controller
 
 
     /**
-     * List all accounts
-     * https://apidoc.tatum.io/tag/Account#operation/getAccounts
-     * 
-     * List all customer accounts
-     * https://apidoc.tatum.io/tag/Account#operation/getAccountsByCustomerId
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function getCustomers(Request $request)
-    {
-        $validated_data = $request->validate([
-            'customer_id' => ['sometimes', 'string'],
-        ]);
-       
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_HTTPHEADER => [
-                "x-api-key: " . $this->x_api_key,
-            ],
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/customer?" . http_build_query(['type' => 'testnet', 'pageSize' => 50]),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => "GET",
-        ]);
-
-        return $this->call_tail($curl);
-    }
-
-
-    /**
-     * Deactivate account
-     * https://apidoc.tatum.io/tag/Account#operation/deactivateAccount
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function deactivateVirtualAccount(Request $request)
-    {
-        $validated_data = $request->validate([
-            'virtual_account_id' => ['required', 'string'],
-        ]);
-
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_HTTPHEADER => [
-                "x-api-key: " . $this->x_api_key,
-            ],
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/" . $validated_data['virtual_account_id'] . "/deactivate",
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => "PUT",
-        ]);
-
-        return $this->call_tail($curl);
-    }
-
-
-    /**
      * Create a new asset wallet on the tatum platform.
      * https://apidoc.tatum.io/tag/Account#operation/createAccount
      *
@@ -287,6 +260,33 @@ class __TatumAPIController extends Controller
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account?type=testnet",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "POST",
+        ]);
+
+        return $this->call_tail($curl);
+    }
+
+
+    /**
+     * Deactivate account
+     * https://apidoc.tatum.io/tag/Account#operation/deactivateAccount
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function deactivateVirtualAccount(Request $request)
+    {
+        $validated_data = $request->validate([
+            'virtual_account_id' => ['required', 'string'],
+        ]);
+
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "x-api-key: " . $this->x_api_key,
+            ],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/" . $validated_data['virtual_account_id'] . "/deactivate",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "PUT",
         ]);
 
         return $this->call_tail($curl);
@@ -480,6 +480,40 @@ class __TatumAPIController extends Controller
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/transaction?type=testnet",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "POST",
+        ]);
+
+        return $this->call_tail($curl);
+    }
+
+    /**
+     * Send payment
+     * https://apidoc.tatum.io/tag/Transaction#operation/sendTransaction
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getVirtualAccountTransactions(Request $request)
+    {
+        $validated_data = $request->validate([
+            'virtual_account_id' => ['required', 'string'],
+            //'currency' => ['required', 'string'],
+        ]);
+
+        $payload = [
+            'id' => $validated_data['virtual_account_id'],
+            //'currency' => $validated_data['currency'],
+        ];
+        
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json",
+                "x-api-key: " . $this->x_api_key,
+            ],
+            CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/transaction/account?" . http_build_query(['type' => 'testnet', 'currency' => isset($validated_data['currency']) ? $validated_data['currency'] : null, 'pageSize'=>50]),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);

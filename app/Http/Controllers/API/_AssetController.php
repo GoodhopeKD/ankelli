@@ -48,9 +48,9 @@ class _AssetController extends Controller
         $validated_data = $request->validate([
             'name' => ['required', 'string', 'max:64'],
             'code' => ['required', 'string', 'max:64'],
-            'tatum_currency' => ['required', 'string', 'max:64'],
             'smallest_display_unit' => ['required', 'numeric'],
             'onchain_disclaimer' => ['required', 'string'],
+            'tatum_currency' => ['required', 'string', 'max:64'],
             '_status' => ['sometimes', 'string', Rule::in(['active', 'frozen'])],
         ]);
 

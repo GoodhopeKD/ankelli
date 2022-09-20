@@ -15,12 +15,13 @@ class _Asset extends Model
      * @var array
      */
     protected $fillable = [
-        'tatum_mnemonic',
-        'tatum_xpub',
         'name',
         'code',
         'smallest_display_unit',
         'onchain_disclaimer',
+        'tatum_mnemonic',
+        'tatum_xpub',
+        'tatum_currency',
         '_status',
         'creator_username',
     ];

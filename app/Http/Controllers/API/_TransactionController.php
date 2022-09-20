@@ -8,6 +8,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
 
 use App\Models\_AssetAccount;
+use App\Models\_AssetAccountAddress;
 use App\Models\_PrefItem;
 use App\Models\_User;
 
@@ -178,7 +179,7 @@ class _TransactionController extends Controller
                 'asset_code' => $validated_data['asset_code'],
                 'senderAccountId' => isset($source_user_asset_account) ? $source_user_asset_account->tatum_virtual_account_id : null,
                 'recipientAccountId' => isset($destination_user_asset_account) ? $destination_user_asset_account->tatum_virtual_account_id : null,
-                'amount' => $validated_data['transfer_asset_value'] + '',
+                'amount' => $validated_data['transfer_asset_value'] . '',
             ];
             if ($validated_data['context'] == 'onchain') {
                 if ($tatum_request_object['senderAccountId']){
@@ -259,10 +260,26 @@ class _TransactionController extends Controller
             'date' => ['sometimes'],
         ]);
 
+        $destination_user_asset_account = _AssetAccount::firstWhere(['tatum_virtual_account_id' => $validated_data['accountId']]);
+
         $tatum_txrecon_data = [
             'context' => 'onchain',
+            'operation_slug' => 'internalisation',
+            'description' => 'Transfer from external wallet to ankelli wallet',
+            'source_blockchain_address' => $validated_data['from'],
+            'destination_user_username' => $destination_user_asset_account->user_username,
+            'destination_blockchain_address' => $validated_data['to'],
+            'asset_code' => $destination_user_asset_account->asset_code,
+            'transfer_asset_value' => $validated_data['amount'],
             'is_recon' => true,
+            'blockchain_txid' => $validated_data['txId'],
+            'transfer_datetime' => date('Y-m-d H:i:s', $validated_data['date'] / 1000)
         ];
+
+        $used_destination_asset_account_address = _AssetAccountAddress::firstWhere(['blockchain_address' => $tatum_txrecon_data['destination_blockchain_address']]);
+        $used_destination_asset_account_address->update(['tx_count' => $used_destination_asset_account_address->tx_count + 1, 'last_active_datetime' => $tatum_txrecon_data['transfer_datetime']]);
+
+        return (new _TransactionController)->store(new Request($tatum_txrecon_data));
     }
 
     /**
