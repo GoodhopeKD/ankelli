@@ -208,7 +208,7 @@ return new class extends Migration
             [
                 'key_name' => 'Use tatum crypto asset engine',
                 'key_slug' => 'use_tatum_crypto_asset_engine',
-                'value' => false,
+                'value' => true,
                 'value_type' => 'boolean',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',

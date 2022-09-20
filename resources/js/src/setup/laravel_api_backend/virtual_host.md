@@ -159,8 +159,19 @@ On Windows
 
 Install [mkcert](https://github.com/FiloSottile/mkcert) if not already installed
 
+On Windows
+
+cmd in admin mode
 ```properties
-npm install -g mkcert
+@"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
+
+choco install mkcert
+```
+
+On MacOS
+
+```properties
+brew install mkcert
 ```
 
 Generate ssl for ankelli.test *.ankelli.test
@@ -168,7 +179,7 @@ Generate ssl for ankelli.test *.ankelli.test
 On MacOS
 
 ```properties
-mkdir /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt
+mkdir -p /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt
 mkcert -cert-file /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/ankelli.test.pem -key-file /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/ankelli.test-key.pem ankelli.test *.ankelli.test
 mkcert -install
 ```

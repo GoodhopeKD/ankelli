@@ -232,7 +232,8 @@ class __AuxController extends Controller
 
     public function load_factory_data()
     {
-        if ( _PrefItem::firstWhere('key_slug', 'use_tatum_crypto_asset_engine')->value_f() ){
+        $clear_virtual_accounts = false;
+        if ( $clear_virtual_accounts && _PrefItem::firstWhere('key_slug', 'use_tatum_crypto_asset_engine')->value_f() ){
             foreach ((new __TatumAPIController)->getVirtualAccounts(new Request())->getData() as $account) {
                 (new __TatumAPIController)->deactivateVirtualAccount(new Request(['virtual_account_id' => $account->id]));
             }
@@ -312,7 +313,6 @@ class __AuxController extends Controller
         (new _AssetAccountController)->store( new Request([
             'asset_code' => 'USDT',
             'user_username' => 'reserves',
-            'tatum_derivation_key' => 1,
         ]));
         (new _UserGroupMembershipController)->store( new Request([
             'user_username' => 'reserves',
@@ -362,6 +362,23 @@ class __AuxController extends Controller
             'user_group_slug' => 'business_administrators',
         ]));
 
+        // user:guddaz
+        (new _UserController)->store( new Request([
+            'username' => 'guddaz', 'email_address' => 'goodhopedhliwayo@gmail.com',
+            'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
+        ]));
+        (new _AssetAccountController)->store( new Request([
+            'asset_code' => 'USDT',
+            'user_username' => 'guddaz',
+        ]));
+        (new _AdminExtensionController)->store( new Request([
+            'user_username' => 'guddaz', 'post_title' => 'Head System Developer',
+        ]));
+        (new _UserGroupMembershipController)->store( new Request([
+            'user_username' => 'guddaz',
+            'user_group_slug' => 'developers',
+        ]));
+
         if ($token_reg_changed){
             (new _PrefItemController)->update( new Request([
                 'update_note' => 'Resetting to default value.',
@@ -390,20 +407,6 @@ class __AuxController extends Controller
             ]), $token_reg_enabled_pref_item->id);
             $token_reg_changed = true;
         }
-
-        // user:guddaz
-        (new _UserController)->store( new Request([
-            'username' => 'guddaz', 'email_address' => 'goodhopedhliwayo@gmail.com',
-            'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
-        ]));
-        session()->put('api_auth_user_username', 'system');
-        (new _AdminExtensionController)->store( new Request([
-            'user_username' => 'guddaz', 'post_title' => 'Head System Developer',
-        ]));
-        (new _UserGroupMembershipController)->store( new Request([
-            'user_username' => 'guddaz',
-            'user_group_slug' => 'developers',
-        ]));
         
         // user:lodza
         (new _UserController)->store( new Request([

@@ -33,7 +33,7 @@ class _AssetAccountController extends Controller
 
     public function get_accounts()
     {
-        return (new __TatumAPIController)->getVirtualAccounts(new Request())->getData();
+        return (new __TatumAPIController)->getVirtualAccounts(new Request(['externalId' => 'guddaz', 'asset_code' => 'USDT']))->getData();
     }
 
     public function get_addresses()
@@ -63,7 +63,13 @@ class _AssetAccountController extends Controller
         $validated_data['total_balance_asset_value'] = 0;
 
         if ( _PrefItem::firstWhere('key_slug', 'use_tatum_crypto_asset_engine')->value_f() ){
-            $tatum_element = (new __TatumAPIController)->createVirtualAccountXpub(new Request(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']]))->getData();
+            $tatum_element = null;
+            try {
+                $tatum_elements = (new __TatumAPIController)->getVirtualAccounts(new Request(['externalId' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']]))->getData();
+                if (count($tatum_elements)){ $tatum_element = $tatum_elements[0]; }
+            } catch (\Throwable $th) {}
+            $tatum_element = $tatum_element ?? (new __TatumAPIController)->createVirtualAccountXpub(new Request(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']]))->getData();
+
             $validated_data['tatum_virtual_account_id'] = $tatum_element->id;
             $validated_data['usable_balance_asset_value'] = $tatum_element->balance->availableBalance;
             $validated_data['total_balance_asset_value'] = $tatum_element->balance->accountBalance;

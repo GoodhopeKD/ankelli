@@ -5,17 +5,18 @@ import { Link } from "react-router-dom";
 import SideBar from 'app/views/components/SideBar'
 import CustomSelect from 'app/views/components/CustomSelect'
 
-import { _User, _DateTime, _Session, _Notification } from 'app/controller'
+import { _User, _DateTime, _Session, _Notification, _AssetAccountAddress } from 'app/controller'
 
 class BCReceiveFundsScreen extends React.Component {
 
     default_input = {
         asset_code: 'USDT',
+        asset_account_id: this.props.auth_user.asset_accounts.length !== 0 ? ((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == 'USDT') ?? { id: null }).id) : null,
     }
 
     state = {
 
-        trades_list_loaded: false,
+        asset_account_addresses_list_loaded: false,
         list: [],
         list_loaded: false,
         list_full: false,
@@ -40,8 +41,63 @@ class BCReceiveFundsScreen extends React.Component {
         this.setState({ input })
     }
 
+    async universalGetCollection(_Type, indicator_var_name, input = null, page_select = null, per_page = null) {
+        //if (page_select && this.state.list_full) return Promise.resolve();
+        if (!this.should_load_items) {
+            //_Notification.flash({ message: 'No filters changed', duration: 2000 })
+            //return Promise.resolve();
+        }
+        if (!this.working) {
+            this.working = true
+            this.setState({
+                asset_account_addresses_list_loaded: false,
+                list: [],
+                list_loaded: false,
+                list_full: false,
+                list_refreshing: false
+            })
+            setTimeout(
+                () => {
+                    _Type.getCollection(input, page_select, per_page)
+                        .then(({ collection }) => {
+                            if (!collection.data) return Promise.resolve();
+                            let update_object = {
+                                //list: page_select ? this.state.list.concat(collection.data) : collection.data,
+                                list: collection.data,
+                                list_loaded: true,
+                                list_full: collection.meta.current_page === collection.meta.last_page,
+                                _collecion: {
+                                    links: collection.links,
+                                    meta: collection.meta,
+                                }
+                            };
+                            update_object[indicator_var_name] = true;
+                            this.setState(update_object);
+                            this.working = false
+                            this.should_load_items = false
+                            return Promise.resolve();
+                        })
+                        .catch((error) => {
+                            this.working = false
+                            this.should_load_items = false
+                            return Promise.reject(error);
+                        })
+                }, 0
+            );
+        } else {
+            return Promise.resolve();
+        }
+    }
+
+    populateScreenWithItems = async (show_list_refreshing_loader = true) => {
+        this.setState({ list_refreshing: show_list_refreshing_loader });
+        await this.universalGetCollection(_AssetAccountAddress, 'asset_account_addresses_list_loaded', JSON.parse(JSON.stringify(this.state.input)), this.state.page_select, this.state.per_page)
+        if (show_list_refreshing_loader) this.setState({ list_refreshing: false })
+    };
+
     componentDidMount = () => {
         _Session.refresh()
+        this.props.auth_user.asset_accounts
     }
 
     render() {
@@ -84,12 +140,17 @@ class BCReceiveFundsScreen extends React.Component {
                                         has_none_option={false}
                                         max_shown_options_count={5}
                                         selected_option_value={this.state.input.asset_code}
-                                        onChange={asset_code => this.handleInputChange('asset_code', asset_code, true)}
+                                        onChange={asset_code => { this.handleInputChange('asset_code', asset_code, true); this.handleInputChange('asset_account_id', this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset_code).blockchain_address, true) }}
                                     />
                                 </div>
                                 <div className="col">
                                     <label htmlFor="output_current_balance" className="form-label">Current total balance</label>
                                     <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { total_balance_asset_value: 0 }).total_balance_asset_value, asset)}</span>
+                                </div>
+
+                                <div className="col">
+                                    <br />
+                                    <button className="btn btn-primary w-100" onClick={this.populateScreenWithItems}>Get Addresses</button>
                                 </div>
                             </div>
 
@@ -105,16 +166,13 @@ class BCReceiveFundsScreen extends React.Component {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {[
-                                        { address: 'ab378dfeca6793dcab572d57ae2b79adc79e682', tx_count: 4, created_datetime: '2022-09-15 04:48:27', last_active_datetime: '2022-09-15 05:10:27' },
-                                        { address: '46fc578ca892cdb898feac562beaf6783cab67e', tx_count: 2, created_datetime: '2022-09-15 07:29:27', last_active_datetime: '2022-09-16 08:30:27' },
-                                    ].map((asset_account_address, index) => {
+                                    {this.state.list.map((asset_account_address, index) => {
                                         return <tr key={index} >
                                             <td className="align-middle" style={{ maxWidth: 300 }}>
                                                 <div className="input-group input-group-sm">
-                                                    <input type="text" className="form-control" value={asset_account_address.address} onChange={() => { }} />
+                                                    <input type="text" className="form-control" value={asset_account_address.blockchain_address} onChange={() => { }} />
                                                     <span className="input-group-text p-0">
-                                                        <button className="btn btn-light" style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, border: 'none' }} onClick={() => { navigator.clipboard.writeText(asset_account_address.address); _Notification.flash({ message: 'Address copied to clipboard', duration: 2000 }); }} >📋</button>
+                                                        <button className="btn btn-light" style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, border: 'none' }} onClick={() => { navigator.clipboard.writeText(asset_account_address.blockchain_address); _Notification.flash({ message: 'Address copied to clipboard', duration: 2000 }); }} >📋</button>
                                                     </span>
                                                 </div>
                                             </td>

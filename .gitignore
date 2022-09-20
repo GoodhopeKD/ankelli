@@ -6,7 +6,7 @@
 Thumbs.db
 
 # local ssl
-#/.crt
+/.crt
 
 /node_modules
 /public/build

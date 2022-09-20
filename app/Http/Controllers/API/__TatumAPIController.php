@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\_Asset;
-use App\Models\_AssetAccount;
 
 class __TatumAPIController extends Controller
 {
@@ -26,6 +25,12 @@ class __TatumAPIController extends Controller
             'blockchain_wallet_generate_url'    => 'https://api-eu1.tatum.io/v3/ethereum/wallet?type=testnet',
             'blockchain_transfer_to_url'        => 'https://api-eu1.tatum.io/v3/offchain/ethereum/erc20/transfer?type=testnet',
         ],
+    ];
+
+    public $saved_customer_ids = [
+        'reserves' => '6321ec61d5f2885b44f1bda0',
+        'guddaz' => '632970417b09c5d6322bc226',
+        'sekuru' => '63207c7291626c6cd5860a21',
     ];
 
     private function call_tail($curl)
@@ -121,33 +126,70 @@ class __TatumAPIController extends Controller
     public function getVirtualAccounts(Request $request)
     {
         $validated_data = $request->validate([
-            'customer_id' => ['sometimes', 'string'],
+            'externalId' => ['sometimes', 'string', 'exists:__users,username'],
+            'customerId' => ['sometimes', 'string'],
+            'asset_code' => ['sometimes', 'exists:__assets,code', 'string'],
         ]);
 
-        $curl = curl_init();
+        if (isset($validated_data['externalId']) && isset($this->saved_customer_ids[$validated_data['externalId']])){
+            $validated_data['customerId'] = $this->saved_customer_ids[$validated_data['externalId']];
+        }
 
-        if (isset($validated_data['customer_id'])){
+        if (isset($validated_data['asset_code'])){
+            $validated_data['currency'] = $this->supported_assets[$validated_data['asset_code']]['base_chain'];
+        }
+
+        $curl = null;
+
+        if (isset($validated_data['externalId']) || isset($validated_data['customerId'])){
+            if (!isset($validated_data['customerId'])){
+                return abort(422, 'No customer id saved for selected user');
+            }
+            $curl = curl_init();
             curl_setopt_array($curl, [
                 CURLOPT_HTTPHEADER => [
                     "Content-Type: application/json",
                     "x-api-key: " . $this->x_api_key,
                 ],
-                CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/customer/" . $validated_data['customer_id'] . "?" . http_build_query(['type' => 'testnet', 'pageSize' => 50]),
+                CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/customer/" . $validated_data['customerId'] . "?" . http_build_query(['type' => 'testnet', 'currency' => isset($validated_data['currency']) ? $validated_data['currency'] : null, 'pageSize' => 50]),
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_CUSTOMREQUEST => "GET",
             ]);
         } else {
+            $curl = curl_init();
             curl_setopt_array($curl, [
                 CURLOPT_HTTPHEADER => [
                     "x-api-key: " . $this->x_api_key,
                 ],
-                CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account",
+                CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account?" . http_build_query(['type' => 'testnet', 'currency' => isset($validated_data['currency']) ? $validated_data['currency'] : null]),
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_CUSTOMREQUEST => "GET",
             ]);
         }
 
-        return $this->call_tail($curl);
+        $response = curl_exec($curl);
+        $error = curl_error($curl);
+
+        $error_code = 422;
+        if ($error) $error_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $error_code = $error_code !== 0 ? $error_code : 422;
+
+        curl_close($curl);
+
+        if ($error) {
+            return abort($error_code, $error);
+        } else {
+            $decoded_response = json_decode($response);
+            if ( isset($decoded_response->statusCode) && $decoded_response->statusCode !== 200 )
+                return abort($decoded_response->statusCode, $decoded_response->message);
+
+            if ((isset($validated_data['customerId'])) && isset($validated_data['asset_code']) && is_array($decoded_response) && count($decoded_response)){
+                $decoded_response = array_filter($decoded_response, function($item) use($validated_data){
+                    return $item->currency = $this->supported_assets[$validated_data['asset_code']]['base_chain'];
+                });
+            }
+            return response()->json( $decoded_response );
+        }
     }
 
 
@@ -168,7 +210,6 @@ class __TatumAPIController extends Controller
         ]);
        
         $curl = curl_init();
-        
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "x-api-key: " . $this->x_api_key,
@@ -196,7 +237,6 @@ class __TatumAPIController extends Controller
         ]);
 
         $curl = curl_init();
-
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "x-api-key: " . $this->x_api_key,
@@ -226,7 +266,6 @@ class __TatumAPIController extends Controller
 
         $asset = _Asset::firstWhere('code',$validated_data['asset_code'])->makeVisible(['tatum_xpub']);
 
-        $curl = curl_init();
         $payload = [
             "currency" => $this->supported_assets[$validated_data['asset_code']]['base_chain'],
             "xpub" => $asset->tatum_xpub,
@@ -237,6 +276,7 @@ class __TatumAPIController extends Controller
             "accountingCurrency" => "USD",
         ];
 
+        $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
@@ -267,12 +307,12 @@ class __TatumAPIController extends Controller
             'type' => ['required', 'string'],
         ]);
 
-        $curl = curl_init();
         $payload = [
             'amount' => $validated_data['amount'],
             'type' => $validated_data['type'],
         ];
 
+        $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
@@ -301,7 +341,6 @@ class __TatumAPIController extends Controller
         ]);
 
         $curl = curl_init();
-
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
@@ -329,7 +368,6 @@ class __TatumAPIController extends Controller
         ]);
 
         $curl = curl_init();
-          
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
@@ -357,7 +395,6 @@ class __TatumAPIController extends Controller
         ]);
 
         $curl = curl_init();
-          
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
@@ -400,7 +437,8 @@ class __TatumAPIController extends Controller
             "mnemonic" => $asset->tatum_mnemonic,
             "senderAccountId" => $validated_data['senderAccountId']
         ];
-          
+        
+        $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
@@ -432,7 +470,8 @@ class __TatumAPIController extends Controller
         ]);
 
         $payload = $validated_data;
-          
+        
+        $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",

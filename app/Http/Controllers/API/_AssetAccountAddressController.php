@@ -18,7 +18,19 @@ class _AssetAccountAddressController extends Controller
      */
     public function index()
     {
-        //
+        $result = null;
+        
+        if ( $result === null ){
+            $simple_query_args = [];
+
+            if ( request()->asset_account_id ){ $simple_query_args = array_merge( $simple_query_args, [ 'asset_account_id' => request()->asset_account_id ]); }
+
+            $eloquent_query = _AssetAccountAddress::where($simple_query_args);
+            
+            $result = $eloquent_query->orderByDesc('created_datetime')->paginate(request()->per_page)->withQueryString();
+        }
+
+        return $result ? _AssetAccountAddressResource::collection( $result ) : null;
     }
 
     /**
