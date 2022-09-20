@@ -22,6 +22,9 @@ if (!File::exists( public_path('storage') )){
 Route::post('', 'App\Http\Controllers\API\__AuxController@default_route')->name('default_route');
 
 Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_token}' ], function() {
+    
+    // Tx recon
+    Route::post('tatum_txrecon', '_TransactionController@tatum_txrecon')->name('tatum_txrecon');
 
     Route::post('load_test_data', 'App\Http\Controllers\API\__AuxController@load_test_data')->name('load_test_data');
     Route::get('get_customers', 'App\Http\Controllers\API\_AssetAccountController@get_customers')->name('get_customers');
@@ -60,8 +63,6 @@ Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_
         Route::delete('users/{uid}/buyer_extension', '_SellerExtensionController@destroy')->name('users.delete_buyer_extension');
     });
 
-    Route::apiResource('asset_accounts', '_AssetAccountController')->only('store')->parameter('asset_accounts', 'id');
-    Route::apiResource('asset_account_addresses', '_AssetAccountAddressController')->only('store','index')->parameter('asset_account_addresses', 'id');
 
     // Auth:null accessible routes
     Route::get('availability_check/{check_param_name}/{check_param_value}', '__AuxController@availability_check')->name('availability_check');
@@ -89,7 +90,8 @@ Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_
         Route::apiResource('transactions', '_TransactionController')->only(['index'])->parameter('transactions', 'ref_code');
         Route::post('deposit_tokens/use/{token}', '_DepositTokenController@use')->name('use_deposit_token');
         Route::apiResource('deposit_tokens', '_DepositTokenController')->parameter('deposit_tokens', 'token');
-        
+        Route::apiResource('asset_accounts', '_AssetAccountController')->only('store')->parameter('asset_accounts', 'id');
+        Route::apiResource('asset_account_addresses', '_AssetAccountAddressController')->only('store','index')->parameter('asset_account_addresses', 'id');
         Route::apiResource('phone_nos', '_PhoneNoController')->parameter('phone_nos', 'id');
         Route::apiResource('messages', '_MessageController')->only(['index', 'store'])->parameter('messages', 'id');
         Route::apiResource('pinnings', '_PinningController')->only(['store', 'update', 'destroy'])->parameter('pinnings', 'id');

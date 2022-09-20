@@ -32,12 +32,14 @@ return new class extends Migration
                     ->on('__users')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
+            $table->string('source_blockchain_address', 96)->nullable(); 
             $table->string('destination_user_username', 64)->nullable(); 
             $table->foreign('destination_user_username')
                     ->references('username')
                     ->on('__users')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
+            $table->string('destination_blockchain_address', 96)->nullable(); 
             $table->string('asset_code', 64)->nullable();
             $table->foreign('asset_code')
                     ->references('code')

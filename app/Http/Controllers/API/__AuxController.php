@@ -86,7 +86,7 @@ class __AuxController extends Controller
 
     public function reserved_usernames()
     {
-        return session()->get('active_session_token') == 'FACTORY_SESSION' ? [] : ['ankelli', 'admin', 'system', 'root', 'user'];
+        return session()->get('active_session_token') == 'FACTORY_SSN' ? [] : ['ankelli', 'admin', 'system', 'root', 'user'];
     }
 
     public function availability_check(Request $request)
@@ -239,14 +239,15 @@ class __AuxController extends Controller
             }
         }
 
-        session()->put('active_session_token', 'FACTORY_SESSION' );
+        session()->put('active_session_token', 'FACTORY_SSN' );
         session()->put('api_auth_user_username', 'system');
 
         (new _AssetController)->store( new Request([
             'name' => 'Tether USD',
             'code' => 'USDT',
+            'tatum_currency' => 'ETH',
             'smallest_display_unit' => 0.0001,
-            'onchain_disclaimer' => "Our USDT is hosted on the Ethereum network.\nAll blockchain transactions should use this network."
+            'onchain_disclaimer' => "Our USDT is hosted on the Ethereum network.\nAll blockchain transactions should be handled accordingly."
         ]));
 
         $token_reg_enabled_pref_item = _PrefItem::firstWhere('key_slug', 'token_reg_enabled');

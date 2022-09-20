@@ -65,6 +65,7 @@ class _TransactionController extends Controller
             'operation_slug' => ['required', 'string'],
             'source_user_username' => ['sometimes', 'exists:__users,username', 'string'],
             'source_user_password' => ['sometimes', 'string', 'min:8', 'max:32'],
+            'source_blockchain_address' => ['sometimes', 'string'],
             'destination_user_username' => ['sometimes', 'exists:__users,username', 'string'],
             'destination_blockchain_address' => ['sometimes', 'string'],
             'asset_code' => ['required', 'exists:__assets,code', 'string'],
@@ -186,6 +187,7 @@ class _TransactionController extends Controller
                     $tatum_element = (new __TatumAPIController)->transferAssetValueFromVirtualAccountToBlockchain(new Request($tatum_request_object))->getData();
                     $validated_data['blockchain_txid'] = $tatum_element->txId;
                 }
+                // handles is_recon here
             } else {
                 $tatum_element = (new __TatumAPIController)->transferAssetValueOffchain(new Request($tatum_request_object))->getData();
                 $validated_data['tatum_reference'] = $tatum_element->reference;
@@ -234,6 +236,33 @@ class _TransactionController extends Controller
         }
 
         return response()->json( new _TransactionResource( $element ) );
+    }
+
+    
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function tatum_txrecon(Request $request)
+    {
+        $validated_data = $request->validate([
+            'accountId' => ['sometimes', 'exists:__asset_accounts,tatum_virtual_account_id', 'string'],
+            'amount' => ['sometimes', 'numeric'],
+            'currency' => ['sometimes', 'string', 'exists:__assets,tatum_currency'],
+            'txId' => ['required', 'string'],
+            'blockheight' => ['sometimes', 'numeric'],
+            'blockhash' => ['sometimes', 'string'],
+            'from' => ['sometimes', 'string'],
+            'to' => ['required', 'string', 'exists:__asset_account_addresses,blockchain_address'],
+            'date' => ['sometimes'],
+        ]);
+
+        $tatum_txrecon_data = [
+            'context' => 'onchain',
+            'is_recon' => true,
+        ];
     }
 
     /**

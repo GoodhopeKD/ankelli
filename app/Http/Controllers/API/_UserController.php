@@ -141,7 +141,7 @@ class _UserController extends Controller
         ]));
         // End Create notification to verify email
 
-        if ( !( session()->get('active_session_token') && in_array(session()->get('active_session_token'), ['FACTORY_SESSION', 'TEST_SESSION']) )){
+        if ( !( session()->get('active_session_token') && in_array(session()->get('active_session_token'), ['FACTORY_SSN', 'TEST_SSN']) )){
             // Handle _Session
             $active_session_data = $request->active_session_data;
             $active_session_data['user_username'] = $api_auth_user->username;

@@ -14,7 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('__sessions', function (Blueprint $table) {
-            $table->string('token',16)->primary();
+            $table->string('token',17)->primary();
             $table->string('user_username', 64)->nullable();
             $table->foreign('user_username')
                     ->references('username')
@@ -33,7 +33,7 @@ return new class extends Migration
 
         DB::table('__sessions')->insert([
             [
-                'token' => 'FACTORY_SESSION',
+                'token' => 'FACTORY_SSN',
                 'user_username' => 'system',
                 'device_info' => json_encode([
                     'name' => 'Factory device',
@@ -46,7 +46,20 @@ return new class extends Migration
                 '_status' => 'ended',
             ],
             [
-                'token' => 'TEST_SESSION',
+                'token' => 'TATUM_TXRECON_SSN',
+                'user_username' => 'system',
+                'device_info' => json_encode([
+                    'name' => 'Tatum Notification Station device',
+                    'version' => 1.0,
+                ]),
+                'agent_app_info' => json_encode([
+                    'name' => 'Tatum Notification Station agent app',
+                    'version' => 1.0,
+                ]),
+                '_status' => 'active',
+            ],
+            [
+                'token' => 'TEST_SSN',
                 'user_username' => null,
                 'device_info' => json_encode([
                     'name' => 'Factory device',
