@@ -246,6 +246,7 @@ class __AuxController extends Controller
             'name' => 'Tether USD',
             'code' => 'USDT',
             'smallest_display_unit' => 0.0001,
+            'onchain_disclaimer' => "Our USDT is hosted on the Ethereum network.\nAll blockchain transactions should use this network."
         ]));
 
         $token_reg_enabled_pref_item = _PrefItem::firstWhere('key_slug', 'token_reg_enabled');
@@ -378,6 +379,28 @@ class __AuxController extends Controller
             'user_username' => 'guddaz',
             'user_group_slug' => 'developers',
         ]));
+        
+        // user:paywyze
+        (new _UserController)->store( new Request([
+            'username' => 'paywyze', 'email_address' => 'paywyze@example.com',
+            'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
+        ]));
+        (new _AssetAccountController)->store( new Request([
+            'asset_code' => 'USDT',
+            'user_username' => 'paywyze',
+        ]));
+        (new _AdminExtensionController)->store( new Request([
+            'user_username' => 'paywyze', 'post_title' => 'Head Business Administrator',
+        ]));
+        (new _UserGroupMembershipController)->store( new Request([
+            'user_username' => 'paywyze', 'user_group_slug' => 'system_administrators',
+        ]));
+        (new _UserGroupMembershipController)->store( new Request([
+            'user_username' => 'paywyze', 'user_group_slug' => 'user_administrators',
+        ]));
+        (new _UserGroupMembershipController)->store( new Request([
+            'user_username' => 'paywyze', 'user_group_slug' => 'business_administrators',
+        ]));
 
         if ($token_reg_changed){
             (new _PrefItemController)->update( new Request([
@@ -407,25 +430,6 @@ class __AuxController extends Controller
             ]), $token_reg_enabled_pref_item->id);
             $token_reg_changed = true;
         }
-        
-        // user:lodza
-        (new _UserController)->store( new Request([
-            'username' => 'lodza', 'email_address' => 'lodza@example.com',
-            'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
-        ]));
-        session()->put('api_auth_user_username', 'system');
-        (new _AdminExtensionController)->store( new Request([
-            'user_username' => 'lodza', 'post_title' => 'Head Business Administrator',
-        ]));
-        (new _UserGroupMembershipController)->store( new Request([
-            'user_username' => 'lodza', 'user_group_slug' => 'system_administrators',
-        ]));
-        (new _UserGroupMembershipController)->store( new Request([
-            'user_username' => 'lodza', 'user_group_slug' => 'user_administrators',
-        ]));
-        (new _UserGroupMembershipController)->store( new Request([
-            'user_username' => 'lodza', 'user_group_slug' => 'business_administrators',
-        ]));
 
         $simple_users = ['ross', 'jimmy', 'keith', 'peter', 'flint', 'clarence', 'raymond', 'nassim'];
 
@@ -441,10 +445,10 @@ class __AuxController extends Controller
         $internalisations = [
             ['reserves', 3000, 'Transfer from Coinbase wallet to Ankelli Reserves Wallet.', 'c83f8818db43d9ba4accfe454aa44fc33123d47a4f89d47b314d6748eb0e9bc9'],
             ['guddaz', 218.87587867, 'Transfer from Coinbase wallet to Ankelli wallet.', '62BD544D1B9031EFC330A3E855CC3A0D51CA5131455C1AB3BCAC6D243F65460D'],
-            ['lodza', 967.86579, 'Transfer from Ledger wallet to Ankelli wallet.', '62BD544D1B9031EFC330A3E855CC3A0D51CA5131455C1AB3BCAC6D243F65460D'],
+            ['paywyze', 967.86579, 'Transfer from Ledger wallet to Ankelli wallet.', '62BD544D1B9031EFC330A3E855CC3A0D51CA5131455C1AB3BCAC6D243F65460D'],
             ['flint', 400, 'Transfer from Coinbase wallet to Ankelli wallet.', 'c83f8818db43d9ba4accfe454aa44fc33123d47a4f89d47b314d6748eb0e9bc9'],
             ['guddaz', 98.9012, 'Transfer from Exodus wallet to Ankelli wallet.', 'c83f8818db43d9ba4accfe454aa44fc33123d47a4f89d47b314d6748eb0e9bc9'],
-            ['lodza', 106.76, 'Transfer from Coinbase wallet to Ankelli wallet.', 'c83f8818db43d9ba4accfe454aa44fc33123d47a4f89d47b314d6748eb0e9bc9'],
+            ['paywyze', 106.76, 'Transfer from Coinbase wallet to Ankelli wallet.', 'c83f8818db43d9ba4accfe454aa44fc33123d47a4f89d47b314d6748eb0e9bc9'],
         ];
 
         foreach ($internalisations as $key => $internalisation) {
@@ -472,7 +476,7 @@ class __AuxController extends Controller
 
         foreach ($deposit_tokeners as $key => $deposit_tokener) {
             // Deposit token -> transaction
-            session()->put('api_auth_user_username', 'lodza');
+            session()->put('api_auth_user_username', 'paywyze');
             $deposit_token = (new _DepositTokenController)->store( new Request([
                 'asset_code' => 'USDT',
                 'asset_value' => $deposit_tokener[1],
@@ -556,7 +560,7 @@ class __AuxController extends Controller
             'pymt_method_slug' => 'world_remit',
             'pymt_details' => [ 'fullname' => 'Kudakwashe Magadze', 'phone_no' => '+263 765 357',],
         ]))->getData();
-        session()->put('api_auth_user_username', 'lodza');
+        session()->put('api_auth_user_username', 'paywyze');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 100, 'source_user_password' => 'Def-Pass#123']))->getData();
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', 'raymond');
@@ -577,7 +581,7 @@ class __AuxController extends Controller
             'pymt_method_slug' => 'paypal',
             'pymt_details' => [ 'fullname' => 'Tawanda Chakatsva', 'email_address' => 'tawanda@example.com', ],
         ]))->getData();
-        session()->put('api_auth_user_username', 'lodza');
+        session()->put('api_auth_user_username', 'paywyze');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 140, 'source_user_password' => 'Def-Pass#123' ]))->getData();
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', 'keith');
@@ -598,7 +602,7 @@ class __AuxController extends Controller
             'pymt_method_slug' => 'skrill',
             'pymt_details' => [ 'fullname' => 'Mulenga Mwamba', 'email_address' => 'mulenga@example.com', ],
         ]))->getData();
-        session()->put('api_auth_user_username', 'lodza');
+        session()->put('api_auth_user_username', 'paywyze');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 600, 'source_user_password' => 'Def-Pass#123' ]))->getData();
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', 'jimmy');
@@ -627,7 +631,7 @@ class __AuxController extends Controller
         sleep(1);
 
         // Offer -> trade -> transaction
-        session()->put('api_auth_user_username', 'lodza');
+        session()->put('api_auth_user_username', 'paywyze');
         $offer = (new _OfferController)->store( new Request([
             'country_name' => 'Zambia',
             'location' => 'Lusaka CBD', 
@@ -643,7 +647,7 @@ class __AuxController extends Controller
         session()->put('api_auth_user_username', 'keith');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 2800, 'source_user_password' => 'Def-Pass#123' ]))->getData();
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
-        session()->put('api_auth_user_username', 'lodza');
+        session()->put('api_auth_user_username', 'paywyze');
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
         sleep(1);
 
@@ -688,7 +692,7 @@ class __AuxController extends Controller
         sleep(1);
 
         // Offer -> trade -> transaction
-        session()->put('api_auth_user_username', 'lodza');
+        session()->put('api_auth_user_username', 'paywyze');
         $offer = (new _OfferController)->store( new Request([
             'country_name' => 'South Africa',
             'offer_to' => 'buy',
@@ -703,7 +707,7 @@ class __AuxController extends Controller
         session()->put('api_auth_user_username', 'jimmy');
         $trade = (new _TradeController)->store( new Request([ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 2800, 'source_user_password' => 'Def-Pass#123' ]))->getData();
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
-        session()->put('api_auth_user_username', 'lodza');
+        session()->put('api_auth_user_username', 'paywyze');
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
         sleep(1);
 

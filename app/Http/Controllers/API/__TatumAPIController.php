@@ -30,6 +30,7 @@ class __TatumAPIController extends Controller
     public $saved_customer_ids = [
         'reserves' => '6321ec61d5f2885b44f1bda0',
         'guddaz' => '632970417b09c5d6322bc226',
+        'paywyze' => '63298faa64858e37282c6267',
         'sekuru' => '63207c7291626c6cd5860a21',
     ];
 

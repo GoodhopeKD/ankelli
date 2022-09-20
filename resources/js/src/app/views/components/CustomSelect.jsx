@@ -59,7 +59,8 @@ export default class CustomSelect extends React.Component {
                                 <a className="dropdown-item d-flex align-items-center gap-2 py-2" href="#"
                                     onClick={e => {
                                         e.preventDefault()
-                                        this.onChange(option.value)
+                                        if (option.value != shown_element.value)
+                                            this.onChange(option.value)
                                     }}
                                 >
                                     <option.output_element />
@@ -71,7 +72,8 @@ export default class CustomSelect extends React.Component {
                                 <a className="dropdown-item d-flex align-items-center gap-2 py-2 list-group-item-warning" href="#"
                                     onClick={e => {
                                         e.preventDefault()
-                                        this.onChange(this.props.none_option_value ?? this.default_props.none_option_value)
+                                        if (this.props.none_option_value != shown_element.value)
+                                            this.onChange(this.props.none_option_value ?? this.default_props.none_option_value)
                                     }}
                                 >
                                     {this.props.none_option_output_element ? <this.props.none_option_output_element /> : <this.default_props.none_option_output_element />}

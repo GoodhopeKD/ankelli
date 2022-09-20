@@ -95,6 +95,13 @@ class BCReceiveFundsScreen extends React.Component {
         if (show_list_refreshing_loader) this.setState({ list_refreshing: false })
     };
 
+    generateNewAddress = async () => {
+        this.setState({ btn_generating_address_working: true })
+        await _AssetAccountAddress.create({ asset_account_id: (this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == this.state.input.asset_code)).id })
+        await this.populateScreenWithItems()
+        this.setState({ btn_generating_address_working: false })
+    }
+
     componentDidMount = () => {
         _Session.refresh()
         this.props.auth_user.asset_accounts
@@ -131,7 +138,7 @@ class BCReceiveFundsScreen extends React.Component {
                     </div>
                     <div className="col-10">
                         {this.props.auth_user.asset_accounts.length !== 0 && <>
-                            <div className="row">
+                            <div className="row mb-3">
                                 <div className="col">
                                     <label htmlFor="input_asset_code" className="form-label">Target asset account</label>
                                     <CustomSelect
@@ -140,21 +147,18 @@ class BCReceiveFundsScreen extends React.Component {
                                         has_none_option={false}
                                         max_shown_options_count={5}
                                         selected_option_value={this.state.input.asset_code}
-                                        onChange={asset_code => { this.handleInputChange('asset_code', asset_code, true); this.handleInputChange('asset_account_id', this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset_code).blockchain_address, true) }}
+                                        onChange={asset_code => { this.setState({ list_loaded: false, asset_account_addresses_list_loaded: true }); this.handleInputChange('asset_code', asset_code, true); this.handleInputChange('asset_account_id', this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset_code).blockchain_address, true) }}
                                     />
                                 </div>
                                 <div className="col">
                                     <label htmlFor="output_current_balance" className="form-label">Current total balance</label>
                                     <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { total_balance_asset_value: 0 }).total_balance_asset_value, asset)}</span>
                                 </div>
-
-                                <div className="col">
-                                    <br />
-                                    <button className="btn btn-primary w-100" onClick={this.populateScreenWithItems}>Get Addresses</button>
-                                </div>
                             </div>
 
-                            <hr />
+                            <p style={{ whiteSpace: 'pre-wrap' }}><b><i>{asset.onchain_disclaimer}</i></b></p>
+
+                            <hr className="mb-0" />
 
                             <table className="table">
                                 <thead>
@@ -187,7 +191,13 @@ class BCReceiveFundsScreen extends React.Component {
                             <div className="d-flex gap-2" >
 
                                 <div>
-                                    <button type="button" className='btn btn-success'>Generate new</button>
+                                    <button type="button" className="btn btn-primary" onClick={this.populateScreenWithItems}>Get Addresses</button>
+                                </div>
+
+                                <div>
+                                    <button type="button" className='btn btn-success' onClick={this.generateNewAddress} disabled={!this.state.list_loaded || this.state.btn_generating_address_working}>
+                                        {this.state.btn_generating_address_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Generate new</>}
+                                    </button>
                                 </div>
 
                                 <div>

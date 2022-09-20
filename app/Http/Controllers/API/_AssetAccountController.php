@@ -95,13 +95,7 @@ class _AssetAccountController extends Controller
                     }
                 }
             } else {
-                $tatum_element = (new __TatumAPIController)->createVirtualAccountDepositAddress(new Request(['virtual_account_id' => $validated_data['tatum_virtual_account_id']]))->getData();
-                $asset_account_address_params = [
-                    'asset_account_id' => $element->id, 
-                    'blockchain_address' => $tatum_element->address,
-                    'tatum_derivation_key' => $tatum_element->derivationKey,
-                ];
-                (new _AssetAccountAddressController)->store(new Request($asset_account_address_params));
+                (new _AssetAccountAddressController)->store(new Request(['asset_account_id' => $element->id]));
             }
         }
         

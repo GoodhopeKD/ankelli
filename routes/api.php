@@ -61,7 +61,7 @@ Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_
     });
 
     Route::apiResource('asset_accounts', '_AssetAccountController')->only('store')->parameter('asset_accounts', 'id');
-    Route::apiResource('asset_account_addresses', '_AssetAccountAddressController')->only('index')->parameter('asset_account_addresses', 'id');
+    Route::apiResource('asset_account_addresses', '_AssetAccountAddressController')->only('store','index')->parameter('asset_account_addresses', 'id');
 
     // Auth:null accessible routes
     Route::get('availability_check/{check_param_name}/{check_param_value}', '__AuxController@availability_check')->name('availability_check');

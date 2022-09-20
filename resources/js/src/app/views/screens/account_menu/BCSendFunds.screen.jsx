@@ -80,6 +80,8 @@ class BCSendFundsScreen extends React.Component {
                                     </div>
                                 </div>
 
+                                <p style={{ whiteSpace: 'pre-wrap' }}><b><i>{asset.onchain_disclaimer}</i></b></p>
+
                                 <div className="mb-3">
                                     <label htmlFor="input_destination_blockchain_address" className="form-label">Destination blockchain address</label>
                                     <div className="input-group">
@@ -92,18 +94,24 @@ class BCSendFundsScreen extends React.Component {
                                     </div>
                                 </div>
 
-                                <div className="mb-3">
-                                    <label htmlFor="input_asset_value" className="form-label">Value of asset to transfer</label>
-                                    <div className="input-group">
-                                        <input
-                                            type="number" className="form-control" id="input_asset_value"
-                                            min="0"
-                                            required
-                                            max={parseFloat(window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset, false))}
-                                            step={asset.smallest_display_unit}
-                                            value={this.state.input.asset_value ? parseFloat(window.assetValueString(this.state.input.asset_value, asset, false)) : ''}
-                                            onChange={e => this.handleInputChange('asset_value', e.target.value)}
-                                        />
+                                <div className="row mb-3">
+                                    <div className="col">
+                                        <label htmlFor="input_asset_value" className="form-label">Value of asset to transfer</label>
+                                        <div className="input-group">
+                                            <input
+                                                type="number" className="form-control" id="input_asset_value"
+                                                min="0"
+                                                required
+                                                max={parseFloat(window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset, false))}
+                                                step={asset.smallest_display_unit}
+                                                value={this.state.input.asset_value ? parseFloat(window.assetValueString(this.state.input.asset_value, asset, false)) : ''}
+                                                onChange={e => this.handleInputChange('asset_value', e.target.value)}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div className="col">
+                                        <label htmlFor="output_current_balance" className="form-label">Total to be debited from account. (Incl. {this.props.sysconfig_params.platform_charge_asset_factor} platform charge) </label>
+                                        <span className="form-control" id='output_current_balance'>{window.assetValueString((this.state.input.asset_value ?? 0) * (1 + this.props.sysconfig_params.platform_charge_asset_factor), asset)}</span>
                                     </div>
                                 </div>
 
@@ -123,6 +131,7 @@ class BCSendFundsScreen extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
+        sysconfig_params: state.sysconfig_params_data,
         datalists: state.datalists_data,
         auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_accounts']) : null,
     }

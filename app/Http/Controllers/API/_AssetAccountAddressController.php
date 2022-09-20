@@ -5,6 +5,8 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Models\_AssetAccount;
+
 use App\Models\_AssetAccountAddress;
 use App\Http\Resources\_AssetAccountAddressResource;
 use App\Http\Resources\_AssetAccountAddressResourceCollection;
@@ -43,9 +45,16 @@ class _AssetAccountAddressController extends Controller
     {
         $validated_data = $request->validate([
             'asset_account_id' => ['required', 'integer', 'exists:__asset_accounts,id'],
-            'blockchain_address' => ['required', 'string'],
-            'tatum_derivation_key' => ['required', 'integer'],
+            'blockchain_address' => ['sometimes', 'string'],
+            'tatum_derivation_key' => ['sometimes', 'integer'],
         ]);
+
+        if ( !( isset($validated_data['blockchain_address']) && isset($validated_data['tatum_derivation_key'])) ){
+            $asset_account = _AssetAccount::find($validated_data['asset_account_id'])->makeVisible(['tatum_virtual_account_id']);
+            $tatum_element = (new __TatumAPIController)->createVirtualAccountDepositAddress(new Request(['virtual_account_id' => $asset_account->tatum_virtual_account_id]))->getData();
+            $validated_data['blockchain_address'] = $tatum_element->address;
+            $validated_data['tatum_derivation_key'] = $tatum_element->derivationKey;
+        }
 
         $element = _AssetAccountAddress::create($validated_data);
         // Handle _Log

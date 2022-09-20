@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('name', 64)->unique();
             $table->string('code', 64)->unique();
             $table->string('smallest_display_unit', 32); // unsignedDecimal
+            $table->text('onchain_disclaimer');
             $table->enum('_status', ['active', 'deactivated'])->default('active');
 
             $table->string('creator_username', 64)->nullable();

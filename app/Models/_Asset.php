@@ -20,6 +20,7 @@ class _Asset extends Model
         'name',
         'code',
         'smallest_display_unit',
+        'onchain_disclaimer',
         '_status',
         'creator_username',
     ];

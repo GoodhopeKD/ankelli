@@ -49,6 +49,7 @@ class _AssetController extends Controller
             'name' => ['required', 'string', 'max:64'],
             'code' => ['required', 'string', 'max:64'],
             'smallest_display_unit' => ['required', 'numeric'],
+            'onchain_disclaimer' => ['required', 'string'],
             '_status' => ['sometimes', 'string', Rule::in(['active', 'frozen'])],
         ]);
 
