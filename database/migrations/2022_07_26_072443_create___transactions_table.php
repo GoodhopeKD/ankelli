@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('__transactions', function (Blueprint $table) {
             $table->string('ref_code', 16)->primary();
-            $table->enum('context', ['onchain', 'offchain']);
+            $table->enum('txcontext', ['onchain', 'offchain']);
             $table->string('blockchain_txid', 255)->nullable();
             $table->string('tatum_reference', 255)->nullable();
             $table->string('session_token', 17)->nullable();

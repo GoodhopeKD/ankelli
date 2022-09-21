@@ -5,18 +5,19 @@ import { Link } from "react-router-dom";
 import SideBar from 'app/views/components/SideBar'
 import CustomSelect from 'app/views/components/CustomSelect'
 
-import { _User, _DateTime, _Session, _Notification, _Input } from 'app/controller'
+import { _User, _DateTime, _Session, _Notification, _Input, _Transaction } from 'app/controller'
 
 class BCSendFundsScreen extends React.Component {
 
     default_input = {
         asset_code: 'USDT',
-        asset_value: 0,
-        destination_blockchain_address: new _Input()
+        asset_value: 5,
+        destination_blockchain_address: new _Input('0x06d64d1d5eb807e10eb59f38a448830d9888d7da'),
+        source_user_password: new _Input('Def-Pass#123'),
+        sender_note: new _Input('Test send.'),
     }
 
     state = {
-        btn_create_wallet_working: false,
         input: _.cloneDeep(this.default_input),
         errors: [],
     }
@@ -31,6 +32,41 @@ class BCSendFundsScreen extends React.Component {
             input[fields[0]][fields[1]] = val
         }
         this.setState({ input })
+    }
+
+    handleSubmit = async () => {
+        const errors = []
+        const input = this.state.input
+
+        if (errors.length === 0) {
+            this.setState({ errors, source_user_password_prompt_open: true }) // Remove input error indicators under text inputs            
+            bootstrap.Modal.getOrCreateInstance(document.querySelector('#password_confirmation_modal')).show();
+        } else {
+            this.setState({ errors, input })
+        }
+    }
+
+    handleSubmit2 = async () => {
+        this.setState({ btn_send_funds_working: true })
+        const errors = []
+        const input = this.state.input
+
+        if (!input.source_user_password.isValid('password')) { errors.push("Invalid password") }
+
+        if (errors.length === 0) {
+            this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs 
+            const password_confirmation_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#password_confirmation_modal'));
+            _Transaction.process(_Input.flatten(input))
+                .then(() => { password_confirmation_modal.hide(); _Notification.flash({ message: 'Funds sent.', duration: 2000 }); _Session.refresh(); this.setState({ input: _.cloneDeep(this.default_input) }) })
+                .catch((error) => {
+                    if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
+                        Object.keys(error.request._response.errors).forEach(input_key => { error.request._response.errors[input_key].forEach(input_key_error => { errors.push(input_key_error) }) })
+                    } else { errors.push(error.message) }
+                    this.setState({ btn_send_funds_working: false, errors })
+                })
+        } else {
+            this.setState({ btn_send_funds_working: false, errors, input })
+        }
     }
 
     componentDidMount = () => {
@@ -100,11 +136,11 @@ class BCSendFundsScreen extends React.Component {
                                         <div className="input-group">
                                             <input
                                                 type="number" className="form-control" id="input_asset_value"
-                                                min="0"
+                                                min={asset.smallest_display_unit}
                                                 required
-                                                max={parseFloat(window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset, false))}
+                                                max={parseFloat(window.assetValueString(((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value) / (1 + this.props.sysconfig_params.platform_charge_asset_factor), asset, false))}
                                                 step={asset.smallest_display_unit}
-                                                value={this.state.input.asset_value ? parseFloat(window.assetValueString(this.state.input.asset_value, asset, false)) : ''}
+                                                value={this.state.input.asset_value ? parseFloat(window.assetValueString(this.state.input.asset_value, asset, false)) : 0}
                                                 onChange={e => this.handleInputChange('asset_value', e.target.value)}
                                             />
                                         </div>
@@ -115,8 +151,63 @@ class BCSendFundsScreen extends React.Component {
                                     </div>
                                 </div>
 
-                                <button type="button" className='btn btn-danger'>Transfer funds</button>
+                                <div className="mb-3">
+                                    <label htmlFor="input_sender_note" className="form-label">Sender note</label>
+                                    <div className="input-group">
+                                        <input
+                                            type="text" className="form-control" id="input_sender_note"
+                                            value={this.state.input.sender_note + ''}
+                                            required
+                                            onChange={e => this.handleInputChange('sender_note', e.target.value)}
+                                        />
+                                    </div>
+                                </div>
+
+                                <button type="submit" className="btn btn-primary" disabled={this.state.btn_send_funds_working} >
+                                    {this.state.btn_send_funds_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Send Funds</>}
+                                </button>
                             </form>
+
+                            <div className="modal fade" id="password_confirmation_modal" tabIndex="-1" >
+                                <div className="modal-dialog modal-dialog-centered">
+                                    <div className="modal-content">
+                                        <div className="modal-header">
+                                            <h5 className="modal-title" >Password confirmation</h5>
+                                            <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <form onSubmit={e => { e.preventDefault(); this.handleSubmit2() }}>
+                                            <div className="modal-body">
+                                                <p>{window.assetValueString(this.state.input.asset_value * (1 + this.props.sysconfig_params.platform_charge_asset_factor), asset)} is about to be debited from your account. Enter password to continue.</p>
+                                                <div className="form-floating mb-3">
+                                                    <input
+                                                        type="password"
+                                                        className={"form-control rounded-3" + (this.state.input.source_user_password.failedValidation() ? ' is-invalid' : '')}
+                                                        id="input_source_user_password"
+                                                        value={this.state.input.source_user_password + ''}
+                                                        onChange={e => this.handleInputChange('source_user_password', e.target.value)}
+                                                        required={this.state.source_user_password_prompt_open}
+                                                        placeholder="Pasword"
+                                                    />
+                                                    <button className="btn btn-sm" type="button" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_source_user_password').setAttribute('type', document.getElementById('input_source_user_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
+                                                    <label htmlFor="input_source_user_password">Password</label>
+                                                </div>
+
+                                                <div className="mb-1">
+                                                    {this.state.errors.map((error, key) => (
+                                                        <div key={key}>• <span style={{ color: 'red' }}>{error}</span></div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div className="modal-footer justify-content-between">
+                                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" >Cancel</button>
+                                                <button type="submit" className="btn btn-primary" disabled={this.state.btn_send_funds_working} >
+                                                    {this.state.btn_send_funds_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Send Funds</>}
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
 
                             <hr />
 

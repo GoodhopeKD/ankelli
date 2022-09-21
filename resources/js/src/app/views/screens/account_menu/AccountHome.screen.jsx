@@ -42,7 +42,9 @@ class AccountHomeScreen extends React.Component {
             const add_new_wallet_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#add_new_wallet_modal'));
             _AssetAccount.create({ ..._Input.flatten(input), user_username: this.props.auth_user.username }).then(() => { add_new_wallet_modal.hide(); _Session.refresh(); _Notification.flash({ message: 'Asset wallet created', duration: 2000 }); this.setState({ btn_create_wallet_working, input: _.cloneDeep(this.default_input) }) })
                 .catch((error) => {
-                    errors.push(error.message)
+                    if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
+                        Object.keys(error.request._response.errors).forEach(input_key => { error.request._response.errors[input_key].forEach(input_key_error => { errors.push(input_key_error) }) })
+                    } else { errors.push(error.message) }
                     this.setState({ btn_create_wallet_working, errors })
                 })
         } else {

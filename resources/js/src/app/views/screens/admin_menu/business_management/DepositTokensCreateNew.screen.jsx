@@ -66,7 +66,9 @@ class DepositTokensCreateNewScreen extends React.Component {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
             _DepositToken.create(_Input.flatten(input)).then(() => { _Notification.flash({ message: 'Deposit token created', duration: 2000 }); this.props.navigate(-1) })
                 .catch((error) => {
-                    errors.push(error.message)
+                    if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
+                        Object.keys(error.request._response.errors).forEach(input_key => { error.request._response.errors[input_key].forEach(input_key_error => { errors.push(input_key_error) }) })
+                    } else { errors.push(error.message) }
                     this.setState({ btn_create_deposit_token_working, errors, input: _.cloneDeep(this.default_input) })
                 })
         } else {
@@ -163,7 +165,7 @@ class DepositTokensCreateNewScreen extends React.Component {
                                         <input type="number" className="form-control" id={'input_asset_value'}
                                             required
                                             value={this.state.input.asset_value}
-                                            min={0}
+                                            min={asset.smallest_display_unit}
                                             max={window.assetValueString((this.state.ankelli_reserves_user_asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset, false)}
                                             onChange={e => this.handleInputChange('asset_value', e.target.value)}
                                         />

@@ -20,7 +20,6 @@ class OffersSingleViewScreen extends React.Component {
         min_currency_amount: 0,
         max_currency_amount: 0,
 
-        source_user_password_prompt_open: false,
         input: {
             source_user_password: new _Input('Def-Pass#123'),
             pymt_details: {}
@@ -113,7 +112,9 @@ class OffersSingleViewScreen extends React.Component {
             this.focused_offer.accept(this.state.currency_amount, _input.pymt_details, _input.source_user_password)
                 .then(() => { password_confirmation_modal.hide(); _Notification.flash({ message: 'Trade initiated.', duration: 2000 }); this.props.navigate('/trades') })
                 .catch((error) => {
-                    errors.push(error.message)
+                    if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
+                        Object.keys(error.request._response.errors).forEach(input_key => { error.request._response.errors[input_key].forEach(input_key_error => { errors.push(input_key_error) }) })
+                    } else { errors.push(error.message) }
                     this.setState({ btn_proceed_working: false, errors })
                 })
         } else {

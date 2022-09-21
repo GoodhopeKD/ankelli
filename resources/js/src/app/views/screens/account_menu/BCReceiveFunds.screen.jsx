@@ -164,7 +164,7 @@ class BCReceiveFundsScreen extends React.Component {
                                 <thead>
                                     <tr>
                                         <th scope="col">Address</th>
-                                        <th scope="col">Transaction count</th>
+                                        <th scope="col">Onchain transaction count</th>
                                         <th scope="col">Created datetime</th>
                                         <th scope="col">Last used datetime</th>
                                     </tr>
@@ -180,7 +180,7 @@ class BCReceiveFundsScreen extends React.Component {
                                                     </span>
                                                 </div>
                                             </td>
-                                            <td className="align-middle">{asset_account_address.tx_count}</td>
+                                            <td className="align-middle">{asset_account_address.onchain_txcount}</td>
                                             <td className="align-middle">{window.ucfirst(new _DateTime(asset_account_address.created_datetime).prettyDatetime())}</td>
                                             <td className="align-middle">{window.isset(asset_account_address.last_active_datetime) ? window.ucfirst(new _DateTime(asset_account_address.last_active_datetime).prettyDatetime()) : '-'}</td>
                                         </tr>

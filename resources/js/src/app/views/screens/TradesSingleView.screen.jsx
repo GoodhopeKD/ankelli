@@ -55,7 +55,9 @@ class TradesSingleViewScreen extends React.Component {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
             this.focused_trade.sendMessage(_Input.flatten(input)).then(() => { this.state.input.message_attachment = undefined; this.state.input.message_body = new _Input(); _Notification.flash({ message: 'Message sent', duration: 2000 }); this.componentDidMount(); this.setState({ btn_send_message_working, errors }) })
                 .catch((error) => {
-                    errors.push(error.message)
+                    if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
+                        Object.keys(error.request._response.errors).forEach(input_key => { error.request._response.errors[input_key].forEach(input_key_error => { errors.push(input_key_error) }) })
+                    } else { errors.push(error.message) }
                     this.setState({ btn_send_message_working, errors })
                 })
         } else {
@@ -75,7 +77,9 @@ class TradesSingleViewScreen extends React.Component {
             this.focused_trade.confirmPymt(_input.source_user_password)
                 .then(() => { password_confirmation_modal.hide(); this.setState({ btn_confirm_pymt_working: false }); _Notification.flash({ message: 'Payment confirmed.', duration: 2000 }); })
                 .catch((error) => {
-                    errors.push(error.message)
+                    if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
+                        Object.keys(error.request._response.errors).forEach(input_key => { error.request._response.errors[input_key].forEach(input_key_error => { errors.push(input_key_error) }) })
+                    } else { errors.push(error.message) }
                     this.setState({ btn_confirm_pymt_working: false, errors })
                 })
         } else {

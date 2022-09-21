@@ -43,7 +43,9 @@ class DepositTokenTopupScreen extends React.Component {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
             _DepositToken.use(_Input.flatten(input)).then(() => { _Notification.flash({ message: 'Deposit successful', duration: 2000 }); this.setState({ btn_attempt_token_topup_working, input: _.cloneDeep(this.default_input) }) })
                 .catch((error) => {
-                    errors.push(error.message)
+                    if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
+                        Object.keys(error.request._response.errors).forEach(input_key => { error.request._response.errors[input_key].forEach(input_key_error => { errors.push(input_key_error) }) })
+                    } else { errors.push(error.message) }
                     this.setState({ btn_attempt_token_topup_working, errors })
                 })
         } else {

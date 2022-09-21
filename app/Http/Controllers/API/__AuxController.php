@@ -455,7 +455,7 @@ class __AuxController extends Controller
         foreach ($internalisations as $key => $internalisation) {
             session()->put('api_auth_user_username', $internalisation[0]);
             (new _TransactionController)->store( new Request([
-                'context' => 'onchain',
+                'txcontext' => 'onchain',
                 'blockchain_txid' => $internalisation[3],
                 'description' => $internalisation[2],
                 'operation_slug' => 'internalisation',

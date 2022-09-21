@@ -18,9 +18,10 @@ class _AssetAccountAddress extends Model
      */
     protected $fillable = [
         'asset_account_id',
+        'user_username',
         'blockchain_address',
         'tatum_derivation_key',
-        'tx_count',
+        'onchain_txcount',
         'last_active_datetime',
     ];
 }

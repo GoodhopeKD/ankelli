@@ -14,6 +14,24 @@ String.prototype.capitalize = function () {
 	}).join(' ');
 };
 
+window.isJson = function (item) {
+	item = typeof item !== "string"
+		? JSON.stringify(item)
+		: item;
+
+	try {
+		item = JSON.parse(item);
+	} catch (e) {
+		return false;
+	}
+
+	if (typeof item === "object" && item !== null) {
+		return true;
+	}
+
+	return false;
+}
+
 window.ucfirst = function (s) {
 	return s && s.length ? s[0].toUpperCase() + s.slice(1) : ''
 }

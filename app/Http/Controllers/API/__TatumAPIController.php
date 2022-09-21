@@ -16,14 +16,12 @@ class __TatumAPIController extends Controller
 
     private $supported_assets = [
         'USDT' => [
-            'base_chain' => 'ETH',
-            'api_code' => 'USDT',
-
             'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent',
             'xpub' => 'xpub6ERKWaEy6mLBzYWoo5P19QTexUufpijY5qod5xaH2ksiYtekeFYAoT3JoK87XKULgG7g3yvvxKwsGEVdkTqcC3BFjthMtJendsN1WH9nHoX',
 
             'blockchain_wallet_generate_url'    => 'https://api-eu1.tatum.io/v3/ethereum/wallet?type=testnet',
-            'blockchain_transfer_to_url'        => 'https://api-eu1.tatum.io/v3/offchain/ethereum/erc20/transfer?type=testnet',
+            'blockchain_transfer_to_url'        => 'https://api-eu1.tatum.io/v3/offchain/ethereum/transfer?type=testnet',
+            //'blockchain_transfer_to_url'        => 'https://api-eu1.tatum.io/v3/offchain/ethereum/erc20/transfer?type=testnet',
         ],
     ];
 
@@ -166,8 +164,10 @@ class __TatumAPIController extends Controller
             $validated_data['customerId'] = $this->saved_customer_ids[$validated_data['externalId']];
         }
 
+        $asset = null;
         if (isset($validated_data['asset_code'])){
-            $validated_data['currency'] = $this->supported_assets[$validated_data['asset_code']]['base_chain'];
+            $asset = _Asset::firstWhere('code',$validated_data['asset_code'])->makeVisible(['tatum_xpub']);
+            $validated_data['currency'] = $asset->tatum_currency;
         }
 
         $curl = null;
@@ -215,8 +215,8 @@ class __TatumAPIController extends Controller
                 return abort($decoded_response->statusCode, $decoded_response->message);
 
             if ((isset($validated_data['customerId'])) && isset($validated_data['asset_code']) && is_array($decoded_response) && count($decoded_response)){
-                $decoded_response = array_filter($decoded_response, function($item) use($validated_data){
-                    return $item->currency = $this->supported_assets[$validated_data['asset_code']]['base_chain'];
+                $decoded_response = array_filter($decoded_response, function($item) use($asset){
+                    return $item->currency = $asset->tatum_currency;
                 });
             }
             return response()->json( $decoded_response );
@@ -234,14 +234,14 @@ class __TatumAPIController extends Controller
     public function createVirtualAccountXpub(Request $request)
     {
         $validated_data = $request->validate([
-            'user_username' => ['required', 'exists:__users,username', 'string'],
+            'user_username' => ['required', 'string', 'exists:__users,username'],
             'asset_code' => ['required', 'exists:__assets,code', 'string'],
         ]);
 
         $asset = _Asset::firstWhere('code',$validated_data['asset_code'])->makeVisible(['tatum_xpub']);
 
         $payload = [
-            "currency" => $this->supported_assets[$validated_data['asset_code']]['base_chain'],
+            "currency" => $asset->tatum_currency,
             "xpub" => $asset->tatum_xpub,
             "customer" => [
                 "externalId" => $validated_data['user_username'],
@@ -431,7 +431,7 @@ class __TatumAPIController extends Controller
         $asset = _Asset::firstWhere('code',$validated_data['asset_code'])->makeVisible(['tatum_mnemonic']);
 
         $payload = [
-            "currency" => $this->supported_assets[$validated_data['asset_code']]['currency'],
+            "currency" => $asset->tatum_currency,
             "address" => $validated_data['address'],
             "amount" => $validated_data['amount'],
             "index" => $validated_data['index'],
@@ -498,12 +498,12 @@ class __TatumAPIController extends Controller
     {
         $validated_data = $request->validate([
             'virtual_account_id' => ['required', 'string'],
-            //'currency' => ['required', 'string'],
+            'currency' => ['required', 'string'],
         ]);
 
         $payload = [
             'id' => $validated_data['virtual_account_id'],
-            //'currency' => $validated_data['currency'],
+            'currency' => $validated_data['currency'],
         ];
         
         $curl = curl_init();

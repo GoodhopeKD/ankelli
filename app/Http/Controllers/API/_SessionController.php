@@ -77,7 +77,7 @@ class _SessionController extends Controller
     {
         $validated_data = $request->validate([
             'token' => ['required', 'exists:__sessions', 'string'],
-            'user_username' => ['required', 'exists:__users,username', 'string'],
+            'user_username' => ['required', 'string', 'exists:__users,username'],
             'device_info' => ['required', 'array'],
             'agent_app_info' => ['required', 'array'],
         ]);
@@ -149,7 +149,7 @@ class _SessionController extends Controller
     {
         $validated_data = $request->validate([
             'token' => ['required', 'exists:__sessions', 'string'],
-            'user_username' => ['required', 'exists:__users,username', 'string'],
+            'user_username' => ['required', 'string', 'exists:__users,username'],
         ]);
 
         $active_session_data = $validated_data;
@@ -199,7 +199,7 @@ class _SessionController extends Controller
     public function update(Request $request, $token)
     {
         $validated_data = $request->validate([
-            'user_username' => ['sometimes', 'required', 'exists:__users,username', 'string'],
+            'user_username' => ['sometimes', 'required', 'string', 'exists:__users,username'],
             'device_info' => ['sometimes', 'array'],
             'agent_app_info' => ['sometimes', 'array'],
             '_status' => ['string', Rule::in(['empty', 'active', 'ended'])],

@@ -47,7 +47,7 @@ class _UserGroupMembershipController extends Controller
     public function store(Request $request)
     {
         $validated_data = $request->validate([
-            'user_username' => ['required', 'exists:__users,username', 'string'],
+            'user_username' => ['required', 'string', 'exists:__users,username'],
             'user_group_slug' => ['required', 'exists:__user_groups,slug', 'string'],
             '_status' => ['sometimes', 'string', Rule::in(['active', 'deactivated'])],
         ]);

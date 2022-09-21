@@ -292,7 +292,7 @@ class _TradeController extends Controller
             // End unlock asset from escrow
             
             (new _TransactionController)->store( new Request([
-                'context' => 'offchain',
+                'txcontext' => 'offchain',
                 'description' => 'Asset release for trade ' . $ref_code . '',
                 'operation_slug' => 'trade_asset_release',
                 'source_user_username' => $seller_username, 

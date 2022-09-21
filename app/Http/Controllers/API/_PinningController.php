@@ -21,7 +21,7 @@ class _PinningController extends Controller
     public function store(Request $request)
     {
         $validated_data = $request->validate([
-            'user_username' => ['required', 'exists:__users,username', 'string'],
+            'user_username' => ['required', 'string', 'exists:__users,username'],
             'item_table' => ['required', 'string', Rule::in(['__listings', '__events'])],
             'item_reference_code' => ['required', 'exists:' . $request->item_table . ',reference_code', 'string'],
             'pinning_type'      => ['required', 'string', Rule::in(['favourite', 'cart'])],

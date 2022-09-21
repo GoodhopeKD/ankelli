@@ -57,7 +57,9 @@ export default withRouter(class SignInModal extends React.Component {
             const signin_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#signin_modal'));
             _User.signIn(_Input.flatten(input)).then(() => { signin_modal.hide(); _Notification.flash({ message: 'Sign in successful!', duration: 750 }) })
                 .catch((error) => {
-                    errors.push(error.message)
+                    if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
+                        Object.keys(error.request._response.errors).forEach(input_key => { error.request._response.errors[input_key].forEach(input_key_error => { errors.push(input_key_error) }) })
+                    } else { errors.push(error.message) }
                     input.username.clearValidation()
                     input.password.clearValidation()
                     this.setState({ btn_signin_working, errors, input })

@@ -45,6 +45,7 @@ class _AssetAccountAddressController extends Controller
     {
         $validated_data = $request->validate([
             'asset_account_id' => ['required', 'integer', 'exists:__asset_accounts,id'],
+            'user_username' => ['required', 'string', 'exists:__users,username'],
             'blockchain_address' => ['sometimes', 'string'],
             'tatum_derivation_key' => ['sometimes', 'integer'],
         ]);

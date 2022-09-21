@@ -78,7 +78,9 @@ class OffersCreateNewScreen extends React.Component {
 
             _Offer.create(_input).then(() => { _Notification.flash({ message: 'Offer posted successfully!', duration: 2000 }); this.props.navigate('/my-offers') })
                 .catch((error) => {
-                    errors.push(error.message)
+                    if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
+                        Object.keys(error.request._response.errors).forEach(input_key => { error.request._response.errors[input_key].forEach(input_key_error => { errors.push(input_key_error) }) })
+                    } else { errors.push(error.message) }
                     this.setState({ btn_post_offer_working, errors })
                 })
         } else {
@@ -259,7 +261,7 @@ class OffersCreateNewScreen extends React.Component {
                                     <input
 
                                         type="number" className="form-control" id="input_offer_price"
-                                        min="0"
+                                        min="0.01"
                                         step="0.01"
                                         value={this.state.input.offer_price + ''}
                                         required
@@ -276,7 +278,7 @@ class OffersCreateNewScreen extends React.Component {
                                         {currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
                                         <input
                                             type="number" className="form-control" id="input_min_purchase_amount"
-                                            min="0"
+                                            min="0.01"
                                             value={this.state.input.min_purchase_amount + ''}
                                             required
                                             onChange={e => this.handleInputChange('min_purchase_amount', e.target.value)}
@@ -306,7 +308,7 @@ class OffersCreateNewScreen extends React.Component {
                                     <div className="input-group">
                                         <input
                                             type="number" className="form-control" id="input_min_sell_value"
-                                            min="0"
+                                            min={asset.smallest_display_unit}
                                             max={max_offerable_asset_value}
                                             value={this.state.input.min_sell_value + ''}
                                             required

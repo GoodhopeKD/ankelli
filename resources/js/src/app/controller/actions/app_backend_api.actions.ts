@@ -158,7 +158,7 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
                             request: {
                                 _status: e.request.status,
                                 _url: e.request.url ?? e.request.responseURL,
-                                _response: typeof e.request.response === 'string' && e.request.response.length < 500 ? e.request.response : undefined,
+                                _response: (window as any).isJson(e.request.response) ? JSON.parse(e.request.response) : (typeof e.request.response === 'string' && e.request.response.length < 500 ? e.request.response : undefined),
                                 _method: e.request.method,
                             },
                             response: e.response.data ? {

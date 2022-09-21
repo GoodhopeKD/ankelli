@@ -4,6 +4,7 @@ import _DateTime from 'app/controller/wrappers/auxilliary/_DateTime'
 import _Wrapper_ from 'app/controller/wrappers/_Wrapper_'
 /* Actions, Configs imports */
 import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend_api.actions'
+import { mainLaravelDBRestAPICallWrapper } from 'app/controller/actions/rest_api.actions'
 
 /*
     Type Definitions
@@ -16,9 +17,9 @@ type get_collection_params = {
 
 /* Result Objects */
 type transfer_result_t = {
-    user_username : string,
-    old_asset_value : number,
-    new_asset_value : number,
+    user_username: string,
+    old_asset_value: number,
+    new_asset_value: number,
 }[]
 
 /* 
@@ -41,8 +42,8 @@ export const _TransactionRespObj = {
 */
 export default class _Transaction extends _Wrapper_ implements Omit<typeof _TransactionRespObj, casts_t> {
     ref_code: string | null = null
-    session_token: string| null = null
-    description: string| null = null
+    session_token: string | null = null
+    description: string | null = null
     source_user_username: string | null = null
     destination_user_username: string | null = null
     asset_code: string | null = null
@@ -60,5 +61,17 @@ export default class _Transaction extends _Wrapper_ implements Omit<typeof _Tran
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
         return this._mainLaravelDBAPIGetCollection('transactions', params, page_select, per_page)
+    }
+
+    public static async process(data: { asset_code: string, asset_value: number, destination_blockchain_address: string, sender_note: string, source_user_password: string }) {
+        return await mainLaravelDBRestAPICallWrapper
+            .dispatch({
+                type: 'APP_BACKEND_API_CALL',
+                method: 'POST',
+                endpoint: 'transactions/process',
+                data
+            })
+            .then((resp: any) => { return Promise.resolve(resp) })
+            .catch((e: any) => { return Promise.reject(e) })
     }
 }

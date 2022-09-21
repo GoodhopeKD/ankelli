@@ -21,7 +21,7 @@ export const _AssetAccountAddressRespObj = {
     asset_account_id: undefined as undefined | null | number,
     blockchain_address: undefined as undefined | null | string,
     tatum_derivation_key: undefined as undefined | null | number,
-    tx_count: undefined as undefined | null | number,
+    onchain_txcount: undefined as undefined | null | number,
 
     created_datetime: undefined as undefined | null | string,
     last_active_datetime: undefined as undefined | null | string,
@@ -36,7 +36,7 @@ export default class _AssetAccountAddress extends _Wrapper_ implements Omit<type
     asset_account_id: number | null = null
     blockchain_address: string | null = null
     tatum_derivation_key: number | null = null
-    tx_count: number | null = null
+    onchain_txcount: number | null = null
 
     created_datetime: _DateTime | null = null
     last_active_datetime: _DateTime | null = null

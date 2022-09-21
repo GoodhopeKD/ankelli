@@ -44,7 +44,7 @@ class _NotificationController extends Controller
     public function store(Request $request)
     {
         $validated_data = $request->validate([
-            'user_username' => ['required', 'exists:__users,username', 'string'],
+            'user_username' => ['required', 'string', 'exists:__users,username'],
             'content' => ['required', 'array'],
         ]);
         // Create uid

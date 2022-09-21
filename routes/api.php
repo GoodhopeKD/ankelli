@@ -89,8 +89,9 @@ Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_
         Route::apiResource('offers', '_OfferController')->only(['store', 'update', 'destroy'])->parameter('offers', 'ref_code');
         Route::apiResource('trades', '_TradeController')->except(['destroy'])->parameter('trades', 'ref_code');
         Route::apiResource('transactions', '_TransactionController')->only(['index'])->parameter('transactions', 'ref_code');
-        Route::post('deposit_tokens/use/{token}', '_DepositTokenController@use')->name('use_deposit_token');
+        Route::post('transactions/process', '_TransactionController@process')->name('process_transaction');
         Route::apiResource('deposit_tokens', '_DepositTokenController')->parameter('deposit_tokens', 'token');
+        Route::post('deposit_tokens/use/{token}', '_DepositTokenController@use')->name('use_deposit_token');
         Route::apiResource('asset_accounts', '_AssetAccountController')->only('store')->parameter('asset_accounts', 'id');
         Route::apiResource('asset_account_addresses', '_AssetAccountAddressController')->only('store','index')->parameter('asset_account_addresses', 'id');
         Route::apiResource('phone_nos', '_PhoneNoController')->parameter('phone_nos', 'id');

@@ -20,7 +20,7 @@ class _Transaction extends Model
      */
     protected $fillable = [
         'ref_code',
-        'context',
+        'txcontext',
         'blockchain_txid',
         'tatum_reference',
         'session_token',

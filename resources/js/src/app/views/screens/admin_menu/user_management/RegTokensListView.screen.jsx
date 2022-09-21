@@ -120,7 +120,9 @@ export default class RegTokensListViewScreen extends React.Component {
             const add_new_reg_token_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#add_new_reg_token_modal'));
             _RegToken.create(_Input.flatten(input)).then(() => { add_new_reg_token_modal.hide(); this.setState({ btn_create_reg_token_working, errors, input: _.cloneDeep(this.default_input) }); this.should_load_items = true; this.populateScreenWithItems(); _Notification.flash({ message: 'Reg token created', duration: 2000 }); })
                 .catch((error) => {
-                    errors.push(error.message)
+                    if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
+                        Object.keys(error.request._response.errors).forEach(input_key => { error.request._response.errors[input_key].forEach(input_key_error => { errors.push(input_key_error) }) })
+                    } else { errors.push(error.message) }
                     this.setState({ btn_create_reg_token_working, errors, input })
                 })
         } else {

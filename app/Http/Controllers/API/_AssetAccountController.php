@@ -43,7 +43,7 @@ class _AssetAccountController extends Controller
 
     public function get_transactions()
     {
-        return (new __TatumAPIController)->getVirtualAccountTransactions(new Request(['virtual_account_id' => '632970417b09c5d6322bc225']))->getData();
+        return (new __TatumAPIController)->getVirtualAccountTransactions(new Request(['virtual_account_id' => '632970417b09c5d6322bc225', 'currency' => 'ETH']))->getData();
     }
 
     /**
@@ -55,7 +55,7 @@ class _AssetAccountController extends Controller
     public function store(Request $request)
     {
         $validated_data = $request->validate([
-            'user_username' => ['required', 'exists:__users,username', 'string'],
+            'user_username' => ['required', 'string', 'exists:__users,username'],
             'asset_code' => ['required', 'exists:__assets,code', 'string'],
             '_status' => ['sometimes', 'string', Rule::in(['active', 'frozen'])],
         ]);
@@ -92,6 +92,7 @@ class _AssetAccountController extends Controller
                 foreach ($asset_account_addresses as $asset_account_address) {
                     $asset_account_address_params = [
                         'asset_account_id' => $element->id, 
+                        'user_username' => $validated_data['user_username'],
                         'blockchain_address' => $asset_account_address->address,
                         'tatum_derivation_key' => $asset_account_address->derivationKey,
                     ];
@@ -100,7 +101,7 @@ class _AssetAccountController extends Controller
                     }
                 }
             } else {
-                (new _AssetAccountAddressController)->store(new Request(['asset_account_id' => $element->id]));
+                (new _AssetAccountAddressController)->store(new Request(['asset_account_id' => $element->id, 'user_username' => $validated_data['user_username']]));
             }
         }
         
