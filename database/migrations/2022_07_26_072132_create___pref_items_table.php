@@ -161,7 +161,7 @@ return new class extends Migration
                 'creator_username' => 'system',
             ],
             [
-                'key_name' => 'Token registration max use count',
+                'key_name' => 'Registration token max use count',
                 'key_slug' => 'reg_token_max_use_count',
                 'value' => 10,
                 'value_type' => 'integer',

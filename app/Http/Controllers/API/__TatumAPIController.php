@@ -488,8 +488,8 @@ class __TatumAPIController extends Controller
     }
 
     /**
-     * Send payment
-     * https://apidoc.tatum.io/tag/Transaction#operation/sendTransaction
+     * Find transactions for account.
+     * https://apidoc.tatum.io/tag/Transaction#operation/getTransactionsByAccountId
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response

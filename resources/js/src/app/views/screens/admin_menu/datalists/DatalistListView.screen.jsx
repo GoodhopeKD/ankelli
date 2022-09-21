@@ -140,6 +140,7 @@ export default class DatalistListViewScreen extends React.Component {
                                             <th scope="col">Name</th>
                                             <th scope="col">Code</th>
                                             <th scope="col">Smallest Display Unit</th>
+                                            <th scope="col">Onchain Disclaimer</th>
                                             <th scope="col">Status</th>
                                         </>}
                                         {this.props.title == 'Currencies List' && <>
@@ -179,6 +180,7 @@ export default class DatalistListViewScreen extends React.Component {
                                                     <td className="align-middle">{datalist_item.name}</td>
                                                     <td className="align-middle">{datalist_item.code}</td>
                                                     <td className="align-middle">{datalist_item.smallest_display_unit}</td>
+                                                    <td className="align-middle" style={{ whiteSpace: 'pre-wrap' }}>{datalist_item.onchain_disclaimer}</td>
                                                     <td className="align-middle">{datalist_item._status}</td>
                                                 </>}
                                                 {this.props.title == 'Currencies List' && <>
