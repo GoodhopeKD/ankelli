@@ -263,11 +263,12 @@ class _TransactionController extends Controller
         $transactions = (new __TatumAPIController)->getVirtualAccountTransactions(new Request(['virtual_account_id' => $validated_data['accountId'], 'currency' => $validated_data['currency']]))->getData();
         $actual_transaction = null;
         if ( count($transactions) ){
-            $found_key = array_search($transactions, function($transaction) use($validated_data){ return $transaction->txId == $validated_data['txId']});
-            $actual_transaction = $found_key ? 
+            $found_key = array_search($transactions, function($transaction) use($validated_data){ return $transaction->txId == $validated_data['txId']; });
+            $actual_transaction = is_numeric( $found_key ) ? $transactions[$found_key] : null;
         }
 
-        return;
+        //$validated_data = $actual_transaction;
+
         $destination_user_asset_account = _AssetAccount::firstWhere(['tatum_virtual_account_id' => $validated_data['accountId']]);
 
         $tatum_txrecon_data = [

@@ -52,7 +52,7 @@ class _FileController extends Controller
             $file_data = [];
             $file_data['filesize'] = $file->getSize();
             $file_data['original_filename'] = $file->getClientOriginalName();
-            $file_data['uri'] = 'https://ankelli.test' . Storage::url( $upload_dir_path . '/' . $filename );
+            $file_data['uri'] = env('APP_URL') . Storage::url( $upload_dir_path . '/' . $filename );
             array_push( $response['files'], $file_data );
         }
         $response["success"] = true;

@@ -215,9 +215,7 @@ class __TatumAPIController extends Controller
                 return abort($decoded_response->statusCode, $decoded_response->message);
 
             if ((isset($validated_data['customerId'])) && isset($validated_data['asset_code']) && is_array($decoded_response) && count($decoded_response)){
-                $decoded_response = array_filter($decoded_response, function($item) use($asset){
-                    return $item->currency = $asset->tatum_currency;
-                });
+                $decoded_response = array_filter($decoded_response, function($item) use($asset){ return $item->currency = $asset->tatum_currency; });
             }
             return response()->json( $decoded_response );
         }

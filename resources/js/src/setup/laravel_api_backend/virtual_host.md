@@ -180,6 +180,7 @@ On MacOS
 
 ```properties
 mkdir -p /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt
+chflags hidden /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt
 mkcert -cert-file /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/ankelli.test.pem -key-file /Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/ankelli.test-key.pem ankelli.test *.ankelli.test
 mkcert -install
 ```
@@ -187,7 +188,8 @@ mkcert -install
 On Windows
 
 ```properties
-mkdir C:\xampp\htdocs\ankelli\.crt
+if not exist C:\xampp\htdocs\ankelli\.crt mkdir C:\xampp\htdocs\ankelli\.crt
+attrib +h C:\xampp\htdocs\ankelli\.crt
 mkcert -cert-file C:\xampp\htdocs\ankelli\.crt\ankelli.test.pem -key-file C:\xampp\htdocs\ankelli\.crt\ankelli.test-key.pem ankelli.test *.ankelli.test
 mkcert -install
 ```
