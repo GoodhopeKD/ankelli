@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('__transactions', function (Blueprint $table) {
             $table->string('ref_code', 16)->primary();
             $table->enum('txcontext', ['onchain', 'offchain']);
-            $table->string('blockchain_txid', 255)->nullable();
+            $table->string('blockchain_txid', 255)->unique()->nullable();
             $table->string('tatum_reference', 255)->nullable();
-            $table->string('session_token', 17)->nullable();
+            $table->string('session_token', 16)->nullable();
             $table->foreign('session_token')
                     ->references('token')
                     ->on('__sessions')
@@ -39,7 +39,12 @@ return new class extends Migration
                     ->on('__users')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->string('destination_blockchain_address', 96)->nullable(); 
+            $table->string('destination_blockchain_address', 96)->nullable();
+            $table->foreign('destination_blockchain_address')
+                    ->references('blockchain_address')
+                    ->on('__asset_account_addresses')
+                    ->onUpdate('cascade')
+                    ->onDelete('set null');
             $table->string('asset_code', 64)->nullable();
             $table->foreign('asset_code')
                     ->references('code')

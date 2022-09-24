@@ -97,7 +97,7 @@ class BCReceiveFundsScreen extends React.Component {
 
     generateNewAddress = async () => {
         this.setState({ btn_generating_address_working: true })
-        await _AssetAccountAddress.create({ asset_account_id: (this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == this.state.input.asset_code)).id })
+        await _AssetAccountAddress.create({ asset_account_id: (this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == this.state.input.asset_code)).id, user_username: this.props.auth_user.username })
         await this.populateScreenWithItems()
         this.setState({ btn_generating_address_working: false })
     }

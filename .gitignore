@@ -15,7 +15,7 @@ Thumbs.db
 #/storage/*.key
 /vendor
 #.env
-.env.backup
+.env.bluehost
 .phpunit.result.cache
 Homestead.json
 Homestead.yaml

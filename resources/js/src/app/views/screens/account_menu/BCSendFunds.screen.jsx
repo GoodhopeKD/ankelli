@@ -14,7 +14,7 @@ class BCSendFundsScreen extends React.Component {
         asset_value: 5,
         destination_blockchain_address: new _Input('0x06d64d1d5eb807e10eb59f38a448830d9888d7da'),
         source_user_password: new _Input('Def-Pass#123'),
-        sender_note: new _Input('Test send.'),
+        recepient_note: new _Input('Test send.'),
     }
 
     state = {
@@ -152,13 +152,13 @@ class BCSendFundsScreen extends React.Component {
                                 </div>
 
                                 <div className="mb-3">
-                                    <label htmlFor="input_sender_note" className="form-label">Sender note</label>
+                                    <label htmlFor="input_recepient_note" className="form-label">Sender note</label>
                                     <div className="input-group">
                                         <input
-                                            type="text" className="form-control" id="input_sender_note"
-                                            value={this.state.input.sender_note + ''}
+                                            type="text" className="form-control" id="input_recepient_note"
+                                            value={this.state.input.recepient_note + ''}
                                             required
-                                            onChange={e => this.handleInputChange('sender_note', e.target.value)}
+                                            onChange={e => this.handleInputChange('recepient_note', e.target.value)}
                                         />
                                     </div>
                                 </div>

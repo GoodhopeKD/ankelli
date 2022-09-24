@@ -378,11 +378,24 @@ Run command
 php artisan config:cache
 ```
 
-### Hot Items
+### Folders to copy in refresh
 
 /app
 /config
 /database
+/public
 /resources
 /storage
-/public
+
+### Items to upload to webhost
+
+/app
+/bootstrap
+/config
+/lang
+/public (run prod using .env.platform)
+/resources
+/routes
+/storage
+/vendor
+/.env (use .env.platform)

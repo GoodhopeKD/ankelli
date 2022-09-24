@@ -239,6 +239,13 @@ class __AuxController extends Controller
             }
         }
 
+        $clear_subscriptions = true;
+        if ( $clear_subscriptions && _PrefItem::firstWhere('key_slug', 'use_tatum_crypto_asset_engine')->value_f() ){
+            foreach ((new __TatumAPIController)->getActiveSubscriptions(new Request())->getData() as $subscription) {
+                (new __TatumAPIController)->cancelActiveSubscription(new Request(['subscription_id' => $subscription->id]));
+            }
+        }
+
         session()->put('active_session_token', 'FACTORY_SSN' );
         session()->put('api_auth_user_username', 'system');
 
@@ -250,6 +257,7 @@ class __AuxController extends Controller
             'onchain_disclaimer' => "Our USDT is hosted on the Ethereum network.\nAll blockchain transactions should be handled accordingly."
         ]));
 
+        $token_reg_changed = false;
         $token_reg_enabled_pref_item = _PrefItem::firstWhere('key_slug', 'token_reg_enabled');
         if ($token_reg_enabled_pref_item->value_f()){
             (new _PrefItemController)->update( new Request([
@@ -383,7 +391,7 @@ class __AuxController extends Controller
         
         // user:paywyze
         (new _UserController)->store( new Request([
-            'username' => 'paywyze', 'email_address' => 'paywyze@example.com',
+            'username' => 'paywyze', 'email_address' => 'paywyze@ankelli.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
         (new _AssetAccountController)->store( new Request([
@@ -401,6 +409,16 @@ class __AuxController extends Controller
         ]));
         (new _UserGroupMembershipController)->store( new Request([
             'user_username' => 'paywyze', 'user_group_slug' => 'business_administrators',
+        ]));
+
+        // user:sekuru
+        (new _UserController)->store( new Request([
+            'username' => 'sekuru', 'email_address' => 'sekuru@ankelli.com',
+            'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
+        ]));
+        (new _AssetAccountController)->store( new Request([
+            'asset_code' => 'USDT',
+            'user_username' => 'sekuru',
         ]));
 
         if ($token_reg_changed){
@@ -422,6 +440,7 @@ class __AuxController extends Controller
         session()->put('active_session_token', request()->segments()[env('API_URL')?0:1] );
         session()->put('api_auth_user_username', 'system');
 
+        $token_reg_changed = false;
         $token_reg_enabled_pref_item = _PrefItem::firstWhere('key_slug', 'token_reg_enabled');
         if ($token_reg_enabled_pref_item->value_f()){
             (new _PrefItemController)->update( new Request([

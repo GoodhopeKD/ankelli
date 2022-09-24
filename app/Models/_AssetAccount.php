@@ -16,6 +16,7 @@ class _AssetAccount extends Model
      */
     protected $fillable = [
         'tatum_virtual_account_id',
+        'tatum_subscription_id',
         'user_username',
         'asset_code',
         'usable_balance_asset_value',
@@ -30,6 +31,7 @@ class _AssetAccount extends Model
      */
     protected $hidden = [
         'tatum_virtual_account_id',
+        'tatum_subscription_id',
     ];
 
     /**

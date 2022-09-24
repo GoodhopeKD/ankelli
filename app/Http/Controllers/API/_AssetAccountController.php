@@ -33,17 +33,45 @@ class _AssetAccountController extends Controller
 
     public function get_accounts()
     {
-        return (new __TatumAPIController)->getVirtualAccounts(new Request(['externalId' => 'guddaz', 'asset_code' => 'USDT']))->getData();
+        return (new __TatumAPIController)->getVirtualAccounts(new Request())->getData();
     }
 
     public function get_addresses()
     {
-        return (new __TatumAPIController)->getVirtualAccountDepositAddresses(new Request(['virtual_account_id' => '632970417b09c5d6322bc225']))->getData();
+        return (new __TatumAPIController)->getVirtualAccountDepositAddresses(new Request(['virtual_account_id' => '63296ef838931796fa9e5aed']))->getData();
     }
 
     public function get_transactions()
     {
-        return (new __TatumAPIController)->getVirtualAccountTransactions(new Request(['virtual_account_id' => '632970417b09c5d6322bc225', 'currency' => 'ETH']))->getData();
+        return (new __TatumAPIController)->getVirtualAccountTransactions(new Request(['virtual_account_id' => '63296ef838931796fa9e5aed', 'currency' => 'ETH']))->getData();
+    }
+
+    public function get_subscriptions()
+    {
+        return (new __TatumAPIController)->getActiveSubscriptions(new Request())->getData();
+    }
+
+    public function get_subscription_notifications()
+    {
+        return (new __TatumAPIController)->getSubscriptionNotifications(new Request())->getData();
+    }
+
+    public function redo_tatum_txrecon_transactions()
+    {
+        foreach ( array_reverse((new __TatumAPIController)->getAllTransactions(new Request())->getData()) as $transaction) {
+            (new _TransactionController)->tatum_txrecon(new Request( json_decode(json_encode($transaction), true) ));
+            sleep(1);
+        }
+    }
+
+    public function redo_tatum_subscription_webhook_txrecon_requests()
+    {
+        foreach ( array_reverse((new __TatumAPIController)->getSubscriptionNotifications(new Request())->getData()) as $request) {
+            if (!isset($request->retryCount)){
+                (new _TransactionController)->tatum_subscription_webhook_txrecon(new Request( json_decode(json_encode($request->data), true) ));
+                sleep(1);
+            }
+        }
     }
 
     /**
@@ -76,12 +104,23 @@ class _AssetAccountController extends Controller
             $tatum_element = $tatum_element ?? (new __TatumAPIController)->createVirtualAccountXpub(new Request(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']]))->getData();
 
             $validated_data['tatum_virtual_account_id'] = $tatum_element->id;
-            $validated_data['usable_balance_asset_value'] = $tatum_element->balance->availableBalance;
-            $validated_data['total_balance_asset_value'] = $tatum_element->balance->accountBalance;
+            //$validated_data['usable_balance_asset_value'] = $tatum_element->balance->availableBalance;
+            //$validated_data['total_balance_asset_value'] = $tatum_element->balance->accountBalance;
             $user = _User::firstWhere('username', $validated_data['user_username']);
             if (!$user->tatum_customer_id){
                 (new _UserController)->update(new Request(['tatum_customer_id' => $tatum_element->customerId]), $validated_data['user_username']);
             }
+
+            $tatum_element = null;
+            try {
+                $tatum_element = (new __TatumAPIController)->createIncomingVirtualAccountTransactionsSubscription(new Request(['virtual_account_id' => $validated_data['tatum_virtual_account_id']]))->getData();
+            } catch (\Throwable $th) {
+                $tatum_elements = (new __TatumAPIController)->getActiveSubscriptions(new Request())->getData();
+                foreach ($tatum_elements as $item) {
+                    if ($item->attr->id == $validated_data['tatum_virtual_account_id']){ $tatum_element = $item; break; }
+                }
+            }
+            $validated_data['tatum_subscription_id'] = $tatum_element->id;
         }
 
         $element = _AssetAccount::create($validated_data);

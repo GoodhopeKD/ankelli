@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('__feedback_reports', function (Blueprint $table) {
             $table->string('ticket_code', 16)->primary();
-            $table->string('session_token', 17)->nullable();
+            $table->string('session_token', 16)->nullable();
             $table->foreign('session_token')
                     ->references('token')
                     ->on('__sessions')

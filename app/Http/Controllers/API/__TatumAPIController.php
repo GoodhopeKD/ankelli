@@ -486,7 +486,7 @@ class __TatumAPIController extends Controller
     }
 
     /**
-     * Find transactions for account.
+     * Find transactions for account
      * https://apidoc.tatum.io/tag/Transaction#operation/getTransactionsByAccountId
      *
      * @param  \Illuminate\Http\Request  $request
@@ -511,9 +511,145 @@ class __TatumAPIController extends Controller
                 "x-api-key: " . $this->x_api_key,
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/transaction/account?" . http_build_query(['type' => 'testnet', 'currency' => isset($validated_data['currency']) ? $validated_data['currency'] : null, 'pageSize'=>50]),
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/transaction/account?" . http_build_query(['type' => 'testnet', 'pageSize'=>50]),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "POST",
+        ]);
+
+        return $this->call_tail($curl);
+    }
+
+    /**
+     * Find transactions within the ledger
+     * https://apidoc.tatum.io/tag/Transaction#operation/getTransactions
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getAllTransactions(Request $request)
+    {
+        $payload = [];
+        
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json",
+                "x-api-key: " . $this->x_api_key,
+            ],
+            CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/transaction/ledger?" . http_build_query(['type' => 'testnet', 'pageSize'=>50]),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "POST",
+        ]);
+
+        return $this->call_tail($curl);
+    }
+
+    /**
+     * Create a subscription
+     * https://apidoc.tatum.io/tag/Notification-subscriptions#operation/createSubscription
+     * ACCOUNT_INCOMING_BLOCKCHAIN_TRANSACTION
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function createIncomingVirtualAccountTransactionsSubscription(Request $request)
+    {
+        $validated_data = $request->validate([
+            'virtual_account_id' => ['required', 'string'],
+        ]);
+
+        $payload = [
+            "type" => "ACCOUNT_INCOMING_BLOCKCHAIN_TRANSACTION",
+            "attr" => [
+                "id" => $validated_data['virtual_account_id'],
+                "url" => "https://api.ankelli.com/TATUM_SUBS_SSN/tatum_subs_webhook"
+            ]
+        ];
+        
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json",
+                "x-api-key: " . $this->x_api_key,
+            ],
+            CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/subscription?" . http_build_query(['type' => 'testnet']),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "POST",
+        ]);
+
+        return $this->call_tail($curl);
+    }
+
+    /**
+     * List all active subscriptions
+     * https://apidoc.tatum.io/tag/Notification-subscriptions#operation/getSubscriptions
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getActiveSubscriptions(Request $request)
+    {
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json",
+                "x-api-key: " . $this->x_api_key,
+            ],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/subscription?" . http_build_query(['type' => 'testnet', 'pageSize' => '50']),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+
+        return $this->call_tail($curl);
+    }
+
+    /**
+     * List all active subscriptions
+     * https://apidoc.tatum.io/tag/Notification-subscriptions#operation/getSubscriptions
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function cancelActiveSubscription(Request $request)
+    {
+        $validated_data = $request->validate([
+            'subscription_id' => ['required', 'string'],
+        ]);
+
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json",
+                "x-api-key: " . $this->x_api_key,
+            ],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/subscription/" . $validated_data['subscription_id'],
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "DELETE",
+        ]);
+
+        return $this->call_tail($curl);
+    }
+
+    /**
+     * List all executed webhooks
+     * https://apidoc.tatum.io/tag/Notification-subscriptions#operation/getAllWebhooks
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getSubscriptionNotifications(Request $request)
+    {
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json",
+                "x-api-key: " . $this->x_api_key,
+            ],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/subscription/webhook?" . http_build_query(['type' => 'testnet', 'pageSize' => 50]),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "GET",
         ]);
 
         return $this->call_tail($curl);

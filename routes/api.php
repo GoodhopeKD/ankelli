@@ -24,13 +24,17 @@ Route::post('', 'App\Http\Controllers\API\__AuxController@default_route')->name(
 Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_token}' ], function() {
     
     // Tx recon
-    Route::post('tatum_txrecon', '_TransactionController@tatum_txrecon')->name('tatum_txrecon');
+    Route::post('tatum_subs_webhook', '_TransactionController@tatum_subscription_webhook_txrecon')->name('tatum.subscription_txrecon');
 
     Route::post('load_test_data', 'App\Http\Controllers\API\__AuxController@load_test_data')->name('load_test_data');
     Route::get('get_customers', 'App\Http\Controllers\API\_AssetAccountController@get_customers')->name('get_customers');
     Route::get('get_accounts', 'App\Http\Controllers\API\_AssetAccountController@get_accounts')->name('get_accounts');
     Route::get('get_addresses', 'App\Http\Controllers\API\_AssetAccountController@get_addresses')->name('get_addresses');
     Route::get('get_transactions', 'App\Http\Controllers\API\_AssetAccountController@get_transactions')->name('get_transactions');
+    Route::get('get_subscriptions', 'App\Http\Controllers\API\_AssetAccountController@get_subscriptions')->name('get_subscriptions');
+    Route::get('get_subscription_notifications', 'App\Http\Controllers\API\_AssetAccountController@get_subscription_notifications')->name('get_subscription_notifications');
+    Route::get('redo_tatum_txrecon_transactions', 'App\Http\Controllers\API\_AssetAccountController@redo_tatum_txrecon_transactions')->name('redo_tatum_txrecon_transactions');
+    Route::get('redo_tatum_subscription_webhook_txrecon_requests', 'App\Http\Controllers\API\_AssetAccountController@redo_tatum_subscription_webhook_txrecon_requests')->name('redo_tatum_subscription_webhook_txrecon_requests');
 
     // User authentication routes
     Route::post('users/signup', '_UserController@store')->name('users.signup');

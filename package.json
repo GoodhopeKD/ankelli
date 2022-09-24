@@ -1,6 +1,7 @@
 {
     "private": true,
     "scripts": {
+        "clean": "find . -name \".DS_Store\" -type f -delete && dot_clean .",
         "dev": "npm run development",
         "development": "mix",
         "watch": "mix watch",

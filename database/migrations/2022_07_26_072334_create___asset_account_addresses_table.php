@@ -22,7 +22,7 @@ return new class extends Migration
                     ->on('__users')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->string('blockchain_address', 96)->nullable();
+            $table->string('blockchain_address', 96)->unique()->nullable();
             $table->unsignedInteger('tatum_derivation_key')->nullable();
             $table->unique(['asset_account_id', 'blockchain_address', 'tatum_derivation_key'], 'asset_account_id_blockchain_address_tatum_derivation_key_unique');
             $table->unsignedTinyInteger('onchain_txcount')->default(0);

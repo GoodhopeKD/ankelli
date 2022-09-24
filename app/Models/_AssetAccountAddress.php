@@ -24,4 +24,13 @@ class _AssetAccountAddress extends Model
         'onchain_txcount',
         'last_active_datetime',
     ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'last_active_datetime' => 'datetime',
+    ];
 }
