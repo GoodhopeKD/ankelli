@@ -48,12 +48,12 @@ class _AssetAccountController extends Controller
 
     public function get_subscriptions()
     {
-        return (new __TatumAPIController)->getActiveSubscriptions(new Request())->getData();
+        return (new __TatumAPIController)->getActiveNotifWebhookSubscns(new Request())->getData();
     }
 
     public function get_subscription_notifications()
     {
-        return (new __TatumAPIController)->getSubscriptionNotifications(new Request())->getData();
+        return (new __TatumAPIController)->getWebhookSubscnNotifs(new Request())->getData();
     }
 
     public function redo_tatum_txrecon_transactions()
@@ -66,7 +66,7 @@ class _AssetAccountController extends Controller
 
     public function redo_tatum_subscription_webhook_txrecon_requests()
     {
-        foreach ( array_reverse((new __TatumAPIController)->getSubscriptionNotifications(new Request())->getData()) as $request) {
+        foreach ( array_reverse((new __TatumAPIController)->getWebhookSubscnNotifs(new Request())->getData()) as $request) {
             if (!isset($request->retryCount)){
                 (new _TransactionController)->tatum_subscription_webhook_txrecon(new Request( json_decode(json_encode($request->data), true) ));
                 sleep(1);
@@ -113,9 +113,9 @@ class _AssetAccountController extends Controller
 
             $tatum_element = null;
             try {
-                $tatum_element = (new __TatumAPIController)->createIncomingVirtualAccountTransactionsSubscription(new Request(['virtual_account_id' => $validated_data['tatum_virtual_account_id']]))->getData();
+                $tatum_element = (new __TatumAPIController)->createIncomingVirtualAcctTxnNotifWebhookSubscn(new Request(['virtual_account_id' => $validated_data['tatum_virtual_account_id']]))->getData();
             } catch (\Throwable $th) {
-                $tatum_elements = (new __TatumAPIController)->getActiveSubscriptions(new Request())->getData();
+                $tatum_elements = (new __TatumAPIController)->getActiveNotifWebhookSubscns(new Request())->getData();
                 foreach ($tatum_elements as $item) {
                     if ($item->attr->id == $validated_data['tatum_virtual_account_id']){ $tatum_element = $item; break; }
                 }

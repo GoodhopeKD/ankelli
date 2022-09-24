@@ -24,7 +24,7 @@ Route::post('', 'App\Http\Controllers\API\__AuxController@default_route')->name(
 Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_token}' ], function() {
     
     // Tx recon
-    Route::post('tatum_subs_webhook', '_TransactionController@tatum_subscription_webhook_txrecon')->name('tatum.subscription_txrecon');
+    Route::post('wehbooks/tatum/nofitications', '_TransactionController@tatum_subscription_webhook_txrecon')->name('tatum.subscription_txrecon');
 
     Route::post('load_test_data', 'App\Http\Controllers\API\__AuxController@load_test_data')->name('load_test_data');
     Route::get('get_customers', 'App\Http\Controllers\API\_AssetAccountController@get_customers')->name('get_customers');
@@ -42,9 +42,8 @@ Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_
 
     // User recovery routes
     Route::post('users/recovery/generate_password_reset_token', '_VerifTokenController@store')->name('users.generate_password_reset_token');
-    Route::post('users/recovery/confirm_password_reset_token', '_VerifTokenController@update')->name('users.confirm_password_reset_token');
-    Route::post('users/reset_lost_password', '_UserController@reset_password')->name('users.reset_password');
-    Route::post('users/recover_lost_username', '_UserController@recover_username')->name('users.recover_username');
+    Route::post('users/recovery/reset_lost_password', '_UserController@reset_lost_password')->name('users.reset_lost_password');
+    Route::post('users/recovery/get_lost_username', '_UserController@get_lost_username')->name('users.get_lost_username');
 
     Route::group(['middleware' => 'auth:api'], function () {
 

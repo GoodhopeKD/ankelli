@@ -5,12 +5,16 @@ import { mainLaravelDBRestAPICallWrapper } from 'app/controller/actions/rest_api
 /*
 	Type Definitions
 */
-type local_validation_param_type_t = 'email_address' | 'surname' | 'name_s' | 'name' | 'username' | 'password' | 'datetime' | 'number' | 'url' | 'passport_number' | 'reg_token'
+type local_validation_param_type_t = 'email_address' | 'surname' | 'name_s' | 'name' | 'username' | 'password' | 'datetime' | 'number' | 'url' | 'passport_number' | 'reg_token' | 'verif_token'
 type available_param_type_t = 'email_address' | 'username' | 'reg_token'
 type usable_param_type_t = 'reg_token'
 
 export const validation_param_lengths = {
 	reg_token: {
+		min_length: 5,
+		max_length: 16,
+	},
+	verif_token: {
 		min_length: 5,
 		max_length: 16,
 	},
@@ -62,6 +66,7 @@ export default class _Input {
 
 	private _is_valid_username: boolean | null = null
 	private _is_valid_reg_token: boolean | null = null
+	private _is_valid_verif_token: boolean | null = null
 	private _is_valid_email_address: boolean | null = null
 	private _is_valid_surname: boolean | null = null
 	private _is_valid_name_s: boolean | null = null
@@ -107,6 +112,16 @@ export default class _Input {
 			this._failed_validation = !this._is_valid_reg_token
 			this._passed_validation = !this._failed_validation
 			return this._is_valid_reg_token
+		}
+
+		if (validation_param === 'verif_token') {
+			this._is_valid_verif_token =
+				this._is_valid_verif_token !== null
+					? this._is_valid_verif_token
+					: /^[a-zA-Z0-9_À-ÿ\u00f1\u00d1]+$/.test(this._input) && this._input.length >= validation_param_lengths.verif_token.min_length && this._input.length <= validation_param_lengths.verif_token.max_length
+			this._failed_validation = !this._is_valid_verif_token
+			this._passed_validation = !this._failed_validation
+			return this._is_valid_verif_token
 		}
 
 		if (validation_param === 'username') {

@@ -46,7 +46,7 @@ return new class extends Migration
                 '_status' => 'ended',
             ],
             [
-                'token' => 'TATUM_SUBS_SSN',
+                'token' => 'TATUM_NOTIFS_SSN',
                 'user_username' => 'system',
                 'device_info' => json_encode([
                     'name' => 'Tatum Notification Station device',

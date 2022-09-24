@@ -73,7 +73,7 @@ export default withRouter(class SignInModal extends React.Component {
         return <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content rounded-4 shadow">
                 <div className="modal-header p-4 border-bottom-0">
-                    <h2 className="fw-bold mb-0">Sign in</h2>
+                    <h3 className="fw-bold mb-0">Sign in</h3>
                 </div>
                 <div className="modal-body p-4 pt-0">
                     <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
@@ -122,10 +122,10 @@ export default withRouter(class SignInModal extends React.Component {
 
                         {this.props.component_context == "screen" ? <>
                             <small className="text-muted">New to ankelli? Click here to <Link to={'/signup' + this.props.location.search}>sign up</Link>.</small><br />
-                            <small className="text-muted">Click here if you <Link to={'/reset_lost_password' + this.props.location.search}>forgot password</Link> or <Link to={'/recover_lost_username' + this.props.location.search} >forgot username</Link>.</small>
+                            <small className="text-muted">Click here if you <Link to={'/generate_password_reset_token' + this.props.location.search}>forgot password</Link> or <Link to={'/recover_lost_username' + this.props.location.search} >forgot username</Link>.</small>
                         </> : <>
                             <small className="text-muted">New to ankelli? Click here to <Link to={'/#/signup'} data-bs-target="#signup_modal" data-bs-toggle="modal" >sign up</Link>.</small><br />
-                            <small className="text-muted">Click here if you <Link to={'/#/reset_lost_password'} data-bs-target="#reset_lost_password_modal" data-bs-toggle="modal">forgot password</Link> or <Link to={'/#/recover_lost_username'} data-bs-target="#recover_lost_username_modal" >forgot username</Link>.</small>
+                            <small className="text-muted">Click here if you <Link to={'/#/generate_password_reset_token'} data-bs-target="#generate_password_reset_token_modal" data-bs-toggle="modal">forgot password</Link> or <Link to={'/#/recover_lost_username'} data-bs-target="#recover_lost_username_modal" >forgot username</Link>.</small>
                         </>}
                     </form>
                 </div>

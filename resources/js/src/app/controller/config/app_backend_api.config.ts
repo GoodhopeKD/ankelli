@@ -8,9 +8,9 @@ const auth_token_returning_endpoints = ['users/signup', 'users/signin']
 // Endpoints that require no auth_token i.e they shouldn't be accessed with the auth_token
 const strictly_auth_clear_endpoints = [
     ...auth_token_returning_endpoints,
-    'verif_tokens/password_reset',
-    'verif_tokens/password_reset/verify_token', // returns user's username
-    'users/{username}/unauth_password_update'
+    'users/recovery/generate_password_reset_token',
+    'users/recovery/reset_lost_password',
+    'users/recovery/get_lost_username'
 ]
 
 // Endpoints that don't require an auth_token i.e they work with or without the auth_token

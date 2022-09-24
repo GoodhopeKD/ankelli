@@ -1,6 +1,9 @@
 import React from 'react'
 import SignInModal from 'app/views/components/SignIn.modal'
 import SignUpModal from 'app/views/components/SignUp.modal'
+import GeneratePasswordResetTokenModal from 'app/views/components/GeneratePasswordResetToken.modal'
+import ResetLostPasswordModal from 'app/views/components/ResetLostPassword.modal'
+import RecoverLostUsernameModal from 'app/views/components/RecoverLostUsername.modal'
 
 class ExampleElement extends React.Component {
     render() {
@@ -52,14 +55,20 @@ export const virtual_menu = {
         },
         {
             title: 'Reset lost password',
+            path: '/generate_password_reset_token',
+            element: (props) => <ModalToScreenWrapper {...props} ><GeneratePasswordResetTokenModal {...props} component_context="screen" /></ModalToScreenWrapper>,
+            show_when_auth_state_is: false,
+        },
+        {
+            title: 'Reset lost password',
             path: '/reset_lost_password',
-            element: (props) => <ExampleElement {...props} />,
+            element: (props) => <ModalToScreenWrapper {...props} ><ResetLostPasswordModal {...props} component_context="screen" /></ModalToScreenWrapper>,
             show_when_auth_state_is: false,
         },
         {
             title: 'Recover lost username',
             path: '/recover_lost_username',
-            element: (props) => <ExampleElement {...props} />,
+            element: (props) => <ModalToScreenWrapper {...props} ><RecoverLostUsernameModal {...props} component_context="screen" /></ModalToScreenWrapper>,
             show_when_auth_state_is: false,
         },
         {

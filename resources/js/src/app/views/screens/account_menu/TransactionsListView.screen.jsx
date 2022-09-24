@@ -138,7 +138,7 @@ class TransactionsListViewScreen extends React.Component {
                             <div className="col">
                                 <label htmlFor="input_asset_code" className="form-label">Asset</label>
                                 <CustomSelect
-                                    element_id="input_asset_code"
+                                    id="input_asset_code"
                                     options={asset_options}
                                     max_shown_options_count={5}
                                     selected_option_value={this.state.input.asset_code}

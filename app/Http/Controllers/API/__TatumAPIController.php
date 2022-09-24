@@ -32,7 +32,7 @@ class __TatumAPIController extends Controller
         'sekuru' => '63207c7291626c6cd5860a21',
     ];
 
-    private function call_tail($curl)
+    private function curl_call_tail($curl)
     {
         $response = curl_exec($curl);
         $error = curl_error($curl);
@@ -138,7 +138,7 @@ class __TatumAPIController extends Controller
             CURLOPT_CUSTOMREQUEST => "GET",
         ]);
 
-        return $this->call_tail($curl);
+        return $this->curl_call_tail($curl);
     }
 
 
@@ -260,7 +260,7 @@ class __TatumAPIController extends Controller
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);
 
-        return $this->call_tail($curl);
+        return $this->curl_call_tail($curl);
     }
 
 
@@ -287,7 +287,7 @@ class __TatumAPIController extends Controller
             CURLOPT_CUSTOMREQUEST => "PUT",
         ]);
 
-        return $this->call_tail($curl);
+        return $this->curl_call_tail($curl);
     }
 
 
@@ -323,7 +323,7 @@ class __TatumAPIController extends Controller
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);
 
-        return $this->call_tail($curl);
+        return $this->curl_call_tail($curl);
     }
 
     /**
@@ -350,7 +350,7 @@ class __TatumAPIController extends Controller
             CURLOPT_CUSTOMREQUEST => "DELETE",
         ]);
 
-        return $this->call_tail($curl);
+        return $this->curl_call_tail($curl);
     }
 
     /**
@@ -377,7 +377,7 @@ class __TatumAPIController extends Controller
             CURLOPT_CUSTOMREQUEST => "GET",
         ]);
 
-        return $this->call_tail($curl);
+        return $this->curl_call_tail($curl);
     }
 
     /**
@@ -404,7 +404,7 @@ class __TatumAPIController extends Controller
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);
 
-        return $this->call_tail($curl);
+        return $this->curl_call_tail($curl);
     }
 
 
@@ -449,7 +449,7 @@ class __TatumAPIController extends Controller
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);
 
-        return $this->call_tail($curl);
+        return $this->curl_call_tail($curl);
     }
 
 
@@ -482,7 +482,7 @@ class __TatumAPIController extends Controller
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);
 
-        return $this->call_tail($curl);
+        return $this->curl_call_tail($curl);
     }
 
     /**
@@ -516,7 +516,7 @@ class __TatumAPIController extends Controller
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);
 
-        return $this->call_tail($curl);
+        return $this->curl_call_tail($curl);
     }
 
     /**
@@ -542,7 +542,7 @@ class __TatumAPIController extends Controller
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);
 
-        return $this->call_tail($curl);
+        return $this->curl_call_tail($curl);
     }
 
     /**
@@ -553,7 +553,7 @@ class __TatumAPIController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function createIncomingVirtualAccountTransactionsSubscription(Request $request)
+    public function createIncomingVirtualAcctTxnNotifWebhookSubscn(Request $request)
     {
         $validated_data = $request->validate([
             'virtual_account_id' => ['required', 'string'],
@@ -563,7 +563,7 @@ class __TatumAPIController extends Controller
             "type" => "ACCOUNT_INCOMING_BLOCKCHAIN_TRANSACTION",
             "attr" => [
                 "id" => $validated_data['virtual_account_id'],
-                "url" => "https://api.ankelli.com/TATUM_SUBS_SSN/tatum_subs_webhook"
+                "url" => "https://api.ankelli.com/TATUM_NOTIFS_SSN/wehbooks/tatum/nofitications"
             ]
         ];
         
@@ -579,7 +579,7 @@ class __TatumAPIController extends Controller
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);
 
-        return $this->call_tail($curl);
+        return $this->curl_call_tail($curl);
     }
 
     /**
@@ -589,7 +589,7 @@ class __TatumAPIController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function getActiveSubscriptions(Request $request)
+    public function getActiveNotifWebhookSubscns(Request $request)
     {
         $curl = curl_init();
         curl_setopt_array($curl, [
@@ -602,7 +602,7 @@ class __TatumAPIController extends Controller
             CURLOPT_CUSTOMREQUEST => "GET",
         ]);
 
-        return $this->call_tail($curl);
+        return $this->curl_call_tail($curl);
     }
 
     /**
@@ -612,7 +612,7 @@ class __TatumAPIController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function cancelActiveSubscription(Request $request)
+    public function cancelActiveNotifWebhookSubscn(Request $request)
     {
         $validated_data = $request->validate([
             'subscription_id' => ['required', 'string'],
@@ -629,7 +629,7 @@ class __TatumAPIController extends Controller
             CURLOPT_CUSTOMREQUEST => "DELETE",
         ]);
 
-        return $this->call_tail($curl);
+        return $this->curl_call_tail($curl);
     }
 
     /**
@@ -639,7 +639,7 @@ class __TatumAPIController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function getSubscriptionNotifications(Request $request)
+    public function getWebhookSubscnNotifs(Request $request)
     {
         $curl = curl_init();
         curl_setopt_array($curl, [
@@ -652,6 +652,6 @@ class __TatumAPIController extends Controller
             CURLOPT_CUSTOMREQUEST => "GET",
         ]);
 
-        return $this->call_tail($curl);
+        return $this->curl_call_tail($curl);
     }
 }

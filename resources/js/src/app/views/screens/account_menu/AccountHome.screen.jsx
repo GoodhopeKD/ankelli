@@ -113,7 +113,7 @@ class AccountHomeScreen extends React.Component {
                                                 <div className="row mb-3">
                                                     <div className="col">
                                                         <CustomSelect
-                                                            element_id="input_asset_code"
+                                                            id="input_asset_code"
                                                             options={asset_options}
                                                             has_none_option={false}
                                                             max_shown_options_count={5}

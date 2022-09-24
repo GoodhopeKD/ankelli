@@ -102,7 +102,7 @@ class BCSendFundsScreen extends React.Component {
                                     <div className="col">
                                         <label htmlFor="input_asset_code" className="form-label">Source asset account</label>
                                         <CustomSelect
-                                            element_id="input_asset_code"
+                                            id="input_asset_code"
                                             options={asset_options}
                                             has_none_option={false}
                                             max_shown_options_count={5}

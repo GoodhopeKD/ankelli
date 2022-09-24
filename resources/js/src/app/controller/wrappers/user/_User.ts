@@ -37,16 +37,32 @@ type get_collection_params = {
 }
 
 const signin_data = {
-	email_address: undefined as undefined | null | string,
-	password: undefined as undefined | null | string,
+	email_address: '',
+	password: '',
 }
 
 const signup_data = {
-	surname: undefined as undefined | null | string,
-	name_s: undefined as undefined | null | string,
-	email_address: undefined as undefined | null | string,
-	password: undefined as undefined | null | string,
-	password_confirmation: undefined as undefined | null | string,
+	reg_token: '',
+	username: '',
+	email_address: '',
+	password: '',
+	password_confirmation: '',
+}
+
+const generate_password_reset_token_data = {
+	username: '',
+	email_address: '',
+}
+
+const reset_lost_password_data = {
+	username: '',
+	email_address: '',
+	password: '',
+	password_confirmation: '',
+}
+
+const get_lost_username_data = {
+	email_address: '',
 }
 
 const _UserExtensionsRespObj = {
@@ -262,6 +278,42 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 				method: 'POST',
 				endpoint: 'users/signout'
 			})
+	}
+
+	static async generatePasswordResetToken(data: typeof generate_password_reset_token_data) {
+		return await mainLaravelDBRestAPICallWrapper
+			.dispatch({
+				type: 'APP_BACKEND_API_CALL',
+				method: 'POST',
+				endpoint: 'users/recovery/generate_password_reset_token',
+				data
+			})
+			.then((resp: any) => { return Promise.resolve(resp) })
+			.catch((e: any) => { return Promise.reject(e) })
+	}
+
+	static async resetLostPassword(data: typeof reset_lost_password_data) {
+		return await mainLaravelDBRestAPICallWrapper
+			.dispatch({
+				type: 'APP_BACKEND_API_CALL',
+				method: 'POST',
+				endpoint: 'users/recovery/reset_lost_password',
+				data
+			})
+			.then((resp: any) => { return Promise.resolve(resp) })
+			.catch((e: any) => { return Promise.reject(e) })
+	}
+
+	static async getLostUsername(data: typeof get_lost_username_data) {
+		return await mainLaravelDBRestAPICallWrapper
+			.dispatch({
+				type: 'APP_BACKEND_API_CALL',
+				method: 'POST',
+				endpoint: 'users/recovery/get_lost_username',
+				data
+			})
+			.then((resp: any) => { return Promise.resolve(resp) })
+			.catch((e: any) => { return Promise.reject(e) })
 	}
 
 	public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {

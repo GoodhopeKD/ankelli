@@ -57,6 +57,5 @@ class _Transaction extends Model
     protected $casts = [
         'transfer_asset_value' => 'float',
         'transfer_result' => 'array',
-        'transfer_datetime' => 'datetime',
     ];
 }

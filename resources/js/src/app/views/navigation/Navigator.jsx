@@ -11,6 +11,9 @@ import Footer from 'app/views/components/Footer'
 
 import SignInModal from 'app/views/components/SignIn.modal'
 import SignUpModal from 'app/views/components/SignUp.modal'
+import GeneratePasswordResetTokenModal from 'app/views/components/GeneratePasswordResetToken.modal'
+import ResetLostPasswordModal from 'app/views/components/ResetLostPassword.modal'
+import RecoverLostUsernameModal from 'app/views/components/RecoverLostUsername.modal'
 
 // stack not in menues
 import { virtual_menu } from 'app/views/navigation/virtual_menu'
@@ -189,6 +192,15 @@ function Navigator(props) {
                 </div>
                 <div className="modal fade" id="signup_modal" tabIndex="-1" >
                     <SignUpModal />
+                </div>
+                <div className="modal fade" id="generate_password_reset_token_modal" tabIndex="-1" >
+                    <GeneratePasswordResetTokenModal />
+                </div>
+                <div className="modal fade" id="reset_lost_password_modal" tabIndex="-1" >
+                    <ResetLostPasswordModal />
+                </div>
+                <div className="modal fade" id="recover_lost_username_modal" tabIndex="-1" >
+                    <RecoverLostUsernameModal />
                 </div>
             </>}
         </React.Fragment>

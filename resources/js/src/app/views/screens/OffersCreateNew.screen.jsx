@@ -151,8 +151,7 @@ class OffersCreateNewScreen extends React.Component {
                             <div className="mb-3">
                                 <label htmlFor="input_country_name" className="form-label">Country</label>
                                 <CustomSelect
-
-                                    element_id="input_country_name"
+                                    id="input_country_name"
                                     options={country_options}
                                     has_none_option={false}
                                     max_shown_options_count={5}
@@ -164,8 +163,7 @@ class OffersCreateNewScreen extends React.Component {
                             <div className="mb-3">
                                 <label htmlFor="input_pymt_method_slug" className="form-label">Payment method</label>
                                 <CustomSelect
-
-                                    element_id="input_pymt_method_slug"
+                                    id="input_pymt_method_slug"
                                     options={pymt_method_options}
                                     has_none_option={false}
                                     max_shown_options_count={5}
@@ -223,8 +221,7 @@ class OffersCreateNewScreen extends React.Component {
                                             <div className="col">
                                                 <label htmlFor="input_asset_code" className="form-label">Asset</label>
                                                 <CustomSelect
-
-                                                    element_id="input_asset_code"
+                                                    id="input_asset_code"
                                                     options={asset_options}
                                                     has_none_option={false}
                                                     max_shown_options_count={5}
@@ -243,7 +240,7 @@ class OffersCreateNewScreen extends React.Component {
                                     <div className="mb-3">
                                         <label htmlFor="input_currency_code" className="form-label">Currency</label>
                                         <CustomSelect
-                                            element_id="input_currency_code"
+                                            id="input_currency_code"
                                             options={currency_options}
                                             has_none_option={false}
                                             max_shown_options_count={5}
@@ -259,7 +256,6 @@ class OffersCreateNewScreen extends React.Component {
                                 <div className="input-group">
                                     {currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
                                     <input
-
                                         type="number" className="form-control" id="input_offer_price"
                                         min="0.01"
                                         step="0.01"
@@ -279,6 +275,7 @@ class OffersCreateNewScreen extends React.Component {
                                         <input
                                             type="number" className="form-control" id="input_min_purchase_amount"
                                             min="0.01"
+                                            step="0.01"
                                             value={this.state.input.min_purchase_amount + ''}
                                             required
                                             onChange={e => this.handleInputChange('min_purchase_amount', e.target.value)}
@@ -292,7 +289,8 @@ class OffersCreateNewScreen extends React.Component {
                                         {currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
                                         <input
                                             type="number" className="form-control" id="input_max_purchase_amount"
-                                            min={this.state.input.min_purchase_amount}
+                                            min={this.state.input.min_purchase_amount + ''}
+                                            step="0.01"
                                             value={this.state.input.max_purchase_amount + ''}
                                             required
                                             onChange={e => this.handleInputChange('max_purchase_amount', e.target.value)}
@@ -309,6 +307,7 @@ class OffersCreateNewScreen extends React.Component {
                                         <input
                                             type="number" className="form-control" id="input_min_sell_value"
                                             min={asset.smallest_display_unit}
+                                            step={asset.smallest_display_unit}
                                             max={max_offerable_asset_value}
                                             value={this.state.input.min_sell_value + ''}
                                             required
@@ -323,6 +322,7 @@ class OffersCreateNewScreen extends React.Component {
                                         <input
                                             type="number" className="form-control" id="input_max_sell_value"
                                             min={this.state.input.min_sell_value}
+                                            step={asset.smallest_display_unit}
                                             max={max_offerable_asset_value}
                                             value={this.state.input.max_sell_value + ''}
                                             required

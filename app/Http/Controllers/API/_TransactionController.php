@@ -252,7 +252,7 @@ class _TransactionController extends Controller
         $validated_data = $request->validate([
             'accountId' => ['required', 'exists:__asset_accounts,tatum_virtual_account_id', 'string'],
             'subscriptionType' => ['required', 'string', Rule::in(['ACCOUNT_INCOMING_BLOCKCHAIN_TRANSACTION'])],
-            'amount' => ['reauired', 'numeric'],
+            'amount' => ['required', 'numeric'],
             'currency' => ['sometimes', 'string', 'exists:__assets,tatum_currency'],
             'txId' => ['required', 'string', 'unique:__transactions,blockchain_txid'],
             'reference' => ['sometimes', 'string'],

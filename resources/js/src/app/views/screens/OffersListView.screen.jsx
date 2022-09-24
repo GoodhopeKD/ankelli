@@ -174,7 +174,7 @@ class OffersListViewScreen extends React.Component {
                         <div className="col">
                             <label htmlFor="input_country_name" className="form-label">Country</label>
                             <CustomSelect
-                                element_id="input_country_name"
+                                id="input_country_name"
                                 options={country_options}
                                 max_shown_options_count={5}
                                 selected_option_value={this.state.input.country_name}
@@ -185,7 +185,7 @@ class OffersListViewScreen extends React.Component {
                         <div className="col">
                             <label htmlFor="input_pymt_method_slug" className="form-label">Payment method</label>
                             <CustomSelect
-                                element_id="input_pymt_method_slug"
+                                id="input_pymt_method_slug"
                                 options={pymt_method_options}
                                 max_shown_options_count={5}
                                 selected_option_value={this.state.input.pymt_method_slug}
@@ -196,7 +196,7 @@ class OffersListViewScreen extends React.Component {
                         <div className="col">
                             <label htmlFor="input_asset_code" className="form-label">Asset</label>
                             <CustomSelect
-                                element_id="input_asset_code"
+                                id="input_asset_code"
                                 options={asset_options}
                                 max_shown_options_count={5}
                                 selected_option_value={this.state.input.asset_code}
@@ -207,7 +207,7 @@ class OffersListViewScreen extends React.Component {
                         <div className="col">
                             <label htmlFor="input_currency_code" className="form-label">Currency</label>
                             <CustomSelect
-                                element_id="input_currency_code"
+                                id="input_currency_code"
                                 options={currency_options}
                                 max_shown_options_count={5}
                                 selected_option_value={this.state.input.currency_code}

@@ -26,7 +26,7 @@ export default class CustomSelect extends React.Component {
         const max_shown_options_count = this.state.max_shown_options_count ?? (this.props.max_shown_options_count ?? this.default_props.max_shown_options_count)
         const has_none_option = this.props.has_none_option ?? this.default_props.has_none_option
         const options = this.props.options ?? this.default_props.options
-        const element_id = this.props.element_id ?? this.element_id
+        const id = this.props.id ?? this.id
         const disabled = this.props.disabled ?? this.default_props.disabled
 
         const shown_element = [...options, {
@@ -45,11 +45,11 @@ export default class CustomSelect extends React.Component {
                         <input
                             disabled={disabled}
                             type="search"
-                            id={'input_search_query_string_' + element_id}
+                            id={'input_search_query_string_' + id}
                             className="form-control"
                             autoComplete="false"
                             value={this.state.search_query_string}
-                            onChange={() => this.setState({ search_query_string: document.getElementById('input_search_query_string_' + element_id).value })}
+                            onChange={() => this.setState({ search_query_string: document.getElementById('input_search_query_string_' + id).value })}
                             placeholder="Type to filter..."
                         />
                     </div>

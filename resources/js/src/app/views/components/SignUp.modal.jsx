@@ -83,7 +83,7 @@ class SignUpScreen extends React.Component {
         return <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content rounded-4 shadow">
                 <div className="modal-header p-4 border-bottom-0">
-                    <h2 className="fw-bold mb-0">Sign up</h2>
+                    <h3 className="fw-bold mb-0">Sign up</h3>
                 </div>
                 <div className="modal-body p-4 pt-0">
                     {(this.props.sysconfig_params_data.open_reg_enabled || this.props.sysconfig_params_data.token_reg_enabled) ? <>
@@ -184,7 +184,8 @@ class SignUpScreen extends React.Component {
                             </>}
                         </form>
                     </> : <>
-                        Sign up is momentarily disabled. Please check back after a while.
+                        Sign up is momentarily disabled.<br />
+                        Please check back after a while or click here to {this.props.component_context == "screen" ? <Link to={'/signin' + this.props.location.search}>sign in</Link> : <Link to={'/#/signin'} data-bs-target="#signin_modal" data-bs-toggle="modal" >sign in</Link>}.
                     </>}
                 </div>
             </div>

@@ -239,10 +239,10 @@ class __AuxController extends Controller
             }
         }
 
-        $clear_subscriptions = true;
-        if ( $clear_subscriptions && _PrefItem::firstWhere('key_slug', 'use_tatum_crypto_asset_engine')->value_f() ){
-            foreach ((new __TatumAPIController)->getActiveSubscriptions(new Request())->getData() as $subscription) {
-                (new __TatumAPIController)->cancelActiveSubscription(new Request(['subscription_id' => $subscription->id]));
+        $clear_notification_webhook_subscriptions = true;
+        if ( $clear_notification_webhook_subscriptions && _PrefItem::firstWhere('key_slug', 'use_tatum_crypto_asset_engine')->value_f() ){
+            foreach ((new __TatumAPIController)->getActiveNotifWebhookSubscns(new Request())->getData() as $subscription) {
+                (new __TatumAPIController)->cancelActiveNotifWebhookSubscn(new Request(['subscription_id' => $subscription->id]));
             }
         }
 

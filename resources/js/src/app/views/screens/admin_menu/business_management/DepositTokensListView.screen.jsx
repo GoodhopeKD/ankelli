@@ -160,7 +160,7 @@ class DepositTokensListViewScreen extends React.Component {
                             <div className="col">
                                 <label htmlFor="input_asset_code" className="form-label">Asset</label>
                                 <CustomSelect
-                                    element_id="input_asset_code"
+                                    id="input_asset_code"
                                     options={asset_options}
                                     max_shown_options_count={5}
                                     selected_option_value={this.state.input.asset_code}
@@ -171,7 +171,7 @@ class DepositTokensListViewScreen extends React.Component {
                             <div className="col">
                                 <label htmlFor="input_currency_code" className="form-label">Currency</label>
                                 <CustomSelect
-                                    element_id="input_currency_code"
+                                    id="input_currency_code"
                                     options={currency_options}
                                     max_shown_options_count={5}
                                     selected_option_value={this.state.input.currency_code}
