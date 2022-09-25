@@ -40,7 +40,7 @@ class BCSendFundsScreen extends React.Component {
 
         if (errors.length === 0) {
             this.setState({ errors, source_user_password_prompt_open: true }) // Remove input error indicators under text inputs            
-            bootstrap.Modal.getOrCreateInstance(document.querySelector('#password_confirmation_modal')).show();
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('password_confirmation_modal')).show();
         } else {
             this.setState({ errors, input })
         }
@@ -55,7 +55,7 @@ class BCSendFundsScreen extends React.Component {
 
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs 
-            const password_confirmation_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#password_confirmation_modal'));
+            const password_confirmation_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('password_confirmation_modal'));
             _Transaction.process(_Input.flatten(input))
                 .then(() => { password_confirmation_modal.hide(); _Notification.flash({ message: 'Funds sent.', duration: 2000 }); _Session.refresh(); this.setState({ input: _.cloneDeep(this.default_input) }) })
                 .catch((error) => {
@@ -188,7 +188,7 @@ class BCSendFundsScreen extends React.Component {
                                                         required={this.state.source_user_password_prompt_open}
                                                         placeholder="Pasword"
                                                     />
-                                                    <button className="btn btn-sm" type="button" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_source_user_password').setAttribute('type', document.getElementById('input_source_user_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
+                                                    <span className="btn btn-sm" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_source_user_password').setAttribute('type', document.getElementById('input_source_user_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
                                                     <label htmlFor="input_source_user_password">Password</label>
                                                 </div>
 

@@ -73,7 +73,7 @@ class TradesSingleViewScreen extends React.Component {
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
             const _input = _Input.flatten(input)
-            const password_confirmation_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#password_confirmation_modal'));
+            const password_confirmation_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('password_confirmation_modal'));
             this.focused_trade.confirmPymt(_input.source_user_password)
                 .then(() => { password_confirmation_modal.hide(); this.setState({ btn_confirm_pymt_working: false }); _Notification.flash({ message: 'Payment confirmed.', duration: 2000 }); })
                 .catch((error) => {
@@ -152,7 +152,7 @@ class TradesSingleViewScreen extends React.Component {
                                                     />
                                                     <label htmlFor={'input_pymt_method_detail_' + detail_key} className="form-label">{detail_key.replace(/_/g, " ").capitalize()}</label>
                                                 </div>
-                                                <button type="button" className="btn btn-sm btn-outline-secondary" onClick={() => document.getElementById('input_pymt_method_detail_' + detail_key).setAttribute('type', document.getElementById('input_pymt_method_detail_' + detail_key).getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
+                                                <span className="btn btn-sm btn-outline-secondary" onClick={() => document.getElementById('input_pymt_method_detail_' + detail_key).setAttribute('type', document.getElementById('input_pymt_method_detail_' + detail_key).getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
                                             </div>
                                         })}
                                     </>}
@@ -182,7 +182,7 @@ class TradesSingleViewScreen extends React.Component {
                                     {auth_user_is_seller && this.focused_trade.pymt_confirmed_datetime == null && <>
                                         <p>As the seller, when the payment has been processed, you should confirm it with the button below</p>
                                         <button className="w-100 mb-3 btn rounded-3 btn-success" disabled={this.state.btn_confirm_pymt_working}
-                                            onClick={() => bootstrap.Modal.getOrCreateInstance(document.querySelector('#password_confirmation_modal')).show()}  >
+                                            onClick={() => bootstrap.Modal.getOrCreateInstance(document.getElementById('password_confirmation_modal')).show()}  >
                                             {this.state.btn_confirm_pymt_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Confirm payment</>}
                                         </button>
                                     </>}
@@ -206,7 +206,7 @@ class TradesSingleViewScreen extends React.Component {
                                                             required={this.state.source_user_password_prompt_open}
                                                             placeholder="Pasword"
                                                         />
-                                                        <button className="btn btn-sm" type="button" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_source_user_password').setAttribute('type', document.getElementById('input_source_user_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
+                                                        <span className="btn btn-sm" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_source_user_password').setAttribute('type', document.getElementById('input_source_user_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
                                                         <label htmlFor="input_source_user_password">Password</label>
                                                     </div>
 

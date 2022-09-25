@@ -4,14 +4,15 @@ import { Link } from "react-router-dom";
 import { _User, _Input, _Notification } from 'app/controller';
 import withRouter from 'app/views/navigation/withRouter'
 
-export default withRouter(class SignUpScreen extends React.Component {
+export default withRouter(class ResetLostPasswordModal extends React.Component {
+
+    id_prefix = 'reset_lost_password_modal_'
 
     state = {
         btn_reset_password_working: false,
         input: {
-            password_reset_token: new _Input(),
-            username: new _Input(),
-            email_address: new _Input(),
+            username: new _Input(this.props.params.username),
+            password_reset_token: new _Input(this.props.params.password_reset_token),
             password: new _Input(),
             password_confirmation: new _Input(),
         },
@@ -38,9 +39,8 @@ export default withRouter(class SignUpScreen extends React.Component {
         const errors = []
         const input = this.state.input
 
-        if (!input.password_reset_token.isValid('verif_token')) { errors.push("Invalid password reset token") }
         if (!input.username.isValid('username')) { errors.push("Invalid username") }
-        if (!input.email_address.isValid('email_address')) { errors.push("Invalid email address") }
+        if (!input.password_reset_token.isValid('verif_token')) { errors.push("Invalid password reset token") }
         if (!input.password.isValid('password')) { errors.push("Password should have: at least 8 characters; at least 1 of: numbers, uppercase, lowercase characters") }
         if (!input.password_confirmation.matches(input.password.toString())) { errors.push("Passwords Mismatch") }
 
@@ -49,18 +49,19 @@ export default withRouter(class SignUpScreen extends React.Component {
             _User.resetLostPassword(_Input.flatten(input))
                 .then(() => {
                     _Notification.flash({ message: 'Password reset successful! Proceed to sign in', duration: 750 });
-                    if (this.props.component_context == "screen")
+                    if (this.props.component_context == "screen") {
                         this.props.navigate('/signin' + this.props.location.search)
-                    else
-                        bootstrap.Modal.getOrCreateInstance(document.querySelector('#signin_modal')).show()
+                    } else {
+                        bootstrap.Modal.getOrCreateInstance(document.getElementById('reset_lost_password_modal')).hide()
+                        bootstrap.Modal.getOrCreateInstance(document.getElementById('signin_modal')).show()
+                    }
                 })
                 .catch((error) => {
                     if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
                         Object.keys(error.request._response.errors).forEach(input_key => { error.request._response.errors[input_key].forEach(input_key_error => { errors.push(input_key_error) }) })
                     } else { errors.push(error.message) }
-                    input.password_reset_token.clearValidation()
                     input.username.clearValidation()
-                    input.email_address.clearValidation()
+                    input.password_reset_token.clearValidation()
                     input.password.clearValidation()
                     input.password_confirmation.clearValidation()
                     this.setState({ btn_reset_password_working, errors })
@@ -77,26 +78,13 @@ export default withRouter(class SignUpScreen extends React.Component {
                     <h3 className="fw-bold mb-0">Reset lost password</h3>
                 </div>
                 <div className="modal-body p-4 pt-0">
+                    <p className="text-muted">Enter your username, password reset token received and new password.</p>
                     <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
                         <div className="form-floating mb-3">
                             <input
                                 type='text'
-                                className={"form-control" + (this.state.input.password_reset_token.failedValidation() ? ' is-invalid' : '') + (this.state.input.password_reset_token.passedValidation() ? ' is-valid' : '')}
-                                id="input_password_reset_token"
-                                minLength={_Input.validation_param_lengths.verif_token.min_length}
-                                maxLength={_Input.validation_param_lengths.verif_token.max_length}
-                                value={this.state.input.password_reset_token + ''}
-                                onChange={e => this.handleInputChange('password_reset_token', e.target.value)}
-                                required
-                                placeholder="Password Reset Token"
-                            />
-                            <label htmlFor="input_password_reset_token">Password Reset Token</label>
-                        </div>
-                        <div className="form-floating mb-3">
-                            <input
-                                type='text'
                                 className={"form-control" + (this.state.input.username.failedValidation() ? ' is-invalid' : '') + (this.state.input.username.passedValidation() ? ' is-valid' : '')}
-                                id="input_username"
+                                id={this.id_prefix + "input_username"}
                                 minLength={_Input.validation_param_lengths.username.min_length}
                                 maxLength={_Input.validation_param_lengths.username.max_length}
                                 value={this.state.input.username + ''}
@@ -104,27 +92,27 @@ export default withRouter(class SignUpScreen extends React.Component {
                                 required
                                 placeholder="Username"
                             />
-                            <label htmlFor="input_username">Username</label>
+                            <label htmlFor={this.id_prefix + "input_username"}>Username</label>
                         </div>
                         <div className="form-floating mb-3">
                             <input
-                                type='email'
-                                className={"form-control" + (this.state.input.email_address.failedValidation() ? ' is-invalid' : '') + (this.state.input.email_address.passedValidation() ? ' is-valid' : '')}
-                                id="input_email_address"
-                                minLength={_Input.validation_param_lengths.email_address.min_length}
-                                maxLength={_Input.validation_param_lengths.email_address.max_length}
-                                value={this.state.input.email_address + ''}
-                                onChange={e => this.handleInputChange('email_address', e.target.value)}
+                                type='text'
+                                className={"form-control" + (this.state.input.password_reset_token.failedValidation() ? ' is-invalid' : '') + (this.state.input.password_reset_token.passedValidation() ? ' is-valid' : '')}
+                                id={this.id_prefix + "input_password_reset_token"}
+                                minLength={_Input.validation_param_lengths.verif_token.min_length}
+                                maxLength={_Input.validation_param_lengths.verif_token.max_length}
+                                value={this.state.input.password_reset_token + ''}
+                                onChange={e => this.handleInputChange('password_reset_token', e.target.value)}
                                 required
-                                placeholder="Email Address"
+                                placeholder="Password reset token"
                             />
-                            <label htmlFor="input_email_address">Email Address</label>
+                            <label htmlFor={this.id_prefix + "input_password_reset_token"}>Token</label>
                         </div>
                         <div className="form-floating mb-3">
                             <input
                                 type="password"
                                 className={"form-control" + (this.state.input.password.failedValidation() ? ' is-invalid' : '') + (this.state.input.password.passedValidation() ? ' is-valid' : '')}
-                                id="input_password"
+                                id={this.id_prefix + "input_password"}
                                 minLength={_Input.validation_param_lengths.password.min_length}
                                 maxLength={_Input.validation_param_lengths.password.max_length}
                                 value={this.state.input.password + ''}
@@ -133,14 +121,14 @@ export default withRouter(class SignUpScreen extends React.Component {
                                 placeholder="Password"
                                 style={{ paddingRight: 40 }}
                             />
-                            <button className="btn btn-sm" type="button" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_password').setAttribute('type', document.getElementById('input_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
-                            <label htmlFor="input_password">Password</label>
+                            <span className="btn btn-sm" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById(this.id_prefix + 'input_password').setAttribute('type', document.getElementById(this.id_prefix + 'input_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
+                            <label htmlFor={this.id_prefix + "input_password"}>Password</label>
                         </div>
                         <div className="form-floating mb-3">
                             <input
                                 type="password"
                                 className={"form-control" + (this.state.input.password_confirmation.failedValidation() ? ' is-invalid' : '') + (this.state.input.password_confirmation.passedValidation() ? ' is-valid' : '')}
-                                id="input_password_confirmation"
+                                id={this.id_prefix + "input_password_confirmation"}
                                 minLength={_Input.validation_param_lengths.password.min_length}
                                 maxLength={_Input.validation_param_lengths.password.max_length}
                                 value={this.state.input.password_confirmation + ''}
@@ -149,8 +137,8 @@ export default withRouter(class SignUpScreen extends React.Component {
                                 placeholder="Password again"
                                 style={{ paddingRight: 40 }}
                             />
-                            <button className="btn btn-sm" type="button" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_password_confirmation').setAttribute('type', document.getElementById('input_password_confirmation').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
-                            <label htmlFor="input_password_confirmation">Password again</label>
+                            <span className="btn btn-sm" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById(this.id_prefix + 'input_password_confirmation').setAttribute('type', document.getElementById(this.id_prefix + 'input_password_confirmation').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
+                            <label htmlFor={this.id_prefix + "input_password_confirmation"}>Password again</label>
                         </div>
 
                         <div className="mb-3">
@@ -166,7 +154,7 @@ export default withRouter(class SignUpScreen extends React.Component {
                         {this.props.component_context == "screen" ? <>
                             <small className="text-muted">Click here to <Link to={'/signin' + this.props.location.search}>sign in</Link>, <Link to={'/signup' + this.props.location.search}>sign up</Link> or <Link to={'/recover_lost_username' + this.props.location.search} >recover lost username</Link>.</small>
                         </> : <>
-                            <small className="text-muted">Click here to <Link to={'/#/signin'} data-bs-target="#signin_modal" data-bs-toggle="modal" >sign in</Link>, <Link to={'/#/signup'} data-bs-target="#signup_modal" data-bs-toggle="modal" >sign up</Link> or <Link to={'/#/recover_lost_username'} data-bs-target="#recover_lost_username_modal" >recover lost username</Link>.</small>
+                            <small className="text-muted">Click here to <Link to={'/#/signin'} data-bs-target="#signin_modal" data-bs-toggle="modal" >sign in</Link>, <Link to={'/#/signup'} data-bs-target="#signup_modal" data-bs-toggle="modal" >sign up</Link> or <Link to={'/#/recover_lost_username'} data-bs-target="#recover_lost_username_modal" data-bs-toggle="modal">recover lost username</Link>.</small>
                         </>}
                     </form>
                 </div>

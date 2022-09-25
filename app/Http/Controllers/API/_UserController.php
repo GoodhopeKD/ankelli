@@ -121,13 +121,13 @@ class _UserController extends Controller
         ]));
         // End _Log Handling
 
-        // Create _User's Email Address
+        // Create _User's Email address
         (new _EmailAddressController)->store( new Request([
             'email_address' => $api_auth_user->email_address,
             'user_username' => $api_auth_user->username,
             'batch_code' => $log_batch_code,
         ]));
-        // End Create _User's Email Address
+        // End Create _User's Email address
 
         // Create notification to verify email
         (new _NotificationController)->store( new Request([
@@ -265,6 +265,28 @@ class _UserController extends Controller
         $element->update($validated_data);
 
         return response()->json( (new _UserResource( $element )) );
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function get_lost_username(Request $request)
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function reset_lost_password(Request $request)
+    {
+        //
     }
 
     /**

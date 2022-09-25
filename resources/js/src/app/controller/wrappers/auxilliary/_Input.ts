@@ -23,7 +23,7 @@ export const validation_param_lengths = {
 		max_length: 64,
 	},
 	email_address: {
-		min_length: 2,
+		min_length: 5,
 		max_length: 64,
 	},
 	surname: {

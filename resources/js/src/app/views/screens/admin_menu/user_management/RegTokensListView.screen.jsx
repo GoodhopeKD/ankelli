@@ -117,7 +117,7 @@ export default class RegTokensListViewScreen extends React.Component {
 
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
-            const add_new_reg_token_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#add_new_reg_token_modal'));
+            const add_new_reg_token_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('add_new_reg_token_modal'));
             _RegToken.create(_Input.flatten(input)).then(() => { add_new_reg_token_modal.hide(); this.setState({ btn_create_reg_token_working, errors, input: _.cloneDeep(this.default_input) }); this.should_load_items = true; this.populateScreenWithItems(); _Notification.flash({ message: 'Reg token created', duration: 2000 }); })
                 .catch((error) => {
                     if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {

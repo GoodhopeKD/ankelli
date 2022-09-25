@@ -128,7 +128,7 @@ class EditSysConfigParamsScreen extends React.Component {
                                                                         placeholder="Password"
                                                                         style={{ paddingRight: 70 }}
                                                                     />
-                                                                    <button className="btn d-none" type="button" style={{ position: 'absolute', top: 10, right: 10 }} onClick={() => document.getElementById("input_password_" + index).setAttribute('type', document.getElementById("input_password_" + index).getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
+                                                                    <span className="btn btn-sm" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById("input_password_" + index).setAttribute('type', document.getElementById("input_password_" + index).getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
                                                                 </div>
                                                             </div>
                                                             <div className="modal-footer justify-content-between">

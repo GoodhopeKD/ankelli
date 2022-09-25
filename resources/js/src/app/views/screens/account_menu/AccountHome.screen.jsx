@@ -39,7 +39,7 @@ class AccountHomeScreen extends React.Component {
 
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
-            const add_new_wallet_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#add_new_wallet_modal'));
+            const add_new_wallet_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('add_new_wallet_modal'));
             _AssetAccount.create({ ..._Input.flatten(input), user_username: this.props.auth_user.username }).then(() => { add_new_wallet_modal.hide(); _Session.refresh(); _Notification.flash({ message: 'Asset wallet created', duration: 2000 }); this.setState({ btn_create_wallet_working, input: _.cloneDeep(this.default_input) }) })
                 .catch((error) => {
                     if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {

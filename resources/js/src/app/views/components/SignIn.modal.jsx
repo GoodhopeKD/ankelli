@@ -21,6 +21,8 @@ const debug_users = {
 
 export default withRouter(class SignInModal extends React.Component {
 
+    id_prefix = 'signin_modal_'
+
     state = {
         btn_signin_working: false,
         input: {
@@ -54,7 +56,7 @@ export default withRouter(class SignInModal extends React.Component {
 
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
-            const signin_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#signin_modal'));
+            const signin_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('signin_modal'));
             _User.signIn(_Input.flatten(input)).then(() => { signin_modal.hide(); _Notification.flash({ message: 'Sign in successful!', duration: 750 }) })
                 .catch((error) => {
                     if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
@@ -81,7 +83,7 @@ export default withRouter(class SignInModal extends React.Component {
                             <input
                                 type='text'
                                 className={"form-control" + (this.state.input.username.failedValidation() ? ' is-invalid' : '') + (this.state.input.username.passedValidation() ? ' is-valid' : '')}
-                                id="input_username"
+                                id={this.id_prefix + "input_username"}
                                 minLength={_Input.validation_param_lengths.username.min_length}
                                 maxLength={_Input.validation_param_lengths.username.max_length}
                                 value={this.state.input.username + ''}
@@ -89,13 +91,13 @@ export default withRouter(class SignInModal extends React.Component {
                                 required
                                 placeholder="Username"
                             />
-                            <label htmlFor="input_username">Username</label>
+                            <label htmlFor={this.id_prefix + "input_username"}>Username</label>
                         </div>
                         <div className="form-floating mb-3">
                             <input
                                 type="password"
                                 className={"form-control" + (this.state.input.password.failedValidation() ? ' is-invalid' : '') + (this.state.input.password.passedValidation() ? ' is-valid' : '')}
-                                id="input_password"
+                                id={this.id_prefix + "input_password"}
                                 minLength={_Input.validation_param_lengths.password.min_length}
                                 maxLength={_Input.validation_param_lengths.password.max_length}
                                 value={this.state.input.password + ''}
@@ -104,8 +106,8 @@ export default withRouter(class SignInModal extends React.Component {
                                 placeholder="Password"
                                 style={{ paddingRight: 40 }}
                             />
-                            <button className="btn btn-sm" type="button" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_password').setAttribute('type', document.getElementById('input_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
-                            <label htmlFor="input_password">Password</label>
+                            <span className="btn btn-sm" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById(this.id_prefix + 'input_password').setAttribute('type', document.getElementById(this.id_prefix + 'input_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
+                            <label htmlFor={this.id_prefix + "input_password"}>Password</label>
                         </div>
                         <div className="text-center mb-3">
                             <input type="checkbox" className='mx-1' id="input_remember_me" name='input_remember_me' />
@@ -125,7 +127,7 @@ export default withRouter(class SignInModal extends React.Component {
                             <small className="text-muted">Click here if you <Link to={'/generate_password_reset_token' + this.props.location.search}>forgot password</Link> or <Link to={'/recover_lost_username' + this.props.location.search} >forgot username</Link>.</small>
                         </> : <>
                             <small className="text-muted">New to ankelli? Click here to <Link to={'/#/signup'} data-bs-target="#signup_modal" data-bs-toggle="modal" >sign up</Link>.</small><br />
-                            <small className="text-muted">Click here if you <Link to={'/#/generate_password_reset_token'} data-bs-target="#generate_password_reset_token_modal" data-bs-toggle="modal">forgot password</Link> or <Link to={'/#/recover_lost_username'} data-bs-target="#recover_lost_username_modal" >forgot username</Link>.</small>
+                            <small className="text-muted">Click here if you <Link to={'/#/generate_password_reset_token'} data-bs-target="#generate_password_reset_token_modal" data-bs-toggle="modal">forgot password</Link> or <Link to={'/#/recover_lost_username'} data-bs-target="#recover_lost_username_modal" data-bs-toggle="modal">forgot username</Link>.</small>
                         </>}
                     </form>
                 </div>

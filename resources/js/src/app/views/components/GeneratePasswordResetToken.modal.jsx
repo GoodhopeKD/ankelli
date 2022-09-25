@@ -6,6 +6,8 @@ import withRouter from 'app/views/navigation/withRouter'
 
 export default withRouter(class GeneratePasswordResetTokenModal extends React.Component {
 
+    id_prefix = 'generate_password_reset_token_modal_'
+
     state = {
         btn_generate_token_working: false,
         input: {
@@ -42,10 +44,12 @@ export default withRouter(class GeneratePasswordResetTokenModal extends React.Co
             _User.generatePasswordResetToken(_Input.flatten(input))
                 .then(() => {
                     _Notification.flash({ message: 'Token sent to given email address!', duration: 750 })
-                    if (this.props.component_context == "screen")
+                    if (this.props.component_context == "screen") {
                         this.props.navigate('/reset_lost_password' + this.props.location.search)
-                    else
-                        bootstrap.Modal.getOrCreateInstance(document.querySelector('#reset_lost_password_modal')).show()
+                    } else {
+                        bootstrap.Modal.getOrCreateInstance(document.getElementById('generate_password_reset_token_modal')).hide()
+                        bootstrap.Modal.getOrCreateInstance(document.getElementById('reset_lost_password_modal')).show()
+                    }
                 })
                 .catch((error) => {
                     if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
@@ -64,15 +68,16 @@ export default withRouter(class GeneratePasswordResetTokenModal extends React.Co
         return <div className="modal-dialog modal-dialog-centered" role="document">
             <div className="modal-content rounded-4 shadow">
                 <div className="modal-header p-4 border-bottom-0">
-                    <h3 className="fw-bold mb-0">Generate Password Reset Token</h3>
+                    <h3 className="fw-bold mb-0">Generate password reset token</h3>
                 </div>
                 <div className="modal-body p-4 pt-0">
+                    <p className="text-muted">Enter your username and user associated email address to send the token to.</p>
                     <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
                         <div className="form-floating mb-3">
                             <input
                                 type='text'
                                 className={"form-control" + (this.state.input.username.failedValidation() ? ' is-invalid' : '') + (this.state.input.username.passedValidation() ? ' is-valid' : '')}
-                                id="input_username"
+                                id={this.id_prefix + "input_username"}
                                 minLength={_Input.validation_param_lengths.username.min_length}
                                 maxLength={_Input.validation_param_lengths.username.max_length}
                                 value={this.state.input.username + ''}
@@ -80,22 +85,22 @@ export default withRouter(class GeneratePasswordResetTokenModal extends React.Co
                                 required
                                 placeholder="Username"
                             />
-                            <label htmlFor="input_username">Username</label>
+                            <label htmlFor={this.id_prefix + "input_username"}>Username</label>
                         </div>
                         <div className="form-floating mb-3">
                             <input
                                 type="email"
                                 className={"form-control" + (this.state.input.email_address.failedValidation() ? ' is-invalid' : '') + (this.state.input.email_address.passedValidation() ? ' is-valid' : '')}
-                                id="input_email_address"
+                                id={this.id_prefix + "input_email_address"}
                                 minLength={_Input.validation_param_lengths.email_address.min_length}
                                 maxLength={_Input.validation_param_lengths.email_address.max_length}
                                 value={this.state.input.email_address + ''}
                                 onChange={e => this.handleInputChange('email_address', e.target.value)}
                                 required
-                                placeholder="Email Address"
+                                placeholder="Email address"
                                 style={{ paddingRight: 40 }}
                             />
-                            <label htmlFor="input_email_address">Email Address to send token to</label>
+                            <label htmlFor={this.id_prefix + "input_email_address"}>Email address</label>
                         </div>
                         <div className="mb-3">
                             {this.state.errors.map((error, key) => (
@@ -105,14 +110,14 @@ export default withRouter(class GeneratePasswordResetTokenModal extends React.Co
                         <div className="row">
                             <div className="col pe-2">
                                 <button className="w-100 mb-2 btn btn-lg rounded-3 btn-primary" disabled={this.state.btn_generate_token_working} type="submit" >
-                                    {this.state.btn_generate_token_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Generate Token</>}
+                                    {this.state.btn_generate_token_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Generate token</>}
                                 </button>
                             </div>
                             <div className="col ps-2">
                                 {this.props.component_context == "screen" ? <>
-                                    <Link className="w-100 mb-2 btn btn-lg rounded-3 btn-success" to={'/reset_lost_password' + this.props.location.search}>Confirm Token</Link>
+                                    <Link className="w-100 mb-2 btn btn-lg rounded-3 btn-success" to={'/reset_lost_password' + this.props.location.search}>Already have token</Link>
                                 </> : <>
-                                    <Link className="w-100 mb-2 btn btn-lg rounded-3 btn-success" to={'/#/reset_lost_password'} data-bs-target="#reset_lost_password_modal" data-bs-toggle="modal" >Confirm Token</Link>
+                                    <Link className="w-100 mb-2 btn btn-lg rounded-3 btn-success" to={'/#/reset_lost_password'} data-bs-target="#reset_lost_password_modal" data-bs-toggle="modal" >Already have token</Link>
                                 </>}
                             </div>
                         </div>
@@ -121,7 +126,7 @@ export default withRouter(class GeneratePasswordResetTokenModal extends React.Co
                         {this.props.component_context == "screen" ? <>
                             <small className="text-muted">Click here to <Link to={'/signin' + this.props.location.search}>sign in</Link>, <Link to={'/signup' + this.props.location.search}>sign up</Link> or <Link to={'/recover_lost_username' + this.props.location.search} >recover lost username</Link>.</small>
                         </> : <>
-                            <small className="text-muted">Click here to <Link to={'/#/signin'} data-bs-target="#signin_modal" data-bs-toggle="modal" >sign in</Link>, <Link to={'/#/signup'} data-bs-target="#signup_modal" data-bs-toggle="modal" >sign up</Link> or <Link to={'/#/recover_lost_username'} data-bs-target="#recover_lost_username_modal" >recover lost username</Link>.</small>
+                            <small className="text-muted">Click here to <Link to={'/#/signin'} data-bs-target="#signin_modal" data-bs-toggle="modal" >sign in</Link>, <Link to={'/#/signup'} data-bs-target="#signup_modal" data-bs-toggle="modal" >sign up</Link> or <Link to={'/#/recover_lost_username'} data-bs-target="#recover_lost_username_modal" data-bs-toggle="modal">recover lost username</Link>.</small>
                         </>}
                     </form>
                 </div>

@@ -7,7 +7,9 @@ import withRouter from 'app/views/navigation/withRouter'
 
 const DEBUG = true
 
-class SignUpScreen extends React.Component {
+class SignUpModal extends React.Component {
+
+    id_prefix = 'signup_modal_'
 
     state = {
         btn_signup_working: false,
@@ -61,7 +63,7 @@ class SignUpScreen extends React.Component {
 
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
-            const signup_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#signup_modal'));
+            const signup_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('signup_modal'));
             _User.signUp(_Input.flatten(input)).then(() => { signup_modal.hide(); _Notification.flash({ message: 'Sign up successful!', duration: 750 }) })
                 .catch((error) => {
                     if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
@@ -93,15 +95,15 @@ class SignUpScreen extends React.Component {
                                     <input
                                         type='text'
                                         className={"form-control" + (this.state.input.reg_token.failedValidation() ? ' is-invalid' : '') + (this.state.input.reg_token.passedValidation() ? ' is-valid' : '')}
-                                        id="input_reg_token"
+                                        id={this.id_prefix + "input_reg_token"}
                                         minLength={_Input.validation_param_lengths.reg_token.min_length}
                                         maxLength={_Input.validation_param_lengths.reg_token.max_length}
                                         value={this.state.input.reg_token + ''}
                                         onChange={e => this.handleInputChange('reg_token', e.target.value)}
                                         required={!this.props.sysconfig_params_data.open_reg_enabled}
-                                        placeholder="Registration Token"
+                                        placeholder="Registration token"
                                     />
-                                    <label htmlFor="input_reg_token">Registration Token</label>
+                                    <label htmlFor={this.id_prefix + "input_reg_token"}>Registration token</label>
                                 </div>
                             }
 
@@ -109,7 +111,7 @@ class SignUpScreen extends React.Component {
                                 <input
                                     type='text'
                                     className={"form-control" + (this.state.input.username.failedValidation() ? ' is-invalid' : '') + (this.state.input.username.passedValidation() ? ' is-valid' : '')}
-                                    id="input_username"
+                                    id={this.id_prefix + "input_username"}
                                     minLength={_Input.validation_param_lengths.username.min_length}
                                     maxLength={_Input.validation_param_lengths.username.max_length}
                                     value={this.state.input.username + ''}
@@ -117,27 +119,27 @@ class SignUpScreen extends React.Component {
                                     required
                                     placeholder="Username"
                                 />
-                                <label htmlFor="input_username">Username</label>
+                                <label htmlFor={this.id_prefix + "input_username"}>Username</label>
                             </div>
                             <div className="form-floating mb-3">
                                 <input
                                     type='email'
                                     className={"form-control" + (this.state.input.email_address.failedValidation() ? ' is-invalid' : '') + (this.state.input.email_address.passedValidation() ? ' is-valid' : '')}
-                                    id="input_email_address"
+                                    id={this.id_prefix + "input_email_address"}
                                     minLength={_Input.validation_param_lengths.email_address.min_length}
                                     maxLength={_Input.validation_param_lengths.email_address.max_length}
                                     value={this.state.input.email_address + ''}
                                     onChange={e => this.handleInputChange('email_address', e.target.value)}
                                     required
-                                    placeholder="Email Address"
+                                    placeholder="Email address"
                                 />
-                                <label htmlFor="input_email_address">Email Address</label>
+                                <label htmlFor={this.id_prefix + "input_email_address"}>Email address</label>
                             </div>
                             <div className="form-floating mb-3">
                                 <input
                                     type="password"
                                     className={"form-control" + (this.state.input.password.failedValidation() ? ' is-invalid' : '') + (this.state.input.password.passedValidation() ? ' is-valid' : '')}
-                                    id="input_password"
+                                    id={this.id_prefix + "input_password"}
                                     minLength={_Input.validation_param_lengths.password.min_length}
                                     maxLength={_Input.validation_param_lengths.password.max_length}
                                     value={this.state.input.password + ''}
@@ -146,14 +148,14 @@ class SignUpScreen extends React.Component {
                                     placeholder="Password"
                                     style={{ paddingRight: 40 }}
                                 />
-                                <button className="btn btn-sm" type="button" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_password').setAttribute('type', document.getElementById('input_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
-                                <label htmlFor="input_password">Password</label>
+                                <span className="btn btn-sm" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById(this.id_prefix + 'input_password').setAttribute('type', document.getElementById(this.id_prefix + 'input_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
+                                <label htmlFor={this.id_prefix + "input_password"}>Password</label>
                             </div>
                             <div className="form-floating mb-3">
                                 <input
                                     type="password"
                                     className={"form-control" + (this.state.input.password_confirmation.failedValidation() ? ' is-invalid' : '') + (this.state.input.password_confirmation.passedValidation() ? ' is-valid' : '')}
-                                    id="input_password_confirmation"
+                                    id={this.id_prefix + "input_password_confirmation"}
                                     minLength={_Input.validation_param_lengths.password.min_length}
                                     maxLength={_Input.validation_param_lengths.password.max_length}
                                     value={this.state.input.password_confirmation + ''}
@@ -162,8 +164,8 @@ class SignUpScreen extends React.Component {
                                     placeholder="Password again"
                                     style={{ paddingRight: 40 }}
                                 />
-                                <button className="btn btn-sm" type="button" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_password_confirmation').setAttribute('type', document.getElementById('input_password_confirmation').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
-                                <label htmlFor="input_password_confirmation">Password again</label>
+                                <span className="btn btn-sm" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById(this.id_prefix + 'input_password_confirmation').setAttribute('type', document.getElementById(this.id_prefix + 'input_password_confirmation').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
+                                <label htmlFor={this.id_prefix + "input_password_confirmation"}>Password again</label>
                             </div>
 
                             <div className="mb-3">
@@ -184,8 +186,10 @@ class SignUpScreen extends React.Component {
                             </>}
                         </form>
                     </> : <>
-                        Sign up is momentarily disabled.<br />
-                        Please check back after a while or click here to {this.props.component_context == "screen" ? <Link to={'/signin' + this.props.location.search}>sign in</Link> : <Link to={'/#/signin'} data-bs-target="#signin_modal" data-bs-toggle="modal" >sign in</Link>}.
+                        <p>
+                            New user sign up is momentarily disabled.<br />
+                            Please check back after a while or click here to {this.props.component_context == "screen" ? <Link to={'/signin' + this.props.location.search}>sign in</Link> : <Link to={'/#/signin'} data-bs-target="#signin_modal" data-bs-toggle="modal" >sign in</Link>}.
+                        </p>
                     </>}
                 </div>
             </div>
@@ -199,4 +203,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(withRouter(SignUpScreen))
+export default connect(mapStateToProps)(withRouter(SignUpModal))

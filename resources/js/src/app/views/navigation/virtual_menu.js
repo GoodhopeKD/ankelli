@@ -62,6 +62,7 @@ export const virtual_menu = {
         {
             title: 'Reset lost password',
             path: '/reset_lost_password',
+            path_alias: '/reset_lost_password/:username/:password_reset_token',
             element: (props) => <ModalToScreenWrapper {...props} ><ResetLostPasswordModal {...props} component_context="screen" /></ModalToScreenWrapper>,
             show_when_auth_state_is: false,
         },

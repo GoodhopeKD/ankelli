@@ -86,7 +86,7 @@ class OffersSingleViewScreen extends React.Component {
         if (errors.length === 0) {
             this.setState({ errors, source_user_password_prompt_open: true }) // Remove input error indicators under text inputs            
             if (this.focused_offer.offer_to == 'buy') {
-                bootstrap.Modal.getOrCreateInstance(document.querySelector('#password_confirmation_modal')).show();
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('password_confirmation_modal')).show();
             } else {
                 this.handleSubmit2()
             }
@@ -108,7 +108,7 @@ class OffersSingleViewScreen extends React.Component {
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs 
             const _input = _Input.flatten(input)
-            const password_confirmation_modal = bootstrap.Modal.getOrCreateInstance(document.querySelector('#password_confirmation_modal'));
+            const password_confirmation_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('password_confirmation_modal'));
             this.focused_offer.accept(this.state.currency_amount, _input.pymt_details, _input.source_user_password)
                 .then(() => { password_confirmation_modal.hide(); _Notification.flash({ message: 'Trade initiated.', duration: 2000 }); this.props.navigate('/trades') })
                 .catch((error) => {
@@ -251,7 +251,7 @@ class OffersSingleViewScreen extends React.Component {
                                                     required={this.state.source_user_password_prompt_open}
                                                     placeholder="Pasword"
                                                 />
-                                                <button className="btn btn-sm" type="button" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_source_user_password').setAttribute('type', document.getElementById('input_source_user_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</button>
+                                                <span className="btn btn-sm" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_source_user_password').setAttribute('type', document.getElementById('input_source_user_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
                                                 <label htmlFor="input_source_user_password">Password</label>
                                             </div>
 
