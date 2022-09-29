@@ -35,12 +35,12 @@ export const _OfferRespObj = {
     offer_price: undefined as undefined | null | number,
 
     // for offer_to:buy
-    min_purchase_amount: undefined as undefined | null | number,
-    max_purchase_amount: undefined as undefined | null | number,
+    min_trade_purchase_amount: undefined as undefined | null | number,
+    max_trade_purchase_amount: undefined as undefined | null | number,
 
     // for offer_to:sell
-    min_sell_value: undefined as undefined | null | number,
-    max_sell_value: undefined as undefined | null | number,
+    min_trade_sell_value: undefined as undefined | null | number,
+    max_trade_sell_value: undefined as undefined | null | number,
 
     pymt_method_slug: undefined as undefined | null | string,
     pymt_details: undefined as undefined | null | pymt_details_t,
@@ -66,11 +66,11 @@ export default class _Offer extends _Wrapper_ implements Omit<typeof _OfferRespO
     currency_code: string | null = null
     offer_price: number | null = null
 
-    min_purchase_amount: number | null = null
-    max_purchase_amount: number | null = null
+    min_trade_purchase_amount: number | null = null
+    max_trade_purchase_amount: number | null = null
 
-    min_sell_value: number | null = null
-    max_sell_value: number | null = null
+    min_trade_sell_value: number | null = null
+    max_trade_sell_value: number | null = null
 
     pymt_method_slug: string | null = null
     pymt_details: pymt_details_t | null = null

@@ -63,7 +63,7 @@ export default class _Transaction extends _Wrapper_ implements Omit<typeof _Tran
         return this._mainLaravelDBAPIGetCollection('transactions', params, page_select, per_page)
     }
 
-    public static async process(data: { asset_code: string, asset_value: number, destination_blockchain_address: string, recepient_note: string, source_user_password: string }) {
+    public static async process(data: { asset_code: string, asset_value: number, destination_blockchain_address: string, recipient_note: string, source_user_password: string }) {
         return await mainLaravelDBRestAPICallWrapper
             .dispatch({
                 type: 'APP_BACKEND_API_CALL',

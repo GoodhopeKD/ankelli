@@ -563,7 +563,7 @@ class __TatumAPIController extends Controller
             "type" => "ACCOUNT_INCOMING_BLOCKCHAIN_TRANSACTION",
             "attr" => [
                 "id" => $validated_data['virtual_account_id'],
-                "url" => "https://api.ankelli.com/TATUM_NOTIFS_SSN/wehbooks/tatum/nofitications"
+                "url" => "https://api.ankelli.com/webhooks/tatum/nofitications"
             ]
         ];
         

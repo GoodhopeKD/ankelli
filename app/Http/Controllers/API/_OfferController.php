@@ -70,11 +70,11 @@ class _OfferController extends Controller
             'currency_code' => ['required', 'exists:__currencies,code', 'string'],
             'offer_price' => ['required', 'numeric'],
             // for offer_to = buy
-            'min_purchase_amount' => ['required_if:offer_to,==,buy', 'integer'],
-            'max_purchase_amount' => ['required_if:offer_to,==,buy', 'integer'],
+            'min_trade_purchase_amount' => ['required_if:offer_to,==,buy', 'integer'],
+            'max_trade_purchase_amount' => ['required_if:offer_to,==,buy', 'integer'],
             // for offer_to = sell
-            'min_sell_value' => ['required_if:offer_to,==,sell', 'numeric'],
-            'max_sell_value' => ['required_if:offer_to,==,sell', 'numeric'],
+            'min_trade_sell_value' => ['required_if:offer_to,==,sell', 'numeric'],
+            'max_trade_sell_value' => ['required_if:offer_to,==,sell', 'numeric'],
             'pymt_method_slug' => ['required', 'exists:__pymt_methods,slug', 'string'],
             'pymt_details' => ['required_if:offer_to,==,sell|pymt_method_slug,==,cash_in_person', 'array'],
             'note' => ['nullable', 'string'],

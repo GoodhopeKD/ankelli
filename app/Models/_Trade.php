@@ -29,7 +29,7 @@ class _Trade extends Model
         'currency_code',
         'asset_value',
         'asset_value_escrowed',
-        'platform_charge_asset_factor',
+        'trade_txn_fee_factor',
         'currency_amount',
         'offer_price',
         'pymt_method_slug',
@@ -56,7 +56,7 @@ class _Trade extends Model
         'visible_to_offer_creator' => 'boolean',
         'asset_value' => 'float',
         'asset_value_escrowed' => 'float',
-        'platform_charge_asset_factor' => 'float',
+        'trade_txn_fee_factor' => 'float',
         'offer_price' => 'float',
         'pymt_details' => 'array',
     ];

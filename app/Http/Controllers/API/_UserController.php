@@ -76,18 +76,18 @@ class _UserController extends Controller
         ]);
 
         if ( $token_reg_enabled ){
-            $reg_token_check = (array)(new __AuxController)->usability_check( new Request([ 'check_param_name' => 'reg_token', 'check_param_value' => $validated_data['reg_token'] ]) )->getData();
+            $reg_token_check = (array)(new __AuxController)->usability_check( new Request([ 'param_name' => 'reg_token', 'param_value' => $validated_data['reg_token'] ]) )->getData();
             if ( !$reg_token_check['usable']){
                 return abort(422, $reg_token_check['message']);
             }
         }
 
-        $username_check = (array)(new __AuxController)->availability_check( new Request([ 'check_param_name' => 'username', 'check_param_value' => $validated_data['username'] ]) )->getData();
+        $username_check = (array)(new __AuxController)->availability_check( new Request([ 'param_name' => 'username', 'param_value' => $validated_data['username'] ]) )->getData();
         if ( !$username_check['available']){
             return abort(422, $username_check['message']);
         }
 
-        $email_address_check = (array)(new __AuxController)->availability_check( new Request([ 'check_param_name' => 'email_address', 'check_param_value' => $validated_data['email_address'] ]) )->getData();
+        $email_address_check = (array)(new __AuxController)->availability_check( new Request([ 'param_name' => 'email_address', 'param_value' => $validated_data['email_address'] ]) )->getData();
         if ( !$email_address_check['available']){
             return abort(422, $email_address_check['message']);
         }

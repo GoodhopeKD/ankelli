@@ -86,6 +86,7 @@ export default class CustomSelect extends React.Component {
                                 <a className="btn btn-outline-secondary w-100" href="#"
                                     onClick={e => {
                                         e.preventDefault()
+                                        e.stopPropagation()
                                         this.setState({ max_shown_options_count: options.length, search_query_string: '' })
                                     }}
                                 >

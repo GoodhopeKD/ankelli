@@ -23,11 +23,11 @@ class OffersCreateNewScreen extends React.Component {
         currency_code: 'USD',
         offer_price: new _Input(),
 
-        min_purchase_amount: new _Input(),
-        max_purchase_amount: new _Input(),
+        min_trade_purchase_amount: new _Input(),
+        max_trade_purchase_amount: new _Input(),
 
-        min_sell_value: new _Input(),
-        max_sell_value: new _Input(),
+        min_trade_sell_value: new _Input(),
+        max_trade_sell_value: new _Input(),
 
         note: new _Input(),
     }
@@ -68,12 +68,12 @@ class OffersCreateNewScreen extends React.Component {
                 delete _input.pymt_details
             }
             if (_input.offer_to != 'buy') {
-                delete _input.min_purchase_amount
-                delete _input.max_purchase_amount
+                delete _input.min_trade_purchase_amount
+                delete _input.max_trade_purchase_amount
             }
             if (_input.offer_to != 'sell') {
-                delete _input.min_sell_value
-                delete _input.max_sell_value
+                delete _input.min_trade_sell_value
+                delete _input.max_trade_sell_value
             }
 
             _Offer.create(_input).then(() => { _Notification.flash({ message: 'Offer posted successfully!', duration: 2000 }); this.props.navigate('/my-offers') })
@@ -130,7 +130,7 @@ class OffersCreateNewScreen extends React.Component {
         const currency = this.props.datalists.active_currencies[this.state.input.currency_code]
         const pymt_method = this.props.datalists.active_pymt_methods[this.state.input.pymt_method_slug]
 
-        const max_offerable_asset_value = this.props.auth_user == null ? null : (1 - this.props.sysconfig_params.platform_charge_asset_factor) * parseFloat(window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value), asset, false)
+        const max_offerable_asset_value = this.props.auth_user == null ? null : (1 - this.props.sysconfig_params.trade_txn_fee_factor) * parseFloat(window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { asset_value: 0 }).asset_value), asset, false)
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container py-4 ">
@@ -269,31 +269,31 @@ class OffersCreateNewScreen extends React.Component {
 
                             {this.state.input.offer_to == 'buy' && <>
                                 <div className="mb-3">
-                                    <label htmlFor="input_min_purchase_amount" className="form-label">Minimum purchase amount</label>
+                                    <label htmlFor="input_min_trade_purchase_amount" className="form-label">Minimum purchase amount</label>
                                     <div className="input-group">
                                         {currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
                                         <input
-                                            type="number" className="form-control" id="input_min_purchase_amount"
+                                            type="number" className="form-control" id="input_min_trade_purchase_amount"
                                             min="0.01"
                                             step="0.01"
-                                            value={this.state.input.min_purchase_amount + ''}
+                                            value={this.state.input.min_trade_purchase_amount + ''}
                                             required
-                                            onChange={e => this.handleInputChange('min_purchase_amount', e.target.value)}
+                                            onChange={e => this.handleInputChange('min_trade_purchase_amount', e.target.value)}
                                         />
                                         {!currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
                                     </div>
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="input_max_purchase_amount" className="form-label">Maximum purchase amount</label>
+                                    <label htmlFor="input_max_trade_purchase_amount" className="form-label">Maximum purchase amount</label>
                                     <div className="input-group">
                                         {currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
                                         <input
-                                            type="number" className="form-control" id="input_max_purchase_amount"
-                                            min={this.state.input.min_purchase_amount + ''}
+                                            type="number" className="form-control" id="input_max_trade_purchase_amount"
+                                            min={this.state.input.min_trade_purchase_amount + ''}
                                             step="0.01"
-                                            value={this.state.input.max_purchase_amount + ''}
+                                            value={this.state.input.max_trade_purchase_amount + ''}
                                             required
-                                            onChange={e => this.handleInputChange('max_purchase_amount', e.target.value)}
+                                            onChange={e => this.handleInputChange('max_trade_purchase_amount', e.target.value)}
                                         />
                                         {!currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
                                     </div>
@@ -302,31 +302,31 @@ class OffersCreateNewScreen extends React.Component {
 
                             {this.state.input.offer_to == 'sell' && <>
                                 <div className="mb-3">
-                                    <label htmlFor="input_min_sell_value" className="form-label">Minimum sell value</label>
+                                    <label htmlFor="input_min_trade_sell_value" className="form-label">Minimum sell value</label>
                                     <div className="input-group">
                                         <input
-                                            type="number" className="form-control" id="input_min_sell_value"
+                                            type="number" className="form-control" id="input_min_trade_sell_value"
                                             min={asset.smallest_display_unit}
                                             step={asset.smallest_display_unit}
                                             max={max_offerable_asset_value}
-                                            value={this.state.input.min_sell_value + ''}
+                                            value={this.state.input.min_trade_sell_value + ''}
                                             required
-                                            onChange={e => this.handleInputChange('min_sell_value', e.target.value)}
+                                            onChange={e => this.handleInputChange('min_trade_sell_value', e.target.value)}
                                         />
                                         <span className="input-group-text">{asset.code}</span>
                                     </div>
                                 </div>
                                 <div className="mb-3">
-                                    <label htmlFor="input_max_sell_value" className="form-label">Maximum sell value</label>
+                                    <label htmlFor="input_max_trade_sell_value" className="form-label">Maximum sell value</label>
                                     <div className="input-group">
                                         <input
-                                            type="number" className="form-control" id="input_max_sell_value"
-                                            min={this.state.input.min_sell_value}
+                                            type="number" className="form-control" id="input_max_trade_sell_value"
+                                            min={this.state.input.min_trade_sell_value}
                                             step={asset.smallest_display_unit}
                                             max={max_offerable_asset_value}
-                                            value={this.state.input.max_sell_value + ''}
+                                            value={this.state.input.max_trade_sell_value + ''}
                                             required
-                                            onChange={e => this.handleInputChange('max_sell_value', e.target.value)}
+                                            onChange={e => this.handleInputChange('max_trade_sell_value', e.target.value)}
                                         />
                                         <span className="input-group-text">{asset.code}</span>
                                     </div>

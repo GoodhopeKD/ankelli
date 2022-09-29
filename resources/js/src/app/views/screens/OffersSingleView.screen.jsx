@@ -31,8 +31,8 @@ class OffersSingleViewScreen extends React.Component {
 
     assetToCurrency = (asset_value, key_prefix = '') => {
         const offer_price = this.focused_offer.offer_price
-        const platform_charge_asset_factor = this.props.sysconfig_params.platform_charge_asset_factor
-        const currency_amount = this.focused_offer.offer_to == 'buy' ? (asset_value * offer_price) / (1 + platform_charge_asset_factor) : (asset_value * offer_price)
+        const trade_txn_fee_factor = this.props.sysconfig_params.trade_txn_fee_factor
+        const currency_amount = this.focused_offer.offer_to == 'buy' ? (asset_value * offer_price) / (1 + trade_txn_fee_factor) : (asset_value * offer_price)
         const update_object = {}
         update_object[key_prefix + 'asset_value'] = asset_value
         update_object[key_prefix + 'currency_amount'] = currency_amount
@@ -41,8 +41,8 @@ class OffersSingleViewScreen extends React.Component {
 
     currencyToAsset = (currency_amount, key_prefix = '') => {
         const offer_price = this.focused_offer.offer_price
-        const platform_charge_asset_factor = this.props.sysconfig_params.platform_charge_asset_factor
-        const asset_value = this.focused_offer.offer_to == 'buy' ? (currency_amount / offer_price) * (1 + platform_charge_asset_factor) : (currency_amount / offer_price)
+        const trade_txn_fee_factor = this.props.sysconfig_params.trade_txn_fee_factor
+        const asset_value = this.focused_offer.offer_to == 'buy' ? (currency_amount / offer_price) * (1 + trade_txn_fee_factor) : (currency_amount / offer_price)
         const update_object = {}
         update_object[key_prefix + 'asset_value'] = asset_value
         update_object[key_prefix + 'currency_amount'] = currency_amount
@@ -65,9 +65,9 @@ class OffersSingleViewScreen extends React.Component {
         _Offer.getOne({ ref_code: this.props.params.ref_code })
             .then(offer => {
                 this.focused_offer = new _Offer(offer)
-                this.currencyToAsset(this.props.params.currency_amount ?? (offer.offer_to == 'buy' ? offer.min_purchase_amount : offer.offer_price * offer.min_sell_value))
-                this.currencyToAsset(offer.offer_to == 'buy' ? offer.min_purchase_amount : offer.offer_price * offer.min_sell_value, 'min_')
-                this.currencyToAsset(offer.offer_to == 'buy' ? offer.max_purchase_amount : offer.offer_price * offer.max_sell_value, 'max_')
+                this.currencyToAsset(this.props.params.currency_amount ?? (offer.offer_to == 'buy' ? offer.min_trade_purchase_amount : offer.offer_price * offer.min_trade_sell_value))
+                this.currencyToAsset(offer.offer_to == 'buy' ? offer.min_trade_purchase_amount : offer.offer_price * offer.min_trade_sell_value, 'min_')
+                this.currencyToAsset(offer.offer_to == 'buy' ? offer.max_trade_purchase_amount : offer.offer_price * offer.max_trade_sell_value, 'max_')
                 const returnObj = (arr) => { const obj = {}; arr.forEach(arr_i => obj[arr_i] = ''); return obj; }
                 this.setState({
                     focused_offer_loaded: true,
@@ -140,8 +140,8 @@ class OffersSingleViewScreen extends React.Component {
                             {window.isset(this.props.auth_user) && <p>Your current usable {asset.code} balance: {window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</p>}
                             <p>Currency : {currency.name} ({currency.code}) </p>
                             <p>{this.focused_offer.offer_to == 'buy' ? 'Purchase' : 'Sell'} price : {window.currencyAmountString(this.focused_offer.offer_price, currency)}</p>
-                            {this.focused_offer.offer_to == 'buy' && <p>Purchase limits : {window.currencyAmountString(this.focused_offer.min_purchase_amount, currency)} - {window.currencyAmountString(this.focused_offer.max_purchase_amount, currency)}</p>}
-                            {this.focused_offer.offer_to == 'sell' && <p>Sell limits : {window.assetValueString(this.focused_offer.min_sell_value, asset)} - {window.assetValueString(this.focused_offer.max_sell_value, asset)}</p>}
+                            {this.focused_offer.offer_to == 'buy' && <p>Purchase limits : {window.currencyAmountString(this.focused_offer.min_trade_purchase_amount, currency)} - {window.currencyAmountString(this.focused_offer.max_trade_purchase_amount, currency)}</p>}
+                            {this.focused_offer.offer_to == 'sell' && <p>Sell limits : {window.assetValueString(this.focused_offer.min_trade_sell_value, asset)} - {window.assetValueString(this.focused_offer.max_trade_sell_value, asset)}</p>}
                             <p>Payment Method: {pymt_method.name}</p>
                         </div>
                     </div>
@@ -174,7 +174,7 @@ class OffersSingleViewScreen extends React.Component {
                                             />}
                                             <span className="input-group-text">{asset.code}</span>
                                         </div>
-                                        {this.focused_offer.offer_to == 'buy' && <div className="form-text">= &#123;<b>purchase_amount</b>&#125; * ( <b>1</b> + &#123;<b>a {this.props.sysconfig_params.platform_charge_asset_factor} platform_fee</b>&#125; ) / &#123;<b>price</b>&#125;</div>}
+                                        {this.focused_offer.offer_to == 'buy' && <div className="form-text">= &#123;<b>purchase_amount</b>&#125; * ( <b>1</b> + &#123;<b>a {this.props.sysconfig_params.trade_txn_fee_factor} platform_fee</b>&#125; ) / &#123;<b>price</b>&#125;</div>}
                                     </div>
                                     <div className="col-lg-6">
                                         <label htmlFor="input_currency_amount" className="form-label">Amount you'll {this.focused_offer.offer_to == 'buy' ? 'receive' : 'pay'}</label>
@@ -190,7 +190,7 @@ class OffersSingleViewScreen extends React.Component {
                                             />
                                             {!currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
                                         </div>
-                                        {this.focused_offer.offer_to == 'buy' && <div className="form-text">= &#123;<b>asset_value</b>&#125; * &#123;<b>price</b>&#125; / ( <b>1</b> + &#123;<b>a {this.props.sysconfig_params.platform_charge_asset_factor} platform_fee</b>&#125; )</div>}
+                                        {this.focused_offer.offer_to == 'buy' && <div className="form-text">= &#123;<b>asset_value</b>&#125; * &#123;<b>price</b>&#125; / ( <b>1</b> + &#123;<b>a {this.props.sysconfig_params.trade_txn_fee_factor} platform_fee</b>&#125; )</div>}
                                     </div>
                                 </div>
                             </div>

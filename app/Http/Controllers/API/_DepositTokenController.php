@@ -88,15 +88,17 @@ class _DepositTokenController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  string  $token
+     * @param  string  $asset_code
      * @return \Illuminate\Http\Response
      */
-    public function use(Request $request, $token)
+    public function use(string $token, string $asset_code)
     {
-        $validated_data = $request->validate([
-            'asset_code' => ['required', 'exists:__assets,code', 'string'],
-        ]);
+        $asset = _Asset::firstWhere(['asset_code' => $asset_code]);
+        if (!$asset){
+            return abort(422,"Asset not valid.");
+        }
+        $validated_data['asset_code'] = $asset_code;
 
         $element = _DepositToken::find($token);
 

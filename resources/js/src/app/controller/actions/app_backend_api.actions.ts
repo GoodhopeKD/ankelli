@@ -103,9 +103,16 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
                 utc_offset: active_session_data.utc_offset
             }
 
+            // Use session_token if its there
+            if (active_session_data.token) {
+                app_backend_api.handle.defaults.headers.common['x-session-token'] = active_session_data.token
+            } else {
+                delete app_backend_api.handle.defaults.headers.common['x-session-token']
+            }
+
             const request_object = {
                 method: action.method,
-                url: action.endpoint === '' ? action.endpoint : active_session_data.token + '/' + action.endpoint,
+                url: action.endpoint,
                 data: action.data_has_files ? action.data : { ...action.data, active_session_data: sent_active_session_data }
             } as any
 

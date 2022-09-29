@@ -68,7 +68,7 @@ function Navigator(props) {
 
     const curr_auth_state = auth_user ? true : false;
 
-    const nav_list = []    // flattened, slugs added // for 404 and 403 messages
+    const nav_path_list = []    // flattened // for 404 and 403 messages // for laravel router
     const nav_list_filtered = []    // flattened, auth_state, auth_user: permissions & groups filtered // for router
     const nav_menus_filtered = []    // auth filtered, virtual routes filtered // for drawer
 
@@ -109,7 +109,10 @@ function Navigator(props) {
                     }
 
                     if (!nav_menus[i].menu_items[j].path.includes('#') && nav_menus[i].menu_items[j].element) {
-                        nav_list.push({ ...nav_menus[i].menu_items[j], children: undefined })
+                        nav_path_list.push(nav_menus[i].menu_items[j].path)
+                        if (window.isset(nav_menus[i].menu_items[j].path_alias)) {
+                            nav_path_list.push(nav_menus[i].menu_items[j].path_alias)
+                        }
                         if (!disabled_j && required_params_passed_j && (show_when_auth_state_is_j === null || show_when_auth_state_is_j === curr_auth_state)) {
                             nav_list_filtered.push({ ...nav_menus[i].menu_items[j], path_alias: undefined, children: undefined })
                             if (window.isset(nav_menus[i].menu_items[j].path_alias)) {
@@ -143,7 +146,10 @@ function Navigator(props) {
                             }
 
                             if (!nav_menus[i].menu_items[j].children[k].path.includes('#') && nav_menus[i].menu_items[j].children[k].element) {
-                                nav_list.push(nav_menus[i].menu_items[j].children[k])
+                                nav_path_list.push(nav_menus[i].menu_items[j].children[k].path)
+                                if (window.isset(nav_menus[i].menu_items[j].children[k].path_alias)) {
+                                    nav_path_list.push(nav_menus[i].menu_items[j].children[k].path_alias)
+                                }
                                 if (!disabled_k && required_params_passed_k && (show_when_auth_state_is_k === null || show_when_auth_state_is_k === curr_auth_state)) {
                                     nav_list_filtered.push({ ...nav_menus[i].menu_items[j].children[k], path_alias: undefined })
                                     if (window.isset(nav_menus[i].menu_items[j].children[k].path_alias)) {
@@ -163,6 +169,38 @@ function Navigator(props) {
                 nav_menus_filtered.push(nav_menus_filtered_element)
             }
         }
+    }
+
+    const regenerate_nav_path_list_laravel = false
+    if (regenerate_nav_path_list_laravel) {
+        const nav_path_list_laravel = []
+        nav_path_list.forEach(path => {
+            if (path.includes(':')) {
+                const path_segments = path.split('/').filter(path_segment => path_segment.length)
+                path = ''
+                path_segments.forEach(path_segment => {
+                    path = path + '/'
+                    if (path_segment.includes(':')) {
+                        path = path + '{' + path_segment.replace(/:/g, "") + '}'
+                    } else {
+                        path = path + path_segment
+                    }
+                });
+            }
+            if (!['/404', '/403'].includes(path))
+                nav_path_list_laravel.push(path)
+        });
+
+        const TextFile = () => {
+            const element = document.createElement("a");
+            const textFile = new Blob([JSON.stringify(nav_path_list_laravel, null, 2)], { type: 'text/json' }); //pass data from localStorage API to blob
+            element.href = URL.createObjectURL(textFile);
+            element.download = "nav_path_list_laravel.json";
+            document.body.appendChild(element);
+            element.click();
+        }
+
+        TextFile()
     }
 
     const PageWrapper = (props) => {
@@ -199,7 +237,7 @@ function Navigator(props) {
                 <div className="modal fade" id="reset_lost_password_modal" tabIndex="-1" >
                     <ResetLostPasswordModal />
                 </div>
-                <div className="modal fade" id="recover_lost_username_modal" tabIndex="-1" >
+                <div className="modal fade" id="get_lost_username_modal" tabIndex="-1" >
                     <RecoverLostUsernameModal />
                 </div>
             </>}
@@ -208,7 +246,7 @@ function Navigator(props) {
 
     const NoMatch = () => {
         const curr_path = useLocation().pathname
-        const curr_path_exists = nav_list.some(rt => rt.path === curr_path)
+        const curr_path_exists = nav_path_list.includes(curr_path)
         if (['/signin', '/signup'].includes(curr_path)) {
             const get_param = useLocation().search;
             return <Navigate to={get_param.length > 6 && get_param.includes('?rdr=') ? get_param.split('?rdr=')[1] : '/'} />
@@ -216,7 +254,7 @@ function Navigator(props) {
         if (curr_path_exists && !curr_auth_state) {
             return <Navigate to={'/signin?rdr=' + curr_path} />
         }
-        const item = nav_list.find(rt => rt.path === (curr_path_exists ? '/403' : '/404'))
+        const item = nav_list_filtered.find(rt => rt.path === (curr_path_exists ? '/403' : '/404'))
         return <item.element PageWrapper={PageWrapper} title={item.title} path={item.path} />
     }
 

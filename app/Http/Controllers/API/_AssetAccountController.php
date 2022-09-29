@@ -95,7 +95,7 @@ class _AssetAccountController extends Controller
         $validated_data['usable_balance_asset_value'] = 0;
         $validated_data['total_balance_asset_value'] = 0;
 
-        if ( _PrefItem::firstWhere('key_slug', 'use_tatum_crypto_asset_engine')->value_f() ){
+        if ( _PrefItem::firstWhere('key_slug', 'use_tatum_api')->value_f() ){
             $tatum_element = null;
             try {
                 $tatum_elements = (new __TatumAPIController)->getVirtualAccounts(new Request(['externalId' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']]))->getData();
@@ -125,7 +125,7 @@ class _AssetAccountController extends Controller
 
         $element = _AssetAccount::create($validated_data);
 
-        if ( _PrefItem::firstWhere('key_slug', 'use_tatum_crypto_asset_engine')->value_f() ){
+        if ( _PrefItem::firstWhere('key_slug', 'use_tatum_api')->value_f() ){
             $asset_account_addresses = (new __TatumAPIController)->getVirtualAccountDepositAddresses(new Request(['virtual_account_id' => $validated_data['tatum_virtual_account_id']]))->getData();
             if (count($asset_account_addresses)){
                 foreach ($asset_account_addresses as $asset_account_address) {

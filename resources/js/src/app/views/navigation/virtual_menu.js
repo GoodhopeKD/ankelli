@@ -55,22 +55,34 @@ export const virtual_menu = {
         },
         {
             title: 'Reset lost password',
-            path: '/generate_password_reset_token',
+            path: '/recovery/generate_password_reset_token',
             element: (props) => <ModalToScreenWrapper {...props} ><GeneratePasswordResetTokenModal {...props} component_context="screen" /></ModalToScreenWrapper>,
             show_when_auth_state_is: false,
         },
         {
             title: 'Reset lost password',
-            path: '/reset_lost_password',
-            path_alias: '/reset_lost_password/:username/:password_reset_token',
+            path: '/recovery/reset_lost_password',
+            path_alias: '/recovery/reset_lost_password/:username/:password_reset_token',
             element: (props) => <ModalToScreenWrapper {...props} ><ResetLostPasswordModal {...props} component_context="screen" /></ModalToScreenWrapper>,
             show_when_auth_state_is: false,
         },
         {
             title: 'Recover lost username',
-            path: '/recover_lost_username',
+            path: '/recovery/get_lost_username',
             element: (props) => <ModalToScreenWrapper {...props} ><RecoverLostUsernameModal {...props} component_context="screen" /></ModalToScreenWrapper>,
             show_when_auth_state_is: false,
+        },
+        {
+            title: 'Verify email address',
+            path: '/verification/email_address',
+            path_alias: '/verification/email_address/:email_address_id/:email_address_verification_token',
+            element: (props) => <ExampleElement {...props} />,
+        },
+        {
+            title: 'Verify phone number',
+            path: '/verification/phone_no',
+            path_alias: '/verification/phone_no/:phone_no_id/:phone_no_verification_token',
+            element: (props) => <ExampleElement {...props} />,
         },
         {
             title: 'Error 403: Not authorized',

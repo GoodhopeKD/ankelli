@@ -74,8 +74,8 @@ export default class _DepositToken extends _Wrapper_ implements Omit<typeof _Dep
         return await mainLaravelDBRestAPICallWrapper
             .dispatch({
                 type: 'APP_BACKEND_API_CALL',
-                method: 'POST',
-                endpoint: 'deposit_tokens/use/' + args.token,
+                method: 'GET',
+                endpoint: 'deposit_tokens/' + args.token + '/use/' + args.asset_code,
                 data: args
             })
             .then((resp: any) => { return Promise.resolve(resp) })

@@ -8,7 +8,7 @@ import _Wrapper_ from 'app/controller/wrappers/_Wrapper_'
 */
 type casts_t = 'created_datetime' | 'verified_datetime'
 type _status_t = 'unused' | 'verified' | 'annulled'
-type recepient_resource_table_t = '__email_addresses' | '__phone_nos'
+type recipient_resource_table_t = '__email_addresses' | '__phone_nos'
 type charge_t = 'email_address_verification' | 'phone_no_verification' | 'password_reset'
 
 /* 
@@ -19,9 +19,9 @@ export const _VerifTokenRespObj = {
     user_username: undefined as undefined | null | string,
     charge: undefined as undefined | null | charge_t,
     _status: undefined as undefined | null | _status_t,
-    recepient_resource_table: undefined as undefined | null | recepient_resource_table_t,
-    recepient_resource_id: undefined as undefined | null | number,
-    recepient_resource_value: undefined as undefined | null | string,
+    recipient_resource_table: undefined as undefined | null | recipient_resource_table_t,
+    recipient_resource_id: undefined as undefined | null | number,
+    recipient_resource_value: undefined as undefined | null | string,
 
     created_datetime: undefined as undefined | null | string,
     verified_datetime: undefined as undefined | null | string,
@@ -35,9 +35,9 @@ export default class _VerifToken extends _Wrapper_ implements Omit<typeof _Verif
     user_username: string | null = null
     charge: charge_t | null = null
     _status: _status_t | null = null
-    recepient_resource_table: recepient_resource_table_t | null = null
-    recepient_resource_id: number | null = null
-    recepient_resource_value: string | null = null
+    recipient_resource_table: recipient_resource_table_t | null = null
+    recipient_resource_id: number | null = null
+    recipient_resource_value: string | null = null
 
     created_datetime: _DateTime | null = null
     verified_datetime: _DateTime | null = null

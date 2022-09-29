@@ -27,11 +27,11 @@ class _Offer extends Model
         'currency_code',
         'offer_price',
 
-        'min_purchase_amount',
-        'max_purchase_amount',
+        'min_trade_purchase_amount',
+        'max_trade_purchase_amount',
 
-        'min_sell_value',
-        'max_sell_value',
+        'min_trade_sell_value',
+        'max_trade_sell_value',
 
         'pymt_method_slug',
         'pymt_details',
@@ -59,8 +59,8 @@ class _Offer extends Model
      */
     protected $casts = [
         'offer_price' => 'float',
-        'min_sell_value' => 'float',
-        'max_sell_value' => 'float',
+        'min_trade_sell_value' => 'float',
+        'max_trade_sell_value' => 'float',
         'pymt_details' => 'array',
     ];
 

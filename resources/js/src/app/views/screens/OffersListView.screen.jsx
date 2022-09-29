@@ -269,12 +269,12 @@ class OffersListViewScreen extends React.Component {
                                             <td className="align-middle"><b>{offer.asset_code}</b> <i>for</i> <b>{offer.currency_code}</b>
                                                 <br /><small className="text-muted"><i>{this.props.auth_user && this.props.auth_user.username == offer.creator_username ? 'Last updated' : 'Posted'} {(new _DateTime(offer.updated_datetime).prettyDatetime())}</i></small></td>
                                             <td className="align-middle">{window.currencyAmountString(offer.offer_price, currency)}</td>
-                                            <td className="align-middle">{window.currencyAmountString(offer.min_purchase_amount, currency)} - {window.currencyAmountString(offer.max_purchase_amount, currency)}</td>
+                                            <td className="align-middle">{window.currencyAmountString(offer.min_trade_purchase_amount, currency)} - {window.currencyAmountString(offer.max_trade_purchase_amount, currency)}</td>
                                         </> : <>
                                             <td className="align-middle"><b>{offer.currency_code}</b> <i>for</i> <b>{offer.asset_code}</b>
                                                 <br /><small className="text-muted"><i>{this.props.auth_user && this.props.auth_user.username == offer.creator_username ? 'Last updated' : 'Posted'} {(new _DateTime(offer.updated_datetime).prettyDatetime())}</i></small></td>
                                             <td className="align-middle">{window.currencyAmountString(offer.offer_price, currency)}</td>
-                                            <td className="align-middle">{offer.min_sell_value} {offer.asset_code} - {offer.max_sell_value} {offer.asset_code}</td>
+                                            <td className="align-middle">{offer.min_trade_sell_value} {offer.asset_code} - {offer.max_trade_sell_value} {offer.asset_code}</td>
                                         </>}
                                         <td className="align-middle">
                                             <img src={pymt_method.icon.uri} alt={pymt_method.name + " icon"} width="40" height="40" className="rounded-1 me-2" />

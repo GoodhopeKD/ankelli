@@ -83,29 +83,30 @@ class _TradeController extends Controller
         ]);
 
         $offer = _Offer::findOrFail($validated_data['offer_ref_code'])->makeVisible(['pymt_details']);
+        $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
 
-        $validated_data['platform_charge_asset_factor'] = (float)_PrefItem::firstWhere('key_slug', 'platform_charge_asset_factor')->value;
+        $validated_data['trade_txn_fee_factor'] = (float)_PrefItem::firstWhere('key_slug', 'trade_txn_fee_factor')->value;
         $validated_data['asset_value'] = $validated_data['currency_amount'] / $offer->offer_price;
-        $validated_data['asset_value_escrowed'] = $validated_data['asset_value'] * (1 + $validated_data['platform_charge_asset_factor']);
+        $validated_data['asset_value_escrowed'] = $validated_data['asset_value'] * (1 + $validated_data['trade_txn_fee_factor']);
 
         if ($offer->offer_to == 'buy'){
-            if (!($validated_data['currency_amount'] >= $offer->min_purchase_amount && $validated_data['currency_amount'] <= $offer->max_purchase_amount)){
+            if (!($validated_data['currency_amount'] >= $offer->min_trade_purchase_amount && $validated_data['currency_amount'] <= $offer->max_trade_purchase_amount)){
                 return abort(422, 'Amount not within limits.');
             }
             if (isset($validated_data['source_user_password'])){
-                if (!Hash::check($validated_data['source_user_password'], _User::firstWhere('username', session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null ))->makeVisible(['password'])->password)) {
+                if (!Hash::check($validated_data['source_user_password'], _User::firstWhere('username', $api_auth_user_username)->makeVisible(['password'])->password)) {
                     return abort(422, 'Password incorrect');
                 }
             } else {
                 return abort(403, 'Source user password required to authorize trade transaction');
             }
         } else {
-            if (!($validated_data['asset_value_escrowed'] >= $offer->min_sell_value && $validated_data['asset_value_escrowed'] <= $offer->max_sell_value)){
+            if (!($validated_data['asset_value_escrowed'] >= $offer->min_trade_sell_value && $validated_data['asset_value_escrowed'] <= $offer->max_trade_sell_value)){
                 return abort(422, 'Asset Value not within limits.');
             }
         }
         $validated_data = array_filter( array_merge( $offer->toArray() , [ '_status' => null ], $validated_data ) );
-        $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $validated_data['creator_username'] = $api_auth_user_username;
 
         if ( $validated_data['creator_username'] == $offer->creator_username ){
             return abort(422, 'Cannot trade with self.');
@@ -122,7 +123,7 @@ class _TradeController extends Controller
                     '_status' => 'offline', 
                     'update_note' => 'Set offline by the system because _SellerExtension is ' . $seller_seller_extension->_status
                 ]), $offer->ref_code );
-                session()->put('api_auth_user_username', $validated_data['creator_username']);
+                session()->put('api_auth_user_username', $api_auth_user_username);
                 return abort(422,"Selected seller cannot sell because _SellerExtension is " . $seller_seller_extension->_status);
             }
         } else {
@@ -138,7 +139,7 @@ class _TradeController extends Controller
                     '_status' => 'offline', 
                     'update_note' => 'Set offline by the system because _BuyerExtension is ' . $buyer_buyer_extension->_status
                 ]), $offer->ref_code );
-                session()->put('api_auth_user_username', $validated_data['creator_username']);
+                session()->put('api_auth_user_username', $api_auth_user_username);
                 return abort(422,"Selected buyer cannot buy because _BuyerExtension is " . $buyer_buyer_extension->_status);
             }
         } else {
@@ -160,15 +161,9 @@ class _TradeController extends Controller
         $seller_new_usable_balance_asset_value = $seller_asset_account->usable_balance_asset_value - $validated_data['asset_value_escrowed'];
 
         if ( $seller_new_usable_balance_asset_value < 0 ){ return abort(422, 'Current ' . $offer->asset_code . ' balance insufficient for transaction.'); }
-
-        /*(new _AssetAccountController)->update( new Request([
-            'usable_balance_asset_value' => $seller_new_usable_balance_asset_value,
-        ]), $seller_asset_account->id );*/
-        
         (new _AssetAccountController)->blockAssetValue( new Request([
             'asset_value' => $validated_data['asset_value_escrowed'],
         ]), $seller_asset_account->id );
-        
         sleep(1);
         // End lock in escrow
 
@@ -185,13 +180,15 @@ class _TradeController extends Controller
         ]));
         // End Create notification
 
+        // Create message
         session()->put('api_auth_user_username', 'system');
         (new _MessageController)->store( new Request([
             'parent_table' => '__trades',
             'parent_uid' => $element->ref_code,
             'body' => 'Trade has been initialized. Use this chat space to communicate with trade peer.'
         ]));
-        session()->put('api_auth_user_username', $validated_data['creator_username']);
+        session()->put('api_auth_user_username', $api_auth_user_username);
+        // End Create message
         
         // Handle _Log
         (new _LogController)->store( new Request([
@@ -236,7 +233,8 @@ class _TradeController extends Controller
         ]);
 
         $element = _Trade::findOrFail($ref_code);
-        $validated_data['updater_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $validated_data['updater_username'] = $api_auth_user_username;
         
         if (isset($validated_data['pymt_declared']) && $validated_data['pymt_declared'] == true){
             $validated_data['pymt_declared_datetime'] = now()->toDateTimeString();
@@ -246,7 +244,7 @@ class _TradeController extends Controller
                 'parent_uid' => $element->ref_code,
                 'body' => 'Asset buyer just declared their payment.'
             ]));
-            session()->put('api_auth_user_username', $validated_data['updater_username']);
+            session()->put('api_auth_user_username', $api_auth_user_username);
         }
 
         if (isset($validated_data['pymt_confirmed']) && $validated_data['pymt_confirmed'] == true){
@@ -267,7 +265,7 @@ class _TradeController extends Controller
                 'parent_uid' => $element->ref_code,
                 'body' => 'Asset seller just confirmed receiving payment.'
             ]));
-            session()->put('api_auth_user_username', $validated_data['updater_username']);
+            session()->put('api_auth_user_username', $api_auth_user_username);
 
             // Unlock asset from escrow
             $seller_username = $element->was_offer_to == 'buy' ? $element->creator_username : $element->offer_creator_username;
@@ -300,7 +298,7 @@ class _TradeController extends Controller
                 'destination_user_username' => $buyer_username, 
                 'asset_code' => $element->asset_code,
                 'transfer_asset_value' => $element->asset_value,
-                'platform_charge_asset_factor' => $element->platform_charge_asset_factor,
+                'trade_txn_fee_factor' => $element->trade_txn_fee_factor,
             ]));
         }
 
@@ -312,7 +310,7 @@ class _TradeController extends Controller
                 'parent_uid' => $element->ref_code,
                 'body' => 'Trade has been marked as completed. Thank you for using our service.'
             ]));
-            session()->put('api_auth_user_username', $validated_data['updater_username']);
+            session()->put('api_auth_user_username', $api_auth_user_username);
         }
 
         // Handle _Log

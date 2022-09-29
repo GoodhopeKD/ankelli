@@ -12,7 +12,8 @@ export default withRouter(class GeneratePasswordResetTokenModal extends React.Co
         btn_generate_token_working: false,
         input: {
             username: new _Input(),
-            email_address: new _Input(),
+            recipient_addon_name: 'email_address',
+            recipient_addon_value: new _Input(),
         },
         errors: [],
     };
@@ -37,15 +38,15 @@ export default withRouter(class GeneratePasswordResetTokenModal extends React.Co
         const input = this.state.input
 
         if (!input.username.isValid('username')) { errors.push("Invalid username") }
-        if (!input.email_address.isValid('email_address')) { errors.push("Invalid email address") }
+        if (!input.recipient_addon_value.isValid(input.recipient_addon_name)) { errors.push('Invalid ' + (input.recipient_addon_name === 'email_address' ? 'email address' : 'phone number')) }
 
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
             _User.generatePasswordResetToken(_Input.flatten(input))
                 .then(() => {
-                    _Notification.flash({ message: 'Token sent to given email address!', duration: 750 })
+                    _Notification.flash({ message: 'Token sent to given  ' + (input.recipient_addon_name === 'email_address' ? 'email address' : 'phone number'), duration: 2000 })
                     if (this.props.component_context == "screen") {
-                        this.props.navigate('/reset_lost_password' + this.props.location.search)
+                        this.props.navigate('/recovery/reset_lost_password' + this.props.location.search)
                     } else {
                         bootstrap.Modal.getOrCreateInstance(document.getElementById('generate_password_reset_token_modal')).hide()
                         bootstrap.Modal.getOrCreateInstance(document.getElementById('reset_lost_password_modal')).show()
@@ -56,7 +57,7 @@ export default withRouter(class GeneratePasswordResetTokenModal extends React.Co
                         Object.keys(error.request._response.errors).forEach(input_key => { error.request._response.errors[input_key].forEach(input_key_error => { errors.push(input_key_error) }) })
                     } else { errors.push(error.message) }
                     input.username.clearValidation()
-                    input.email_address.clearValidation()
+                    input.recipient_addon_value.clearValidation()
                     this.setState({ btn_generate_token_working, errors, input })
                 })
         } else {
@@ -71,7 +72,7 @@ export default withRouter(class GeneratePasswordResetTokenModal extends React.Co
                     <h3 className="fw-bold mb-0">Generate password reset token</h3>
                 </div>
                 <div className="modal-body p-4 pt-0">
-                    <p className="text-muted">Enter your username and user associated email address to send the token to.</p>
+                    <p className="text-muted">Enter your username and user associated {this.state.input.recipient_addon_name === "email_address" ? "email address" : "phone number"} to send the token to.</p>
                     <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
                         <div className="form-floating mb-3">
                             <input
@@ -89,18 +90,18 @@ export default withRouter(class GeneratePasswordResetTokenModal extends React.Co
                         </div>
                         <div className="form-floating mb-3">
                             <input
-                                type="email"
-                                className={"form-control" + (this.state.input.email_address.failedValidation() ? ' is-invalid' : '') + (this.state.input.email_address.passedValidation() ? ' is-valid' : '')}
-                                id={this.id_prefix + "input_email_address"}
-                                minLength={_Input.validation_param_lengths.email_address.min_length}
-                                maxLength={_Input.validation_param_lengths.email_address.max_length}
-                                value={this.state.input.email_address + ''}
-                                onChange={e => this.handleInputChange('email_address', e.target.value)}
+                                type={this.state.input.recipient_addon_name === "email_address" ? "email" : 'tel'}
+                                className={"form-control" + (this.state.input.recipient_addon_value.failedValidation() ? ' is-invalid' : '') + (this.state.input.recipient_addon_value.passedValidation() ? ' is-valid' : '')}
+                                id={this.id_prefix + "input_recipient_addon_value"}
+                                minLength={_Input.validation_param_lengths[this.state.input.recipient_addon_name].min_length}
+                                maxLength={_Input.validation_param_lengths[this.state.input.recipient_addon_name].max_length}
+                                value={this.state.input.recipient_addon_value + ''}
+                                onChange={e => this.handleInputChange('recipient_addon_value', e.target.value)}
                                 required
-                                placeholder="Email address"
+                                placeholder={this.state.input.recipient_addon_name === "email_address" ? "Email address" : "Phone number"}
                                 style={{ paddingRight: 40 }}
                             />
-                            <label htmlFor={this.id_prefix + "input_email_address"}>Email address</label>
+                            <label htmlFor={this.id_prefix + "input_recipient_addon_value"}>{this.state.input.recipient_addon_name === "email_address" ? "Email address" : "Phone number (include country code)"}</label>
                         </div>
                         <div className="mb-3">
                             {this.state.errors.map((error, key) => (
@@ -115,18 +116,18 @@ export default withRouter(class GeneratePasswordResetTokenModal extends React.Co
                             </div>
                             <div className="col ps-2">
                                 {this.props.component_context == "screen" ? <>
-                                    <Link className="w-100 mb-2 btn btn-lg rounded-3 btn-success" to={'/reset_lost_password' + this.props.location.search}>Already have token</Link>
+                                    <Link className="w-100 mb-2 btn btn-lg rounded-3 btn-success" to={'/recovery/reset_lost_password' + this.props.location.search}>Already have token</Link>
                                 </> : <>
-                                    <Link className="w-100 mb-2 btn btn-lg rounded-3 btn-success" to={'/#/reset_lost_password'} data-bs-target="#reset_lost_password_modal" data-bs-toggle="modal" >Already have token</Link>
+                                    <Link className="w-100 mb-2 btn btn-lg rounded-3 btn-success" to={'/#/recovery/reset_lost_password'} data-bs-target="#reset_lost_password_modal" data-bs-toggle="modal" >Already have token</Link>
                                 </>}
                             </div>
                         </div>
 
 
                         {this.props.component_context == "screen" ? <>
-                            <small className="text-muted">Click here to <Link to={'/signin' + this.props.location.search}>sign in</Link>, <Link to={'/signup' + this.props.location.search}>sign up</Link> or <Link to={'/recover_lost_username' + this.props.location.search} >recover lost username</Link>.</small>
+                            <small className="text-muted">Click here to <Link to={'/signin' + this.props.location.search}>sign in</Link>, <Link to={'/signup' + this.props.location.search}>sign up</Link> or <Link to={'/recovery/get_lost_username' + this.props.location.search} >recover lost username</Link>.</small>
                         </> : <>
-                            <small className="text-muted">Click here to <Link to={'/#/signin'} data-bs-target="#signin_modal" data-bs-toggle="modal" >sign in</Link>, <Link to={'/#/signup'} data-bs-target="#signup_modal" data-bs-toggle="modal" >sign up</Link> or <Link to={'/#/recover_lost_username'} data-bs-target="#recover_lost_username_modal" data-bs-toggle="modal">recover lost username</Link>.</small>
+                            <small className="text-muted">Click here to <Link to={'/#/signin'} data-bs-target="#signin_modal" data-bs-toggle="modal" >sign in</Link>, <Link to={'/#/signup'} data-bs-target="#signup_modal" data-bs-toggle="modal" >sign up</Link> or <Link to={'/#/recovery/get_lost_username'} data-bs-target="#get_lost_username_modal" data-bs-toggle="modal">recover lost username</Link>.</small>
                         </>}
                     </form>
                 </div>

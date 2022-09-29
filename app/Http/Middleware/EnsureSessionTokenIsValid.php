@@ -17,13 +17,17 @@ class EnsureSessionTokenIsValid
      */
     public function handle(Request $request, Closure $next)
     {
-        if (( !env('API_URL') && $request->path() == "api" ) || ( env('API_URL') && $request->path() == "/")) return $next($request);
-        $session = _Session::find( $request->segments()[env('API_URL')?0:1] );
-        if ( $session && $session['_status'] !== "ended" ){
-            $request->route()->forgetParameter('session_token');
-            return $next($request);
-        } else {
-            return abort(403,'Session ended or session token invalid');
-        }
+        if (( !env('API_URL') && $request->path() == "api" ) || ( env('API_URL') && $request->path() == "/") || str_contains( $request->path(), 'webhooks' ) ) return $next($request);
+        
+        $session_token = $request->header('x-session-token');
+        if (!$session_token) return abort(401,'Session token header required');
+
+        $session = _Session::find( $session_token );
+        if (!$session) return abort(401,'Invalid session token given');
+        if ($session['_status'] == "ended") abort(401,'Session with given token is marked as ended');
+
+        session()->put('active_session_token', $session_token);
+
+        return $next($request);
     }
 }

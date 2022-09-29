@@ -5,7 +5,7 @@ import { mainLaravelDBRestAPICallWrapper } from 'app/controller/actions/rest_api
 /*
 	Type Definitions
 */
-type local_validation_param_type_t = 'email_address' | 'surname' | 'name_s' | 'name' | 'username' | 'password' | 'datetime' | 'number' | 'url' | 'passport_number' | 'reg_token' | 'verif_token'
+type local_validation_param_type_t = 'email_address' | 'phone_no' | 'surname' | 'name_s' | 'name' | 'username' | 'password' | 'datetime' | 'number' | 'url' | 'passport_number' | 'reg_token' | 'verif_token'
 type available_param_type_t = 'email_address' | 'username' | 'reg_token'
 type usable_param_type_t = 'reg_token'
 
@@ -25,6 +25,14 @@ export const validation_param_lengths = {
 	email_address: {
 		min_length: 5,
 		max_length: 64,
+	},
+	phone_no: {
+		min_length: 10,
+		max_length: 24,
+	},
+	phone_no_number: {
+		min_length: 6,
+		max_length: 16,
 	},
 	surname: {
 		min_length: 2,
@@ -68,6 +76,7 @@ export default class _Input {
 	private _is_valid_reg_token: boolean | null = null
 	private _is_valid_verif_token: boolean | null = null
 	private _is_valid_email_address: boolean | null = null
+	private _is_valid_phone_no: boolean | null = null
 	private _is_valid_surname: boolean | null = null
 	private _is_valid_name_s: boolean | null = null
 	private _is_valid_name: boolean | null = null
@@ -146,6 +155,18 @@ export default class _Input {
 			return this._is_valid_email_address
 		}
 
+		if (validation_param === 'phone_no') {
+			this._is_valid_phone_no =
+				this._is_valid_phone_no !== null
+					? this._is_valid_phone_no
+					: /\+[0-9-\ .()]+$/i.test(
+						this._input
+					) && this._input.length >= validation_param_lengths.phone_no.min_length && this._input.length <= validation_param_lengths.phone_no.max_length
+			this._failed_validation = !this._is_valid_phone_no
+			this._passed_validation = !this._failed_validation
+			return this._is_valid_phone_no
+		}
+
 		if (validation_param === 'surname') {
 			this._is_valid_surname =
 				/^[a-zA-Z0-9 -_()À-ÿ\u00f1\u00d1]+$/.test(this._input) &&
@@ -211,8 +232,8 @@ export default class _Input {
 			.dispatch({
 				type: 'APP_BACKEND_API_CALL',
 				method: 'GET',
-				endpoint: 'availability_check/{check_param_name}/{check_param_value}',
-				data: { check_param_name: resource_name, check_param_value: this._input }
+				endpoint: 'param_checks/availability/{param_name}/{param_value}',
+				data: { param_name: resource_name, param_value: this._input }
 			})
 			.then((resp: any) => {
 				if (resource_name === 'reg_token') this._is_available_reg_token = resp.available === true
@@ -240,8 +261,8 @@ export default class _Input {
 			.dispatch({
 				type: 'APP_BACKEND_API_CALL',
 				method: 'GET',
-				endpoint: 'usability_check/{check_param_name}/{check_param_value}',
-				data: { check_param_name: resource_name, check_param_value: this._input }
+				endpoint: 'param_checks/usability/{param_name}/{param_value}',
+				data: { param_name: resource_name, param_value: this._input }
 			})
 			.then((resp: any) => {
 				if (resource_name === 'reg_token') this._is_usable_reg_token = resp.usable === true

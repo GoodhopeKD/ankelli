@@ -34,7 +34,7 @@ export const top_navbar_user_menu = {
         {
             has_divider_above: true,
             title: 'Sign out',
-            path: '/#/logout',
+            path: '/#/signout',
         },
     ]
 }

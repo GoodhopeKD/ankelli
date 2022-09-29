@@ -1,11 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+import { _Notification } from 'app/controller';
+
 import withRouter from 'app/views/navigation/withRouter'
 
 import Logo from "app/assets/img/logo/logo.jpeg";
 
 export default withRouter(class TopNavbar extends React.Component {
+
+    state = {}
 
     render() {
         return <>
@@ -37,7 +41,9 @@ export default withRouter(class TopNavbar extends React.Component {
                                     <li><i className="dropdown-header">@{this.props.auth_user.username}</i></li>
                                     <li><hr className="dropdown-divider" /></li>
                                     {this.props.top_navbar_user_menu.menu_items.map((item, index) => {
-                                        const linkk = <Link to={item.path} className="dropdown-item" onClick={e => { if (item.path === '/#/logout') { e.preventDefault(); this.props.auth_user.signOut() } }} >{item.title}</Link>
+                                        const linkk = <Link to={item.path} className="dropdown-item" onClick={e => { if (item.path === '/#/signout') { e.stopPropagation(); e.preventDefault(); this.setState({ btn_signout_working: true }); this.props.auth_user.signOut().then(() => { this.setState({ btn_signout_working: false }); _Notification.flash({ message: "You're now signed out", duration: 1000 }) }) } }} >
+                                            {(this.state.btn_signout_working && item.path === '/#/signout') ? <div className="text-center"><div className="spinner-border spinner-border-sm"></div></div> : item.title}
+                                        </Link>
                                         if (item.has_divider_above) {
                                             return <React.Fragment key={index}>
                                                 <li><hr className="dropdown-divider" /></li>

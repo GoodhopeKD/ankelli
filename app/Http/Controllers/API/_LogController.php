@@ -59,7 +59,7 @@ class _LogController extends Controller
                 $validated_data['request_location'] = $encrypt( json_encode( Location::get() ? (array)(Location::get()) : [ 'ip' => request()->ip() ] ));
                 $validated_data['utc_offset'] = session()->get('utc_offset');
             }
-            $validated_data['session_token'] = session()->get('active_session_token', isset(request()->segments()[env('API_URL')?0:1]) ? request()->segments()[env('API_URL')?0:1] : null );
+            $validated_data['session_token'] = session()->get('active_session_token');
             $validated_data['action_user_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
 
             _Log::create($validated_data);

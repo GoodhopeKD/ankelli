@@ -14,7 +14,7 @@ class BCSendFundsScreen extends React.Component {
         asset_value: 5,
         destination_blockchain_address: new _Input('0x06d64d1d5eb807e10eb59f38a448830d9888d7da'),
         source_user_password: new _Input('Def-Pass#123'),
-        recepient_note: new _Input('Test send.'),
+        recipient_note: new _Input('Test send.'),
     }
 
     state = {
@@ -138,7 +138,7 @@ class BCSendFundsScreen extends React.Component {
                                                 type="number" className="form-control" id="input_asset_value"
                                                 min={asset.smallest_display_unit}
                                                 required
-                                                max={parseFloat(window.assetValueString(((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value) / (1 + this.props.sysconfig_params.platform_charge_asset_factor), asset, false))}
+                                                max={parseFloat(window.assetValueString(((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value) / (1 + this.props.sysconfig_params.trade_txn_fee_factor), asset, false))}
                                                 step={asset.smallest_display_unit}
                                                 value={this.state.input.asset_value ? parseFloat(window.assetValueString(this.state.input.asset_value, asset, false)) : 0}
                                                 onChange={e => this.handleInputChange('asset_value', e.target.value)}
@@ -146,19 +146,19 @@ class BCSendFundsScreen extends React.Component {
                                         </div>
                                     </div>
                                     <div className="col">
-                                        <label htmlFor="output_current_balance" className="form-label">Total to be debited from account. (Incl. {this.props.sysconfig_params.platform_charge_asset_factor} platform charge) </label>
-                                        <span className="form-control" id='output_current_balance'>{window.assetValueString((this.state.input.asset_value ?? 0) * (1 + this.props.sysconfig_params.platform_charge_asset_factor), asset)}</span>
+                                        <label htmlFor="output_current_balance" className="form-label">Total to be debited from account. (Incl. {this.props.sysconfig_params.trade_txn_fee_factor} platform charge) </label>
+                                        <span className="form-control" id='output_current_balance'>{window.assetValueString((this.state.input.asset_value ?? 0) * (1 + this.props.sysconfig_params.trade_txn_fee_factor), asset)}</span>
                                     </div>
                                 </div>
 
                                 <div className="mb-3">
-                                    <label htmlFor="input_recepient_note" className="form-label">Sender note</label>
+                                    <label htmlFor="input_recipient_note" className="form-label">Sender note</label>
                                     <div className="input-group">
                                         <input
-                                            type="text" className="form-control" id="input_recepient_note"
-                                            value={this.state.input.recepient_note + ''}
+                                            type="text" className="form-control" id="input_recipient_note"
+                                            value={this.state.input.recipient_note + ''}
                                             required
-                                            onChange={e => this.handleInputChange('recepient_note', e.target.value)}
+                                            onChange={e => this.handleInputChange('recipient_note', e.target.value)}
                                         />
                                     </div>
                                 </div>
@@ -177,7 +177,7 @@ class BCSendFundsScreen extends React.Component {
                                         </div>
                                         <form onSubmit={e => { e.preventDefault(); this.handleSubmit2() }}>
                                             <div className="modal-body">
-                                                <p>{window.assetValueString(this.state.input.asset_value * (1 + this.props.sysconfig_params.platform_charge_asset_factor), asset)} is about to be debited from your account. Enter password to continue.</p>
+                                                <p>{window.assetValueString(this.state.input.asset_value * (1 + this.props.sysconfig_params.trade_txn_fee_factor), asset)} is about to be debited from your account. Enter password to continue.</p>
                                                 <div className="form-floating mb-3">
                                                     <input
                                                         type="password"

@@ -21,12 +21,13 @@ if (!File::exists( public_path('storage') )){
 // Default Route
 Route::post('', 'App\Http\Controllers\API\__AuxController@default_route')->name('default_route');
 
-Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_token}' ], function() {
+Route::group([ 'namespace' => 'App\Http\Controllers\API' ], function() {
     
     // Tx recon
-    Route::post('wehbooks/tatum/nofitications', '_TransactionController@tatum_subscription_webhook_txrecon')->name('tatum.subscription_txrecon');
+    Route::post('webhooks/tatum/nofitications', '_TransactionController@tatum_subscription_webhook_txrecon')->name('tatum.subscription_txrecon');
 
-    Route::post('load_test_data', 'App\Http\Controllers\API\__AuxController@load_test_data')->name('load_test_data');
+    // Test routes
+    /*Route::post('load_test_data', 'App\Http\Controllers\API\__AuxController@load_test_data')->name('load_test_data');
     Route::get('get_customers', 'App\Http\Controllers\API\_AssetAccountController@get_customers')->name('get_customers');
     Route::get('get_accounts', 'App\Http\Controllers\API\_AssetAccountController@get_accounts')->name('get_accounts');
     Route::get('get_addresses', 'App\Http\Controllers\API\_AssetAccountController@get_addresses')->name('get_addresses');
@@ -34,24 +35,25 @@ Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_
     Route::get('get_subscriptions', 'App\Http\Controllers\API\_AssetAccountController@get_subscriptions')->name('get_subscriptions');
     Route::get('get_subscription_notifications', 'App\Http\Controllers\API\_AssetAccountController@get_subscription_notifications')->name('get_subscription_notifications');
     Route::get('redo_tatum_txrecon_transactions', 'App\Http\Controllers\API\_AssetAccountController@redo_tatum_txrecon_transactions')->name('redo_tatum_txrecon_transactions');
-    Route::get('redo_tatum_subscription_webhook_txrecon_requests', 'App\Http\Controllers\API\_AssetAccountController@redo_tatum_subscription_webhook_txrecon_requests')->name('redo_tatum_subscription_webhook_txrecon_requests');
+    Route::get('redo_tatum_subscription_webhook_txrecon_requests', 'App\Http\Controllers\API\_AssetAccountController@redo_tatum_subscription_webhook_txrecon_requests')->name('redo_tatum_subscription_webhook_txrecon_requests');*/
 
     // User authentication routes
     Route::post('users/signup', '_UserController@store')->name('users.signup');
     Route::post('users/signin', '_UserController@signin')->name('users.signin');
 
     // User recovery routes
-    Route::post('users/recovery/generate_password_reset_token', '_VerifTokenController@store')->name('users.generate_password_reset_token');
-    Route::post('users/recovery/reset_lost_password', '_UserController@reset_lost_password')->name('users.reset_lost_password');
-    Route::post('users/recovery/get_lost_username', '_UserController@get_lost_username')->name('users.get_lost_username');
+    Route::get('users/recovery/username/get/send_to/{recipient_addon_name}/{recipient_addon_value}', '_UserController@get_lost_username')->name('users.recovery.get_lost_username');
+    Route::get('users/recovery/password/generate_reset_token/for_user/{username}/send_to/{recipient_addon_name}/{recipient_addon_value}', '_VerifTokenController@generate_password_reset_token')->name('users.recovery.generate_password_reset_token');
+    Route::post('users/recovery/password/reset', '_UserController@reset_lost_password')->name('users.recovery.reset_lost_password');
+
+    // User addon verification routes (email_address, phone_no)
+    Route::get('users/verification/{addon_name}/{addon_id}/generate_verification_token', '_VerifTokenController@generate_verification_token')->name('users.verification.generate_verification_token');
+    Route::get('users/verification/{addon_name}/{addon_id}/verify/{verification_token}', '_VerifTokenController@verify')->name('users.verification.confirm_verification_token');
 
     Route::group(['middleware' => 'auth:api'], function () {
 
         // User authentication routes
         Route::post('users/signout', '_UserController@signout')->name('users.signout');
-
-        // User modification and deletion routes
-        Route::apiResource('users', '_UserController')->only(['update', 'index'])->parameter('users', 'uid');
 
         // User extension management routes
         Route::post('users/{uid}/admin_extension', '_AdminExtensionController@store')->name('users.add_admin_extension');
@@ -65,12 +67,15 @@ Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_
         Route::post('users/{uid}/buyer_extension', '_SellerExtensionController@store')->name('users.add_buyer_extension');
         Route::put('users/{uid}/buyer_extension', '_SellerExtensionController@update')->name('users.update_buyer_extension');
         Route::delete('users/{uid}/buyer_extension', '_SellerExtensionController@destroy')->name('users.delete_buyer_extension');
+
+        // User modification and index routes
+        Route::apiResource('users', '_UserController')->only(['update', 'index'])->parameter('users', 'uid');
     });
 
 
     // Auth:null accessible routes
-    Route::get('availability_check/{check_param_name}/{check_param_value}', '__AuxController@availability_check')->name('availability_check');
-    Route::get('usability_check/{check_param_name}/{check_param_value}', '__AuxController@usability_check')->name('usability_check');
+    Route::get('param_checks/availability/{param_name}/{param_value}', '__AuxController@availability_check')->name('availability_check');
+    Route::get('param_checks/usability/{param_name}/{param_value}', '__AuxController@usability_check')->name('usability_check');
     Route::get('sysconfig_params', '__AuxController@sysconfig_params')->name('sysconfig_params');
     Route::get('sysconfig_params_enum_options', '__AuxController@sysconfig_params_enum_options')->name('sysconfig_params_enum_options');
     Route::get('datalists', '__AuxController@datalists')->name('datalists');
@@ -85,19 +90,23 @@ Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_
 
     // Auth:true accessible routes
     Route::group(['middleware' => 'auth:api'], function () {
+
         Route::post('files/upload', '_FileController@upload')->name('files.upload');
         Route::apiResource('files', '_FileController')->except(['index'])->parameter('files', 'id');
-        Route::apiResource('email_addresses', '_EmailAddressController')->only(['store', 'index', 'destroy'])->parameter('email_addresses', 'id');
+
+        Route::post('transactions/process', '_TransactionController@process')->name('process_transaction');
+        Route::apiResource('transactions', '_TransactionController')->only(['index'])->parameter('transactions', 'ref_code');
+
+        Route::get('deposit_tokens/{token}/use/{asset_code}', '_DepositTokenController@use')->name('use_deposit_token');
+        Route::apiResource('deposit_tokens', '_DepositTokenController')->parameter('deposit_tokens', 'token');
+
+        Route::apiResource('email_addresses', '_EmailAddressController')->only(['store', 'index', 'destroy'])->parameter('email_addresses', 'uid');
+        Route::apiResource('phone_nos', '_PhoneNoController')->only(['store', 'index', 'destroy'])->parameter('phone_nos', 'id');
         Route::apiResource('feedback_reports', '_FeedbackReportController')->parameter('feedback_reports', 'uid');
         Route::apiResource('offers', '_OfferController')->only(['store', 'update', 'destroy'])->parameter('offers', 'ref_code');
         Route::apiResource('trades', '_TradeController')->except(['destroy'])->parameter('trades', 'ref_code');
-        Route::apiResource('transactions', '_TransactionController')->only(['index'])->parameter('transactions', 'ref_code');
-        Route::post('transactions/process', '_TransactionController@process')->name('process_transaction');
-        Route::apiResource('deposit_tokens', '_DepositTokenController')->parameter('deposit_tokens', 'token');
-        Route::post('deposit_tokens/use/{token}', '_DepositTokenController@use')->name('use_deposit_token');
         Route::apiResource('asset_accounts', '_AssetAccountController')->only('store')->parameter('asset_accounts', 'id');
         Route::apiResource('asset_account_addresses', '_AssetAccountAddressController')->only('store','index')->parameter('asset_account_addresses', 'id');
-        Route::apiResource('phone_nos', '_PhoneNoController')->parameter('phone_nos', 'id');
         Route::apiResource('messages', '_MessageController')->only(['index', 'store'])->parameter('messages', 'id');
         Route::apiResource('pinnings', '_PinningController')->only(['store', 'update', 'destroy'])->parameter('pinnings', 'id');
         Route::apiResource('pref_items', '_PrefItemController')->parameter('pref_items', 'id');
@@ -106,7 +115,6 @@ Route::group([ 'namespace' => 'App\Http\Controllers\API', 'prefix' => '{session_
 
         Route::apiResource('systools/exportables', '_ExportableController')->parameter('exportables', 'id');
         Route::apiResource('systools/reg_tokens', '_RegTokenController')->parameter('reg_tokens', 'token');
-        Route::apiResource('systools/verif_tokens', '_VerifTokenController')->parameter('verif_tokens', 'token');
 
         Route::apiResource('systools/permissions', '_PermissionController')->parameter('permissions', 'uid');
         Route::apiResource('systools/permission_instances', '_PermissionInstanceController')->parameter('permission_instances', 'id');

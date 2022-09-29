@@ -49,9 +49,15 @@ const signup_data = {
 	password_confirmation: '',
 }
 
+const get_lost_username_data = {
+	recipient_addon_name: '' as 'email_address' | 'phone_no',
+	recipient_addon_value: '',
+}
+
 const generate_password_reset_token_data = {
 	username: '',
-	email_address: '',
+	recipient_addon_name: '' as 'email_address' | 'phone_no',
+	recipient_addon_value: '',
 }
 
 const reset_lost_password_data = {
@@ -59,10 +65,6 @@ const reset_lost_password_data = {
 	email_address: '',
 	password: '',
 	password_confirmation: '',
-}
-
-const get_lost_username_data = {
-	email_address: '',
 }
 
 const _UserExtensionsRespObj = {
@@ -280,12 +282,24 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 			})
 	}
 
+	static async getLostUsername(data: typeof get_lost_username_data) {
+		return await mainLaravelDBRestAPICallWrapper
+			.dispatch({
+				type: 'APP_BACKEND_API_CALL',
+				method: 'GET',
+				endpoint: 'users/recovery/username/get/send_to/{recipient_addon_name}/{recipient_addon_value}',
+				data
+			})
+			.then((resp: any) => { return Promise.resolve(resp) })
+			.catch((e: any) => { return Promise.reject(e) })
+	}
+
 	static async generatePasswordResetToken(data: typeof generate_password_reset_token_data) {
 		return await mainLaravelDBRestAPICallWrapper
 			.dispatch({
 				type: 'APP_BACKEND_API_CALL',
-				method: 'POST',
-				endpoint: 'users/recovery/generate_password_reset_token',
+				method: 'GET',
+				endpoint: 'users/recovery/password/generate_reset_token/for_user/{username}/send_to/{recipient_addon_name}/{recipient_addon_value}',
 				data
 			})
 			.then((resp: any) => { return Promise.resolve(resp) })
@@ -297,19 +311,7 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 			.dispatch({
 				type: 'APP_BACKEND_API_CALL',
 				method: 'POST',
-				endpoint: 'users/recovery/reset_lost_password',
-				data
-			})
-			.then((resp: any) => { return Promise.resolve(resp) })
-			.catch((e: any) => { return Promise.reject(e) })
-	}
-
-	static async getLostUsername(data: typeof get_lost_username_data) {
-		return await mainLaravelDBRestAPICallWrapper
-			.dispatch({
-				type: 'APP_BACKEND_API_CALL',
-				method: 'POST',
-				endpoint: 'users/recovery/get_lost_username',
+				endpoint: 'users/recovery/password/reset',
 				data
 			})
 			.then((resp: any) => { return Promise.resolve(resp) })

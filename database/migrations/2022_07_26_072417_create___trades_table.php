@@ -39,7 +39,7 @@ return new class extends Migration
                     ->onDelete('set null');
             $table->string('asset_value', 32); // unsignedDecimal
             $table->string('asset_value_escrowed', 32); // unsignedDecimal
-            $table->string('platform_charge_asset_factor', 32); // unsignedDecimal
+            $table->string('trade_txn_fee_factor', 32); // unsignedDecimal
             $table->unsignedBigInteger('currency_amount');
             $table->string('offer_price', 32)->nullable(); // unsignedDecimal
 
@@ -50,10 +50,14 @@ return new class extends Migration
                     ->onUpdate('cascade')
                     ->onDelete('set null');
             $table->text('pymt_details');
+            $table->boolean('pymt_details_visible')->default(false);
             $table->timestamp('pymt_declared_datetime')->nullable();
             $table->timestamp('pymt_confirmed_datetime')->nullable();
             $table->boolean('visible_to_creator')->default(true);
             $table->boolean('visible_to_offer_creator')->default(true);
+            $table->boolean('completion_rating_on_creator')->nullable();
+            $table->boolean('completion_rating_on_offer_creator')->nullable();
+            $table->timestamp('buyer_opened_datetime')->nullable();
             $table->enum('_status', ['active', 'cancelled', 'flagged', 'completed'])->default('active');
 
             $table->string('offer_creator_username', 64)->nullable();

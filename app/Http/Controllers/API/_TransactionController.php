@@ -71,7 +71,7 @@ class _TransactionController extends Controller
             'destination_blockchain_address' => ['sometimes', 'string', 'exists:__asset_account_addresses,blockchain_address'],
             'asset_code' => ['required', 'exists:__assets,code', 'string'],
             'transfer_asset_value' => ['required', 'numeric'],
-            'platform_charge_asset_factor' => ['sometimes', 'numeric'],
+            'trade_txn_fee_factor' => ['sometimes', 'numeric'],
             'is_recon' => ['sometimes', 'boolean'],
             'tatum_reference' => ['sometimes', 'string'],
             'blockchain_txid' => ['required_if:is_recon,==,true', 'string', 'unique:__transactions,blockchain_txid'],
@@ -95,12 +95,12 @@ class _TransactionController extends Controller
 
         // Create uid
         $validated_data['ref_code'] = random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
-        $validated_data['session_token'] = session()->get('active_session_token', isset(request()->segments()[env('API_URL')?0:1]) ? request()->segments()[env('API_URL')?0:1] : null );
+        $validated_data['session_token'] = session()->get('active_session_token');
         $validated_data['action_user_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
         $validated_data['transfer_result'] = [];
 
-        $platform_charge_asset_factor = $validated_data['platform_charge_asset_factor'] ?? (float)_PrefItem::firstWhere('key_slug', 'platform_charge_asset_factor')->value;
-        $validated_data['platform_charge_asset_value'] = (!isset($validated_data['source_user_username']) || in_array($validated_data['destination_user_username'], ['reserves']) || in_array($validated_data['source_user_username'], ['reserves']) ) ? 0 : $validated_data['transfer_asset_value'] * $platform_charge_asset_factor;
+        $trade_txn_fee_factor = $validated_data['trade_txn_fee_factor'] ?? (float)_PrefItem::firstWhere('key_slug', 'trade_txn_fee_factor')->value;
+        $validated_data['platform_charge_asset_value'] = (!isset($validated_data['source_user_username']) || in_array($validated_data['destination_user_username'], ['reserves']) || in_array($validated_data['source_user_username'], ['reserves']) ) ? 0 : $validated_data['transfer_asset_value'] * $trade_txn_fee_factor;
 
         if (isset($validated_data['source_user_username'])){
             if ( isset($validated_data['destination_user_username']) && $validated_data['source_user_username'] == $validated_data['destination_user_username']){
@@ -175,7 +175,7 @@ class _TransactionController extends Controller
             ]), $destination_user_asset_account->id );
         }
 
-        if ( _PrefItem::firstWhere('key_slug', 'use_tatum_crypto_asset_engine')->value_f() ){
+        if ( _PrefItem::firstWhere('key_slug', 'use_tatum_api')->value_f() ){
             $tatum_request_object = [
                 'asset_code' => $validated_data['asset_code'],
                 'senderAccountId' => isset($source_user_asset_account) ? $source_user_asset_account->tatum_virtual_account_id : null,
@@ -249,6 +249,8 @@ class _TransactionController extends Controller
      */
     public function tatum_subscription_webhook_txrecon(Request $request)
     {
+        session()->put('active_session_token', 'TATUM_NOTIFS_SSN');
+
         $validated_data = $request->validate([
             'accountId' => ['required', 'exists:__asset_accounts,tatum_virtual_account_id', 'string'],
             'subscriptionType' => ['required', 'string', Rule::in(['ACCOUNT_INCOMING_BLOCKCHAIN_TRANSACTION'])],
@@ -373,7 +375,7 @@ class _TransactionController extends Controller
             'asset_code' => ['required', 'exists:__assets,code', 'string'],
             'asset_value' => ['required', 'numeric'],
             'destination_blockchain_address' => ['required', 'string'],
-            'recepient_note' => ['required', 'string'],
+            'recipient_note' => ['required', 'string'],
             'source_user_password' => ['required', 'string', 'min:8', 'max:32'],
         ]);
 
@@ -389,7 +391,7 @@ class _TransactionController extends Controller
             $validated_data['operation_slug'] = 'externalisation';
         }
 
-        $validated_data['description'] = $validated_data['recepient_note'];
+        $validated_data['description'] = $validated_data['recipient_note'];
         $validated_data['transfer_asset_value'] = $validated_data['asset_value'];
 
         return (new _TransactionController)->store(new Request($validated_data));

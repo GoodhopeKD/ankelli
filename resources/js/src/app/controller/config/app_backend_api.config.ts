@@ -8,17 +8,17 @@ const auth_token_returning_endpoints = ['users/signup', 'users/signin']
 // Endpoints that require no auth_token i.e they shouldn't be accessed with the auth_token
 const strictly_auth_clear_endpoints = [
     ...auth_token_returning_endpoints,
-    'users/recovery/generate_password_reset_token',
-    'users/recovery/reset_lost_password',
-    'users/recovery/get_lost_username'
+    'users/recovery/password/generate_reset_token/for_user/{username}/send_to/{recipient_addon_name}/{recipient_addon_value}',
+    'users/recovery/password/reset',
+    'users/recovery/username/get/send_to/{recipient_addon_name}/{recipient_addon_value}'
 ]
 
 // Endpoints that don't require an auth_token i.e they work with or without the auth_token
 const auth_clear_endpoints = [
     ...strictly_auth_clear_endpoints,
     '',
-    'availability_check/{check_param_name}/{check_param_value}', // checks username, email_address, reg_token
-    'usability_check/{check_param_name}/{check_param_value}', // checks reg_token
+    'param_checks/availability/{param_name}/{param_value}', // param_checks username, email_address, reg_token
+    'param_checks/usability/{param_name}/{param_value}', // param_checks reg_token
 ]
 
 // Endpoints that require auth_token on all other methods except the GET method

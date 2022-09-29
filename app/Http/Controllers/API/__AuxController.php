@@ -91,9 +91,9 @@ class __AuxController extends Controller
 
     public function availability_check(Request $request)
     {
-        switch ($request->check_param_name) {
+        switch ($request->param_name) {
             case 'reg_token':
-                $available = !_RegToken::where('token', $request->check_param_value )->exists();
+                $available = !_RegToken::where('token', $request->param_value )->exists();
                 $message = $available ? 'Reg token available for use.' : 'Reg token already exists in database.';
                 break;
 
@@ -102,17 +102,17 @@ class __AuxController extends Controller
                 $regex_passes = true;
                 $regex_failed_username = '';
                 foreach ($reserved_usernames as $reserved_username) {
-                    if(preg_match("/{$reserved_username}/i", $request->check_param_value)) {
+                    if(preg_match("/{$reserved_username}/i", $request->param_value)) {
                         $regex_passes = false;
                         $regex_failed_username = $reserved_username;
                     }
                 }
-                $available = !_User::where('username', $request->check_param_value )->exists() && !in_array( $request->check_param_value , $reserved_usernames ) && $regex_passes;
-                $message = $available ? 'Username available for use.' : ( in_array( $request->check_param_value , $reserved_usernames ) ? 'Chosen username is reserved word and can\'t be used.' : ( !$regex_passes ? 'Username contains "' . $regex_failed_username . '" which is a reserved word' : 'Username already in use in the system.' ) );
+                $available = !_User::where('username', $request->param_value )->exists() && !in_array( $request->param_value , $reserved_usernames ) && $regex_passes;
+                $message = $available ? 'Username available for use.' : ( in_array( $request->param_value , $reserved_usernames ) ? 'Chosen username is reserved word and can\'t be used.' : ( !$regex_passes ? 'Username contains "' . $regex_failed_username . '" which is a reserved word' : 'Username already in use in the system.' ) );
                 break;
 
             case 'email_address':
-                $available = !(_User::where('email_address', $request->check_param_value )->exists() || _EmailAddress::where('email_address', $request->check_param_value )->exists());
+                $available = !(_User::where('email_address', $request->param_value )->exists() || _EmailAddress::where('email_address', $request->param_value )->exists());
                 $message = $available ? 'Email address available for use.' : 'Email address already exists in database.';
                 break;
             
@@ -131,10 +131,10 @@ class __AuxController extends Controller
 
     public function usability_check(Request $request)
     {
-        switch ($request->check_param_name) {
+        switch ($request->param_name) {
             case 'reg_token':
-                $reg_token = _RegToken::find( $request->check_param_value );
-                $usable = $reg_token && $reg_token->_status === 'usable' && count(_User::where('reg_token', $request->check_param_value)->get()) <= _PrefItem::firstWhere('key_slug', 'reg_token_max_use_count')->value_f();
+                $reg_token = _RegToken::find( $request->param_value );
+                $usable = $reg_token && $reg_token->_status === 'usable' && count(_User::where('reg_token', $request->param_value)->get()) <= _PrefItem::firstWhere('key_slug', 'reg_token_max_use_count')->value_f();
                 $message = $usable ? 'Reg token is usable.' : ($reg_token ? ($reg_token->_status === 'used_up' ? 'Reg token used up.' : 'Reg token has _status "'.$reg_token->_status.'".') : 'Reg token not found.');
                 break;
             
@@ -233,14 +233,14 @@ class __AuxController extends Controller
     public function load_factory_data()
     {
         $clear_virtual_accounts = false;
-        if ( $clear_virtual_accounts && _PrefItem::firstWhere('key_slug', 'use_tatum_crypto_asset_engine')->value_f() ){
+        if ( $clear_virtual_accounts && _PrefItem::firstWhere('key_slug', 'use_tatum_api')->value_f() ){
             foreach ((new __TatumAPIController)->getVirtualAccounts(new Request())->getData() as $account) {
                 (new __TatumAPIController)->deactivateVirtualAccount(new Request(['virtual_account_id' => $account->id]));
             }
         }
 
         $clear_notification_webhook_subscriptions = true;
-        if ( $clear_notification_webhook_subscriptions && _PrefItem::firstWhere('key_slug', 'use_tatum_crypto_asset_engine')->value_f() ){
+        if ( $clear_notification_webhook_subscriptions && _PrefItem::firstWhere('key_slug', 'use_tatum_api')->value_f() ){
             foreach ((new __TatumAPIController)->getActiveNotifWebhookSubscns(new Request())->getData() as $subscription) {
                 (new __TatumAPIController)->cancelActiveNotifWebhookSubscn(new Request(['subscription_id' => $subscription->id]));
             }
@@ -437,7 +437,6 @@ class __AuxController extends Controller
 
     public function load_test_data()
     {
-        session()->put('active_session_token', request()->segments()[env('API_URL')?0:1] );
         session()->put('api_auth_user_username', 'system');
 
         $token_reg_changed = false;
@@ -517,8 +516,8 @@ class __AuxController extends Controller
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
             'offer_price' => 0.94,
-            'min_purchase_amount' => 100,
-            'max_purchase_amount' => 500,
+            'min_trade_purchase_amount' => 100,
+            'max_trade_purchase_amount' => 500,
             'pymt_method_slug' => 'mukuru',
             'pymt_details' => [ 'fullname' => 'Kudakwashe Magadze', 'phone_no' => '+263 7658 357' ],
         ]))->getData();
@@ -561,8 +560,8 @@ class __AuxController extends Controller
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
             'offer_price' => 1.04,
-            'min_sell_value' => 50,
-            'max_sell_value' => 200,
+            'min_trade_sell_value' => 50,
+            'max_trade_sell_value' => 200,
             'pymt_method_slug' => 'cash_in_person',
         ]))->getData();
 
@@ -575,8 +574,8 @@ class __AuxController extends Controller
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
             'offer_price' => 0.95,
-            'min_purchase_amount' => 100,
-            'max_purchase_amount' => 500,
+            'min_trade_purchase_amount' => 100,
+            'max_trade_purchase_amount' => 500,
             'pymt_method_slug' => 'world_remit',
             'pymt_details' => [ 'fullname' => 'Kudakwashe Magadze', 'phone_no' => '+263 765 357',],
         ]))->getData();
@@ -596,8 +595,8 @@ class __AuxController extends Controller
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
             'offer_price' => 0.94,
-            'min_purchase_amount' => 100,
-            'max_purchase_amount' => 500,
+            'min_trade_purchase_amount' => 100,
+            'max_trade_purchase_amount' => 500,
             'pymt_method_slug' => 'paypal',
             'pymt_details' => [ 'fullname' => 'Tawanda Chakatsva', 'email_address' => 'tawanda@example.com', ],
         ]))->getData();
@@ -617,8 +616,8 @@ class __AuxController extends Controller
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
             'offer_price' => 0.94,
-            'min_purchase_amount' => 100,
-            'max_purchase_amount' => 1000,
+            'min_trade_purchase_amount' => 100,
+            'max_trade_purchase_amount' => 1000,
             'pymt_method_slug' => 'skrill',
             'pymt_details' => [ 'fullname' => 'Mulenga Mwamba', 'email_address' => 'mulenga@example.com', ],
         ]))->getData();
@@ -638,8 +637,8 @@ class __AuxController extends Controller
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
             'offer_price' => 0.94,
-            'min_purchase_amount' => 100,
-            'max_purchase_amount' => 1000,
+            'min_trade_purchase_amount' => 100,
+            'max_trade_purchase_amount' => 1000,
             'pymt_method_slug' => 'cash_in_person',
             'pymt_details' => [ 'fullname' => 'Mulenga Mwamba', 'phone_no' => 'mulenga@example.com', ],
         ]))->getData();
@@ -659,8 +658,8 @@ class __AuxController extends Controller
             'asset_code' => 'USDT',
             'currency_code' => 'ZMW',
             'offer_price' => 13.3,
-            'min_purchase_amount' => 2800,
-            'max_purchase_amount' => 14000,
+            'min_trade_purchase_amount' => 2800,
+            'max_trade_purchase_amount' => 14000,
             'pymt_method_slug' => 'cash_in_person',
             'pymt_details' => [ 'fullname' => 'Mulenga Mwamba', 'phone_no' => 'mulenga@example.com', ],
         ]))->getData();
@@ -679,8 +678,8 @@ class __AuxController extends Controller
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
             'offer_price' => 0.94,
-            'min_purchase_amount' => 200,
-            'max_purchase_amount' => 300,
+            'min_trade_purchase_amount' => 200,
+            'max_trade_purchase_amount' => 300,
             'pymt_method_slug' => 'fbc_bank',
             'pymt_details' => [ 'fullname' => 'Tadiwa Magodi', 'account_no' => '556788965445', ],
         ]))->getData();
@@ -699,8 +698,8 @@ class __AuxController extends Controller
             'asset_code' => 'USDT',
             'currency_code' => 'ZAR',
             'offer_price' => 15.36,
-            'min_purchase_amount' => 1500,
-            'max_purchase_amount' => 2500,
+            'min_trade_purchase_amount' => 1500,
+            'max_trade_purchase_amount' => 2500,
             'pymt_method_slug' => 'fnb_bank',
             'pymt_details' => [ 'fullname' => 'William Mbeki', 'account_no' => '6557890898', ],
         ]))->getData();
@@ -719,8 +718,8 @@ class __AuxController extends Controller
             'asset_code' => 'USDT',
             'currency_code' => 'ZAR',
             'offer_price' => 15.2,
-            'min_purchase_amount' => 700,
-            'max_purchase_amount' => 3000,
+            'min_trade_purchase_amount' => 700,
+            'max_trade_purchase_amount' => 3000,
             'pymt_method_slug' => 'fnb_bank',
             'pymt_details' => [ 'fullname' => 'William Mbeki', 'account_no' => '6557890898', ],
         ]))->getData();
@@ -739,8 +738,8 @@ class __AuxController extends Controller
             'asset_code' => 'USDT',
             'currency_code' => 'EUR',
             'offer_price' => 0.76,
-            'min_purchase_amount' => 200,
-            'max_purchase_amount' => 500,
+            'min_trade_purchase_amount' => 200,
+            'max_trade_purchase_amount' => 500,
             'pymt_method_slug' => 'world_remit',
             'pymt_details' => [ 'fullname' => 'Panashe Gabvu', 'phone_no' => '+78 568 6553', ],
         ]))->getData();
@@ -759,8 +758,8 @@ class __AuxController extends Controller
             'asset_code' => 'USDT',
             'currency_code' => 'DZD',
             'offer_price' => 178,
-            'min_purchase_amount' => 10000,
-            'max_purchase_amount' => 40000,
+            'min_trade_purchase_amount' => 10000,
+            'max_trade_purchase_amount' => 40000,
             'pymt_method_slug' => 'algerie_poste',
             'pymt_details' => [ 'account_holder_name' => 'Djenna Moulad', 'account_no' => '22657899', 'account_key' => '67', ],
         ]))->getData();
@@ -780,8 +779,8 @@ class __AuxController extends Controller
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
             'offer_price' => 0.94,
-            'min_purchase_amount' => 100,
-            'max_purchase_amount' => 200,
+            'min_trade_purchase_amount' => 100,
+            'max_trade_purchase_amount' => 200,
             'pymt_method_slug' => 'cash_in_person',
             'pymt_details' => [ 'fullname' => 'Tamari Karongo', 'address' => 'Opposite OK Marondera', 'phone_no' => '+263 7658 357' ],
         ]))->getData();
@@ -800,8 +799,8 @@ class __AuxController extends Controller
             'asset_code' => 'USDT',
             'currency_code' => 'DZD',
             'offer_price' => 170,
-            'min_purchase_amount' => 20000,
-            'max_purchase_amount' => 40000,
+            'min_trade_purchase_amount' => 20000,
+            'max_trade_purchase_amount' => 40000,
             'pymt_method_slug' => 'algerie_poste',
             'pymt_details' => [ 'account_holder_name' => 'Timothy Tambo', 'account_number' => '22558678', 'account_key' => '87' ],
         ]))->getData();

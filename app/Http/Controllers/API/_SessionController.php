@@ -221,7 +221,7 @@ class _SessionController extends Controller
             $check_array['_status'] = 'active';
         } else {
             if (!(isset($validated_data['default_route']) && $validated_data['default_route'])){
-                $check_array['token'] = request()->segments()[env('API_URL')?0:1];
+                $check_array['token'] = request()->header('x-session-token');
             }
             $check_array['user_username'] = $element->user_username ? $api_auth_user_username : null;
         }
