@@ -83,7 +83,7 @@ Members can manage other users and user related queries.',
             ],
             [
                 'name' => 'Platform moderators',
-                'slug' => 'platform_moderators',
+                'slug' => 'moderators',
                 'description' => 'Group for Platform moderators. 
 Members can respond in the customer service chat module, handle flagged business elements, manage daily updates.',
                 'creator_username' => 'system',

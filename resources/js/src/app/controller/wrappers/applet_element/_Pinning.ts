@@ -53,7 +53,7 @@ export default class _Pinning extends _Wrapper_ implements Omit<typeof _PinningR
     /* Creator(s) */
 
     public static async create(args: typeof _PinningRespObj) {
-        return this._mainLaravelDBAPICreate('pinnings', args)
+        return this._mainLaravelDBAPICreate('content/pinnings', args)
     }
 
     /* Updaters */
@@ -61,11 +61,11 @@ export default class _Pinning extends _Wrapper_ implements Omit<typeof _PinningR
     public async update(args: typeof _PinningRespObj, update_note: string) {
         const data = {} as typeof args
         if (typeof args.pinning_type === typeof this.pinning_type && args.pinning_type !== this.pinning_type) data.pinning_type = args.pinning_type
-        return this._mainLaravelDBAPIUpdate('pinnings/' + this.id, update_note, data)
+        return this._mainLaravelDBAPIUpdate('content/pinnings/' + this.id, update_note, data)
     }
 
     /* Deleter */
     public async delete() {
-        return this._delete('pinnings/' + this.id)
+        return this._delete('content/pinnings/' + this.id)
     }
 }

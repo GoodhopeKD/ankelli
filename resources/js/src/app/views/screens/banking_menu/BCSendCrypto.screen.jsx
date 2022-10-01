@@ -7,12 +7,14 @@ import CustomSelect from 'app/views/components/CustomSelect'
 
 import { _User, _DateTime, _Session, _Notification, _Input, _Transaction } from 'app/controller'
 
-class BCSendFundsScreen extends React.Component {
+class BCSendCryptoScreen extends React.Component {
 
     default_input = {
+        send_to: 'user', // address
         asset_code: 'USDT',
         asset_value: 5,
         destination_blockchain_address: new _Input('0x06d64d1d5eb807e10eb59f38a448830d9888d7da'),
+        destination_user_username: new _Input('reserves'),
         source_user_password: new _Input('Def-Pass#123'),
         recipient_note: new _Input('Test send.'),
     }
@@ -90,10 +92,10 @@ class BCSendFundsScreen extends React.Component {
         const asset = this.props.datalists.active_assets[this.state.input.asset_code]
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
-            <div className="container-fluid py-3">
+            <div className="container py-3">
                 <div className="row">
                     <div className="col-2">
-                        <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'account_menu')]} />
+                        <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'banking_menu')]} />
                     </div>
                     <div className="col-10">
                         {this.props.auth_user.asset_accounts.length !== 0 && <>
@@ -118,15 +120,40 @@ class BCSendFundsScreen extends React.Component {
 
                                 <p style={{ whiteSpace: 'pre-wrap' }}><b><i>{asset.onchain_disclaimer}</i></b></p>
 
-                                <div className="mb-3">
-                                    <label htmlFor="input_destination_blockchain_address" className="form-label">Destination blockchain address</label>
-                                    <div className="input-group">
-                                        <input
-                                            type="text" className="form-control" id="input_destination_blockchain_address"
-                                            value={this.state.input.destination_blockchain_address + ''}
-                                            required
-                                            onChange={e => this.handleInputChange('destination_blockchain_address', e.target.value)}
-                                        />
+                                <div className="bd-example">
+                                    <nav>
+                                        <div className="nav nav-tabs mb-3" id="nav-tab" role="tablist">
+                                            <button onClick={() => this.handleInputChange('send_to', 'user', true)} className="nav-link active" id="nav-send-to-user-tab" data-bs-toggle="tab" data-bs-target="#nav-send-to-user" type="button" role="tab" aria-controls="nav-send-to-user" aria-selected="true">To platform user</button>
+                                            <button onClick={() => this.handleInputChange('send_to', 'address', true)} className="nav-link" id="nav-send-to-address-tab" data-bs-toggle="tab" data-bs-target="#nav-send-to-address" type="button" role="tab" aria-controls="nav-send-to-address" aria-selected="false" tabIndex="-1">To blockchain address</button>
+                                        </div>
+                                    </nav>
+                                    <div className="tab-content" id="nav-tabContent">
+                                        <div className="tab-pane fade active show" id="nav-send-to-user" role="tabpanel" aria-labelledby="nav-send-to-user-tab">
+                                            <div className="mb-3">
+                                                <label htmlFor="input_destination_user_username" className="form-label">Destination user username</label>
+                                                <div className="input-group">
+                                                    <input
+                                                        type="text" className="form-control" id="input_destination_user_username"
+                                                        value={this.state.input.destination_user_username + ''}
+                                                        required={this.state.input.send_to == 'user'}
+                                                        onChange={e => this.handleInputChange('destination_user_username', e.target.value)}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="tab-pane fade" id="nav-send-to-address" role="tabpanel" aria-labelledby="nav-send-to-address-tab">
+                                            <div className="mb-3">
+                                                <label htmlFor="input_destination_blockchain_address" className="form-label">Destination blockchain address</label>
+                                                <div className="input-group">
+                                                    <input
+                                                        type="text" className="form-control" id="input_destination_blockchain_address"
+                                                        value={this.state.input.destination_blockchain_address + ''}
+                                                        required={this.state.input.send_to == 'address'}
+                                                        onChange={e => this.handleInputChange('destination_blockchain_address', e.target.value)}
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -212,7 +239,7 @@ class BCSendFundsScreen extends React.Component {
                             <hr />
 
                         </>}
-                        <p className="my-3">Go to <Link to='/account/home'>account home</Link> screen to create asset accounts</p>
+                        <p className="my-3">Go to <Link to='/banking/e-wallets/crypto'>crypto wallets</Link> screen to create asset accounts</p>
                     </div>
                 </div>
             </div>
@@ -228,4 +255,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(BCSendFundsScreen)
+export default connect(mapStateToProps)(BCSendCryptoScreen)

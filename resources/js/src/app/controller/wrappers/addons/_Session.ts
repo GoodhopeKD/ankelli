@@ -77,11 +77,11 @@ export default class _Session extends _Wrapper_ implements Omit<typeof _SessionR
     /* Readers */
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('sessions', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('accounts/sessions', params, page_select, per_page)
     }
 
     public static refresh() {
-        mainLaravelDBRestAPICallWrapper.dispatch({ type: 'APP_BACKEND_API_CALL', method: 'POST', endpoint: '' })
+        mainLaravelDBRestAPICallWrapper.dispatch({ type: 'APP_BACKEND_API_CALL', method: 'POST', endpoint: 'accounts' })
     }
 
     /* Updaters */

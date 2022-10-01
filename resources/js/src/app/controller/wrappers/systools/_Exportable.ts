@@ -71,13 +71,13 @@ export default class _Exportable extends _Wrapper_ implements Omit<typeof _Expor
     /* Creator(s) */
 
     public static async create(args: typeof _ExportableRespObj) {
-        return this._mainLaravelDBAPICreate('systools/exportables', args)
+        return this._mainLaravelDBAPICreate('admin/systools/exportables', args)
     }
 
     /* Readers */
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('systools/exportables', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('content/systools/exportables', params, page_select, per_page)
     }
 
     public async getAddonProp(addon_prop_name: keyof typeof GettableAddonPropsRespObj, page_select?: laravel_api_page_selection_t, per_page?: number) {

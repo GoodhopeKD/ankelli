@@ -1,26 +1,26 @@
 import React from "react"
 import { connect } from 'react-redux'
-import { Link } from "react-router-dom";
+import _ from 'lodash'
 
-import { _DepositToken, _Notification, _User, _DateTime, _Input } from 'app/controller'
 import SideBar from 'app/views/components/SideBar'
+
+import { _User, _Input, _Transaction, _DateTime, _Notification } from 'app/controller'
 import CustomSelect from 'app/views/components/CustomSelect'
 
 class BgTaskHandler { static runInBackground = (fn) => fn() }
 
-class DepositTokensListViewScreen extends React.Component {
+class TransactionsListViewScreen extends React.Component {
 
     working = false
 
     default_input = {
+        focused_user_username: this.props.auth_user.username,
+        focused_user_username_tag: 'user_username',
         asset_code: undefined,
-        currency_code: undefined,
-        creator_username: undefined,
-        _status: undefined,
     }
 
     state = {
-        deposit_tokens_list_loaded: false,
+        transactions_list_loaded: false,
         list: [],
         list_loaded: false,
         list_full: false,
@@ -31,6 +31,7 @@ class DepositTokensListViewScreen extends React.Component {
 
         input: _.cloneDeep(this.default_input),
     };
+
 
     should_load_items = true
 
@@ -46,7 +47,7 @@ class DepositTokensListViewScreen extends React.Component {
         this.setState({ input }, () => this.should_load_items = true)
     }
 
-    async universalGetCollection(_Type, indicator_var_name, get_collection_params = null, page_select = null, per_page = null) {
+    async universalGetCollection(_Type, indicator_var_name, input = null, page_select = null, per_page = null) {
         //if (page_select && this.state.list_full) return Promise.resolve();
         if (!this.should_load_items) {
             _Notification.flash({ message: 'No filters changed', duration: 2000 })
@@ -55,40 +56,38 @@ class DepositTokensListViewScreen extends React.Component {
         if (!this.working) {
             this.working = true
             this.setState({
-                deposit_tokens_list_loaded: false,
+                transactions_list_loaded: false,
                 list: [],
                 list_loaded: false,
                 list_full: false,
                 list_refreshing: false
             })
-            setTimeout(
-                () => {
-                    _Type.getCollection({ ...get_collection_params }, page_select, per_page)
-                        .then(({ collection }) => {
-                            if (!collection.data) return Promise.resolve();
-                            let update_object = {
-                                //list: page_select ? this.state.list.concat(collection.data) : collection.data,
-                                list: collection.data,
-                                list_loaded: true,
-                                list_full: collection.meta.current_page === collection.meta.last_page,
-                                _collecion: {
-                                    links: collection.links,
-                                    meta: collection.meta,
-                                }
-                            };
-                            update_object[indicator_var_name] = true;
-                            this.setState(update_object);
-                            this.working = false
-                            this.should_load_items = false
-                            return Promise.resolve();
-                        })
-                        .catch((error) => {
-                            this.working = false
-                            this.should_load_items = false
-                            return Promise.reject(error);
-                        })
-                }, 0
-            );
+            return new Promise((resolve) => setTimeout(() => {
+                resolve(_Type.getCollection(input, page_select, per_page)
+                    .then(({ collection }) => {
+                        if (!collection.data) return Promise.resolve();
+                        let update_object = {
+                            //list: page_select ? this.state.list.concat(collection.data) : collection.data,
+                            list: collection.data,
+                            list_loaded: true,
+                            list_full: collection.meta.current_page === collection.meta.last_page,
+                            _collecion: {
+                                links: collection.links,
+                                meta: collection.meta,
+                            }
+                        };
+                        update_object[indicator_var_name] = true;
+                        this.setState(update_object);
+                        this.working = false
+                        this.should_load_items = false
+                        return Promise.resolve();
+                    })
+                    .catch((error) => {
+                        this.working = false
+                        this.should_load_items = false
+                        return Promise.reject(error);
+                    }))
+            }, 0))
         } else {
             return Promise.resolve();
         }
@@ -96,7 +95,7 @@ class DepositTokensListViewScreen extends React.Component {
 
     populateScreenWithItems = async (show_list_refreshing_loader = true) => {
         this.setState({ list_refreshing: show_list_refreshing_loader });
-        await this.universalGetCollection(_DepositToken, 'deposit_tokens_list_loaded', JSON.parse(JSON.stringify(this.state.input)), this.state.page_select, this.state.per_page)
+        await this.universalGetCollection(_Transaction, 'transactions_list_loaded', JSON.parse(JSON.stringify({ ...this.state.input, focused_user_username: undefined, focused_user_username_tag: undefined, [this.state.input.focused_user_username_tag]: this.state.input.focused_user_username })), this.state.page_select, this.state.per_page)
         if (show_list_refreshing_loader) this.setState({ list_refreshing: false })
     };
 
@@ -107,23 +106,13 @@ class DepositTokensListViewScreen extends React.Component {
 
     render() {
 
-        const asset_options = []
+        const asset_options = [];
         Object.keys(this.props.datalists.active_assets).forEach(asset_code => {
             const asset = this.props.datalists.active_assets[asset_code]
             asset_options.push({
                 value: asset_code,
                 searchable_text: asset_code + asset.name + asset.description,
                 output_element: () => <>{asset.name} <i className="text-primary">{asset_code}</i></>
-            })
-        })
-
-        const currency_options = []
-        Object.keys(this.props.datalists.active_currencies).forEach(currency_code => {
-            const currency = this.props.datalists.active_currencies[currency_code]
-            currency_options.push({
-                value: currency_code,
-                searchable_text: currency_code + currency.name + currency.description,
-                output_element: () => <><span className="d-inline-block rounded-circle align-self-center text-success" ><i><b>{currency.symbol}</b></i></span>{currency.name}<i className="text-success">{currency_code}</i></>
             })
         })
 
@@ -135,27 +124,14 @@ class DepositTokensListViewScreen extends React.Component {
         }
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
-            <div className="container-fluid py-3">
+            <div className="container py-3">
                 <div className="row">
                     <div className="col-2">
-                        <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'admin_menu')]} />
+                        <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'banking_menu')]} />
                     </div>
                     <div className="col-10">
 
-                        <div className='row'>
-
-                            <div className="col">
-                                <label htmlFor="input__status" className="form-label">Status</label>
-                                <select className="form-select" id="input__status" value={this.state.input._status} onChange={rr => {
-                                    this.handleInputChange('_status', rr.target.value, true); setTimeout(() => {
-                                        this.populateScreenWithItems()
-                                    }, 0);
-                                }} >
-                                    <option value="all">All</option>
-                                    <option value="used">Used</option>
-                                    <option value="unused">Unused</option>
-                                </select>
-                            </div>
+                        <div className="row">
 
                             <div className="col">
                                 <label htmlFor="input_asset_code" className="form-label">Asset</label>
@@ -167,16 +143,13 @@ class DepositTokensListViewScreen extends React.Component {
                                     onChange={asset_code => this.handleInputChange('asset_code', asset_code, true)}
                                 />
                             </div>
-
                             <div className="col">
-                                <label htmlFor="input_currency_code" className="form-label">Currency</label>
-                                <CustomSelect
-                                    id="input_currency_code"
-                                    options={currency_options}
-                                    max_shown_options_count={5}
-                                    selected_option_value={this.state.input.currency_code}
-                                    onChange={currency_code => this.handleInputChange('currency_code', currency_code, true)}
-                                />
+                                <label htmlFor="input_focused_user_username_tag" className="form-label">Type</label>
+                                <select className="form-select" id="input_focused_user_username_tag" value={this.state.input.focused_user_username_tag} onChange={rr => this.handleInputChange('focused_user_username_tag', rr.target.value, true)} >
+                                    <option value="user_username" >All</option>
+                                    <option value="source_user_username" >Debit</option>
+                                    <option value="destination_user_username" >Credit</option>
+                                </select>
                             </div>
 
                         </div>
@@ -187,7 +160,7 @@ class DepositTokensListViewScreen extends React.Component {
                                 onClick={() => { if (this.state.page_select.page !== 1) { this.setState({ page_select: { page: 1 } }, () => { this.should_load_items = true; this.populateScreenWithItems() }) } else { this.populateScreenWithItems() } }}
                                 className="btn btn-outline-danger mt-3"
                             >
-                                Load deposit tokens
+                                Load transactions
                             </button>
                             <button
                                 onClick={() => this.setState({
@@ -206,36 +179,27 @@ class DepositTokensListViewScreen extends React.Component {
                             <table className="table">
                                 <thead>
                                     <tr>
-                                        <th scope="col">Token</th>
-                                        <th scope="col">Asset</th>
-                                        <th scope="col">Purchase Amount</th>
-                                        <th scope="col">Creator</th>
-                                        <th scope="col">Created datetime</th>
-                                        {this.state.input._status != 'unused' && <th scope="col text-center">User</th>}
-                                        {this.state.input._status != 'unused' && <th scope="col text-center">Used datetime</th>}
+                                        <th scope="col">Ref Code</th>
+                                        <th scope="col">Type</th>
+                                        <th scope="col">Asset Value</th>
+                                        <th scope="col">Description</th>
+                                        <th scope="col">Datetime</th>
+                                        <th scope="col">New balance</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {this.state.list_loaded ? (
-                                        this.state.list.map((deposit_token, index) => {
-                                            const asset = this.props.datalists.active_assets[deposit_token.asset_code]
-                                            const currency = this.props.datalists.active_currencies[deposit_token.currency_code]
-
+                                        this.state.list.map((transaction, index) => {
+                                            const asset = this.props.datalists.active_assets[transaction.asset_code]
+                                            const debit = transaction.source_user_username == this.props.auth_user.username
+                                            const tr_group = debit ? 'Debit' : 'Credit'
                                             return <tr key={index} >
-                                                <td className="align-middle" style={{ maxWidth: 200 }}>
-                                                    <div className="input-group input-group-sm">
-                                                        <input type="text" className="form-control" value={deposit_token.token} onChange={() => { }} />
-                                                        <span className="input-group-text p-0">
-                                                            <button className="btn btn-light" style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, border: 'none' }} onClick={() => { navigator.clipboard.writeText(deposit_token.token); _Notification.flash({ message: 'Token copied to clipboard', duration: 2000 }); }} >📋</button>
-                                                        </span>
-                                                    </div>
-                                                </td>
-                                                <td className="align-middle">{window.assetValueString(deposit_token.asset_value, asset)}</td>
-                                                <td className="align-middle">{window.currencyAmountString(deposit_token.currency_amount, currency)}</td>
-                                                <td className="align-middle">{deposit_token.creator_username}</td>
-                                                <td className="align-middle">{window.ucfirst(new _DateTime(deposit_token.created_datetime).prettyDatetime())}</td>
-                                                {this.state.input._status != 'unused' && <td className="align-middle">{deposit_token.user_username ?? '-'}</td>}
-                                                {this.state.input._status != 'unused' && <td className="align-middle">{deposit_token.used_datetime ? window.ucfirst(new _DateTime(deposit_token.used_datetime).prettyDatetime()) : '-'}</td>}
+                                                <td className="align-middle">{transaction.ref_code}</td>
+                                                <td className="align-middle">{tr_group}</td>
+                                                <td className="align-middle">{window.assetValueString(transaction.transfer_asset_value, asset)}</td>
+                                                <td className="align-middle">{transaction.operation_slug == 'trade_asset_release' ? (debit ? 'Outbound ' : 'Inbound ') : ''}{transaction.description}</td>
+                                                <td className="align-middle">{window.ucfirst(new _DateTime(transaction.transfer_datetime).prettyDatetime())}</td>
+                                                <td className="align-middle">{window.assetValueString(transaction.transfer_result.find(tr => tr.user_username == this.props.auth_user.username).new_total_balance_asset_value, asset)}</td>
                                             </tr>
                                         })
                                     ) : (
@@ -251,10 +215,6 @@ class DepositTokensListViewScreen extends React.Component {
                             </table>
 
                             <div className="d-flex gap-2" >
-
-                                <div>
-                                    <Link to={'/business_management/deposit_tokens/new'} className='btn btn-success' >Create new</Link>
-                                </div>
 
                                 <div>
                                     <div className="d-flex gap-1">
@@ -292,9 +252,8 @@ class DepositTokensListViewScreen extends React.Component {
 const mapStateToProps = (state) => {
     return {
         datalists: state.datalists_data,
-        sysconfig_params: state.sysconfig_params_data,
         auth_user: state.auth_user_data ? new _User(state.auth_user_data) : null,
     }
 }
 
-export default connect(mapStateToProps)(DepositTokensListViewScreen)
+export default connect(mapStateToProps)(TransactionsListViewScreen)

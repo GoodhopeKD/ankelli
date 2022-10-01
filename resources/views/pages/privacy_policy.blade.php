@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content="Read the Ankelli Privacy Policy" />
+    <meta name="description" content="Read the Ankelli Privacy policy" />
 
-    <title>Privacy Policy - Ankelli</title>
+    <title>Privacy policy - Ankelli</title>
 
     <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous"> -->
     <link rel="stylesheet" href="https://cdn-emu.local/bootstrap-5.2.0-dist/css/bootstrap.min.css" >
@@ -25,14 +25,14 @@
     <meta property="og:type"              content="website" />
     <meta property="og:site_name"         content="Ankelli" />
     <meta property="og:url"               content="{{ config('app.url', 'https://ankelli.com') }}/terms-of-service" />
-    <meta property="og:title"             content="Privacy Policy - Ankelli" />
-    <meta property="og:description"       content="Read the Ankelli Privacy Policy" />
+    <meta property="og:title"             content="Privacy policy - Ankelli" />
+    <meta property="og:description"       content="Read the Ankelli Privacy policy" />
     <meta property="og:image"             content="{{ asset('images/logo.jpeg') }}" />
     <meta property="og:image:alt"         content="Ankelli logo" />
     <meta name="twitter:card"             content="summary" />
     <meta name="twitter:url"              content="{{ config('app.url', 'https://ankelli.com') }}/terms-of-service" />
-    <meta name="twitter:title"            content="Privacy Policy - Ankelli" />
-    <meta name="twitter:description"      content="Read the Ankelli Privacy Policy" />
+    <meta name="twitter:title"            content="Privacy policy - Ankelli" />
+    <meta name="twitter:description"      content="Read the Ankelli Privacy policy" />
     <meta name="twitter:image"            content="{{ asset('images/logo.jpeg') }}" />
 
   </head>

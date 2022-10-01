@@ -58,7 +58,7 @@ export default class _PhoneNo extends _Wrapper_ implements Omit<typeof _PhoneNoR
     /* Creator(s) */
 
     public static async create(args: typeof _PhoneNoRespObj) {
-        return this._mainLaravelDBAPICreate('phone_nos', args)
+        return this._mainLaravelDBAPICreate('accounts/phone_nos', args)
     }
 
     /* Readers */
@@ -80,6 +80,6 @@ export default class _PhoneNo extends _Wrapper_ implements Omit<typeof _PhoneNoR
         if (typeof args.country_calling_code === typeof this.country_calling_code && args.country_calling_code !== this.country_calling_code) data['country_calling_code'] = args.country_calling_code
         if (typeof args.number === typeof this.number && args.number !== this.number) data.number = args.number
         if (typeof args.tag === typeof this.tag && args.tag !== this.tag) data.tag = args.tag
-        return this._mainLaravelDBAPIUpdate('phone_nos/' + this.id, update_note, data)
+        return this._mainLaravelDBAPIUpdate('accounts/phone_nos/' + this.id, update_note, data)
     }
 }

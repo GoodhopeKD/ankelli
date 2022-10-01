@@ -109,7 +109,7 @@ export default class _File extends _Wrapper_ implements Omit<typeof _FileRespObj
         if (!files) {
             return Promise.reject({ message: 'An error occured' })
         }
-        return this._mainLaravelDBAPICreate('files', { ...files[0], type: files[0].type })
+        return this._mainLaravelDBAPICreate('content/files', { ...files[0], type: files[0].type })
     }
 
     static async upload(files: typeof _FileRespObj[], filegroup: filegroup_t, parent_table: parent_table_t) {
@@ -121,7 +121,7 @@ export default class _File extends _Wrapper_ implements Omit<typeof _FileRespObj
             for (let i = 0; i < files.length; i++) {
                 data.append('files[]', files[i] as any);
             }
-            const resp: any = await this._mainLaravelDBAPICreate('files/upload?filegroup=' + filegroup + '&parent_table=' + parent_table, data, null, true).catch((e: any) => { return Promise.reject(e) });
+            const resp: any = await this._mainLaravelDBAPICreate('content/files/upload?filegroup=' + filegroup + '&parent_table=' + parent_table, data, null, true).catch((e: any) => { return Promise.reject(e) });
             for (let i = 0; i < files.length; i++) {
                 const uploaded_file = resp.files.find((t: any) => t.original_filename === files[i].original_filename)
                 files[i].uri = uploaded_file.uri
@@ -136,15 +136,15 @@ export default class _File extends _Wrapper_ implements Omit<typeof _FileRespObj
     /* Readers */
 
     public static async getOneWhere(params: { tag?: tag_t, parent_table?: parent_table_t, parent_uid?: string | number }) {
-        return this._mainLaravelDBAPIGetOneWhere('files', params)
+        return this._mainLaravelDBAPIGetOneWhere('content/files', params)
     }
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('files', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('content/files', params, page_select, per_page)
     }
 
     /* Deleter */
     public async delete() {
-        return this._delete('files/' + this.id)
+        return this._delete('content/files/' + this.id)
     }
 }

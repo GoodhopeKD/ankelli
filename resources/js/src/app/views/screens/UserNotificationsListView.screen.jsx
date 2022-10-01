@@ -50,32 +50,30 @@ class UserNotificationsListViewScreen extends React.Component {
                 list_full: false,
                 list_refreshing: false
             })
-            setTimeout(
-                () => {
-                    _Type.getCollection({ ...input, user_username: this.props.auth_user.username }, page_select, per_page)
-                        .then(({ collection }) => {
-                            if (!collection.data) return Promise.resolve();
-                            let update_object = {
-                                //list: page_select ? this.state.list.concat(collection.data) : collection.data,
-                                list: collection.data,
-                                list_loaded: true,
-                                list_full: collection.meta.current_page === collection.meta.last_page,
-                                _collecion: {
-                                    links: collection.links,
-                                    meta: collection.meta,
-                                }
-                            };
-                            update_object[indicator_var_name] = true;
-                            this.setState(update_object);
-                            this.working = false
-                            return Promise.resolve();
-                        })
-                        .catch((error) => {
-                            this.working = false
-                            return Promise.reject(error);
-                        })
-                }, 0
-            );
+            return new Promise((resolve) => setTimeout(() => {
+                resolve(_Type.getCollection({ ...input, user_username: this.props.auth_user.username }, page_select, per_page)
+                    .then(({ collection }) => {
+                        if (!collection.data) return Promise.resolve();
+                        let update_object = {
+                            //list: page_select ? this.state.list.concat(collection.data) : collection.data,
+                            list: collection.data,
+                            list_loaded: true,
+                            list_full: collection.meta.current_page === collection.meta.last_page,
+                            _collecion: {
+                                links: collection.links,
+                                meta: collection.meta,
+                            }
+                        };
+                        update_object[indicator_var_name] = true;
+                        this.setState(update_object);
+                        this.working = false
+                        return Promise.resolve();
+                    })
+                    .catch((error) => {
+                        this.working = false
+                        return Promise.reject(error);
+                    }))
+            }, 0))
         } else {
             return Promise.resolve();
         }
@@ -132,7 +130,7 @@ class UserNotificationsListViewScreen extends React.Component {
                                 this.state.list.map((notification, index) => {
                                     return <tr key={index} >
                                         <td className={"align-middle" + (notification.read_datetime ? '' : ' table-secondary')}>
-                                            <Link to={'/user_notifications/' + notification.id} style={{ textDecoration: 'none' }} className="w-100" >
+                                            <Link to={'/accounts/notifications/' + notification.id} style={{ textDecoration: 'none' }} className="w-100" >
                                                 <i className="text-muted">{window.ucfirst(new _DateTime(notification.created_datetime).prettyDatetime())}</i> - {notification.content.title}: {notification.content.subtitle}
                                             </Link>
                                         </td>

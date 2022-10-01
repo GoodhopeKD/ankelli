@@ -51,10 +51,10 @@ export default class _RegToken extends _Wrapper_ implements Omit<typeof _RegToke
     /* Creator(s) */
 
     public static async create(args: typeof _RegTokenRespObj) {
-        return this._mainLaravelDBAPICreate('systools/reg_tokens', args)
+        return this._mainLaravelDBAPICreate('accounts/systools/reg_tokens', args)
     }
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('systools/reg_tokens', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('accounts/systools/reg_tokens', params, page_select, per_page)
     }
 }

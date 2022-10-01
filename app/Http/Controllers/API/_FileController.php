@@ -94,7 +94,7 @@ class _FileController extends Controller
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        return response()->json( new _FileResource( $element ) );
+        if ($request->expectsJson()) return response()->json( new _FileResource( $element ) );
     }
 
     /**
@@ -125,7 +125,7 @@ class _FileController extends Controller
 
         $element = _File::findOrFail($id);
         $element->update($validated_data);
-        return response()->json( (new _FileResource( _File::find( $id ) )) );
+        if ($request->expectsJson()) return response()->json( (new _FileResource( _File::find( $id ) )) );
     }
 
     /**

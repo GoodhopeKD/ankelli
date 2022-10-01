@@ -83,7 +83,7 @@ export default class _AdminExtension extends _Wrapper_ implements Omit<typeof _A
 	/* Creator(s) */
 
 	public static async create(args: typeof _AdminExtensionRespObj) {
-		return this._mainLaravelDBAPICreate('users/' + args.user_username + 'admin_extensions', args)
+		return this._mainLaravelDBAPICreate('accounts/users/' + args.user_username + 'admin_extensions', args)
 	}
 
 	/* Readers */

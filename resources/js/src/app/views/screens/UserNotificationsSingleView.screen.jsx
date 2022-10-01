@@ -16,7 +16,7 @@ class NotificationsSingleViewScreen extends React.Component {
 
 
     componentDidMount = () => {
-        _Notification.getOne({ id: this.props.params.id })
+        _Notification.getOne({ id: this.props.params.notification_id })
             .then(notification => {
                 this.focused_notification = new _Notification(notification)
                 this.setState({ focused_notification_loaded: true, })

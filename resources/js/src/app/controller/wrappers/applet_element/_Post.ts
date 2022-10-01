@@ -93,21 +93,21 @@ export default class _Post extends _Wrapper_ implements Omit<typeof _PostRespObj
     /* Creator(s) */
 
     public static async create(args: typeof _PostRespObj) {
-        return this._mainLaravelDBAPICreate('posts', args)
+        return this._mainLaravelDBAPICreate('admin/posts', args)
     }
 
     /* Readers */
 
     public async read() {
-        return this._mainLaravelDBAPIRead('posts/' + this.id)
+        return this._mainLaravelDBAPIRead('content/posts/' + this.id)
     }
 
     public static async getOne(params: { id: number }) {
-        return this._mainLaravelDBAPIGetOne('posts/' + params.id)
+        return this._mainLaravelDBAPIGetOne('content/posts/' + params.id)
     }
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('posts', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('content/posts', params, page_select, per_page)
     }
 
     public async getAddonProp(addon_prop_name: keyof typeof GettableAddonPropsRespObj, page_select?: laravel_api_page_selection_t, per_page?: number) {

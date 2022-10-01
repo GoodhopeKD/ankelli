@@ -98,9 +98,9 @@ export default withRouter(class RecoverLostUsernameModal extends React.Component
 
 
                         {this.props.component_context == "screen" ? <>
-                            <small className="text-muted">Click here to <Link to={'/signin' + this.props.location.search}>sign in</Link>, <Link to={'/signup' + this.props.location.search}>sign up</Link> or <Link to={'/recovery/generate_password_reset_token' + this.props.location.search} >reset lost password</Link>.</small>
+                            <small className="text-muted">Click here to <Link to={'/accounts/auth/signin' + this.props.location.search}>sign in</Link>, <Link to={'/accounts/auth/signup' + this.props.location.search}>sign up</Link> or <Link to={'/accounts/recovery/generate_password_reset_token' + this.props.location.search} >reset lost password</Link>.</small>
                         </> : <>
-                            <small className="text-muted">Click here to <Link to={'/#/signin'} data-bs-target="#signin_modal" data-bs-toggle="modal" >sign in</Link>, <Link to={'/#/signup'} data-bs-target="#signup_modal" data-bs-toggle="modal" >sign up</Link> or <Link to={'/#/recovery/generate_password_reset_token'} data-bs-target="#generate_password_reset_token_modal" data-bs-toggle="modal">reset lost password</Link>.</small>
+                            <small className="text-muted">Click here to <Link to={'/#/accounts/auth/signin'} data-bs-target="#signin_modal" data-bs-toggle="modal" >sign in</Link>, <Link to={'/#/accounts/auth/signup'} data-bs-target="#signup_modal" data-bs-toggle="modal" >sign up</Link> or <Link to={'/#/accounts/recovery/generate_password_reset_token'} data-bs-target="#generate_password_reset_token_modal" data-bs-toggle="modal">reset lost password</Link>.</small>
                         </>}
                     </form>
                 </div>

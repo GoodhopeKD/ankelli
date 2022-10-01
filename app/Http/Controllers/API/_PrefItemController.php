@@ -79,7 +79,7 @@ class _PrefItemController extends Controller
         // Handle _Log
         $log_entry_update_result = [];
         foreach ( $validated_data as $key => $value ) {
-            if ( $element->{$key} != $value ){
+            if ( in_array( $key, $element->getFillable() ) && $element->{$key} != $value ){
                 array_push( $log_entry_update_result, [
                     'field_name' => $key,
                     'old_value' => $element->{$key},
@@ -96,10 +96,8 @@ class _PrefItemController extends Controller
             'entry_update_result'=> $log_entry_update_result,
         ]));
         // End _Log Handling
-
         $element->update($validated_data);
-
-        return response()->json( new _PrefItemResource( $element ) );
+        if ($request->expectsJson()) return response()->json( new _PrefItemResource( $element ) );
     }
 
     /**

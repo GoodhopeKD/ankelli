@@ -62,6 +62,6 @@ export default class _Log extends _Wrapper_ implements Omit<typeof _LogRespObj, 
     }
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('logs', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('content/logs', params, page_select, per_page)
     }
 }

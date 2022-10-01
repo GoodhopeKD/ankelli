@@ -54,7 +54,7 @@ export default class _VerifToken extends _Wrapper_ implements Omit<typeof _Verif
     /* Creator(s) */
 
     public static async create(args: typeof _VerifTokenRespObj) {
-        return this._mainLaravelDBAPICreate('systools/verif_tokens/' + args.charge, args)
+        return this._mainLaravelDBAPICreate('accounts/systools/verif_tokens/' + args.charge, args)
     }
 
     /* Updaters */

@@ -21,27 +21,37 @@ import { virtual_menu } from 'app/views/navigation/virtual_menu'
 import { top_navbar_menu } from 'app/views/navigation/top_navbar_menu'
 import { top_navbar_user_menu } from 'app/views/navigation/top_navbar_user_menu'
 // sidebar
-import { account_menu } from 'app/views/navigation/account_menu'
-import { account_settings_menu } from 'app/views/navigation/account_settings_menu'
+import { pay_menu } from 'app/views/navigation/pay_menu'
+import { banking_menu } from 'app/views/navigation/banking_menu'
+import { accounts_menu } from 'app/views/navigation/accounts_menu'
 import { admin_menu } from 'app/views/navigation/admin_menu'
 // footer
 import { footer_menu } from 'app/views/navigation/footer_menu'
+import { support_menu } from 'app/views/navigation/support_menu'
 
-const nav_menus = [
+const nav_menus_raw = [
     // top_navbar
     top_navbar_menu,
     top_navbar_user_menu,
     // sidebar
-    account_menu,
-    account_settings_menu,
+    pay_menu,
+    banking_menu,
+    accounts_menu,
     admin_menu,
     // virtual stack
     virtual_menu,
     // footer
     footer_menu,
+    support_menu,
 ]
 
 let tried = false
+
+function ScrollToTop() {
+    const { pathname } = useLocation();
+    useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+    return null;
+}
 
 function Navigator(props) {
 
@@ -56,8 +66,8 @@ function Navigator(props) {
         if (window.datalists_data) {
             store.dispatch({ type: 'DATALISTS_DATA_UPDATE', datalists_data: window.datalists_data })
         }
-        tried = true
         props.connectivityBoot()
+        tried = true
     }
 
     if (props.app_backend_api_connectivity_indicator === null || !props.sysconfig_params) {
@@ -68,6 +78,7 @@ function Navigator(props) {
 
     const curr_auth_state = auth_user ? true : false;
 
+    const nav_menus = _.cloneDeep(nav_menus_raw)
     const nav_path_list = []    // flattened // for 404 and 403 messages // for laravel router
     const nav_list_filtered = []    // flattened, auth_state, auth_user: permissions & groups filtered // for router
     const nav_menus_filtered = []    // auth filtered, virtual routes filtered // for drawer
@@ -76,6 +87,7 @@ function Navigator(props) {
         for (let i = 0; i < nav_menus.length; i++) {
 
             const disabled_i = window.isset(nav_menus[i].disabled) ? nav_menus[i].disabled : null
+            const subdomain_i = window.isset(nav_menus[i].subdomain) ? nav_menus[i].subdomain : null
             const show_in_menu_i = window.isset(nav_menus[i].show_in_menu) ? nav_menus[i].show_in_menu : false
             const show_when_auth_state_is_i = window.isset(nav_menus[i].show_when_auth_state_is) ? nav_menus[i].show_when_auth_state_is : null
             const required_active_user_group_membership_slugs_i = nav_menus[i].required_active_user_group_membership_slugs
@@ -94,11 +106,12 @@ function Navigator(props) {
             if (nav_menus[i] && nav_menus[i].menu_items) {
                 for (let j = 0; j < nav_menus[i].menu_items.length; j++) {
 
-                    const disabled_j = window.isset(nav_menus[i].menu_items[j].disabled) ? nav_menus[i].menu_items[j].disabled : disabled_i
-                    const show_in_menu_j = window.isset(nav_menus[i].menu_items[j].show_in_menu) ? nav_menus[i].menu_items[j].show_in_menu : show_in_menu_i
-                    const show_when_auth_state_is_j = window.isset(nav_menus[i].menu_items[j].show_when_auth_state_is) ? nav_menus[i].menu_items[j].show_when_auth_state_is : show_when_auth_state_is_i
-                    const required_active_user_group_membership_slugs_j = nav_menus[i].menu_items[j].required_active_user_group_membership_slugs ?? nav_menus[i].required_active_user_group_membership_slugs
-                    let required_params_passed_j = (!auth_user || auth_user.isInUserGroup('developers') || !(auth_user.isInUserGroup('default_users') && nav_menus[i].menu_items[j].restricted_for_default_users))
+                    const nav_item_j = nav_menus[i].menu_items[j]
+                    const disabled_j = window.isset(nav_item_j.disabled) ? nav_item_j.disabled : disabled_i
+                    const show_in_menu_j = window.isset(nav_item_j.show_in_menu) ? nav_item_j.show_in_menu : show_in_menu_i
+                    const show_when_auth_state_is_j = window.isset(nav_item_j.show_when_auth_state_is) ? nav_item_j.show_when_auth_state_is : show_when_auth_state_is_i
+                    const required_active_user_group_membership_slugs_j = nav_item_j.required_active_user_group_membership_slugs ?? nav_menus[i].required_active_user_group_membership_slugs
+                    let required_params_passed_j = (!auth_user || auth_user.isInUserGroup('developers') || !(auth_user.isInUserGroup('default_users') && nav_item_j.restricted_for_default_users))
                     if (required_params_passed_j && required_active_user_group_membership_slugs_j) {
                         required_params_passed_j = false
                         required_active_user_group_membership_slugs_j.forEach(user_group_membership_slug => {
@@ -108,28 +121,35 @@ function Navigator(props) {
                         });
                     }
 
-                    if (!nav_menus[i].menu_items[j].path.includes('#') && nav_menus[i].menu_items[j].element) {
-                        nav_path_list.push(nav_menus[i].menu_items[j].path)
-                        if (window.isset(nav_menus[i].menu_items[j].path_alias)) {
-                            nav_path_list.push(nav_menus[i].menu_items[j].path_alias)
+                    const subdomain = nav_item_j.subdomain ?? subdomain_i
+                    nav_item_j.path = ('/' + (subdomain !== 'default' ? subdomain + '/' : '') + nav_item_j.path.replace(/^\/|\/$/g, ''))
+                    if (window.isset(nav_item_j.path_alias)) {
+                        nav_item_j.path_alias = ('/' + (subdomain !== 'default' ? subdomain + '/' : '') + nav_item_j.path_alias.replace(/^\/|\/$/g, ''))
+                    }
+
+                    if (!nav_item_j.path.includes('#') && nav_item_j.element) {
+                        nav_path_list.push(nav_item_j.path)
+                        if (window.isset(nav_item_j.path_alias)) {
+                            nav_path_list.push(nav_item_j.path_alias)
                         }
                         if (!disabled_j && required_params_passed_j && (show_when_auth_state_is_j === null || show_when_auth_state_is_j === curr_auth_state)) {
-                            nav_list_filtered.push({ ...nav_menus[i].menu_items[j], path_alias: undefined, children: undefined })
-                            if (window.isset(nav_menus[i].menu_items[j].path_alias)) {
-                                nav_list_filtered.push({ ...nav_menus[i].menu_items[j], path: nav_menus[i].menu_items[j].path_alias, path_alias: undefined, children: undefined })
+                            nav_list_filtered.push({ ...nav_item_j, path_alias: undefined, children: undefined })
+                            if (window.isset(nav_item_j.path_alias)) {
+                                nav_list_filtered.push({ ...nav_item_j, path: nav_item_j.path_alias, path_alias: undefined, children: undefined })
                             }
                         }
                     }
-                    const nav_menus_filtered_element_menu_item = nav_menus_filtered_element && show_in_menu_j && !disabled_j && required_params_passed_j && (show_when_auth_state_is_j === null || show_when_auth_state_is_j === curr_auth_state) ? { ...nav_menus[i].menu_items[j], children: [] } : null
+                    const nav_menus_filtered_element_menu_item = nav_menus_filtered_element && show_in_menu_j && !disabled_j && required_params_passed_j && (show_when_auth_state_is_j === null || show_when_auth_state_is_j === curr_auth_state) ? { ...nav_item_j, children: [] } : null
 
-                    if (nav_menus[i].menu_items[j] && nav_menus[i].menu_items[j].children) {
-                        for (let k = 0; k < nav_menus[i].menu_items[j].children.length; k++) {
+                    if (nav_item_j && nav_item_j.children) {
+                        for (let k = 0; k < nav_item_j.children.length; k++) {
 
-                            const disabled_k = window.isset(nav_menus[i].menu_items[j].children[k].disabled) ? nav_menus[i].menu_items[j].children[k].disabled : disabled_j
-                            const show_in_menu_k = window.isset(nav_menus[i].menu_items[j].children[k].show_in_menu) ? nav_menus[i].menu_items[j].children[k].show_in_menu : show_in_menu_j
-                            const show_when_auth_state_is_k = window.isset(nav_menus[i].menu_items[j].children[k].show_when_auth_state_is) ? nav_menus[i].menu_items[j].children[k].show_when_auth_state_is : show_when_auth_state_is_j
-                            const required_active_user_group_membership_slugs_k = nav_menus[i].menu_items[j].children[k].required_active_user_group_membership_slugs ?? nav_menus[i].menu_items[j].required_active_user_group_membership_slugs
-                            let required_params_passed_k = (!auth_user || auth_user.isInUserGroup('developers') || !(auth_user.isInUserGroup('default_users') && nav_menus[i].menu_items[j].children[k].restricted_for_default_users))
+                            const nav_item_j_child_k = nav_item_j.children[k]
+                            const disabled_k = window.isset(nav_item_j_child_k.disabled) ? nav_item_j_child_k.disabled : disabled_j
+                            const show_in_menu_k = window.isset(nav_item_j_child_k.show_in_menu) ? nav_item_j_child_k.show_in_menu : show_in_menu_j
+                            const show_when_auth_state_is_k = window.isset(nav_item_j_child_k.show_when_auth_state_is) ? nav_item_j_child_k.show_when_auth_state_is : show_when_auth_state_is_j
+                            const required_active_user_group_membership_slugs_k = nav_item_j_child_k.required_active_user_group_membership_slugs ?? nav_item_j.required_active_user_group_membership_slugs
+                            let required_params_passed_k = (!auth_user || auth_user.isInUserGroup('developers') || !(auth_user.isInUserGroup('default_users') && nav_item_j_child_k.restricted_for_default_users))
                             if (required_params_passed_k && required_active_user_group_membership_slugs_k) {
                                 required_params_passed_k = false
                                 required_active_user_group_membership_slugs_k.forEach(user_group_membership_slug => {
@@ -139,21 +159,27 @@ function Navigator(props) {
                                 });
                             }
 
-                            const nav_menus_filtered_element_menu_item_child = nav_menus_filtered_element_menu_item && show_in_menu_k && !disabled_k && required_params_passed_k && (show_when_auth_state_is_k === null || show_when_auth_state_is_k === curr_auth_state) ? nav_menus[i].menu_items[j].children[k] : null
+                            const subdomain = nav_item_j_child_k.subdomain ?? subdomain_i
+                            nav_item_j_child_k.path = ('/' + (subdomain !== 'default' ? subdomain + '/' : '') + nav_item_j_child_k.path.replace(/^\/|\/$/g, ''))
+                            if (window.isset(nav_item_j_child_k.path_alias)) {
+                                nav_item_j_child_k.path_alias = ('/' + (subdomain !== 'default' ? subdomain + '/' : '') + nav_item_j_child_k.path_alias.replace(/^\/|\/$/g, ''))
+                            }
+
+                            const nav_menus_filtered_element_menu_item_child = nav_menus_filtered_element_menu_item && show_in_menu_k && !disabled_k && required_params_passed_k && (show_when_auth_state_is_k === null || show_when_auth_state_is_k === curr_auth_state) ? nav_item_j_child_k : null
 
                             if (nav_menus_filtered_element_menu_item_child) {
                                 nav_menus_filtered_element_menu_item.children.push({ ...nav_menus_filtered_element_menu_item_child, element: undefined })
                             }
 
-                            if (!nav_menus[i].menu_items[j].children[k].path.includes('#') && nav_menus[i].menu_items[j].children[k].element) {
-                                nav_path_list.push(nav_menus[i].menu_items[j].children[k].path)
-                                if (window.isset(nav_menus[i].menu_items[j].children[k].path_alias)) {
-                                    nav_path_list.push(nav_menus[i].menu_items[j].children[k].path_alias)
+                            if (!nav_item_j_child_k.path.includes('#') && nav_item_j_child_k.element) {
+                                nav_path_list.push(nav_item_j_child_k.path)
+                                if (window.isset(nav_item_j_child_k.path_alias)) {
+                                    nav_path_list.push(nav_item_j_child_k.path_alias)
                                 }
                                 if (!disabled_k && required_params_passed_k && (show_when_auth_state_is_k === null || show_when_auth_state_is_k === curr_auth_state)) {
-                                    nav_list_filtered.push({ ...nav_menus[i].menu_items[j].children[k], path_alias: undefined })
-                                    if (window.isset(nav_menus[i].menu_items[j].children[k].path_alias)) {
-                                        nav_list_filtered.push({ ...nav_menus[i].menu_items[j].children[k], path: nav_menus[i].menu_items[j].children[k].path_alias, path_alias: undefined })
+                                    nav_list_filtered.push({ ...nav_item_j_child_k, path_alias: undefined })
+                                    if (window.isset(nav_item_j_child_k.path_alias)) {
+                                        nav_list_filtered.push({ ...nav_item_j_child_k, path: nav_item_j_child_k.path_alias, path_alias: undefined })
                                     }
                                 }
                             }
@@ -215,7 +241,6 @@ function Navigator(props) {
                 auth_user={auth_user}
                 curr_path={useLocation().pathname}
                 top_navbar_menu={nav_menus_filtered.find(menu => menu.slug === 'top_navbar_menu')}
-                top_navbar_auth_menu={nav_menus_filtered.find(menu => menu.slug === 'virtual_menu')}
                 top_navbar_user_menu={nav_menus_filtered.find(menu => menu.slug === 'top_navbar_user_menu')}
             />
             <div className="bg-white shadow" style={{ borderBottomColor: 'black', borderBottomWidth: 1 }}>
@@ -244,22 +269,24 @@ function Navigator(props) {
         </React.Fragment>
     }
 
+
     const NoMatch = () => {
         const curr_path = useLocation().pathname
         const curr_path_exists = nav_path_list.includes(curr_path)
-        if (['/signin', '/signup'].includes(curr_path)) {
+        if (['/accounts/auth/signin', '/accounts/auth/signup'].includes(curr_path)) {
             const get_param = useLocation().search;
             return <Navigate to={get_param.length > 6 && get_param.includes('?rdr=') ? get_param.split('?rdr=')[1] : '/'} />
         }
         if (curr_path_exists && !curr_auth_state) {
-            return <Navigate to={'/signin?rdr=' + curr_path} />
+            return <Navigate to={'/accounts/auth/signin?rdr=' + curr_path} />
         }
         const item = nav_list_filtered.find(rt => rt.path === (curr_path_exists ? '/403' : '/404'))
         return <item.element PageWrapper={PageWrapper} title={item.title} path={item.path} />
     }
 
     return (
-        <BrowserRouter basename={'/'}>
+        <BrowserRouter basename={''}>
+            <ScrollToTop />
             <Routes>
                 {nav_list_filtered.map((item, i) => <Route key={i} path={item.path} element={<item.element PageWrapper={PageWrapper} nav_menus={nav_menus_filtered} title={item.title} path={item.path} />} />)}
                 <Route path='*' element={<NoMatch />} />

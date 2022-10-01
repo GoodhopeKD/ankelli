@@ -7,7 +7,7 @@ import CustomSelect from 'app/views/components/CustomSelect'
 
 import { _User, _DateTime, _Session, _Notification, _AssetAccountAddress } from 'app/controller'
 
-class BCReceiveFundsScreen extends React.Component {
+class BCReceiveCryptoScreen extends React.Component {
 
     default_input = {
         asset_code: 'USDT',
@@ -56,34 +56,32 @@ class BCReceiveFundsScreen extends React.Component {
                 list_full: false,
                 list_refreshing: false
             })
-            setTimeout(
-                () => {
-                    _Type.getCollection(input, page_select, per_page)
-                        .then(({ collection }) => {
-                            if (!collection.data) return Promise.resolve();
-                            let update_object = {
-                                //list: page_select ? this.state.list.concat(collection.data) : collection.data,
-                                list: collection.data,
-                                list_loaded: true,
-                                list_full: collection.meta.current_page === collection.meta.last_page,
-                                _collecion: {
-                                    links: collection.links,
-                                    meta: collection.meta,
-                                }
-                            };
-                            update_object[indicator_var_name] = true;
-                            this.setState(update_object);
-                            this.working = false
-                            this.should_load_items = false
-                            return Promise.resolve();
-                        })
-                        .catch((error) => {
-                            this.working = false
-                            this.should_load_items = false
-                            return Promise.reject(error);
-                        })
-                }, 0
-            );
+            return new Promise((resolve) => setTimeout(() => {
+                resolve(_Type.getCollection(input, page_select, per_page)
+                    .then(({ collection }) => {
+                        if (!collection.data) return Promise.resolve();
+                        let update_object = {
+                            //list: page_select ? this.state.list.concat(collection.data) : collection.data,
+                            list: collection.data,
+                            list_loaded: true,
+                            list_full: collection.meta.current_page === collection.meta.last_page,
+                            _collecion: {
+                                links: collection.links,
+                                meta: collection.meta,
+                            }
+                        };
+                        update_object[indicator_var_name] = true;
+                        this.setState(update_object);
+                        this.working = false
+                        this.should_load_items = false
+                        return Promise.resolve();
+                    })
+                    .catch((error) => {
+                        this.working = false
+                        this.should_load_items = false
+                        return Promise.reject(error);
+                    }))
+            }, 0))
         } else {
             return Promise.resolve();
         }
@@ -131,10 +129,10 @@ class BCReceiveFundsScreen extends React.Component {
         }
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
-            <div className="container-fluid py-3">
+            <div className="container py-3">
                 <div className="row">
                     <div className="col-2">
-                        <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'account_menu')]} />
+                        <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'banking_menu')]} />
                     </div>
                     <div className="col-10">
                         {this.props.auth_user.asset_accounts.length !== 0 && <>
@@ -227,7 +225,7 @@ class BCReceiveFundsScreen extends React.Component {
 
                             <hr />
                         </>}
-                        <p className="my-3">Go to <Link to='/account/home'>account home</Link> screen to create asset accounts</p>
+                        <p className="my-3">Go to <Link to='/banking/e-wallets/crypto'>crypto wallets</Link> screen to create asset accounts</p>
                     </div>
                 </div>
             </div>
@@ -242,4 +240,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(BCReceiveFundsScreen)
+export default connect(mapStateToProps)(BCReceiveCryptoScreen)

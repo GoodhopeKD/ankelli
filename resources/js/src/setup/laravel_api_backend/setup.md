@@ -105,14 +105,13 @@ In the **`app/Providers/RouteServiceProvider`** file
         $this->configureRateLimiting();
 
         $this->routes(function () {
-            $api_location = env('API_URL') ? Route::domain(env('API_URL')) : Route::prefix('api');
+            $api_location = env('MIX_API_URL') ? Route::domain(env('MIX_API_URL')) : Route::prefix('api');
             $api_location
                 ->middleware('api')
-                ->namespace($this->namespace)
+                ->namespace($this->namespace . '\\API')
                 ->group(base_path('routes/api.php'));
 
             Route::middleware('web')
-                ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
         });
     }

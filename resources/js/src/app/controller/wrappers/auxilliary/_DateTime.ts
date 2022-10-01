@@ -19,7 +19,7 @@ export default class _DateTime extends _Date {
 		this._pretty_time = ''
 
 		if (input_datetime === 'now' || input_datetime === '') {
-			this._datetime = this._nowDatetime()
+			this._datetime = _Date.nowDatetime()
 			this._time = moment.utc().format('HH:mm') + 'hrs'
 		} else {
 			this._datetime = moment.utc(input_datetime).format('YYYY-MM-DD HH:mm:ss')
@@ -66,7 +66,7 @@ export default class _DateTime extends _Date {
 
 		rel_offset_minutes = rel_offset_minutes !== 0 ? rel_offset_minutes * 60 : 0
 
-		let time_diff: number = this._nowUnixTimeStamp() - this._unix_timestamp
+		let time_diff: number = _Date.nowUnixTimeStamp() - this._unix_timestamp
 
 		if (rel_offset_minutes <= time_diff && time_diff >= 0) {
 			if (
@@ -96,14 +96,14 @@ export default class _DateTime extends _Date {
 			if (
 				rel_offset_minutes <= time_diff &&
 				time_diff < 60 * 60 * 24 &&
-				moment(this._nowDatetime()).format('DD') === moment(this._datetime).format('DD') // Date is today
+				moment(_Date.nowDatetime()).format('DD') === moment(this._datetime).format('DD') // Date is today
 			)
 				return 'today at ' + this._pretty_time
 
 			if (
 				rel_offset_minutes <= time_diff &&
 				time_diff < 60 * 60 * 24 * 2 &&
-				moment(this._nowDatetime()).format('DD') === moment(this._datetime).add(1, 'day').format('DD') // Date is yesterday
+				moment(_Date.nowDatetime()).format('DD') === moment(this._datetime).add(1, 'day').format('DD') // Date is yesterday
 			)
 				return 'yesterday at ' + this._pretty_time
 
@@ -130,14 +130,14 @@ export default class _DateTime extends _Date {
 			if (
 				rel_offset_minutes <= time_diff &&
 				time_diff < 60 * 60 * 24 &&
-				moment(this._nowDatetime()).format('DD') === moment(this._datetime).format('DD') // Date is today
+				moment(_Date.nowDatetime()).format('DD') === moment(this._datetime).format('DD') // Date is today
 			)
 				return 'today at ' + this._pretty_time
 
 			if (
 				rel_offset_minutes <= time_diff &&
 				time_diff < 60 * 60 * 24 * 2 &&
-				moment(this._nowDatetime()).format('DD') === moment(this._datetime).subtract(1, 'day').format('DD') // Date is tomorrow
+				moment(_Date.nowDatetime()).format('DD') === moment(this._datetime).subtract(1, 'day').format('DD') // Date is tomorrow
 			)
 				return 'tomorrow at ' + this._pretty_time
 
@@ -150,7 +150,7 @@ export default class _DateTime extends _Date {
 
 		if (
 			Math.abs(time_diff) < 60 * 60 * 24 * 31 &&
-			moment(this._nowDatetime()).format('M') === moment(this._datetime).format('M') // Date is this month
+			moment(_Date.nowDatetime()).format('M') === moment(this._datetime).format('M') // Date is this month
 		)
 			return moment(this._datetime).format('ddd, D MMM YYYY') + ' at ' + this._pretty_time // Fri, 21 Dec 2018 at 12:45
 

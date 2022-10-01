@@ -100,22 +100,22 @@ return new class extends Migration
                 'permission_slug' => 'handle_flagged_users',
                 'creator_username' => 'system',
             ],
-            // _UserGroup: platform_moderators
+            // _UserGroup: moderators
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'platform_moderators',
+                'parent_uid' => 'moderators',
                 'permission_slug' => 'handle_customer_service_chats',
                 'creator_username' => 'system',
             ],
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'platform_moderators',
+                'parent_uid' => 'moderators',
                 'permission_slug' => 'handle_flagged_business_elems',
                 'creator_username' => 'system',
             ],
             [
                 'parent_table' => '__user_groups',
-                'parent_uid' => 'platform_moderators',
+                'parent_uid' => 'moderators',
                 'permission_slug' => 'manage_update_posts',
                 'creator_username' => 'system',
             ],

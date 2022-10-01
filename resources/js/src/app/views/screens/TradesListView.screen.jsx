@@ -55,34 +55,32 @@ class TradesListViewScreen extends React.Component {
                 list_full: false,
                 list_refreshing: false
             })
-            setTimeout(
-                () => {
-                    _Type.getCollection({ ...input, user_username: this.props.auth_user.username }, page_select, per_page)
-                        .then(({ collection }) => {
-                            if (!collection.data) return Promise.resolve();
-                            let update_object = {
-                                //list: page_select ? this.state.list.concat(collection.data) : collection.data,
-                                list: collection.data,
-                                list_loaded: true,
-                                list_full: collection.meta.current_page === collection.meta.last_page,
-                                _collecion: {
-                                    links: collection.links,
-                                    meta: collection.meta,
-                                }
-                            };
-                            update_object[indicator_var_name] = true;
-                            this.setState(update_object);
-                            this.working = false
-                            this.should_load_items = false
-                            return Promise.resolve();
-                        })
-                        .catch((error) => {
-                            this.working = false
-                            this.should_load_items = false
-                            return Promise.reject(error);
-                        })
-                }, 0
-            );
+            return new Promise((resolve) => setTimeout(() => {
+                resolve(_Type.getCollection({ ...input, user_username: this.props.auth_user.username }, page_select, per_page)
+                    .then(({ collection }) => {
+                        if (!collection.data) return Promise.resolve();
+                        let update_object = {
+                            //list: page_select ? this.state.list.concat(collection.data) : collection.data,
+                            list: collection.data,
+                            list_loaded: true,
+                            list_full: collection.meta.current_page === collection.meta.last_page,
+                            _collecion: {
+                                links: collection.links,
+                                meta: collection.meta,
+                            }
+                        };
+                        update_object[indicator_var_name] = true;
+                        this.setState(update_object);
+                        this.working = false
+                        this.should_load_items = false
+                        return Promise.resolve();
+                    })
+                    .catch((error) => {
+                        this.working = false
+                        this.should_load_items = false
+                        return Promise.reject(error);
+                    }))
+            }, 0))
         } else {
             return Promise.resolve();
         }
@@ -112,7 +110,7 @@ class TradesListViewScreen extends React.Component {
             <div className="container py-3">
 
                 <div className="d-flex gap-2">
-                    <div className="d-flex gap-2 mt-3">
+                    <div className="d-flex gap-2">
                         <label htmlFor="input__status" className="align-self-center">Status</label>
                         <select className="form-select" id="input__status" value={this.state.input._status} onChange={rr => { this.handleInputChange('_status', rr.target.value, true); this.should_load_items = true; this.populateScreenWithItems() }} >
                             <option value="all">All</option>
@@ -153,8 +151,12 @@ class TradesListViewScreen extends React.Component {
                                         case 'completed': btn_class = 'success'; break;
                                     }
 
-                                    return <tr key={index} >
-                                        <td className="align-middle"><i>@{trade.creator_username == this.props.auth_user.username ? trade.offer_creator_username : trade.creator_username}</i><br />In {window.isset(trade.location) && <> #{trade.location} - </>} {trade.country_name}</td>
+                                    const trade_peer_username = trade.creator_username == this.props.auth_user.username ? trade.offer_creator_username : trade.creator_username
+                                    const auth_user_is_buyer = (trade.was_offer_to == 'sell' && trade.creator_username == this.props.auth_user.username) || (trade.was_offer_to == 'buy' && trade.offer_creator_username == this.props.auth_user.username)
+                                    //const auth_user_is_seller = (trade.was_offer_to == 'buy' && trade.creator_username == this.props.auth_user.username) || (trade.was_offer_to == 'sell' && trade.offer_creator_username == this.props.auth_user.username)
+
+                                    return <tr key={index} className={((auth_user_is_buyer && trade.buyer_opened_datetime == null) ? ' table-secondary' : '')} >
+                                        <td className="align-middle"><i><Link to={'/accounts/profiles/' + trade_peer_username} style={{ textDecoration: 'none' }} target='_blank'>@{trade_peer_username}</Link></i><br />In {window.isset(trade.location) && <> #{trade.location} - </>} {trade.country_name}</td>
                                         <td className="align-middle"><b>{trade.asset_code}</b> <i>for</i> <b>{trade.currency_code}</b>
                                             <br /><small className="text-muted"><i>Last activity: {window.ucfirst(new _DateTime(trade.updated_datetime).prettyDatetime())}</i></small></td>
                                         <td className="align-middle">{window.currencyAmountString(trade.currency_amount, currency)}</td>
@@ -168,8 +170,8 @@ class TradesListViewScreen extends React.Component {
                                         </td>
                                         <td className="align-middle">
                                             <div className="btn-group">
-                                                <button type="button" className="btn btn-sm btn-outline-secondary">•••</button>
-                                                <Link to={'/trades/' + trade.ref_code} className='btn btn-sm btn-primary' >Open</Link>
+                                                {/*<button type="button" className="btn btn-sm btn-outline-secondary">•••</button>*/}
+                                                <Link to={'/p2p/trades/' + trade.ref_code} className='btn btn-sm btn-primary' >Open</Link>
                                             </div>
                                         </td>
                                     </tr>

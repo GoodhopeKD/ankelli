@@ -231,17 +231,17 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 	/* Creator(s) */
 
 	static async signUp(args: typeof signup_data) {
-		return this._mainLaravelDBAPICreate('users/signup', args)
+		return this._mainLaravelDBAPICreate('accounts/auth/signup', args)
 	}
 
 	/* Readers */
 
 	public async read() {
-		return this._mainLaravelDBAPIRead('users/' + this.username)
+		return this._mainLaravelDBAPIRead('accounts/users/' + this.username)
 	}
 
 	public static async getOne(params: { username: string }) {
-		return this._mainLaravelDBAPIGetOne('users/' + params.username)
+		return this._mainLaravelDBAPIGetOne('accounts/users/' + params.username)
 	}
 
 	isInUserGroup(user_group_slug: string): boolean {
@@ -266,7 +266,7 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 			.dispatch({
 				type: 'APP_BACKEND_API_CALL',
 				method: 'POST',
-				endpoint: 'users/signin',
+				endpoint: 'accounts/auth/signin',
 				data
 			})
 			.then((resp: any) => { return Promise.resolve(resp.auth_user) })
@@ -278,7 +278,7 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 			.dispatch({
 				type: 'APP_BACKEND_API_CALL',
 				method: 'POST',
-				endpoint: 'users/signout'
+				endpoint: 'accounts/auth/signout'
 			})
 	}
 
@@ -287,7 +287,7 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 			.dispatch({
 				type: 'APP_BACKEND_API_CALL',
 				method: 'GET',
-				endpoint: 'users/recovery/username/get/send_to/{recipient_addon_name}/{recipient_addon_value}',
+				endpoint: 'accounts/recovery/username/get/send_to/{recipient_addon_name}/{recipient_addon_value}',
 				data
 			})
 			.then((resp: any) => { return Promise.resolve(resp) })
@@ -299,7 +299,7 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 			.dispatch({
 				type: 'APP_BACKEND_API_CALL',
 				method: 'GET',
-				endpoint: 'users/recovery/password/generate_reset_token/for_user/{username}/send_to/{recipient_addon_name}/{recipient_addon_value}',
+				endpoint: 'accounts/recovery/password/generate_reset_token/for_user/{username}/send_to/{recipient_addon_name}/{recipient_addon_value}',
 				data
 			})
 			.then((resp: any) => { return Promise.resolve(resp) })
@@ -311,7 +311,7 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 			.dispatch({
 				type: 'APP_BACKEND_API_CALL',
 				method: 'POST',
-				endpoint: 'users/recovery/password/reset',
+				endpoint: 'accounts/recovery/password/reset',
 				data
 			})
 			.then((resp: any) => { return Promise.resolve(resp) })
@@ -319,7 +319,7 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 	}
 
 	public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-		return this._mainLaravelDBAPIGetCollection('users', params, page_select, per_page)
+		return this._mainLaravelDBAPIGetCollection('admin/users', params, page_select, per_page)
 	}
 
 	public async getAddonProp(addon_prop_name: keyof typeof GettableAddonPropsRespObj, page_select?: laravel_api_page_selection_t, per_page?: number) {
@@ -348,7 +348,7 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 		if (typeof args.email_address === typeof this.email_address && args.email_address !== this.email_address) data.email_address = args.email_address
 		if (typeof args._status === typeof this._status && args._status !== this._status) data._status = args._status
 		if (typeof args.avatar_image_id === typeof this.avatar_image_id && args.avatar_image_id !== this.avatar_image_id) data.avatar_image_id = args.avatar_image_id
-		return this._mainLaravelDBAPIUpdate('users/' + this.id, update_note, data)
+		return this._mainLaravelDBAPIUpdate('accounts/users/' + this.id, update_note, data)
 	}
 
 	public async addAddonProp(prop_name: keyof typeof AddableAddonPropsRespObj, args: addable_addon_args_t) {

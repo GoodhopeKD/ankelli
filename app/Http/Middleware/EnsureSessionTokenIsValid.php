@@ -17,7 +17,7 @@ class EnsureSessionTokenIsValid
      */
     public function handle(Request $request, Closure $next)
     {
-        if (( !env('API_URL') && $request->path() == "api" ) || ( env('API_URL') && $request->path() == "/") || str_contains( $request->path(), 'webhooks' ) ) return $next($request);
+        if (( !env('MIX_API_URL') && $request->path() == "api/accounts" ) || ( env('MIX_API_URL') && $request->path() == "accounts") || str_contains( $request->path(), 'webhooks' ) ) return $next($request);
         
         $session_token = $request->header('x-session-token');
         if (!$session_token) return abort(401,'Session token header required');

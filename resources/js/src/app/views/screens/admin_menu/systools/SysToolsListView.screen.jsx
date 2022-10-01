@@ -64,34 +64,32 @@ export default withRouter(class SysToolsListViewScreen extends React.Component {
                 list_full: false,
                 list_refreshing: false
             })
-            setTimeout(
-                () => {
-                    _Type.getCollection({ ...get_collection_params }, page_select, per_page)
-                        .then(({ collection }) => {
-                            if (!collection.data) return Promise.resolve();
-                            let update_object = {
-                                //list: page_select ? this.state.list.concat(collection.data) : collection.data,
-                                list: collection.data,
-                                list_loaded: true,
-                                list_full: collection.meta.current_page === collection.meta.last_page,
-                                _collecion: {
-                                    links: collection.links,
-                                    meta: collection.meta,
-                                }
-                            };
-                            update_object[indicator_var_name] = true;
-                            this.setState(update_object);
-                            this.working = false
-                            this.should_load_items = false
-                            return Promise.resolve();
-                        })
-                        .catch((error) => {
-                            this.working = false
-                            this.should_load_items = false
-                            return Promise.reject(error);
-                        })
-                }, 0
-            );
+            return new Promise((resolve) => setTimeout(() => {
+                resolve(_Type.getCollection({ ...get_collection_params }, page_select, per_page)
+                    .then(({ collection }) => {
+                        if (!collection.data) return Promise.resolve();
+                        let update_object = {
+                            //list: page_select ? this.state.list.concat(collection.data) : collection.data,
+                            list: collection.data,
+                            list_loaded: true,
+                            list_full: collection.meta.current_page === collection.meta.last_page,
+                            _collecion: {
+                                links: collection.links,
+                                meta: collection.meta,
+                            }
+                        };
+                        update_object[indicator_var_name] = true;
+                        this.setState(update_object);
+                        this.working = false
+                        this.should_load_items = false
+                        return Promise.resolve();
+                    })
+                    .catch((error) => {
+                        this.working = false
+                        this.should_load_items = false
+                        return Promise.reject(error);
+                    }))
+            }, 0))
         } else {
             return Promise.resolve();
         }
@@ -131,7 +129,7 @@ export default withRouter(class SysToolsListViewScreen extends React.Component {
         }
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
-            <div className="container-fluid py-3">
+            <div className="container py-3">
                 <div className="row">
                     <div className="col-2">
                         <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'admin_menu')]} />
@@ -183,7 +181,7 @@ export default withRouter(class SysToolsListViewScreen extends React.Component {
                                                     <td className="align-middle">{system_tools_item.name}</td>
                                                     <td className="align-middle" style={{ whiteSpace: 'pre-wrap' }}>{system_tools_item.description}</td>
                                                     <td className="align-middle">{system_tools_item._status}</td>
-                                                    <td className="align-middle"><Link className="btn btn-sm btn-info" to={"/systools/user_groups/" + system_tools_item.slug + "/user_group_memberships"}>Open</Link></td>
+                                                    <td className="align-middle"><Link className="btn btn-sm btn-info" to={"/systools/user_groups/" + system_tools_item.slug + "/user-group-memberships"}>Open</Link></td>
                                                 </>}
                                                 {this.props.title == 'View User Group Members' && <>
                                                     <td className="align-middle">{system_tools_item.user_username}</td>

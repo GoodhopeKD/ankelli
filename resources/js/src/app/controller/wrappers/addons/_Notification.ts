@@ -88,7 +88,7 @@ export default class _Notification extends _Wrapper_ implements Omit<typeof _Not
     /* Readers */
 
     public static async getOne(params: { id: string }) {
-        return this._mainLaravelDBAPIGetOne('notifications/{id}', params)
+        return this._mainLaravelDBAPIGetOne('accounts/notifications/{id}', params)
     }
 
     wasRead(): boolean {
@@ -96,6 +96,6 @@ export default class _Notification extends _Wrapper_ implements Omit<typeof _Not
     }
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('notifications', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('accounts/notifications', params, page_select, per_page)
     }
 }

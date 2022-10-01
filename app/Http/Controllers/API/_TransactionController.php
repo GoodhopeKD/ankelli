@@ -146,10 +146,10 @@ class _TransactionController extends Controller
                 'asset_code' => $validated_data['asset_code']
             ]);
             if (!$destination_user_asset_account){
-                $destination_user_asset_account = (new _AssetAccountController)->store( new Request([
+                $destination_user_asset_account = (new _AssetAccountController)->store( Request::create('','',[
                     'user_username' => $validated_data['destination_user_username'], 
                     'asset_code' => $validated_data['asset_code']
-                ]))->getData();
+                ],[],[],['HTTP_accept'=>'application/json']))->getData();
             }
 
             $old_usable_balance_asset_value = $destination_user_asset_account->usable_balance_asset_value;
@@ -224,10 +224,10 @@ class _TransactionController extends Controller
         }
 
         if ( isset($validated_data['source_user_username']) && $validated_data['platform_charge_asset_value'] ){
-            sleep(1);
+            //sleep(1);
             (new _TransactionController)->store( new Request([
                 'txcontext' => 'offchain',
-                'description' => 'Platform charge for transaction ' . $element->ref_code,
+                'description' => 'Platform charges for transaction ' . $element->ref_code,
                 'operation_slug' => 'platform_charge',
                 'source_user_username' => $validated_data['source_user_username'],
                 'source_user_password' => $validated_data['source_user_password'],
@@ -237,7 +237,8 @@ class _TransactionController extends Controller
             ]));
         }
 
-        return response()->json( new _TransactionResource( $element ) );
+        if ($request->expectsJson()) return response()->json( [ 'ref_code' => $element->ref_code ] );
+        //return response()->json( new _TransactionResource( $element ) );
     }
 
     

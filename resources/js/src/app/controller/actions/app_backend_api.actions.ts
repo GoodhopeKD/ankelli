@@ -5,11 +5,11 @@ export type laravel_api_page_selection_t = 'next' | 'prev' | 'first' | 'last' | 
 export const connectivityBoot = () => {
     return (dispatch: (args: any) => Promise<any>) => {
         dispatch({ type: 'APP_INSTANCE_STATE_RESET_CONNECTIVITY_INDICATORS' })
-
-        dispatch({ type: 'APP_BACKEND_API_CALL', method: 'POST', endpoint: '' })
-            .then(() => { dispatch({ type: 'APP_INSTANCE_STATE_SET_APP_BACKEND_API_CONNECTIVITY_INDICATOR', app_backend_api_connectivity_indicator: true }) })
+        return dispatch({ type: 'APP_BACKEND_API_CALL', method: 'POST', endpoint: 'accounts' })
+            .then(() => { dispatch({ type: 'APP_INSTANCE_STATE_SET_APP_BACKEND_API_CONNECTIVITY_INDICATOR', app_backend_api_connectivity_indicator: true }); return Promise.resolve() })
             .catch((e: any) => {
                 dispatch({ type: 'APP_INSTANCE_STATE_SET_APP_BACKEND_API_CONNECTIVITY_INDICATOR', app_backend_api_connectivity_indicator: false })
+                return Promise.reject(e)
             })
     }
 }
@@ -20,7 +20,7 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
         if (!action.is_boot) {
             let core_state_request_action = {
                 method: 'POST',
-                endpoint: ''
+                endpoint: 'accounts'
             }
             action.requests.push(core_state_request_action)
         }
@@ -123,7 +123,7 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
             return app_backend_api.handle(request_object)
                 .then((resp: any) => {
                     batch(() => {
-                        if ((action.endpoint === '' && active_session_data.auth_token && !resp.data.auth_user_data) || (action.endpoint === 'users/signout' && !resp.data.auth_user_data))
+                        if ((action.endpoint === 'accounts' && active_session_data.auth_token && !resp.data.auth_user_data) || (action.endpoint === 'accounts/auth/signout' && !resp.data.auth_user_data))
                             dispatch({ type: 'AUTH_DATA_CLEAR_ALL' })
 
                         if (app_backend_api.config.endpoint_filtering.auth_token_returning_endpoints.some((x: string) => x.toLowerCase() === action.endpoint.toLowerCase()) && resp.data.auth_token) {

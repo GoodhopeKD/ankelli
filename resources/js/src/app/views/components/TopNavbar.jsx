@@ -25,7 +25,7 @@ export default withRouter(class TopNavbar extends React.Component {
                         <ul className="nav nav-pills col-md-6 justify-content-center">
                             {this.props.top_navbar_menu.menu_items.map((item, index) => {
                                 return <li className="nav-item" key={index}>
-                                    <Link to={item.path} className={"nav-link " + ((item.path === this.props.curr_path || (this.props.curr_path === '/' && item.path === '/offers')) ? 'active' : '')} >
+                                    <Link to={item.path} className={"nav-link " + ((item.path === this.props.curr_path || ((this.props.curr_path === '/' || this.props.curr_path === '/p2p') && item.path === '/p2p/offers')) ? 'active' : '')} >
                                         {item.title}
                                     </Link>
                                 </li>
@@ -41,8 +41,8 @@ export default withRouter(class TopNavbar extends React.Component {
                                     <li><i className="dropdown-header">@{this.props.auth_user.username}</i></li>
                                     <li><hr className="dropdown-divider" /></li>
                                     {this.props.top_navbar_user_menu.menu_items.map((item, index) => {
-                                        const linkk = <Link to={item.path} className="dropdown-item" onClick={e => { if (item.path === '/#/signout') { e.stopPropagation(); e.preventDefault(); this.setState({ btn_signout_working: true }); this.props.auth_user.signOut().then(() => { this.setState({ btn_signout_working: false }); _Notification.flash({ message: "You're now signed out", duration: 1000 }) }) } }} >
-                                            {(this.state.btn_signout_working && item.path === '/#/signout') ? <div className="text-center"><div className="spinner-border spinner-border-sm"></div></div> : item.title}
+                                        const linkk = <Link to={item.path} className="dropdown-item" onClick={e => { if (item.path === '/#/accounts/auth/signout') { e.stopPropagation(); e.preventDefault(); this.setState({ btn_signout_working: true }); this.props.auth_user.signOut().then(() => { _Notification.flash({ message: "You're now signed out", duration: 1000 }) }) } }} >
+                                            {(this.state.btn_signout_working && item.path === '/#/accounts/auth/signout') ? <div className="text-center"><div className="spinner-border spinner-border-sm"></div></div> : item.title}
                                         </Link>
                                         if (item.has_divider_above) {
                                             return <React.Fragment key={index}>
@@ -57,8 +57,8 @@ export default withRouter(class TopNavbar extends React.Component {
                             </div>
                             :
                             <div className="col-md-3 text-end">
-                                <Link to={'/signin' + this.props.location.search} className={'btn btn-outline-primary me-2'} >Login</Link>
-                                <Link to={'/signup' + this.props.location.search} className={'btn btn-primary'} >Sign Up</Link>
+                                <Link to={'/accounts/auth/signin' + this.props.location.search} className={'btn btn-outline-primary me-2'} >Login</Link>
+                                <Link to={'/accounts/auth/signup' + this.props.location.search} className={'btn btn-primary'} >Sign Up</Link>
                             </div>
                         }
                     </header>

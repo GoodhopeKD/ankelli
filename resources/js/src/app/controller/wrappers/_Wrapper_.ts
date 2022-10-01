@@ -173,7 +173,7 @@ export default class _Wrapper_ {
                 if (!link) {
                     return Promise.reject({ message: 'Link not found' })
                 }
-                endpoint = link.split(app_backend_api.config.api_url + '/' + store.getState().active_session_data.token + '/')[1]
+                endpoint = link.split(app_backend_api.config.API_URL + '/' + store.getState().active_session_data.token + '/')[1]
             } else if (typeof page_select === 'object' && (page_select as object).hasOwnProperty('page')) {
                 if (page_select.page < 1 || (collection.meta.last_page > 0 && page_select.page > collection.meta.last_page)) {
                     return Promise.reject({ message: 'Page out of range' })

@@ -107,7 +107,7 @@ class DepositTokensCreateNewScreen extends React.Component {
         const asset = this.props.datalists.active_assets[this.state.input.asset_code]
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
-            <div className="container-fluid py-3">
+            <div className="container py-3">
                 <div className="row">
                     <div className="col-2">
                         <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'admin_menu')]} />

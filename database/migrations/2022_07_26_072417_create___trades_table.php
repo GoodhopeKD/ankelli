@@ -21,8 +21,14 @@ return new class extends Migration
                     ->on('__countries')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-        	$table->string('location', 32)->nullable();
+            $table->string('location', 32)->nullable();
             
+            $table->string('offer_ref_code', 16)->nullable();
+            $table->foreign('offer_ref_code')
+                    ->references('ref_code')
+                    ->on('__offers')
+                    ->onUpdate('cascade')
+                    ->onDelete('set null');
             $table->enum('was_offer_to', ['buy', 'sell']);
 
             $table->string('asset_code', 64)->nullable();
@@ -55,8 +61,8 @@ return new class extends Migration
             $table->timestamp('pymt_confirmed_datetime')->nullable();
             $table->boolean('visible_to_creator')->default(true);
             $table->boolean('visible_to_offer_creator')->default(true);
-            $table->boolean('completion_rating_on_creator')->nullable();
-            $table->boolean('completion_rating_on_offer_creator')->nullable();
+            $table->unsignedTinyInteger('completion_rating_on_trade_creator')->nullable();
+            $table->unsignedTinyInteger('completion_rating_on_offer_creator')->nullable();
             $table->timestamp('buyer_opened_datetime')->nullable();
             $table->enum('_status', ['active', 'cancelled', 'flagged', 'completed'])->default('active');
 

@@ -69,12 +69,15 @@ class _OfferController extends Controller
             'asset_code' => ['required', 'exists:__assets,code', 'string'],
             'currency_code' => ['required', 'exists:__currencies,code', 'string'],
             'offer_price' => ['required', 'numeric'],
+            'buyer_cmplt_trade_mins_tmt' => ['required', 'integer'],
             // for offer_to = buy
             'min_trade_purchase_amount' => ['required_if:offer_to,==,buy', 'integer'],
             'max_trade_purchase_amount' => ['required_if:offer_to,==,buy', 'integer'],
+            'offer_total_purchase_amount' => ['required_if:offer_to,==,buy', 'integer'],
             // for offer_to = sell
             'min_trade_sell_value' => ['required_if:offer_to,==,sell', 'numeric'],
             'max_trade_sell_value' => ['required_if:offer_to,==,sell', 'numeric'],
+            'offer_total_sell_value' => ['required_if:offer_to,==,sell', 'numeric'],
             'pymt_method_slug' => ['required', 'exists:__pymt_methods,slug', 'string'],
             'pymt_details' => ['required_if:offer_to,==,sell|pymt_method_slug,==,cash_in_person', 'array'],
             'note' => ['nullable', 'string'],
@@ -110,7 +113,7 @@ class _OfferController extends Controller
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        return response()->json( new _OfferResource( $element ) );
+        if ($request->expectsJson()) return response()->json( new _OfferResource( $element ) );
     }
 
     /**
@@ -136,6 +139,14 @@ class _OfferController extends Controller
     {
         $validated_data = $request->validate([
             'update_note' => ['required', 'string', 'max:255'],
+            // for offer_to = buy
+            'max_trade_purchase_amount' => ['sometimes', 'integer'],
+            'offer_total_purchase_amount' => ['sometimes', 'integer'],
+            'fill_amount' => ['sometimes', 'integer'],
+            // for offer_to = sell
+            'max_trade_sell_value' => ['sometimes', 'numeric'],
+            'offer_total_sell_value' => ['sometimes', 'numeric'],
+            'fill_value' => ['sometimes', 'numeric'],
             '_status' => ['sometimes', 'string', Rule::in(['online', 'offline'])],
         ]);
 
@@ -144,7 +155,7 @@ class _OfferController extends Controller
         // Handle _Log
         $log_entry_update_result = [];
         foreach ( $validated_data as $key => $value ) {
-            if ( $element->{$key} != $value ){
+            if ( in_array( $key, $element->getFillable() ) && $element->{$key} != $value ){
                 array_push( $log_entry_update_result, [
                     'field_name' => $key,
                     'old_value' => $element->{$key},
@@ -161,10 +172,8 @@ class _OfferController extends Controller
             'entry_update_result'=> $log_entry_update_result,
         ]));
         // End _Log Handling
-
         $element->update($validated_data);
-
-        return response()->json( new _OfferResource( $element ) );
+        if ($request->expectsJson()) return response()->json( new _OfferResource( $element ) );
     }
 
     /**

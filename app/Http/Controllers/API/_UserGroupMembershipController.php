@@ -96,7 +96,7 @@ class _UserGroupMembershipController extends Controller
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        return response()->json( new _UserGroupMembershipResource( $element ) );
+        if ($request->expectsJson()) return response()->json( new _UserGroupMembershipResource( $element ) );
     }
 
     /**

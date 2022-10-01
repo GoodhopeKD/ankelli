@@ -1,3 +1,5 @@
+import React from 'react'
+
 import OffersListViewScreen from 'app/views/screens/OffersListView.screen'
 import OffersSingleViewScreen from 'app/views/screens/OffersSingleView.screen'
 import OffersCreateNewScreen from 'app/views/screens/OffersCreateNew.screen'
@@ -5,11 +7,29 @@ import TradesListViewScreen from 'app/views/screens/TradesListView.screen'
 import TradesSingleViewScreen from 'app/views/screens/TradesSingleView.screen'
 import LearnScreen from 'app/views/screens/Learn.screen'
 
+class ExampleElement extends React.Component {
+    render() {
+        return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
+            <div className="container py-3">
+                {this.props.title} screen
+            </div>
+        </this.props.PageWrapper>
+    }
+}
+
 export const top_navbar_menu = {
     slug: 'top_navbar_menu',
     menu_title: 'Top Navbar Menu',
+    subdomain: 'p2p',
     show_in_menu: true,
     menu_items: [
+        {
+            title: 'P2P',
+            path: '/',
+            subdomain: 'default',
+            element: (props) => <OffersListViewScreen {...props} />,
+            show_in_menu: false
+        },
         {
             title: 'P2P',
             path: '/offers',
@@ -33,7 +53,14 @@ export const top_navbar_menu = {
         {
             title: 'Learn',
             path: '/learn',
+            subdomain: 'default',
             element: (props) => <LearnScreen {...props} />,
+            restricted_for_default_users: true,
+        },
+        {
+            title: 'Pay',
+            path: '/home',
+            subdomain: 'pay',
             restricted_for_default_users: true,
         },
         {

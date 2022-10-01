@@ -15,13 +15,13 @@ class OffersListViewScreen extends React.Component {
     working = false
 
     default_input = {
-        offer_to: this.props.path == '/my-offers' ? undefined : (this.props.sysconfig_params.offer_to_buy_enabled ? 'buy' : this.props.sysconfig_params.offer_to_sell_enabled ? 'sell' : undefined),
+        offer_to: this.props.path == '/p2p/my-offers' ? undefined : (this.props.sysconfig_params.offer_to_buy_enabled ? 'buy' : this.props.sysconfig_params.offer_to_sell_enabled ? 'sell' : undefined),
         country_name: undefined,
         currency_code: undefined,
         asset_code: undefined,
         pymt_method_slug: undefined,
-        _status: this.props.path == '/my-offers' ? 'all' : 'online',
-        creator_username: this.props.path == '/my-offers' ? this.props.auth_user.username : undefined
+        _status: this.props.path == '/p2p/my-offers' ? 'all' : 'online',
+        creator_username: this.props.path == '/p2p/my-offers' ? this.props.auth_user.username : undefined
     }
 
     state = {
@@ -69,35 +69,33 @@ class OffersListViewScreen extends React.Component {
                 list_full: false,
                 list_refreshing: false
             })
-            setTimeout(
-                () => {
-                    _Type.getCollection(input, page_select, per_page)
-                        .then(({ collection }) => {
-                            if (!collection.data) return Promise.resolve();
-                            let update_object = {
-                                showing_offer_to: input.offer_to,
-                                //list: page_select ? this.state.list.concat(collection.data) : collection.data,
-                                list: collection.data,
-                                list_loaded: true,
-                                list_full: collection.meta.current_page === collection.meta.last_page,
-                                _collecion: {
-                                    links: collection.links,
-                                    meta: collection.meta,
-                                }
-                            };
-                            update_object[indicator_var_name] = true;
-                            this.setState(update_object);
-                            this.working = false
-                            this.should_load_items = false
-                            return Promise.resolve();
-                        })
-                        .catch((error) => {
-                            this.working = false
-                            this.should_load_items = false
-                            return Promise.reject(error);
-                        })
-                }, 0
-            );
+            return new Promise((resolve) => setTimeout(() => {
+                resolve(_Type.getCollection(input, page_select, per_page)
+                    .then(({ collection }) => {
+                        if (!collection.data) return Promise.resolve();
+                        let update_object = {
+                            showing_offer_to: input.offer_to,
+                            //list: page_select ? this.state.list.concat(collection.data) : collection.data,
+                            list: collection.data,
+                            list_loaded: true,
+                            list_full: collection.meta.current_page === collection.meta.last_page,
+                            _collecion: {
+                                links: collection.links,
+                                meta: collection.meta,
+                            }
+                        };
+                        update_object[indicator_var_name] = true;
+                        this.setState(update_object);
+                        this.working = false
+                        this.should_load_items = false
+                        return Promise.resolve();
+                    })
+                    .catch((error) => {
+                        this.working = false
+                        this.should_load_items = false
+                        return Promise.reject(error);
+                    }))
+            }, 0))
         } else {
             return Promise.resolve();
         }
@@ -159,7 +157,7 @@ class OffersListViewScreen extends React.Component {
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container py-3">
 
-                {(this.props.path == '/offers' || this.props.path == '/') && <>
+                {(this.props.path == '/p2p/offers' || this.props.path == '/') && <>
                     <div className="row">
                         {(this.props.sysconfig_params.offer_to_buy_enabled && this.props.sysconfig_params.offer_to_sell_enabled) &&
                             <div className="col">
@@ -232,7 +230,7 @@ class OffersListViewScreen extends React.Component {
                             className="btn btn-outline-danger mt-3"
                         >
                             Reset Filters
-                    </button>
+                        </button>
                     </div>
 
                     <hr />
@@ -244,14 +242,15 @@ class OffersListViewScreen extends React.Component {
                     <table className="table">
                         <thead>
                             <tr>
-                                {(this.props.path == '/offers' || this.props.path == '/') && <th scope="col">{this.state.showing_offer_to === 'buy' ? 'Buyer' : 'Seller'}</th>}
-                                {this.props.path == '/my-offers' && <th scope="col">Location</th>}
+                                {(this.props.path == '/p2p/offers' || this.props.path == '/') && <th scope="col">{this.state.showing_offer_to === 'buy' ? 'Buyer' : 'Seller'}</th>}
+                                {this.props.path == '/p2p/my-offers' && <th scope="col">Location</th>}
                                 <th scope="col">Trading</th>
                                 <th scope="col">Price</th>
-                                <th scope="col">Limit</th>
+                                <th scope="col">Limits</th>
+                                {this.props.path == '/p2p/my-offers' && <th scope="col">Fill</th>}
                                 <th scope="col">Payment method</th>
                                 <th scope="col">Trade</th>
-                                {this.props.path == '/my-offers' && <th scope="col">Status</th>}
+                                {this.props.path == '/p2p/my-offers' && <th scope="col">Status</th>}
                             </tr>
                         </thead>
                         <tbody>
@@ -259,22 +258,49 @@ class OffersListViewScreen extends React.Component {
                                 this.state.list.map((offer, index) => {
                                     const currency = this.props.datalists.active_currencies[offer.currency_code]
                                     const pymt_method = this.props.datalists.active_pymt_methods[offer.pymt_method_slug]
+                                    const progress = (offer.offer_to === 'buy' ? (offer.fill_amount / offer.offer_total_purchase_amount) : (offer.fill_value / offer.offer_total_sell_value)) * 100
                                     return <tr key={index} >
                                         <td className="align-middle">
-                                            {(this.props.path == '/offers' || this.props.path == '/') && <i>@{offer.creator_username}</i>}
-                                            {this.props.path == '/my-offers' && <i>Offer to: {offer.offer_to}</i>}
+                                            {(this.props.path == '/p2p/offers' || this.props.path == '/') && <i><Link to={'/accounts/profiles/' + offer.creator_username} style={{ textDecoration: 'none' }} target='_blank'>@{offer.creator_username}</Link></i>}
+                                            {this.props.path == '/p2p/my-offers' && <i>Offer to: {offer.offer_to}</i>}
                                             <br />In {window.isset(offer.location) && <> #{offer.location} - </>} {offer.country_name}
                                         </td>
                                         {offer.offer_to === 'buy' ? <>
                                             <td className="align-middle"><b>{offer.asset_code}</b> <i>for</i> <b>{offer.currency_code}</b>
                                                 <br /><small className="text-muted"><i>{this.props.auth_user && this.props.auth_user.username == offer.creator_username ? 'Last updated' : 'Posted'} {(new _DateTime(offer.updated_datetime).prettyDatetime())}</i></small></td>
                                             <td className="align-middle">{window.currencyAmountString(offer.offer_price, currency)}</td>
-                                            <td className="align-middle">{window.currencyAmountString(offer.min_trade_purchase_amount, currency)} - {window.currencyAmountString(offer.max_trade_purchase_amount, currency)}</td>
+                                            <td className="align-middle">
+                                                {window.currencyAmountString(offer.min_trade_purchase_amount, currency)} - {window.currencyAmountString(offer.max_trade_purchase_amount, currency)}
+                                                {this.props.path == '/p2p/my-offers' && <>
+                                                    <br />
+                                                    Total : {window.currencyAmountString(offer.offer_total_purchase_amount, currency)}
+                                                </>}
+                                            </td>
+                                            {this.props.path == '/p2p/my-offers' && <td className="align-middle">
+                                                {window.currencyAmountString(offer.fill_amount, currency)}
+                                                <br />
+                                                <div className="progress mt-1">
+                                                    <div className={"progress-bar bg-primary"} style={{ width: progress + '%' }} role="progressbar" aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100">{progress}%</div>
+                                                </div>
+                                            </td>}
                                         </> : <>
                                             <td className="align-middle"><b>{offer.currency_code}</b> <i>for</i> <b>{offer.asset_code}</b>
                                                 <br /><small className="text-muted"><i>{this.props.auth_user && this.props.auth_user.username == offer.creator_username ? 'Last updated' : 'Posted'} {(new _DateTime(offer.updated_datetime).prettyDatetime())}</i></small></td>
                                             <td className="align-middle">{window.currencyAmountString(offer.offer_price, currency)}</td>
-                                            <td className="align-middle">{offer.min_trade_sell_value} {offer.asset_code} - {offer.max_trade_sell_value} {offer.asset_code}</td>
+                                            <td className="align-middle">
+                                                {offer.min_trade_sell_value} {offer.asset_code} - {offer.max_trade_sell_value} {offer.asset_code}
+                                                {this.props.path == '/p2p/my-offers' && <>
+                                                    <br />
+                                                    Total : {offer.offer_total_sell_value} {offer.asset_code}
+                                                </>}
+                                            </td>
+                                            {this.props.path == '/p2p/my-offers' && <td className="align-middle">
+                                                {offer.fill_value} {offer.asset_code}
+                                                <br />
+                                                <div className="progress mt-1">
+                                                    <div className={"progress-bar bg-primary"} style={{ width: progress + '%' }} role="progressbar" aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100">{progress}%</div>
+                                                </div>
+                                            </td>}
                                         </>}
                                         <td className="align-middle">
                                             <img src={pymt_method.icon.uri} alt={pymt_method.name + " icon"} width="40" height="40" className="rounded-1 me-2" />
@@ -282,11 +308,11 @@ class OffersListViewScreen extends React.Component {
                                         </td>
                                         <td className="align-middle">
                                             <div className="btn-group">
-                                                <button type="button" className="btn btn-sm btn-outline-secondary">•••</button>
-                                                <Link to={'/offers/' + offer.ref_code} className='btn btn-sm btn-danger' >{offer.offer_to == 'buy' ? <>Sell</> : <>Buy</>}</Link>
+                                                {/*<button type="button" className="btn btn-sm btn-outline-secondary">•••</button>*/}
+                                                <Link to={'/p2p/offers/' + offer.ref_code} className='btn btn-sm btn-danger' >{offer.offer_to == 'buy' ? <>Sell</> : <>Buy</>}</Link>
                                             </div>
                                         </td>
-                                        {this.props.path == '/my-offers' && <td className="align-middle">
+                                        {this.props.path == '/p2p/my-offers' && <td className="align-middle">
                                             <div className="form-check form-switch d-flex justify-content-center">
                                                 {this.state.loading_item == offer.ref_code ?
                                                     <div className="spinner-border spinner-border-sm text-dark" style={{ width: 20, height: 20, marginLeft: -45 }}></div> :

@@ -123,11 +123,11 @@ export default withRouter(class SignInModal extends React.Component {
                         </button>
 
                         {this.props.component_context == "screen" ? <>
-                            <small className="text-muted">New to ankelli? Click here to <Link to={'/signup' + this.props.location.search}>sign up</Link>.</small><br />
-                            <small className="text-muted">Click here if you <Link to={'/recovery/generate_password_reset_token' + this.props.location.search}>forgot password</Link> or <Link to={'/recovery/get_lost_username' + this.props.location.search} >forgot username</Link>.</small>
+                            <small className="text-muted">New to ankelli? Click here to <Link to={'/accounts/auth/signup' + this.props.location.search}>sign up</Link>.</small><br />
+                            <small className="text-muted">Click here if you <Link to={'/accounts/recovery/generate_password_reset_token' + this.props.location.search}>forgot password</Link> or <Link to={'/accounts/recovery/get_lost_username' + this.props.location.search} >forgot username</Link>.</small>
                         </> : <>
-                            <small className="text-muted">New to ankelli? Click here to <Link to={'/#/signup'} data-bs-target="#signup_modal" data-bs-toggle="modal" >sign up</Link>.</small><br />
-                            <small className="text-muted">Click here if you <Link to={'/#/recovery/generate_password_reset_token'} data-bs-target="#generate_password_reset_token_modal" data-bs-toggle="modal">forgot password</Link> or <Link to={'/#/recovery/get_lost_username'} data-bs-target="#get_lost_username_modal" data-bs-toggle="modal">forgot username</Link>.</small>
+                            <small className="text-muted">New to ankelli? Click here to <Link to={'/#/accounts/auth/signup'} data-bs-target="#signup_modal" data-bs-toggle="modal" >sign up</Link>.</small><br />
+                            <small className="text-muted">Click here if you <Link to={'/#/accounts/recovery/generate_password_reset_token'} data-bs-target="#generate_password_reset_token_modal" data-bs-toggle="modal">forgot password</Link> or <Link to={'/#/accounts/recovery/get_lost_username'} data-bs-target="#get_lost_username_modal" data-bs-toggle="modal">forgot username</Link>.</small>
                         </>}
                     </form>
                 </div>

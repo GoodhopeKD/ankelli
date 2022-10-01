@@ -75,7 +75,7 @@ export default class _SellerExtension extends _Wrapper_ implements Omit<typeof _
     /* Creator(s) */
 
     public static async create(args: typeof _SellerExtensionRespObj) {
-        return this._mainLaravelDBAPICreate('users/' + args.user_username + '/seller_extension', args)
+        return this._mainLaravelDBAPICreate('accounts/users/' + args.user_username + '/seller_extension', args)
     }
 
     /* Readers */

@@ -44,7 +44,7 @@ if ( $scaffolding_app_enabled_pref_item && !$scaffolding_app_enabled_pref_item->
           <li><a href='/about' >About</a></li>
           <li><a href='/contact' >Contact</a></li>
           <li><a href='/faq' >Requently Asked Questions</a></li>
-          <li><a href='/privacy-policy' >Privacy Policy</a></li>
+          <li><a href='/privacy-policy' >Privacy policy</a></li>
           <li><a href='/terms-of-service' >Terms of Service</a></li>
         </ul>
       </div>

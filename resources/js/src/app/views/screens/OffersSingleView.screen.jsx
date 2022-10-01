@@ -109,8 +109,8 @@ class OffersSingleViewScreen extends React.Component {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs 
             const _input = _Input.flatten(input)
             const password_confirmation_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('password_confirmation_modal'));
-            this.focused_offer.accept(this.state.currency_amount, _input.pymt_details, _input.source_user_password)
-                .then(() => { password_confirmation_modal.hide(); _Notification.flash({ message: 'Trade initiated.', duration: 2000 }); this.props.navigate('/trades') })
+            this.focused_offer.accept({ currency_amount: this.state.currency_amount, pymt_details: _input.pymt_details, source_user_password: _input.source_user_password })
+                .then(() => { password_confirmation_modal.hide(); _Notification.flash({ message: 'Trade initiated.', duration: 2000 }); this.props.navigate('/p2p/trades') })
                 .catch((error) => {
                     if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
                         Object.keys(error.request._response.errors).forEach(input_key => { error.request._response.errors[input_key].forEach(input_key_error => { errors.push(input_key_error) }) })

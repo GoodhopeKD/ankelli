@@ -81,13 +81,13 @@ export default class _PermissionInstance extends _Wrapper_ implements Omit<typeo
     /* Creator(s) */
 
     public static async create(args: typeof _PermissionInstanceRespObj) {
-        return this._mainLaravelDBAPICreate('systools/permission_instances', args)
+        return this._mainLaravelDBAPICreate('admin/systools/permission-instances', args)
     }
 
     /* Readers */
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('systools/permission_instances', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('accounts/systools/permission-instances', params, page_select, per_page)
     }
 
     public async getAddonProp(addon_prop_name: keyof typeof GettableAddonPropsRespObj, page_select?: laravel_api_page_selection_t, per_page?: number) {

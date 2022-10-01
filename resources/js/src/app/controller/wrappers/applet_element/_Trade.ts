@@ -129,21 +129,21 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
     /* Creator(s) */
 
     public static async create(args: { offer_ref_code: string, currency_amount: number, pymt_details?: pymt_details_t, source_user_password?: string }) {
-        return this._mainLaravelDBAPICreate('trades', args)
+        return this._mainLaravelDBAPICreate('p2p/trades', args)
     }
 
     /* Readers */
 
     public async read() {
-        return this._mainLaravelDBAPIRead('trades/' + this.ref_code)
+        return this._mainLaravelDBAPIRead('p2p/trades/' + this.ref_code)
     }
 
     public static async getOne(params: { ref_code: string }) {
-        return this._mainLaravelDBAPIGetOne('trades/' + params.ref_code)
+        return this._mainLaravelDBAPIGetOne('p2p/trades/' + params.ref_code)
     }
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('trades', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('p2p/trades', params, page_select, per_page)
     }
 
     public async getAddonProp(addon_prop_name: keyof typeof GettableAddonPropsRespObj, page_select?: laravel_api_page_selection_t, per_page?: number) {
@@ -169,7 +169,7 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
         if (typeof args.visible_to_creator === typeof this.visible_to_creator && args.visible_to_creator !== this.visible_to_creator) data.visible_to_creator = args.visible_to_creator
         if (typeof args.visible_to_offer_creator === typeof this.visible_to_offer_creator && args.visible_to_offer_creator !== this.visible_to_offer_creator) data.visible_to_offer_creator = args.visible_to_offer_creator
         if (typeof args._status === typeof this._status && args._status !== this._status) data._status = args._status
-        return this._mainLaravelDBAPIUpdate('trades/' + this.ref_code, update_note, data)
+        return this._mainLaravelDBAPIUpdate('p2p/trades/' + this.ref_code, update_note, data)
     }
 
     public async declarePymt() {

@@ -54,12 +54,12 @@ export default class _Currency extends _Wrapper_ implements Omit<typeof _Currenc
     /* Creator(s) */
 
     public static async create(args: typeof _CurrencyRespObj) {
-        return this._mainLaravelDBAPICreate('datalists/currencies', args)
+        return this._mainLaravelDBAPICreate('admin/datalists/currencies', args)
     }
 
     /* Readers */
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('datalists/currencies', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('content/datalists/currencies', params, page_select, per_page)
     }
 }

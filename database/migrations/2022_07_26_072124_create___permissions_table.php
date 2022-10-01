@@ -96,7 +96,7 @@ return new class extends Migration
                 'description' => 'Permission holder can handle flagged Users.',
                 'creator_username' => 'system',
             ],
-            // _UserGroups: platform_moderators
+            // _UserGroups: moderators
             [
                 'name' => 'Handle customer service chats',
                 'slug' => 'handle_customer_service_chats',
@@ -109,7 +109,7 @@ return new class extends Migration
                 'description' => 'Permission holder can handle posting and editing update posts.',
                 'creator_username' => 'system',
             ],
-            // _UserGroups: platform_moderators, business_administrators
+            // _UserGroups: moderators, business_administrators
             [
                 'name' => 'Handle flagged business elems',
                 'slug' => 'handle_flagged_business_elems',

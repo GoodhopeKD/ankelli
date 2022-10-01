@@ -87,17 +87,17 @@ export default class _UserGroup extends _Wrapper_ implements Omit<typeof _UserGr
     /* Creator(s) */
 
     public static async create(args: typeof _UserGroupRespObj) {
-        return this._mainLaravelDBAPICreate('systools/user_groups', args)
+        return this._mainLaravelDBAPICreate('admin/systools/user_groups', args)
     }
 
     /* Readers */
 
     public static async getOne(params: { id?: number, slug?: string }) {
-        return this._mainLaravelDBAPIGetOne('systools/user_groups/' + (params.slug ? params.slug : params.id))
+        return this._mainLaravelDBAPIGetOne('accounts/systools/user_groups/' + (params.slug ? params.slug : params.id))
     }
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('systools/user_groups', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('accounts/systools/user_groups', params, page_select, per_page)
     }
 
     public async getAddonProp(addon_prop_name: keyof typeof GettableAddonPropsRespObj, page_select?: laravel_api_page_selection_t, per_page?: number) {

@@ -55,12 +55,12 @@ export default class _AssetAccount extends _Wrapper_ implements Omit<typeof _Ass
     /* Creator(s) */
 
     public static async create(args: typeof _AssetAccountRespObj) {
-        return this._mainLaravelDBAPICreate('asset_accounts', args)
+        return this._mainLaravelDBAPICreate('banking/asset_accounts', args)
     }
 
     /* Readers */
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('asset_accounts', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('banking/asset_accounts', params, page_select, per_page)
     }
 }

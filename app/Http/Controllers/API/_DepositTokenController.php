@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
+use App\Models\_Asset;
+
 use App\Models\_DepositToken;
 use App\Http\Resources\_DepositTokenResource;
 use App\Http\Resources\_DepositTokenResourceCollection;
@@ -71,7 +73,7 @@ class _DepositTokenController extends Controller
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        return response()->json( new _DepositTokenResource( $element ) );
+        if ($request->expectsJson()) return response()->json( new _DepositTokenResource( $element ) );
     }
 
     /**
@@ -94,7 +96,7 @@ class _DepositTokenController extends Controller
      */
     public function use(string $token, string $asset_code)
     {
-        $asset = _Asset::firstWhere(['asset_code' => $asset_code]);
+        $asset = _Asset::firstWhere(['code' => $asset_code]);
         if (!$asset){
             return abort(422,"Asset not valid.");
         }
@@ -130,7 +132,7 @@ class _DepositTokenController extends Controller
         // Handle _Log
         $log_entry_update_result = [];
         foreach ( $validated_data as $key => $value ) {
-            if ( $element->{$key} != $value ){
+            if ( in_array( $key, $element->getFillable() ) && $element->{$key} != $value ){
                 array_push( $log_entry_update_result, [
                     'field_name' => $key,
                     'old_value' => $element->{$key},
@@ -143,14 +145,10 @@ class _DepositTokenController extends Controller
             'action_type' => 'entry_update',
             'entry_table' => $element->getTable(),
             'entry_uid' => $element->token,
-            'batch_code' => $request->batch_code,
             'entry_update_result'=> $log_entry_update_result,
         ]));
         // End _Log Handling
-
         $element->update($validated_data);
-
-        // End _Log Handling
         return response()->json( new _DepositTokenResource( $element ) );
     }
 

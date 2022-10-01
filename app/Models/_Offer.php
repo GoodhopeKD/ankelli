@@ -26,12 +26,17 @@ class _Offer extends Model
         'asset_code',
         'currency_code',
         'offer_price',
+        'buyer_cmplt_trade_mins_tmt',
 
         'min_trade_purchase_amount',
         'max_trade_purchase_amount',
+        'offer_total_purchase_amount',
+        'fill_amount',
 
         'min_trade_sell_value',
         'max_trade_sell_value',
+        'offer_total_sell_value',
+        'fill_value',
 
         'pymt_method_slug',
         'pymt_details',
@@ -61,6 +66,8 @@ class _Offer extends Model
         'offer_price' => 'float',
         'min_trade_sell_value' => 'float',
         'max_trade_sell_value' => 'float',
+        'offer_total_sell_value' => 'float',
+        'fill_value' => 'float',
         'pymt_details' => 'array',
     ];
 

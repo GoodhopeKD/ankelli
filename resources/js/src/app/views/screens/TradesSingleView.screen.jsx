@@ -1,5 +1,6 @@
 import React from "react"
 import { connect } from 'react-redux'
+import { Link } from "react-router-dom";
 
 import { _User, _Trade, _Notification, _DateTime, _Session, _Input } from 'app/controller'
 import withRouter from 'app/views/navigation/withRouter'
@@ -94,7 +95,7 @@ class TradesSingleViewScreen extends React.Component {
                 this.handleInputChange('pymt_details', trade.pymt_details, true)
                 this.setState({ focused_trade_loaded: true })
             })
-            .catch(e => console.log(e))
+            .catch(e => _Notification.flash({ message: e.message, duration: 5000 }))
             .finally(() => _Session.refresh())
     }
 
@@ -131,14 +132,15 @@ class TradesSingleViewScreen extends React.Component {
                                     <div className="progress mb-3">
                                         <div className={"progress-bar bg-" + btn_class + " w-" + this.focused_trade.progress} role="progressbar" aria-valuenow={this.focused_trade.progress} aria-valuemin="0" aria-valuemax="100">{this.focused_trade.progress}%</div>
                                     </div>
+                                    <p>Initiated: {this.focused_trade.created_datetime.prettyDatetime()}</p>
                                     <p>Status: {window.ucfirst(this.focused_trade._status)}</p>
-                                    <p>{auth_user_is_buyer ? <>Seller</> : <>Buyer</>}: @{trade_peer_username}</p>
+                                    <p>{auth_user_is_buyer ? <>Seller</> : <>Buyer</>}: <Link to={'/accounts/profiles/' + trade_peer_username} style={{ textDecoration: 'none' }} target='_blank'>@{trade_peer_username}</Link></p>
                                     <p>{this.focused_trade.was_offer_to == 'buy' && <>Purchase</>} {this.focused_trade.was_offer_to == 'sell' && <>Sale</>} amount: {window.currencyAmountString(this.focused_trade.currency_amount, currency)} ({currency.code})</p>
                                     <p>
                                         <>Asset value on sale: {window.assetValueString(this.focused_trade.currency_amount / this.focused_trade.offer_price, asset)} </>
                                     (@ {window.currencyAmountString(this.focused_trade.offer_price, currency)})
                                     </p>
-                                    {this.focused_trade._status !== 'completed' && <>
+                                    {['active', 'flagged'].includes(this.focused_trade._status) && <>
                                         <p>{pymt_method.name} <img src={pymt_method.icon.uri} alt={pymt_method.name + " icon"} width="24" height="24" className="mx-2" /> payment details:</p>
                                         {Object.keys(this.state.input.pymt_details).map((detail_key, index) => {
                                             return <div key={index} className="input-group mb-3">
@@ -152,108 +154,207 @@ class TradesSingleViewScreen extends React.Component {
                                                     />
                                                     <label htmlFor={'input_pymt_method_detail_' + detail_key} className="form-label">{detail_key.replace(/_/g, " ").capitalize()}</label>
                                                 </div>
-                                                <span className="btn btn-sm btn-outline-secondary" onClick={() => document.getElementById('input_pymt_method_detail_' + detail_key).setAttribute('type', document.getElementById('input_pymt_method_detail_' + detail_key).getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
+                                                <span className="btn btn-sm btn-outline-secondary d-grid align-content-center" onClick={() => document.getElementById('input_pymt_method_detail_' + detail_key).setAttribute('type', document.getElementById('input_pymt_method_detail_' + detail_key).getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
                                             </div>
                                         })}
                                     </>}
-                                    {this.focused_trade._status == 'completed' && <div>Payment method: {pymt_method.name} <img src={pymt_method.icon.uri} alt={pymt_method.name + " icon"} width="24" height="24" className="mx-2" /></div>}
+                                    {['completed', 'cancelled'].includes(this.focused_trade._status) && <div>Payment method: {pymt_method.name} <img src={pymt_method.icon.uri} alt={pymt_method.name + " icon"} width="24" height="24" className="mx-2" /> (details hidden)</div>}
                                 </div>
                             </div>
                             <div className="card mb-3">
                                 <div className="card-header">
                                     Trade Actions
                                 </div>
-                                <div className="card-body pb-0">
-                                    {auth_user_is_buyer && this.focused_trade.pymt_declared_datetime == null && <>
-                                        <p>As the buyer, when you have processed the payment, you should declare it with the button below</p>
-                                        <button className="w-100 mb-3 btn rounded-3 btn-primary" disabled={this.state.btn_declare_pymt_working}
-                                            onClick={() => { this.setState({ btn_declare_pymt_working: true }, () => this.focused_trade.declarePymt().catch(e => console.log(e)).finally(() => this.setState({ btn_declare_pymt_working: false }, () => _Notification.flash({ message: 'Payment declared', duration: 2000 })))) }} >
-                                            {this.state.btn_declare_pymt_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Declare payment</>}
-                                        </button>
-                                    </>}
+                                <div className="card-body">
+                                    <div className="accordion" id="accordionExample">
 
-                                    {auth_user_is_buyer && this.focused_trade._status != 'completed' && <>
-                                        <button className="w-100 mb-3 btn rounded-3 btn-danger" disabled={this.state.btn_cancel_trade_working}
-                                            onClick={() => { this.setState({ btn_cancel_trade_working: true }, () => this.focused_trade.cancel().catch(e => console.log(e)).finally(() => this.setState({ btn_cancel_trade_working: false }, () => _Notification.flash({ message: 'Trade cancelled', duration: 2000 })))) }} >
-                                            {this.state.btn_declare_pymt_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Cancel</>}
-                                        </button>
-                                    </>}
-
-                                    {auth_user_is_seller && this.focused_trade.pymt_confirmed_datetime == null && <>
-                                        <p>As the seller, when the payment has been processed, you should confirm it with the button below</p>
-                                        <button className="w-100 mb-3 btn rounded-3 btn-success" disabled={this.state.btn_confirm_pymt_working}
-                                            onClick={() => bootstrap.Modal.getOrCreateInstance(document.getElementById('password_confirmation_modal')).show()}  >
-                                            {this.state.btn_confirm_pymt_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Confirm payment</>}
-                                        </button>
-                                    </>}
-
-                                    <div className="modal fade" id="password_confirmation_modal" tabIndex="-1" >
-                                        <div className="modal-dialog modal-dialog-centered">
-                                            <div className="modal-content">
-                                                <div className="modal-header">
-                                                    <h5 className="modal-title" >Password confirmation</h5>
-                                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-                                                <div className="modal-body">
-                                                    <p>Funds are about to be released from your account. Confirm.</p>
-                                                    <div className="form-floating mb-3">
-                                                        <input
-                                                            type="password"
-                                                            className={"form-control" + (this.state.input.source_user_password.failedValidation() ? ' is-invalid' : '')}
-                                                            id="input_source_user_password"
-                                                            value={this.state.input.source_user_password + ''}
-                                                            onChange={e => this.handleInputChange('source_user_password', e.target.value)}
-                                                            required={this.state.source_user_password_prompt_open}
-                                                            placeholder="Pasword"
-                                                        />
-                                                        <span className="btn btn-sm" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_source_user_password').setAttribute('type', document.getElementById('input_source_user_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
-                                                        <label htmlFor="input_source_user_password">Password</label>
-                                                    </div>
-
-                                                    <div className="mb-1">
-                                                        {this.state.errors.map((error, key) => (
-                                                            <div key={key}>• <span style={{ color: 'red' }}>{error}</span></div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                                <div className="modal-footer justify-content-between">
-                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" >Cancel</button>
-                                                    <button className="btn btn-primary" disabled={this.state.btn_confirm_pymt_working} onClick={this.handleSubmit2} >
-                                                        {this.state.btn_confirm_pymt_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Confirm payment</>}
+                                        {(this.focused_trade._status !== 'cancelled' && auth_user_is_buyer && this.focused_trade.pymt_declared_datetime == null) && <>
+                                            <div className="accordion-item">
+                                                <h4 className="accordion-header" >
+                                                    <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_declare_payment" >
+                                                        Declare payment
                                                     </button>
+                                                </h4>
+                                                <div id="collapse_declare_payment" className="accordion-collapse collapse" data-bs-parent="#accordionExample" >
+                                                    <div className="accordion-body">
+                                                        <p>As the buyer, when you have processed the payment, you should declare it with the button below</p>
+                                                        <button className="w-100 btn rounded-3 btn-primary" disabled={this.state.btn_declare_pymt_working}
+                                                            onClick={() => { this.setState({ btn_declare_pymt_working: true }, () => this.focused_trade.declarePymt().catch(e => _Notification.flash({ message: e.message, duration: 5000 })).finally(() => this.setState({ btn_declare_pymt_working: false }, () => _Notification.flash({ message: 'Payment declared', duration: 2000 })))) }} >
+                                                            {this.state.btn_declare_pymt_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Declare payment</>}
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </>}
+
+                                        {auth_user_is_seller && this.focused_trade.pymt_confirmed_datetime == null && <>
+                                            <div className="accordion-item">
+                                                <h4 className="accordion-header" >
+                                                    <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_confirm_payment" >
+                                                        Confirm payment
+                                                    </button>
+                                                </h4>
+                                                <div id="collapse_confirm_payment" className="accordion-collapse collapse" data-bs-parent="#accordionExample" >
+                                                    <div className="accordion-body">
+
+                                                        <p>As the seller, when the payment has been processed, you should confirm it with the button below</p>
+                                                        <button className="w-100 btn rounded-3 btn-success" disabled={this.state.btn_confirm_pymt_working}
+                                                            onClick={() => bootstrap.Modal.getOrCreateInstance(document.getElementById('password_confirmation_modal')).show()}  >
+                                                            {this.state.btn_confirm_pymt_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Confirm payment</>}
+                                                        </button>
+
+                                                        <div className="modal fade" id="password_confirmation_modal" tabIndex="-1" >
+                                                            <div className="modal-dialog modal-dialog-centered">
+                                                                <div className="modal-content">
+                                                                    <div className="modal-header">
+                                                                        <h5 className="modal-title" >Password confirmation</h5>
+                                                                        <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                                                                    </div>
+                                                                    <div className="modal-body">
+                                                                        <p>Funds are about to be released from your account. Confirm.</p>
+                                                                        <div className="form-floating mb-3">
+                                                                            <input
+                                                                                type="password"
+                                                                                className={"form-control" + (this.state.input.source_user_password.failedValidation() ? ' is-invalid' : '')}
+                                                                                id="input_source_user_password"
+                                                                                value={this.state.input.source_user_password + ''}
+                                                                                onChange={e => this.handleInputChange('source_user_password', e.target.value)}
+                                                                                required={this.state.source_user_password_prompt_open}
+                                                                                placeholder="Pasword"
+                                                                            />
+                                                                            <span className="btn btn-sm" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_source_user_password').setAttribute('type', document.getElementById('input_source_user_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
+                                                                            <label htmlFor="input_source_user_password">Password</label>
+                                                                        </div>
+
+                                                                        <div className="mb-1">
+                                                                            {this.state.errors.map((error, key) => (
+                                                                                <div key={key}>• <span style={{ color: 'red' }}>{error}</span></div>
+                                                                            ))}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="modal-footer justify-content-between">
+                                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" >Cancel</button>
+                                                                        <button className="btn btn-primary" disabled={this.state.btn_confirm_pymt_working} onClick={this.handleSubmit2} >
+                                                                            {this.state.btn_confirm_pymt_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Confirm payment</>}
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>}
+
+                                        {(auth_user_is_buyer && !['cancelled', 'completed'].includes(this.focused_trade._status) || (auth_user_is_seller && this.focused_trade.buyer_opened_datetime == null)) && <>
+                                            <div className="accordion-item">
+                                                <h4 className="accordion-header" >
+                                                    <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_cancel_trade" >
+                                                        Cancel trade
+                                                    </button>
+                                                </h4>
+                                                <div id="collapse_cancel_trade" className="accordion-collapse collapse" data-bs-parent="#accordionExample" >
+                                                    <div className="accordion-body">
+                                                        {(auth_user_is_buyer && !['cancelled', 'completed'].includes(this.focused_trade._status)) && <>
+                                                            <button className="w-100 btn rounded-3 btn-danger" disabled={this.state.btn_cancel_trade_working}
+                                                                onClick={() => {
+                                                                    this.setState({ btn_cancel_trade_working: true },
+                                                                        () => this.focused_trade.cancel()
+                                                                            .then(() => _Notification.flash({ message: 'Trade cancelled', duration: 2000 }))
+                                                                            .catch(e => _Notification.flash({ message: e.message, duration: 5000 }))
+                                                                            .finally(() => this.setState({ btn_cancel_trade_working: false }))
+                                                                    )
+                                                                }} >
+                                                                {this.state.btn_cancel_trade_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Cancel</>}
+                                                            </button>
+                                                        </>}
+
+                                                        {auth_user_is_seller && this.focused_trade.buyer_opened_datetime == null && <>
+                                                            <p>As the seller, you can cancel the trade if the buyer doesn't open it {this.props.sysconfig_params.buyer_open_trade_min_mins_tmt} minutes after it has been initiated.</p>
+                                                            <button className="w-100 btn rounded-3 btn-danger" disabled={this.state.btn_cancel_trade_working || ((_DateTime.nowUnixTimeStamp() - this.focused_trade.created_datetime._unix_timestamp) < (this.props.sysconfig_params.buyer_open_trade_min_mins_tmt * 60))}
+                                                                onClick={() => {
+                                                                    this.setState({ btn_cancel_trade_working: true },
+                                                                        () => this.focused_trade.cancel()
+                                                                            .then(() => _Notification.flash({ message: 'Trade cancelled', duration: 2000 }))
+                                                                            .catch(e => _Notification.flash({ message: e.message, duration: 5000 }))
+                                                                            .finally(() => this.setState({ btn_cancel_trade_working: false }))
+                                                                    )
+                                                                }} >
+                                                                {this.state.btn_cancel_trade_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Cancel</>}
+                                                            </button>
+                                                        </>}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>}
+
+                                        {['active', 'completed'].includes(this.focused_trade._status) && (this.focused_trade.pymt_declared_datetime == null || (this.focused_trade.pymt_declared_datetime && ((_DateTime.nowUnixTimeStamp() - this.focused_trade.pymt_declared_datetime._unix_timestamp) < (10 * 60)))) && <>
+                                            <div className="accordion-item">
+                                                <h4 className="accordion-header" >
+                                                    <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_flag_trade" >
+                                                        Flag trade
+                                                    </button>
+                                                </h4>
+                                                <div id="collapse_flag_trade" className="accordion-collapse collapse" data-bs-parent="#accordionExample" >
+                                                    <div className="accordion-body">
+                                                        <p>You can raise flag to invite moderators to referee trade in the event of abuse.</p>
+                                                        <button className="w-100 btn rounded-3 btn-warning" disabled={this.state.btn_flag_trade_working}
+                                                            onClick={() => { this.setState({ btn_flag_trade_working: true }, () => this.focused_trade.flag().catch(e => _Notification.flash({ message: e.message, duration: 5000 })).finally(() => this.setState({ btn_flag_trade_working: false }, () => _Notification.flash({ message: 'Trade flagged', duration: 2000 })))) }}  >
+                                                            {this.state.btn_flag_trade_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Flag trade</>}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>}
+
+                                        {auth_user_is_seller && this.focused_trade._status == 'flagged' && <>
+                                            <div className="accordion-item">
+                                                <h4 className="accordion-header" >
+                                                    <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_unflag_trade" >
+                                                        Unflag trade
+                                                    </button>
+                                                </h4>
+                                                <div id="collapse_unflag_trade" className="accordion-collapse collapse" data-bs-parent="#accordionExample" >
+                                                    <div className="accordion-body">
+                                                        <button className="w-100 btn rounded-3 btn-primary" disabled={this.state.btn_flag_trade_working}
+                                                            onClick={() => { this.setState({ btn_flag_trade_working: true }, () => this.focused_trade.unFlag().catch(e => _Notification.flash({ message: e.message, duration: 5000 })).finally(() => this.setState({ btn_flag_trade_working: false }, () => _Notification.flash({ message: 'Trade unflagged', duration: 2000 })))) }}  >
+                                                            {this.state.btn_flag_trade_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Unflag trade</>}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>}
+
+                                        {['cancelled', 'completed'].includes(this.focused_trade._status) && <>
+                                            <div className="accordion-item">
+                                                <h4 className="accordion-header" >
+                                                    <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_archive_trade" >
+                                                        Archive trade
+                                                    </button>
+                                                </h4>
+                                                <div id="collapse_archive_trade" className="accordion-collapse collapse" data-bs-parent="#accordionExample" >
+                                                    <div className="accordion-body">
+                                                        {this.focused_trade.visible_to_creator && this.focused_trade.creator_username == this.props.auth_user.username && <>
+                                                            <button className="w-100 btn rounded-3 btn-info" disabled={this.state.btn_set_creator_visibility_working}
+                                                                onClick={() => { this.setState({ btn_set_creator_visibility_working: true }, () => this.focused_trade.creatorArchive().catch(e => _Notification.flash({ message: e.message, duration: 5000 })).finally(() => this.setState({ btn_set_creator_visibility_working: false }, () => { _Notification.flash({ message: 'Trade archived', duration: 2000 }); this.props.navigate(-1) }))) }} >
+                                                                {this.state.btn_set_creator_visibility_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Archive trade</>}
+                                                            </button>
+                                                        </>}
+
+                                                        {this.focused_trade.visible_to_offer_creator && this.focused_trade.offer_creator_username == this.props.auth_user.username && <>
+                                                            <button className="w-100 btn rounded-3 btn-info" disabled={this.state.btn_set_offer_creator_visibility_working}
+                                                                onClick={() => { this.setState({ btn_set_offer_creator_visibility_working: true }, () => this.focused_trade.offerCreatorArchive().catch(e => _Notification.flash({ message: e.message, duration: 5000 })).finally(() => this.setState({ btn_set_offer_creator_visibility_working: false }, () => { _Notification.flash({ message: 'Trade archived', duration: 2000 }); this.props.navigate(-1) }))) }} >
+                                                                {this.state.btn_set_offer_creator_visibility_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Archive trade</>}
+                                                            </button>
+                                                        </>}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </>}
                                     </div>
 
-                                    {auth_user_is_seller && this.focused_trade._status == 'flagged' && <>
-                                        <button className="w-100 mb-3 btn rounded-3 btn-primary" disabled={this.state.btn_flag_trade_working}
-                                            onClick={() => { this.setState({ btn_flag_trade_working: true }, () => this.focused_trade.unFlag().catch(e => console.log(e)).finally(() => this.setState({ btn_flag_trade_working: false }, () => _Notification.flash({ message: 'Trade unflagged', duration: 2000 })))) }}  >
-                                            {this.state.btn_flag_trade_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Unflag trade</>}
-                                        </button>
-                                    </>}
 
-                                    {this.focused_trade.visible_to_creator && this.focused_trade.creator_username == this.props.auth_user.username && this.focused_trade._status == 'completed' && <>
-                                        <button className="w-100 mb-3 btn rounded-3 btn-warning" disabled={this.state.btn_set_creator_visibility_working}
-                                            onClick={() => { this.setState({ btn_set_creator_visibility_working: true }, () => this.focused_trade.creatorArchive().catch(e => console.log(e)).finally(() => this.setState({ btn_set_creator_visibility_working: false }, () => { _Notification.flash({ message: 'Trade archived', duration: 2000 }); this.props.navigate(-1) }))) }} >
-                                            {this.state.btn_set_creator_visibility_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Archive trade</>}
-                                        </button>
-                                    </>}
 
-                                    {this.focused_trade.visible_to_offer_creator && this.focused_trade.offer_creator_username == this.props.auth_user.username && this.focused_trade._status == 'completed' && <>
-                                        <button className="w-100 mb-3 btn rounded-3 btn-warning" disabled={this.state.btn_set_offer_creator_visibility_working}
-                                            onClick={() => { this.setState({ btn_set_offer_creator_visibility_working: true }, () => this.focused_trade.offerCreatorArchive().catch(e => console.log(e)).finally(() => this.setState({ btn_set_offer_creator_visibility_working: false }, () => { _Notification.flash({ message: 'Trade archived', duration: 2000 }); this.props.navigate(-1) }))) }} >
-                                            {this.state.btn_set_offer_creator_visibility_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Archive trade</>}
-                                        </button>
-                                    </>}
-
-                                    {this.focused_trade._status != 'flagged' && (this.focused_trade.pymt_declared_datetime == null || !(new _DateTime(this.focused_trade.pymt_confirmed_datetime)).isAfter('10 minutes')) && <>
-                                        <p>You can raise flag to invite platform moderators to referee trade in the event of abuse.</p>
-                                        <button className="w-100 mb-3 btn rounded-3 btn-danger" disabled={this.state.btn_flag_trade_working}
-                                            onClick={() => { this.setState({ btn_flag_trade_working: true }, () => this.focused_trade.flag().catch(e => console.log(e)).finally(() => this.setState({ btn_flag_trade_working: false }, () => _Notification.flash({ message: 'Trade flagged', duration: 2000 })))) }}  >
-                                            {this.state.btn_flag_trade_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Flag trade</>}
-                                        </button>
-                                    </>}
                                 </div>
                             </div>
                         </div>

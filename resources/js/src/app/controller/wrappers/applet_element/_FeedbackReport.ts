@@ -83,21 +83,21 @@ export default class _FeedbackReport extends _Wrapper_ implements Omit<typeof _F
     /* Creator(s) */
 
     public static async create(args: typeof _FeedbackReportRespObj) {
-        return this._mainLaravelDBAPICreate('feedback_reports', args)
+        return this._mainLaravelDBAPICreate('support/feedback_reports', args)
     }
 
     /* Readers */
 
     public async read() {
-        return this._mainLaravelDBAPIRead('feedback_reports/' + this.ticket_code)
+        return this._mainLaravelDBAPIRead('support/feedback_reports/' + this.ticket_code)
     }
 
     public static async getOne(params: { id?: number, ticket_code?: string }) {
-        return this._mainLaravelDBAPIGetOne('feedback_reports/' + (params.ticket_code ? params.ticket_code : params.id))
+        return this._mainLaravelDBAPIGetOne('support/feedback_reports/' + (params.ticket_code ? params.ticket_code : params.id))
     }
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('feedback_reports', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('support/feedback_reports', params, page_select, per_page)
     }
 
     public async getAddonProp(addon_prop_name: keyof typeof GettableAddonPropsRespObj, page_select?: laravel_api_page_selection_t, per_page?: number) {

@@ -43,7 +43,7 @@ class _EmailAddressController extends Controller
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        return response()->json( new _EmailAddressResource( $element ) );
+        if ($request->expectsJson()) return response()->json( new _EmailAddressResource( $element ) );
     }
 
     /**

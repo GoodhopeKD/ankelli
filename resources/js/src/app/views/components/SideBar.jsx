@@ -33,7 +33,8 @@ function SideBar(props) {
                                                     <li className={`nav-item`} key={j}>
                                                         <NavLink
                                                             to={item_j.path}
-                                                            className="link-dark d-inline-flex text-decoration-none rounded w-75"
+                                                            className="link-dark d-inline-flex text-decoration-none rounded"
+                                                            style={{ width: '85%' }}
                                                         >
                                                             {item_j.title}
                                                         </NavLink>

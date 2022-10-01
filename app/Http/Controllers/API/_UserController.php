@@ -153,7 +153,7 @@ class _UserController extends Controller
             $response['auth_user_data'] = new _UserResource( $api_auth_user );
         }
 
-        return response()->json( $response );
+        if ($request->expectsJson()) return response()->json( $response );
     }
 
     /**
@@ -244,7 +244,7 @@ class _UserController extends Controller
         // Handle _Log
         $log_entry_update_result = [];
         foreach ( $validated_data as $key => $value ) {
-            if ( $element->{$key} != $value ){
+            if ( in_array( $key, $element->getFillable() ) && $element->{$key} != $value ){
                 array_push( $log_entry_update_result, [
                     'field_name' => $key,
                     'old_value' => $element->{$key},
@@ -261,10 +261,8 @@ class _UserController extends Controller
             'entry_update_result'=> $log_entry_update_result,
         ]));
         // End _Log Handling
-
         $element->update($validated_data);
-
-        return response()->json( (new _UserResource( $element )) );
+        if ($request->expectsJson()) return response()->json( (new _UserResource( $element )) );
     }
 
     /**

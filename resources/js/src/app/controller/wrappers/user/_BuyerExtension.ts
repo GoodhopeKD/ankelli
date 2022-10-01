@@ -70,7 +70,7 @@ export default class _BuyerExtension extends _Wrapper_ implements Omit<typeof _B
     /* Creator(s) */
 
     public static async create(args: typeof _BuyerExtensionRespObj) {
-        return this._mainLaravelDBAPICreate('users/' + args.user_username + '/buyer_extension', args)
+        return this._mainLaravelDBAPICreate('accounts/users/' + args.user_username + '/buyer_extension', args)
     }
 
     /* Readers */

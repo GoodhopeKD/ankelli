@@ -60,7 +60,7 @@ export default class _Transaction extends _Wrapper_ implements Omit<typeof _Tran
     }
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('transactions', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('banking/transactions', params, page_select, per_page)
     }
 
     public static async process(data: { asset_code: string, asset_value: number, destination_blockchain_address: string, recipient_note: string, source_user_password: string }) {
@@ -68,7 +68,7 @@ export default class _Transaction extends _Wrapper_ implements Omit<typeof _Tran
             .dispatch({
                 type: 'APP_BACKEND_API_CALL',
                 method: 'POST',
-                endpoint: 'transactions/process',
+                endpoint: 'banking/transactions/process',
                 data
             })
             .then((resp: any) => { return Promise.resolve(resp) })

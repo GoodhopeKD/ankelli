@@ -6,8 +6,8 @@ import TermsOfServiceScreen from 'app/views/screens/footer_menu/TermsOfService.s
 class ExampleElement extends React.Component {
     render() {
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
-            <div className="container-fluid py-3">
-                {this.props.title} Screen
+            <div className="container py-5">
+                {this.props.title} screen
             </div>
         </this.props.PageWrapper>
     }
@@ -15,6 +15,7 @@ class ExampleElement extends React.Component {
 
 export const footer_menu = {
     slug: 'footer_menu',
+    subdomain: 'default',
     menu_title: 'Footer Menu',
     show_in_menu: true,
     menu_items: [
@@ -28,6 +29,47 @@ export const footer_menu = {
                     element: (props) => <ExampleElement {...props} />,
                 },
                 {
+                    title: 'Privacy policy',
+                    path: '/privacy-policy',
+                    element: (props) => <PrivacyPolicyScreen {...props} />,
+                },
+                {
+                    title: 'Terms of service',
+                    path: '/terms-of-service',
+                    element: (props) => <TermsOfServiceScreen {...props} />,
+                },
+                {
+                    title: 'Blog',
+                    path: '/blog-posts',
+                    element: (props) => <ExampleElement {...props} />,
+                },
+                {
+                    title: 'View Post',
+                    path: '/blog-posts/:blog_post_id',
+                    element: (props) => <ExampleElement {...props} />,
+                    show_in_menu: false,
+                },
+                {
+                    title: 'Team',
+                    path: '/team',
+                    element: (props) => <ExampleElement {...props} />,
+                },
+            ]
+        },
+        {
+            title: 'Help',
+            path: '/#/help',
+            children: [
+                {
+                    title: 'Learn',
+                    path: '/learn',
+                },
+                {
+                    title: 'FAQs',
+                    path: '/faq',
+                    element: (props) => <FAQsScreen {...props} />,
+                },
+                {
                     title: 'Contact us',
                     path: '/contact',
                     element: (props) => <ExampleElement {...props} />,
@@ -39,75 +81,40 @@ export const footer_menu = {
                     show_in_menu: false,
                 },
                 {
-                    title: 'Privacy Policy',
-                    path: '/privacy-policy',
-                    element: (props) => <PrivacyPolicyScreen {...props} />,
-                },
-                {
-                    title: 'Terms Of Service',
-                    path: '/terms-of-service',
-                    element: (props) => <TermsOfServiceScreen {...props} />,
-                },
-                {
-                    title: 'Blog',
-                    path: '/blog_posts',
+                    title: 'Find us',
+                    path: '/find-us',
                     element: (props) => <ExampleElement {...props} />,
                 },
                 {
-                    title: 'View Post',
-                    path: '/blog_posts/:blog_post_id',
-                    element: (props) => <ExampleElement {...props} />,
-                    show_in_menu: false,
+                    title: 'Support center',
+                    path: '/home',
+                    subdomain: 'support',
+                    restricted_for_default_users: true,
                 },
             ]
         },
         {
-            title: 'Help',
-            path: '/#/help',
+            title: 'Useful lists',
+            path: '/#/useful-lists',
             children: [
                 {
-                    title: 'FAQs',
-                    path: '/faq',
-                    element: (props) => <FAQsScreen {...props} />,
-                },
-                {
-                    title: 'Learn mode',
-                    path: '/learn',
-                },
-                {
-                    title: 'Local outlets',
-                    path: '/local_outlets',
+                    title: 'Supported payments',
+                    path: '/supported-payment-methods',
                     element: (props) => <ExampleElement {...props} />,
                 },
                 {
-                    title: 'Payment methods',
-                    path: '/payment_methods',
-                    element: (props) => <ExampleElement {...props} />,
-                },
-            ]
-        },
-        {
-            title: 'Partners',
-            path: '/#/help',
-            children: [
-                {
-                    title: 'Paywyze',
-                    path: '/partners/paywyze',
+                    title: 'Supported currencies',
+                    path: '/supported-fiat-currencies',
                     element: (props) => <ExampleElement {...props} />,
                 },
                 {
-                    title: 'Ecocash',
-                    path: '/partners/ecocash',
+                    title: 'Supported crypto assets',
+                    path: '/supported-crypto-assets',
                     element: (props) => <ExampleElement {...props} />,
                 },
                 {
-                    title: 'Stanbic Bank',
-                    path: '/partners/stanbic-bank',
-                    element: (props) => <ExampleElement {...props} />,
-                },
-                {
-                    title: 'Mukuru',
-                    path: '/partners/mukuru',
+                    title: 'Serviced countries',
+                    path: '/serviced-countries',
                     element: (props) => <ExampleElement {...props} />,
                 },
             ]

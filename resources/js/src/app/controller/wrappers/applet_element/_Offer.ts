@@ -94,15 +94,15 @@ export default class _Offer extends _Wrapper_ implements Omit<typeof _OfferRespO
     /* Creator(s) */
 
     public static async create(args: typeof _OfferRespObj) {
-        return this._mainLaravelDBAPICreate('offers', args)
+        return this._mainLaravelDBAPICreate('p2p/offers', args)
     }
 
     public static async getOne(params: { ref_code: string }) {
-        return this._mainLaravelDBAPIGetOne('offers/{ref_code}', params)
+        return this._mainLaravelDBAPIGetOne('p2p/offers/{ref_code}', params)
     }
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('offers', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('p2p/offers', params, page_select, per_page)
     }
 
     public async accept(args: { currency_amount: number, pymt_details?: any, source_user_password?: string }) {
@@ -114,7 +114,7 @@ export default class _Offer extends _Wrapper_ implements Omit<typeof _OfferRespO
     public async update(args: typeof _OfferRespObj, update_note: string) {
         const data = {} as typeof args
         if (typeof args._status === typeof this._status && args._status !== this._status) data._status = args._status
-        return this._mainLaravelDBAPIUpdate('offers/' + this.ref_code, update_note, data)
+        return this._mainLaravelDBAPIUpdate('p2p/offers/' + this.ref_code, update_note, data)
     }
 
     public async setOffline() {

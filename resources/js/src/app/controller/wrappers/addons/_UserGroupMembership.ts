@@ -81,13 +81,13 @@ export default class _UserGroupMembership extends _Wrapper_ implements Omit<type
     /* Creator(s) */
 
     public static async create(args: typeof _UserGroupMembershipRespObj) {
-        return this._mainLaravelDBAPICreate('systools/user_group_memberships', args)
+        return this._mainLaravelDBAPICreate('admin/systools/user-group-memberships', args)
     }
 
     /* Readers */
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('systools/user_group_memberships', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('accounts/systools/user-group-memberships', params, page_select, per_page)
     }
 
     public async getAddonProp(addon_prop_name: keyof typeof GettableAddonPropsRespObj, page_select?: laravel_api_page_selection_t, per_page?: number) {

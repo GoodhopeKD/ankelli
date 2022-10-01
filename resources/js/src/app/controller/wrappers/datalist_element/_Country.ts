@@ -60,12 +60,12 @@ export default class _Country extends _Wrapper_ implements Omit<typeof _CountryR
     /* Creator(s) */
 
     public static async create(args: typeof _CountryRespObj) {
-        return this._mainLaravelDBAPICreate('datalists/countries', args)
+        return this._mainLaravelDBAPICreate('admin/datalists/countries', args)
     }
 
     /* Readers */
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('datalists/countries', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('content/datalists/countries', params, page_select, per_page)
     }
 }

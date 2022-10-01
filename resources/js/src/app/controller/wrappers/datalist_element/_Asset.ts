@@ -55,12 +55,12 @@ export default class _Asset extends _Wrapper_ implements Omit<typeof _AssetRespO
     /* Creator(s) */
 
     public static async create(args: typeof _AssetRespObj) {
-        return this._mainLaravelDBAPICreate('datalists/assets', args)
+        return this._mainLaravelDBAPICreate('admin/datalists/assets', args)
     }
 
     /* Readers */
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('datalists/assets', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('content/datalists/assets', params, page_select, per_page)
     }
 }

@@ -53,6 +53,6 @@ export default class _Message extends _Wrapper_ implements Omit<typeof _MessageR
     /* Creator(s) */
 
     public static async create(args: typeof _MessageRespObj) {
-        return this._mainLaravelDBAPICreate('messages', args)
+        return this._mainLaravelDBAPICreate('content/messages', args)
     }
 }

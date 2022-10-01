@@ -116,18 +116,18 @@ export default withRouter(class GeneratePasswordResetTokenModal extends React.Co
                             </div>
                             <div className="col ps-2">
                                 {this.props.component_context == "screen" ? <>
-                                    <Link className="w-100 mb-2 btn btn-lg rounded-3 btn-success" to={'/recovery/reset_lost_password' + this.props.location.search}>Already have token</Link>
+                                    <Link className="w-100 mb-2 btn btn-lg rounded-3 btn-success" to={'/accounts/recovery/reset_lost_password' + this.props.location.search}>Already have token</Link>
                                 </> : <>
-                                    <Link className="w-100 mb-2 btn btn-lg rounded-3 btn-success" to={'/#/recovery/reset_lost_password'} data-bs-target="#reset_lost_password_modal" data-bs-toggle="modal" >Already have token</Link>
+                                    <Link className="w-100 mb-2 btn btn-lg rounded-3 btn-success" to={'/#/accounts/recovery/reset_lost_password'} data-bs-target="#reset_lost_password_modal" data-bs-toggle="modal" >Already have token</Link>
                                 </>}
                             </div>
                         </div>
 
 
                         {this.props.component_context == "screen" ? <>
-                            <small className="text-muted">Click here to <Link to={'/signin' + this.props.location.search}>sign in</Link>, <Link to={'/signup' + this.props.location.search}>sign up</Link> or <Link to={'/recovery/get_lost_username' + this.props.location.search} >recover lost username</Link>.</small>
+                            <small className="text-muted">Click here to <Link to={'/accounts/auth/signin' + this.props.location.search}>sign in</Link>, <Link to={'/accounts/auth/signup' + this.props.location.search}>sign up</Link> or <Link to={'/accounts/recovery/get_lost_username' + this.props.location.search} >recover lost username</Link>.</small>
                         </> : <>
-                            <small className="text-muted">Click here to <Link to={'/#/signin'} data-bs-target="#signin_modal" data-bs-toggle="modal" >sign in</Link>, <Link to={'/#/signup'} data-bs-target="#signup_modal" data-bs-toggle="modal" >sign up</Link> or <Link to={'/#/recovery/get_lost_username'} data-bs-target="#get_lost_username_modal" data-bs-toggle="modal">recover lost username</Link>.</small>
+                            <small className="text-muted">Click here to <Link to={'/#/accounts/auth/signin'} data-bs-target="#signin_modal" data-bs-toggle="modal" >sign in</Link>, <Link to={'/#/accounts/auth/signup'} data-bs-target="#signup_modal" data-bs-toggle="modal" >sign up</Link> or <Link to={'/#/accounts/recovery/get_lost_username'} data-bs-target="#get_lost_username_modal" data-bs-toggle="modal">recover lost username</Link>.</small>
                         </>}
                     </form>
                 </div>

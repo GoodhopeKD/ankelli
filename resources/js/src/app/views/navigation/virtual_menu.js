@@ -8,8 +8,8 @@ import RecoverLostUsernameModal from 'app/views/components/RecoverLostUsername.m
 class ExampleElement extends React.Component {
     render() {
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
-            <div className="container-fluid py-3">
-                {this.props.title} Screen
+            <div className="container py-3">
+                {this.props.title} screen
             </div>
         </this.props.PageWrapper>
     }
@@ -40,16 +40,17 @@ class ErrorScreen extends React.Component {
 export const virtual_menu = {
     slug: 'virtual_menu',
     menu_title: 'Virtual Menu',
+    subdomain: 'accounts',
     menu_items: [
         {
             title: 'Sign In',
-            path: '/signin',
+            path: '/auth/signin',
             element: (props) => <ModalToScreenWrapper {...props} ><SignInModal {...props} component_context="screen" /></ModalToScreenWrapper>,
             show_when_auth_state_is: false,
         },
         {
             title: 'Sign Up',
-            path: '/signup',
+            path: '/auth/signup',
             element: (props) => <ModalToScreenWrapper {...props} ><SignUpModal {...props} component_context="screen" /></ModalToScreenWrapper>,
             show_when_auth_state_is: false,
         },
@@ -87,11 +88,13 @@ export const virtual_menu = {
         {
             title: 'Error 403: Not authorized',
             path: '/403',
+            subdomain: 'default',
             element: (props) => <ErrorScreen {...props} >You are not authorized to view this page.</ErrorScreen>,
         },
         {
             title: 'Error 404: Page not found',
             path: '/404',
+            subdomain: 'default',
             element: (props) => <ErrorScreen {...props} >Page not found.</ErrorScreen>,
         },
     ]

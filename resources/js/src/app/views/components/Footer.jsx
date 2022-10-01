@@ -18,7 +18,7 @@ export default class Footer extends React.Component {
                                                 <li className={`nav-item mb-2`} key={j}>
                                                     <NavLink
                                                         to={item_j.path}
-                                                        reloadDocument={!['/learn'].includes(item_j.path)}
+                                                        //reloadDocument={!['/learn', '/support/home'].includes(item_j.path)}
                                                         className="nav-link p-0 text-muted"
                                                     >
                                                         {item_j.title}

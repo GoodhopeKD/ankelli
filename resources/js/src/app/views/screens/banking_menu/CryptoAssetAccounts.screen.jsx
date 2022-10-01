@@ -7,7 +7,7 @@ import { _User, _Session, _Input, _AssetAccount, _Notification } from 'app/contr
 
 import CustomSelect from 'app/views/components/CustomSelect'
 
-class AccountHomeScreen extends React.Component {
+class CryptoAssetAccountsScreen extends React.Component {
 
     default_input = {
         asset_code: 'USDT',
@@ -72,13 +72,13 @@ class AccountHomeScreen extends React.Component {
         })
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
-            <div className="container-fluid py-3">
+            <div className="container py-3">
                 <div className="row">
                     <div className="col-2">
-                        <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'account_menu')]} />
+                        <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'banking_menu')]} />
                     </div>
                     <div className="col-10">
-                        <h4>My asset wallets</h4>
+                        <h4>My crypto wallets</h4>
                         <table className="table">
                             <thead>
                                 <tr>
@@ -156,4 +156,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(AccountHomeScreen)
+export default connect(mapStateToProps)(CryptoAssetAccountsScreen)

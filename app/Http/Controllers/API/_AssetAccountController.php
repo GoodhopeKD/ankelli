@@ -153,7 +153,7 @@ class _AssetAccountController extends Controller
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        return response()->json( new _AssetAccountResource( $element ) );
+        if ($request->expectsJson()) return response()->json( new _AssetAccountResource( $element ) );
     }
 
     /**
@@ -226,7 +226,7 @@ class _AssetAccountController extends Controller
         // Handle _Log
         $log_entry_update_result = [];
         foreach ( $validated_data as $key => $value ) {
-            if ( $element->{$key} != $value ){
+            if ( in_array( $key, $element->getFillable() ) && $element->{$key} != $value ){
                 array_push( $log_entry_update_result, [
                     'field_name' => $key,
                     'old_value' => $element->{$key},
@@ -243,10 +243,8 @@ class _AssetAccountController extends Controller
             'entry_update_result'=> $log_entry_update_result,
         ]));
         // End _Log Handling
-
         $element->update($validated_data);
-
-        return response()->json( new _AssetAccountResource( $element ) );
+        if ($request->expectsJson()) return response()->json( new _AssetAccountResource( $element ) );
     }
 
     /**

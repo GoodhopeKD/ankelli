@@ -178,17 +178,17 @@ class SignUpModal extends React.Component {
                                 {this.state.btn_signup_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <span>Sign up</span>}
                             </button>
 
-                            <small className="text-muted">By clicking Sign up, you agree to our <Link to='/terms-of-service' target='_blank'>Terms of service</Link> and confirm that you have read our <Link to='/privacy-policy' target='_blank'>Privacy Policy.</Link></small><br />
+                            <small className="text-muted">By clicking Sign up, you agree to our <Link to='/terms-of-service' target='_blank'>Terms of service</Link> and confirm that you have read our <Link to='/privacy-policy' target='_blank'>Privacy policy.</Link></small><br />
                             {this.props.component_context == "screen" ? <>
-                                <small className="text-muted">Already have an account? Click here to <Link to={'/signin' + this.props.location.search}>sign in</Link>.</small>
+                                <small className="text-muted">Already have an account? Click here to <Link to={'/accounts/auth/signin' + this.props.location.search}>sign in</Link>.</small>
                             </> : <>
-                                <small className="text-muted">Already have an account? Click here to <Link to={'/#/signin'} data-bs-target="#signin_modal" data-bs-toggle="modal" >sign in</Link>.</small>
+                                <small className="text-muted">Already have an account? Click here to <Link to={'/#/accounts/auth/signin'} data-bs-target="#signin_modal" data-bs-toggle="modal" >sign in</Link>.</small>
                             </>}
                         </form>
                     </> : <>
                         <p>
                             New user sign up is momentarily disabled.<br />
-                            Please check back after a while or click here to {this.props.component_context == "screen" ? <Link to={'/signin' + this.props.location.search}>sign in</Link> : <Link to={'/#/signin'} data-bs-target="#signin_modal" data-bs-toggle="modal" >sign in</Link>}.
+                            Please check back after a while or click here to {this.props.component_context == "screen" ? <Link to={'/accounts/auth/signin' + this.props.location.search}>sign in</Link> : <Link to={'/#/accounts/auth/signin'} data-bs-target="#signin_modal" data-bs-toggle="modal" >sign in</Link>}.
                         </p>
                     </>}
                 </div>

@@ -49,7 +49,7 @@ export default class _EmailAddress extends _Wrapper_ implements Omit<typeof _Ema
     /* Creator(s) */
 
     public static async create(args: typeof _EmailAddressRespObj) {
-        return this._mainLaravelDBAPICreate('email_addresses', args)
+        return this._mainLaravelDBAPICreate('accounts/email_addresses', args)
     }
 
     /* Readers */
