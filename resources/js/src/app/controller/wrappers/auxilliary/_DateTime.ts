@@ -66,7 +66,7 @@ export default class _DateTime extends _Date {
 
 		rel_offset_minutes = rel_offset_minutes !== 0 ? rel_offset_minutes * 60 : 0
 
-		let time_diff: number = _Date.nowUnixTimeStamp() - this._unix_timestamp
+		let time_diff: number = _Date.nowUnixTimeStamp() - this.unix_timestamp
 
 		if (rel_offset_minutes <= time_diff && time_diff >= 0) {
 			if (

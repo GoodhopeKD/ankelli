@@ -148,6 +148,7 @@ class TradesViewListScreen extends React.Component {
                             <tbody>
                                 {this.state.list_loaded ? (
                                     this.state.list.map((trade, index) => {
+                                        trade = new _Trade(trade)
                                         const asset = this.props.datalists.active_assets[trade.asset_code]
                                         const currency = this.props.datalists.active_currencies[trade.currency_code]
                                         const pymt_method = this.props.datalists.active_pymt_methods[trade.pymt_method_slug]
@@ -163,6 +164,7 @@ class TradesViewListScreen extends React.Component {
                                         const trade_peer_username = trade.creator_username == this.props.auth_user.username ? trade.offer_creator_username : trade.creator_username
                                         const auth_user_is_buyer = (trade.was_offer_to == 'sell' && trade.creator_username == this.props.auth_user.username) || (trade.was_offer_to == 'buy' && trade.offer_creator_username == this.props.auth_user.username)
                                         //const auth_user_is_seller = (trade.was_offer_to == 'buy' && trade.creator_username == this.props.auth_user.username) || (trade.was_offer_to == 'sell' && trade.offer_creator_username == this.props.auth_user.username)
+                                        const trade_closed = ['completed', 'cancelled'].includes(trade._status)
 
                                         return <tr key={index} className={((auth_user_is_buyer && trade.buyer_opened_datetime == null) ? ' table-secondary' : '')} >
                                             <td className="align-middle"><i><Link to={'/accounts/profiles/' + trade_peer_username} style={{ textDecoration: 'none' }} target='_blank'>@{trade_peer_username}</Link></i><br />In {window.isset(trade.location) && <> #{trade.location} - </>} {trade.country_name}</td>
@@ -172,13 +174,13 @@ class TradesViewListScreen extends React.Component {
                                                 </> : <>
                                                     <b>{trade.asset_code}</b> <i>for</i> <b>{trade.currency_code}</b> <small className="text-muted">(selling)</small>
                                                 </>}
-                                                <br /><small className="text-muted"><i>Last activity: {window.ucfirst(new _DateTime(trade.last_activity_datetime).prettyDatetime())}</i></small>
+                                                <br /><small className="text-muted"><i>Last activity: {window.ucfirst(trade.last_activity_datetime.prettyDatetime())}</i></small>
                                             </td>
                                             <td className="align-middle">{window.currencyAmountString(trade.currency_amount, currency)}</td>
                                             <td className="align-middle">{window.assetValueString(trade.asset_value, asset)}</td>
-                                            <td className="align-middle d-flex gap-2">
-                                                <img src={pymt_method.icon.uri} alt={pymt_method.name + " icon"} width="40" height="40" className="rounded-1" />
-                                                <span><b>{pymt_method.name}</b>{!['completed', 'cancelled'].includes(trade._status) && <><br /><small className='text-muted'>🕑 0 mins remaining</small></>}</span>
+                                            <td className={(trade_closed ? 'align-middle' : "d-flex gap-2")}>
+                                                <img src={pymt_method.icon.uri} alt={pymt_method.name + " icon"} width="40" height="40" className={"rounded-1" + (trade_closed ? " me-2" : '')} />
+                                                <span><b>{pymt_method.name}</b>{!trade_closed && <><br /><small className='text-muted'>🕑 {(trade.mins_remaining > 0) ? trade.mins_remaining + ' mins remaining' : -1 * trade.mins_remaining + ' mins late'}</small></>}</span>
                                             </td>
                                             <td className="align-middle" width="100">
                                                 <button type="button" className={"btn w-100 btn-sm btn-outline-" + btn_class}>{window.ucfirst(trade._status)}</button>

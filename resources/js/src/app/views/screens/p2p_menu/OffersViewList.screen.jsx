@@ -265,6 +265,7 @@ class OffersViewListScreen extends React.Component {
                                 {this.state.list_loaded ? (
                                     this.state.list.map((offer, index) => {
                                         const currency = this.props.datalists.active_currencies[offer.currency_code]
+                                        const asset = this.props.datalists.active_assets[offer.asset_code]
                                         const pymt_method = this.props.datalists.active_pymt_methods[offer.pymt_method_slug]
                                         const progress = window.roundTo2dp((offer.offer_to === 'buy' ? (offer.filled_amount / offer.offer_total_purchase_amount) : (offer.filled_value / offer.offer_total_sell_value)) * 100)
                                         return <tr key={index} >
@@ -296,14 +297,14 @@ class OffersViewListScreen extends React.Component {
                                                     <br /><small className="text-muted"><i>{this.props.auth_user && this.props.auth_user.username == offer.creator_username ? 'Last updated' : 'Posted'} {(new _DateTime(offer.updated_datetime).prettyDatetime())}</i></small></td>
                                                 <td className="align-middle">{window.currencyAmountString(offer.offer_price, currency)}</td>
                                                 <td className="align-middle">
-                                                    {offer.min_trade_sell_value} {offer.asset_code} - {offer.max_trade_sell_value} {offer.asset_code}
+                                                    {window.assetValueString(offer.min_trade_sell_value, asset)} - {window.assetValueString(offer.max_trade_sell_value, asset)}
                                                     {this.props.path == '/p2p/my-offers' && <>
                                                         <br />
-                                                    Total : {offer.offer_total_sell_value} {offer.asset_code}
+                                                    Total : {window.assetValueString(offer.offer_total_sell_value, asset)}
                                                     </>}
                                                 </td>
                                                 {this.props.path == '/p2p/my-offers' && <td className="align-middle">
-                                                    {offer.filled_value} {offer.asset_code}
+                                                    {window.assetValueString(offer.filled_value, asset)}
                                                     <br />
                                                     <div className="progress mt-1">
                                                         <div className={"progress-bar text-bg-info"} style={{ width: progress + '%' }} role="progressbar" >{progress}%</div>

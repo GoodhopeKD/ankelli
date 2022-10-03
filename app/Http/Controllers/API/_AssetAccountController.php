@@ -60,7 +60,7 @@ class _AssetAccountController extends Controller
     {
         foreach ( array_reverse((new __TatumAPIController)->getAllTransactions(new Request())->getData()) as $transaction) {
             (new _TransactionController)->tatum_txrecon(new Request( json_decode(json_encode($transaction), true) ));
-            sleep(2);
+            usleep(500);
         }
     }
 
@@ -69,7 +69,7 @@ class _AssetAccountController extends Controller
         foreach ( array_reverse((new __TatumAPIController)->getWebhookSubscnNotifs(new Request())->getData()) as $request) {
             if (!isset($request->retryCount)){
                 (new _TransactionController)->tatum_subscription_webhook_txrecon(new Request( json_decode(json_encode($request->data), true) ));
-                sleep(2);
+                usleep(500);
             }
         }
     }

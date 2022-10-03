@@ -224,7 +224,7 @@ class _TransactionController extends Controller
         }
 
         if ( isset($validated_data['source_user_username']) && $validated_data['txn_fee_asset_value'] ){
-            sleep(2);
+            usleep(500);
             (new _TransactionController)->store( new Request([
                 'txn_context' => 'offchain',
                 'description' => 'Platform charge fee for transaction '.$element->ref_code,

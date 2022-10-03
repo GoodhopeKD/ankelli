@@ -42,7 +42,7 @@ return new class extends Migration
                 'symbol_before_number' => true,
                 'usd_rate' => 1,
                 'min_transactable_cash_amount' => 10,
-                'smallest_transactable_cash_denomination_amount' => 5,
+                'smallest_transactable_cash_denomination_amount' => 1,
                 'creator_username' => 'system',
             ],
             [
@@ -50,9 +50,9 @@ return new class extends Migration
                 'code' => 'EUR',
                 'symbol' => '€',
                 'symbol_before_number' => true,
-                'usd_rate' => 0.87,
+                'usd_rate' => 1.02,
                 'min_transactable_cash_amount' => 10,
-                'smallest_transactable_cash_denomination_amount' => 5,
+                'smallest_transactable_cash_denomination_amount' => 1,
                 'creator_username' => 'system',
             ],
             [
@@ -60,9 +60,9 @@ return new class extends Migration
                 'code' => 'GBP',
                 'symbol' => '£',
                 'symbol_before_number' => true,
-                'usd_rate' => 0.77,
+                'usd_rate' => 0.89,
                 'min_transactable_cash_amount' => 10,
-                'smallest_transactable_cash_denomination_amount' => 5,
+                'smallest_transactable_cash_denomination_amount' => 1,
                 'creator_username' => 'system',
             ],
             [
@@ -72,7 +72,7 @@ return new class extends Migration
                 'symbol_before_number' => false,
                 'usd_rate' => 18,
                 'min_transactable_cash_amount' => 100,
-                'smallest_transactable_cash_denomination_amount' => 100,
+                'smallest_transactable_cash_denomination_amount' => 10,
                 'creator_username' => 'system',
             ],
             [
@@ -82,7 +82,7 @@ return new class extends Migration
                 'symbol_before_number' => false,
                 'usd_rate' => 14,
                 'min_transactable_cash_amount' => 100,
-                'smallest_transactable_cash_denomination_amount' => 100,
+                'smallest_transactable_cash_denomination_amount' => 10,
                 'creator_username' => 'system',
             ],
             [
@@ -102,7 +102,7 @@ return new class extends Migration
                 'symbol_before_number' => true,
                 'usd_rate' => 800,
                 'min_transactable_cash_amount' => 500,
-                'smallest_transactable_cash_denomination_amount' => 5000,
+                'smallest_transactable_cash_denomination_amount' => 50,
                 'creator_username' => 'system',
             ],
         ]);

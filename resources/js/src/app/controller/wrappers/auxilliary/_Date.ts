@@ -5,9 +5,9 @@ import moment from 'moment'
 */
 export default class _Date {
 	protected _date: string
-	protected _unix_timestamp: number
-
 	protected _is_valid_datetime: boolean
+
+	public unix_timestamp: number
 
 	/* Class Constructor */
 	constructor(input_date: moment.MomentInput = null) {
@@ -16,11 +16,11 @@ export default class _Date {
 		if (input_date === 'now' || input_date === 'today' || input_date === '') {
 			this._is_valid_datetime = true
 			this._date = moment.utc().format('YYYY-MM-DD')
-			this._unix_timestamp = moment.utc().unix()
+			this.unix_timestamp = moment.utc().unix()
 		} else {
 			this._is_valid_datetime = moment.utc(input_date).isValid()
 			this._date = moment.utc(input_date).format('YYYY-MM-DD')
-			this._unix_timestamp = moment.utc(input_date).unix()
+			this.unix_timestamp = moment.utc(input_date).unix()
 		}
 	}
 
@@ -58,7 +58,7 @@ export default class _Date {
 
 		rel_offset_days = rel_offset_days !== 0 ? rel_offset_days * 60 * 60 * 24 : 0
 
-		let time_diff: number = _Date.nowUnixTimeStamp() - this._unix_timestamp
+		let time_diff: number = _Date.nowUnixTimeStamp() - this.unix_timestamp
 
 		if (rel_offset_days <= time_diff && time_diff >= 0) {
 			if (

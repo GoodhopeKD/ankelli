@@ -217,9 +217,9 @@ class _TradeController extends Controller
         (new _NotificationController)->store( new Request([
             'user_username' => $validated_data['offer_creator_username'],
             'content' => [
-                'title' => 'Trade initiated',
+                'title' => 'Trade initialized',
                 'subtitle' => 'Someone accepted your offer ref: '.$validated_data['offer_ref_code'].' for asset value '.$validated_data['asset_value'].' '.$validated_data['asset_code'],
-                'body' => 'Your offer '.$validated_data['offer_ref_code'].' has been accepted. Trade '.$validated_data['ref_code'].' initiated for asset value '.$validated_data['asset_value'].' '.$validated_data['asset_code'],
+                'body' => 'Your offer '.$validated_data['offer_ref_code'].' has been accepted. Trade '.$validated_data['ref_code'].' initialized for asset value '.$validated_data['asset_value'].' '.$validated_data['asset_code'],
             ],
         ]));
         // End Create notification
@@ -256,9 +256,9 @@ class _TradeController extends Controller
     {
         $element = _Trade::find($ref_code);
         if (!$element) return abort(404, 'Trade with specified reference code not found');
-        if ($element->was_offer_to === 'buy' && !$element->buyer_opened_datetime){
+        if (!$element->buyer_opened_datetime){
             $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
-            if ($api_auth_user_username == $element->offer_creator_username){
+            if (($element->was_offer_to === 'buy' && $api_auth_user_username == $element->offer_creator_username) || ($element->was_offer_to === 'sell' && $api_auth_user_username == $element->creator_username)){
                 $validated_data['buyer_opened_datetime'] = now()->toDateTimeString();
                 $element->update($validated_data);
             }
@@ -412,7 +412,7 @@ class _TradeController extends Controller
             (new _AssetAccountController)->unblockAssetValue( new Request([
                 'asset_value' => $element->asset_value_escrowed,
             ]), $seller_asset_account->id );
-            sleep(2);
+            usleep(500);
             // End unlock asset from escrow
             
             (new _TransactionController)->store( new Request([

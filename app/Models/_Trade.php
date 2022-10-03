@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Carbon;
 
 use App\Http\Resources\_MessageResourceCollection;
 use App\Http\Resources\_ReviewResourceCollection;
@@ -128,6 +129,27 @@ class _Trade extends Model
         $all_datetimes = array_filter([$last_message_datetime, $this->created_datetime, $this->updated_datetime]);
         rsort($all_datetimes);
         return ($all_datetimes[0]);
+    }
+
+    public function progress_f()
+    {
+        $progress = 0;
+        if ($this->created_datetime)
+            $progress = 0.2;
+        if ($this->buyer_opened_datetime)
+            $progress += 0.2;
+        if ($this->pymt_declared_datetime)
+            $progress += 0.2;
+        if ($this->pymt_confirmed_datetime)
+            $progress += 0.2;
+        if ($this->_status === 'completed')
+            $progress += 0.2;
+        return $progress;
+    }
+
+    public function mins_remaining_f()
+    {
+        return round((( (new Carbon($this->created_datetime))->timestamp + ($this->buyer_cmplt_trade_mins_tmt * 60) ) - time()) / 60);
     }
     
 }

@@ -17,21 +17,21 @@ class OffersCreateNewScreen extends React.Component {
         country_name: 'Zimbabwe',
         pymt_method_slug: 'cash_in_person',
         pymt_details: returnObj(this.props.datalists.active_pymt_methods['cash_in_person'].details_required),
-        location: new _Input('Harare CBD'),
+        location: new _Input(),
 
         asset_code: 'USDT',
         currency_code: 'USD',
-        offer_price: new _Input(1),
+        offer_price: new _Input(),
 
-        min_trade_purchase_amount: new _Input(100),
-        max_trade_purchase_amount: new _Input(200),
-        offer_total_purchase_amount: new _Input(500),
+        min_trade_purchase_amount: new _Input(),
+        max_trade_purchase_amount: new _Input(),
+        offer_total_purchase_amount: new _Input(),
 
-        min_trade_sell_value: new _Input(50.5),
-        max_trade_sell_value: new _Input(202),
-        offer_total_sell_value: new _Input(202),
+        min_trade_sell_value: new _Input(),
+        max_trade_sell_value: new _Input(),
+        offer_total_sell_value: new _Input(),
 
-        buyer_cmplt_trade_mins_tmt: new _Input(this.props.sysconfig_params.buyer_cmplt_trade_max_mins_tmt),
+        buyer_cmplt_trade_mins_tmt: new _Input(),
 
         note: new _Input(),
     }
@@ -42,9 +42,9 @@ class OffersCreateNewScreen extends React.Component {
         errors: [],
     }
 
-    assetToCurrency = (asset_value) => { return (asset_value * this.state.input.offer_price) / (1 + this.props.sysconfig_params.trade_txn_fee_fctr) }
+    assetToCurrency = (asset_value) => { return asset_value ? ((asset_value * this.state.input.offer_price) / (1 + this.props.sysconfig_params.trade_txn_fee_fctr)) : 0 }
 
-    currencyToAsset = (currency_amount) => { return currency_amount / this.state.input.offer_price }
+    currencyToAsset = (currency_amount) => { return currency_amount ? (currency_amount / this.state.input.offer_price) : 0 }
 
     handleInputChange(field = 'field.deep_field', value, use_raw = false) {
         const input = this.state.input
@@ -86,7 +86,7 @@ class OffersCreateNewScreen extends React.Component {
                 delete _input.offer_total_sell_value
             }
 
-            _Offer.create(_input).then(() => { _Notification.flash({ message: 'Offer posted successfully!', duration: 2000 }); this.props.navigate('/p2p/my-offers') })
+            _Offer.create(_input).then(resp => { _Notification.flash({ message: 'Offer posted successfully!', duration: 2000 }); this.props.navigate('/p2p/offers/' + resp.ref_code) })
                 .catch((error) => {
                     if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
                         Object.keys(error.request._response.errors).forEach(input_key => { error.request._response.errors[input_key].forEach(input_key_error => { errors.push(input_key_error) }) })
@@ -199,7 +199,7 @@ class OffersCreateNewScreen extends React.Component {
                                 <div className="card mb-3">
                                     <div className="card-header">
                                         {pymt_method.name} <img src={pymt_method.icon.uri} alt={pymt_method.name + " icon"} width="24" height="24" className="mx-2" /> Recepient details
-                </div>
+                                    </div>
                                     <div className="card-body py-0">
                                         {Object.keys(this.state.input.pymt_details).map((detail_key, index) => {
                                             return <div key={index} className="form-floating my-3">
@@ -226,6 +226,7 @@ class OffersCreateNewScreen extends React.Component {
                                         <input
                                             type="text" className="form-control" id="input_location"
                                             value={this.state.input.location + ''}
+                                            placeholder='Harare CBD'
                                             required
                                             onChange={e => this.handleInputChange('location', e.target.value)}
                                         />
@@ -279,7 +280,7 @@ class OffersCreateNewScreen extends React.Component {
                                     <h4 className="accordion-header" >
                                         <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_calculation_info" >
                                             Calculation info
-                                            </button>
+                                        </button>
                                     </h4>
                                     <div id="collapse_calculation_info" className="accordion-collapse collapse show" data-bs-parent="#accordion_offer_to_sell_calculator" >
                                         <div className="accordion-body pb-0">
@@ -290,7 +291,7 @@ class OffersCreateNewScreen extends React.Component {
                                             {this.state.input.offer_to == 'sell' && <>
                                                 <p>Trade transaction fee factor is set at <b>{this.props.sysconfig_params.trade_txn_fee_fctr}</b></p>
                                                 <p>The amount you get is calculated as follows:</p>
-                                                <p className="text-muted">{'$received_amount = $asset_value * $offer_price / (1 + $trade_txn_fee_fctr)'}</p>
+                                                <p className="text-muted">$received_amount = $asset_value * $offer_price / (1 + $trade_txn_fee_factor)</p>
                                             </>}
                                         </div>
                                     </div>
@@ -321,8 +322,8 @@ class OffersCreateNewScreen extends React.Component {
                                         {currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
                                         <input
                                             type="number" className="form-control" id="input_min_trade_purchase_amount"
-                                            min="0.01"
-                                            step="0.01"
+                                            min={this.state.input.pymt_method_slug == 'cash_in_person' ? currency.min_transactable_cash_amount : "0.01"}
+                                            step={this.state.input.pymt_method_slug == 'cash_in_person' ? currency.smallest_transactable_cash_denomination_amount : "0.01"}
                                             value={this.state.input.min_trade_purchase_amount + ''}
                                             required
                                             onChange={e => this.handleInputChange('min_trade_purchase_amount', e.target.value)}
@@ -338,7 +339,7 @@ class OffersCreateNewScreen extends React.Component {
                                         <input
                                             type="number" className="form-control" id="input_max_trade_purchase_amount"
                                             min={this.state.input.min_trade_purchase_amount + ''}
-                                            step="0.01"
+                                            step={this.state.input.pymt_method_slug == 'cash_in_person' ? currency.smallest_transactable_cash_denomination_amount : "0.01"}
                                             value={this.state.input.max_trade_purchase_amount + ''}
                                             required
                                             onChange={e => this.handleInputChange('max_trade_purchase_amount', e.target.value)}
@@ -354,7 +355,7 @@ class OffersCreateNewScreen extends React.Component {
                                         <input
                                             type="number" className="form-control" id="input_offer_total_purchase_amount"
                                             min={this.state.input.max_trade_purchase_amount + ''}
-                                            step="0.01"
+                                            step={this.state.input.pymt_method_slug == 'cash_in_person' ? currency.smallest_transactable_cash_denomination_amount : "0.01"}
                                             value={this.state.input.offer_total_purchase_amount + ''}
                                             required
                                             onChange={e => this.handleInputChange('offer_total_purchase_amount', e.target.value)}
@@ -417,7 +418,7 @@ class OffersCreateNewScreen extends React.Component {
                             </>}
 
                             <div className="mb-3">
-                                <label htmlFor="input_buyer_cmplt_trade_mins_tmt" className="form-label">{this.state.input.offer_to == 'buy' ? 'You engage' : 'You expect buyer'} to complete initiated trade in</label>
+                                <label htmlFor="input_buyer_cmplt_trade_mins_tmt" className="form-label">{this.state.input.offer_to == 'buy' ? 'You engage' : 'You expect buyer'} to complete initialized trade in</label>
                                 <div className="input-group">
                                     <input
                                         type="number" className="form-control" id="input_buyer_cmplt_trade_mins_tmt"

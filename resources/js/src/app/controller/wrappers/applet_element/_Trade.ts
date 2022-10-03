@@ -15,7 +15,7 @@ import { _dataless_resource_collection_wrapper } from 'app/controller/redux_redu
 /*
     Type Definitions
 */
-type casts_t = 'pymt_declared_datetime' | 'pymt_confirmed_datetime' | 'last_activity_datetime' | 'completion_review_on_offer_creator' | 'completion_review_on_trade_creator' | 'created_datetime' | 'updated_datetime'
+type casts_t = 'buyer_opened_datetime' | 'pymt_declared_datetime' | 'pymt_confirmed_datetime' | 'closed_datetime' | 'last_activity_datetime' | 'completion_review_on_offer_creator' | 'completion_review_on_trade_creator' | 'created_datetime' | 'updated_datetime'
 type was_offer_to_t = 'buy' | 'sell'
 type _status_t = 'active' | 'cancelled' | 'flagged' | 'completed'
 type pymt_details_t = { key: string, value: string | number }[]
@@ -41,10 +41,13 @@ export const _TradeRespObj = {
 
     offer_price: undefined as undefined | null | number,
 
+    buyer_cmplt_trade_mins_tmt: undefined as undefined | null | number,
     pymt_method_slug: undefined as undefined | null | string,
     pymt_details: undefined as undefined | null | pymt_details_t,
     pymt_declared_datetime: undefined as undefined | null | string,
     pymt_confirmed_datetime: undefined as undefined | null | string,
+    buyer_opened_datetime: undefined as undefined | null | string,
+    closed_datetime: undefined as undefined | null | string,
     last_activity_datetime: undefined as undefined | null | string,
     visible_to_creator: undefined as undefined | null | boolean,
     visible_to_offer_creator: undefined as undefined | null | boolean,
@@ -92,10 +95,13 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
 
     offer_price: number | null = null
 
+    buyer_cmplt_trade_mins_tmt: number | null = null
     pymt_method_slug: string | null = null
     pymt_details: pymt_details_t | null = null
     pymt_declared_datetime: _DateTime | null = null
     pymt_confirmed_datetime: _DateTime | null = null
+    buyer_opened_datetime: _DateTime | null = null
+    closed_datetime: _DateTime | null = null
     last_activity_datetime: _DateTime | null = null
     visible_to_creator: boolean | null = null
     visible_to_offer_creator: boolean | null = null
@@ -103,6 +109,7 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
     completion_review_on_offer_creator: _Review | null = null
     _status: _status_t | null = null
     progress: number = 0
+    mins_remaining: number | null = null
 
     flag_raiser_username: string | null = null
     offer_creator_username: string | null = null
@@ -120,20 +127,27 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
 
     protected populate(args: typeof _TradeRespObj) {
         this._populate(args)
+        this.buyer_opened_datetime = args.buyer_opened_datetime && typeof args.buyer_opened_datetime === 'string' ? new _DateTime(args.buyer_opened_datetime) : null
         this.pymt_declared_datetime = args.pymt_declared_datetime && typeof args.pymt_declared_datetime === 'string' ? new _DateTime(args.pymt_declared_datetime) : null
         this.pymt_confirmed_datetime = args.pymt_confirmed_datetime && typeof args.pymt_confirmed_datetime === 'string' ? new _DateTime(args.pymt_confirmed_datetime) : null
+        this.closed_datetime = args.closed_datetime && typeof args.closed_datetime === 'string' ? new _DateTime(args.closed_datetime) : null
+        this.last_activity_datetime = args.last_activity_datetime && typeof args.last_activity_datetime === 'string' ? new _DateTime(args.last_activity_datetime) : null
         this.created_datetime = args.created_datetime && typeof args.created_datetime === 'string' ? new _DateTime(args.created_datetime) : null
         this.updated_datetime = args.updated_datetime && typeof args.updated_datetime === 'string' ? new _DateTime(args.updated_datetime) : null
-        this.last_activity_datetime = args.last_activity_datetime && typeof args.last_activity_datetime === 'string' ? new _DateTime(args.last_activity_datetime) : null
 
         if (this.created_datetime)
-            this.progress = 25
+            this.progress = 20
+        if (this.buyer_opened_datetime)
+            this.progress = this.progress + 20
         if (this.pymt_declared_datetime)
-            this.progress = this.progress + 25
+            this.progress = this.progress + 20
         if (this.pymt_confirmed_datetime)
-            this.progress = this.progress + 25
+            this.progress = this.progress + 20
         if (this._status === 'completed')
-            this.progress = this.progress + 25
+            this.progress = this.progress + 20
+
+        if (this.created_datetime && this.buyer_cmplt_trade_mins_tmt)
+            this.mins_remaining = Math.round((((this.created_datetime as _DateTime).unix_timestamp + ((this.buyer_cmplt_trade_mins_tmt as number) * 60)) - _DateTime.nowUnixTimeStamp()) / 60)
 
         this.completion_review_on_trade_creator = args.completion_review_on_trade_creator && typeof args.completion_review_on_trade_creator === typeof _ReviewRespObj ? new _Review(args.completion_review_on_trade_creator) : null
         this.completion_review_on_offer_creator = args.completion_review_on_offer_creator && typeof args.completion_review_on_offer_creator === typeof _ReviewRespObj ? new _Review(args.completion_review_on_offer_creator) : null

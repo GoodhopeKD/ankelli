@@ -176,13 +176,15 @@ class TradesViewSingleScreen extends React.Component {
                                                 </button>
                                             </h4>
                                             <div id="collapse_progress" className="accordion-collapse collapse show" data-bs-parent="#accordion_trade_details" >
-                                                <div className="accordion-body">
-                                                    <p>Initiated: {this.focused_trade.created_datetime.prettyDatetime()}</p>
-                                                    <p>Last activity: {this.focused_trade.last_activity_datetime.prettyDatetime()}</p>
-                                                    <p>Status: {window.ucfirst(this.focused_trade._status)}</p>
-                                                    <div className="progress">
-                                                        <div className={"progress-bar bg-" + btn_class + " w-" + this.focused_trade.progress} role="progressbar">{this.focused_trade.progress}%</div>
+                                                <div className="accordion-body pb-0">
+                                                    <div className="progress mb-3">
+                                                        <div className={"progress-bar text-bg-" + btn_class} style={{ width: this.focused_trade.progress + '%' }} role="progressbar">{this.focused_trade.progress}%</div>
                                                     </div>
+                                                    <p>Status: {window.ucfirst(this.focused_trade._status)}</p>
+                                                    <p>Initialized: {this.focused_trade.created_datetime.prettyDatetime()}</p>
+                                                    <p>Last activity: {this.focused_trade.last_activity_datetime.prettyDatetime()}</p>
+                                                    {this.focused_trade.closed_datetime === null && <p>🕑 {(this.focused_trade.mins_remaining > 0) ? this.focused_trade.mins_remaining + ' mins remaining' : -1 * this.focused_trade.mins_remaining + ' mins late'}</p>}
+                                                    {this.focused_trade.closed_datetime !== null && <p>Closed: {this.focused_trade.closed_datetime.prettyDatetime()}</p>}
                                                 </div>
                                             </div>
                                         </div>
@@ -422,8 +424,8 @@ class TradesViewSingleScreen extends React.Component {
                                                         </>}
 
                                                         {auth_user_is_seller && this.focused_trade.buyer_opened_datetime == null && <>
-                                                            <p>As the seller, you can cancel the trade if the buyer doesn't open it {this.props.sysconfig_params.buyer_open_trade_min_mins_tmt} minutes after it has been initiated.</p>
-                                                            <button className="w-100 btn rounded-3 btn-danger" disabled={this.state.btn_cancel_trade_working || ((_DateTime.nowUnixTimeStamp() - this.focused_trade.created_datetime._unix_timestamp) < (this.props.sysconfig_params.buyer_open_trade_min_mins_tmt * 60))}
+                                                            <p>As the seller, you can cancel the trade if the buyer doesn't open it {this.props.sysconfig_params.buyer_open_trade_min_mins_tmt} minutes after it has been initialized.</p>
+                                                            <button className="w-100 btn rounded-3 btn-danger" disabled={this.state.btn_cancel_trade_working || ((_DateTime.nowUnixTimeStamp() - this.focused_trade.created_datetime.unix_timestamp) < (this.props.sysconfig_params.buyer_open_trade_min_mins_tmt * 60))}
                                                                 onClick={() => {
                                                                     this.setState({ btn_cancel_trade_working: true },
                                                                         () => this.focused_trade.cancel()
@@ -440,7 +442,7 @@ class TradesViewSingleScreen extends React.Component {
                                             </div>
                                         </>}
 
-                                        {['active', 'completed'].includes(this.focused_trade._status) && (this.focused_trade.pymt_declared_datetime == null || (this.focused_trade.pymt_declared_datetime && ((_DateTime.nowUnixTimeStamp() - this.focused_trade.pymt_declared_datetime._unix_timestamp) < (10 * 60)))) && <>
+                                        {['active', 'completed'].includes(this.focused_trade._status) && (this.focused_trade.pymt_declared_datetime == null || (this.focused_trade.pymt_declared_datetime && ((_DateTime.nowUnixTimeStamp() - this.focused_trade.pymt_declared_datetime.unix_timestamp) < (10 * 60)))) && <>
                                             <div className="accordion-item">
                                                 <h4 className="accordion-header" >
                                                     <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_flag_trade" >
