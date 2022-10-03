@@ -28,6 +28,7 @@ class _TradeResourceCollection extends ResourceCollection
                     'offer_price' => $_this->offer_price,
                     'pymt_method_slug' => $_this->pymt_method_slug,
                     'buyer_opened_datetime' => $_this->buyer_opened_datetime,
+                    'closed_datetime' => $_this->closed_datetime,
                     '_status' => $_this->_status,
                     'offer_creator_username' => $_this->offer_creator_username,
                     'creator_username' => $_this->creator_username,

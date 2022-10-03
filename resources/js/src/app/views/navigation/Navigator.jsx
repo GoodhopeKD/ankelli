@@ -207,7 +207,7 @@ function Navigator(props) {
                 path_segments.forEach(path_segment => {
                     path = path + '/'
                     if (path_segment.includes(':')) {
-                        path = path + '{' + path_segment.replace(/:/g, "") + '}'
+                        path = path + '{' + path_segment.replace(/:/g, '') + '}'
                     } else {
                         path = path + path_segment
                     }

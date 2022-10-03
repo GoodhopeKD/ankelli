@@ -96,12 +96,12 @@ class DepositTokenTopupScreen extends React.Component {
                                     <div className="bd-example">
                                         <nav>
                                             <div className="nav nav-tabs mb-3" id="nav-tab" role="tablist">
-                                                <button onClick={() => this.handleInputChange('deposit_type', 'crypto', true)} className="nav-link active" id="nav-crypto-topup-tab" data-bs-toggle="tab" data-bs-target="#nav-crypto-topup" type="button" role="tab" aria-controls="nav-crypto-topup" aria-selected="true">Crypto topup</button>
-                                                <button onClick={() => this.handleInputChange('deposit_type', 'fiat', true)} className="nav-link" id="nav-fiat-topup-tab" data-bs-toggle="tab" data-bs-target="#nav-fiat-topup" type="button" role="tab" aria-controls="nav-fiat-topup" aria-selected="false" tabIndex="-1">Fiat topup</button>
+                                                <button onClick={() => this.handleInputChange('deposit_type', 'crypto', true)} className="nav-link active" id="nav-crypto-topup-tab" data-bs-toggle="tab" data-bs-target="#nav-crypto-topup" type="button" role="tab" >Crypto topup</button>
+                                                <button onClick={() => this.handleInputChange('deposit_type', 'fiat', true)} className="nav-link" id="nav-fiat-topup-tab" data-bs-toggle="tab" data-bs-target="#nav-fiat-topup" type="button" role="tab" tabIndex="-1">Fiat topup</button>
                                             </div>
                                         </nav>
                                         <div className="tab-content" id="nav-tabContent">
-                                            <div className="tab-pane fade active show" id="nav-crypto-topup" role="tabpanel" aria-labelledby="nav-crypto-topup-tab">
+                                            <div className="tab-pane fade active show" id="nav-crypto-topup" role="tabpanel">
                                                 <div className="mb-3 row">
                                                     <div className="col">
                                                         <label htmlFor="input_asset_code" className="form-label">Asset</label>
@@ -115,12 +115,12 @@ class DepositTokenTopupScreen extends React.Component {
                                                         />
                                                     </div>
                                                     <div className="col">
-                                                        <label htmlFor="output_current_balance" className="form-label">Current total balance</label>
+                                                        <label htmlFor="output_current_balance" className="form-label">Total balance</label>
                                                         <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { total_balance_asset_value: 0 }).total_balance_asset_value, asset)}</span>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="tab-pane fade" id="nav-fiat-topup" role="tabpanel" aria-labelledby="nav-fiat-topup-tab">
+                                            <div className="tab-pane fade" id="nav-fiat-topup" role="tabpanel" >
                                                 <div className="mb-3 row">
                                                     <div className="col">
                                                         <label htmlFor="input_currency_code" className="form-label">Currency</label>
@@ -134,7 +134,7 @@ class DepositTokenTopupScreen extends React.Component {
                                                         />
                                                     </div>
                                                     <div className="col">
-                                                        <label htmlFor="output_current_balance" className="form-label">Current total balance</label>
+                                                        <label htmlFor="output_current_balance" className="form-label">Total balance</label>
                                                         <span className="form-control" id='output_current_balance'>{window.currencyAmountString(0, currency)}</span>
                                                     </div>
                                                 </div>

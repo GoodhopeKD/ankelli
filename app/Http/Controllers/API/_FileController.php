@@ -47,12 +47,12 @@ class _FileController extends Controller
             $filegroup = $request->filegroup;
             $parent_table = $request->parent_table;
             $filename = substr(md5(microtime()),rand(0,9),20).'.'.$file->extension();
-            $upload_dir_path = 'public/' . $filegroup . '/' . ltrim( $parent_table, '__' );
+            $upload_dir_path = 'public/'.$filegroup.'/'.ltrim( $parent_table, '__' );
             $path = $file->storeAs( $upload_dir_path , $filename );
             $file_data = [];
             $file_data['filesize'] = $file->getSize();
             $file_data['original_filename'] = $file->getClientOriginalName();
-            $file_data['uri'] = env('APP_URL') . Storage::url( $upload_dir_path . '/' . $filename );
+            $file_data['uri'] = env('APP_URL').Storage::url( $upload_dir_path.'/'.$filename );
             array_push( $response['files'], $file_data );
         }
         $response["success"] = true;
@@ -138,7 +138,7 @@ class _FileController extends Controller
     {
         $element = _File::findOrFail($id);
         if (in_array( auth('api')->user()->username, [$element->creator_username, $element->upater_username] )){
-            Storage::delete( 'public/' . $element->filegroup . '/' . ltrim( $element->parent_table, '__' ) . '/' . $element->filename );
+            Storage::delete( 'public/'.$element->filegroup.'/'.ltrim( $element->parent_table, '__' ).'/'.$element->filename );
             $element->delete();
             return response()->json(['success' => 'success'], 200);
         } else {

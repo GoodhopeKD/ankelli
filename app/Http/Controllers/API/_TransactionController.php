@@ -61,7 +61,7 @@ class _TransactionController extends Controller
     public function store(Request $request)
     {
         $validated_data = $request->validate([
-            'txcontext' => ['required', 'string', Rule::in(['onchain', 'offchain'])],
+            'txn_context' => ['required', 'string', Rule::in(['onchain', 'offchain'])],
             'description' => ['required', 'string'],
             'operation_slug' => ['required', 'string'],
             'source_user_username' => ['sometimes', 'exists:__users,username', 'string'],
@@ -71,10 +71,10 @@ class _TransactionController extends Controller
             'destination_blockchain_address' => ['sometimes', 'string', 'exists:__asset_account_addresses,blockchain_address'],
             'asset_code' => ['required', 'exists:__assets,code', 'string'],
             'transfer_asset_value' => ['required', 'numeric'],
-            'trade_txn_fee_factor' => ['sometimes', 'numeric'],
+            'txn_fee_fctr' => ['sometimes', 'numeric'],
             'is_recon' => ['sometimes', 'boolean'],
             'tatum_reference' => ['sometimes', 'string'],
-            'blockchain_txid' => ['required_if:is_recon,==,true', 'string', 'unique:__transactions,blockchain_txid'],
+            'blockchain_txn_id' => ['required_if:is_recon,==,true', 'string', 'unique:__transactions,blockchain_txn_id'],
             'transfer_datetime' => ['required_if:is_recon,==,true', 'date:Y-m-d H:i:s'],
         ]);
 
@@ -99,8 +99,8 @@ class _TransactionController extends Controller
         $validated_data['action_user_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
         $validated_data['transfer_result'] = [];
 
-        $trade_txn_fee_factor = $validated_data['trade_txn_fee_factor'] ?? (float)_PrefItem::firstWhere('key_slug', 'trade_txn_fee_factor')->value;
-        $validated_data['platform_charge_asset_value'] = (!isset($validated_data['source_user_username']) || in_array($validated_data['destination_user_username'], ['reserves']) || in_array($validated_data['source_user_username'], ['reserves']) ) ? 0 : $validated_data['transfer_asset_value'] * $trade_txn_fee_factor;
+        $txn_fee_fctr = isset($validated_data['txn_fee_fctr']) ? $validated_data['txn_fee_fctr'] : 0;
+        $validated_data['txn_fee_asset_value'] = (!isset($validated_data['source_user_username']) || in_array($validated_data['destination_user_username'], ['reserves']) || in_array($validated_data['source_user_username'], ['reserves']) ) ? 0 : $validated_data['transfer_asset_value'] * $txn_fee_fctr;
 
         if (isset($validated_data['source_user_username'])){
             if ( isset($validated_data['destination_user_username']) && $validated_data['source_user_username'] == $validated_data['destination_user_username']){
@@ -112,12 +112,12 @@ class _TransactionController extends Controller
             ]);
 
             if ( $source_user_asset_account->_status == 'frozen' ){ return abort(422, 'Selected asset is frozen.'); }
-            if ( !$source_user_asset_account ){ return abort(422, 'Current ' . $validated_data['asset_code'] . ' balance insufficient for transaction.'); }
+            if ( !$source_user_asset_account ){ return abort(422, 'Current '.$validated_data['asset_code'].' balance insufficient for transaction.'); }
             
             $old_usable_balance_asset_value = $source_user_asset_account->usable_balance_asset_value;
             $new_usable_balance_asset_value = $old_usable_balance_asset_value - $validated_data['transfer_asset_value'];
 
-            if ( $new_usable_balance_asset_value < 0 ){ return abort(422, 'Current ' . $validated_data['asset_code'] . ' balance for ' . $validated_data['source_user_username'] . ' insufficient for transaction.'); }
+            if ( $new_usable_balance_asset_value < 0 ){ return abort(422, 'Current '.$validated_data['asset_code'].' balance for '.$validated_data['source_user_username'].' insufficient for transaction.'); }
 
             $old_total_balance_asset_value = $source_user_asset_account->total_balance_asset_value;
             $new_total_balance_asset_value = $old_total_balance_asset_value - $validated_data['transfer_asset_value'];
@@ -180,14 +180,14 @@ class _TransactionController extends Controller
                 'asset_code' => $validated_data['asset_code'],
                 'senderAccountId' => isset($source_user_asset_account) ? $source_user_asset_account->tatum_virtual_account_id : null,
                 'recipientAccountId' => isset($destination_user_asset_account) ? $destination_user_asset_account->tatum_virtual_account_id : null,
-                'amount' => $validated_data['transfer_asset_value'] . '',
+                'amount' => $validated_data['transfer_asset_value'],
             ];
-            if ($validated_data['txcontext'] == 'onchain') {
+            if ($validated_data['txn_context'] == 'onchain') {
                 if ($tatum_request_object['senderAccountId']){
                     $tatum_request_object['index'] = $source_user_asset_account->tatum_derivation_key;
                     $tatum_request_object['address'] = $validated_data['destination_blockchain_address'];
                     $tatum_element = (new __TatumAPIController)->transferAssetValueFromVirtualAccountToBlockchain(new Request($tatum_request_object))->getData();
-                    $validated_data['blockchain_txid'] = $tatum_element->txId;
+                    $validated_data['blockchain_txn_id'] = $tatum_element->txId;
                 }
                 // handles is_recon here
             } else {
@@ -223,21 +223,21 @@ class _TransactionController extends Controller
             // End Create notification
         }
 
-        if ( isset($validated_data['source_user_username']) && $validated_data['platform_charge_asset_value'] ){
-            //sleep(1);
+        if ( isset($validated_data['source_user_username']) && $validated_data['txn_fee_asset_value'] ){
+            sleep(2);
             (new _TransactionController)->store( new Request([
-                'txcontext' => 'offchain',
-                'description' => 'Platform charges for transaction ' . $element->ref_code,
-                'operation_slug' => 'platform_charge',
+                'txn_context' => 'offchain',
+                'description' => 'Platform charge fee for transaction '.$element->ref_code,
+                'operation_slug' => 'transaction_fee_charge',
                 'source_user_username' => $validated_data['source_user_username'],
                 'source_user_password' => $validated_data['source_user_password'],
                 'destination_user_username' => 'reserves',
                 'asset_code' => $validated_data['asset_code'],
-                'transfer_asset_value' => $validated_data['platform_charge_asset_value'],
+                'transfer_asset_value' => $validated_data['txn_fee_asset_value'],
             ]));
         }
 
-        if ($request->expectsJson()) return response()->json( [ 'ref_code' => $element->ref_code ] );
+        return response()->json( [ 'ref_code' => $element->ref_code ] );
         //return response()->json( new _TransactionResource( $element ) );
     }
 
@@ -257,7 +257,7 @@ class _TransactionController extends Controller
             'subscriptionType' => ['required', 'string', Rule::in(['ACCOUNT_INCOMING_BLOCKCHAIN_TRANSACTION'])],
             'amount' => ['required', 'numeric'],
             'currency' => ['sometimes', 'string', 'exists:__assets,tatum_currency'],
-            'txId' => ['required', 'string', 'unique:__transactions,blockchain_txid'],
+            'txId' => ['required', 'string', 'unique:__transactions,blockchain_txn_id'],
             'reference' => ['sometimes', 'string'],
             'blockHeight' => ['sometimes', 'numeric'],
             'blockHash' => ['sometimes', 'string'],
@@ -292,8 +292,8 @@ class _TransactionController extends Controller
         $destination_user_asset_account = _AssetAccount::firstWhere(['tatum_virtual_account_id' => $validated_data['accountId']]);
 
         $txrecon_data = [
-            'txcontext' => 'onchain',
-            'operation_slug' => 'internalisation',
+            'txn_context' => 'onchain',
+            'operation_slug' => 'inbound_direct_transfer',
             'description' => isset($validated_data['description']) ? $validated_data['description'] : 'Transfer from external wallet to ankelli wallet',
             'source_blockchain_address' => $validated_data['from'],
             'destination_user_username' => $destination_user_asset_account->user_username,
@@ -301,13 +301,13 @@ class _TransactionController extends Controller
             'asset_code' => $destination_user_asset_account->asset_code,
             'transfer_asset_value' => $validated_data['amount'],
             'is_recon' => true,
-            'blockchain_txid' => $validated_data['txId'],
+            'blockchain_txn_id' => $validated_data['txId'],
             'tatum_reference' => $validated_data['reference'],
             'transfer_datetime' => date('Y-m-d H:i:s', $validated_data['date'] / 1000)
         ];
 
         $used_destination_asset_account_address = _AssetAccountAddress::firstWhere(['blockchain_address' => $txrecon_data['destination_blockchain_address']]);
-        $used_destination_asset_account_address->update(['onchain_txcount' => $used_destination_asset_account_address->onchain_txcount + 1, 'last_active_datetime' => $txrecon_data['transfer_datetime']]);
+        $used_destination_asset_account_address->update(['onchain_txn_count' => $used_destination_asset_account_address->onchain_txn_count + 1, 'last_active_datetime' => $txrecon_data['transfer_datetime']]);
 
         return (new _TransactionController)->store(new Request($txrecon_data));
     }
@@ -325,7 +325,7 @@ class _TransactionController extends Controller
             'accountId' => ['required', 'exists:__asset_accounts,tatum_virtual_account_id', 'string'],
             'amount' => ['required', 'numeric'],
             'currency' => ['sometimes', 'string', 'exists:__assets,tatum_currency'],
-            'txId' => ['required', 'string', 'unique:__transactions,blockchain_txid'],
+            'txId' => ['required', 'string', 'unique:__transactions,blockchain_txn_id'],
             'reference' => ['required', 'string'],
             'marketValue' => ['sometimes', 'array'],
             'address' => ['required', 'string', 'exists:__asset_account_addresses,blockchain_address'],
@@ -344,33 +344,43 @@ class _TransactionController extends Controller
         $destination_user_asset_account = _AssetAccount::firstWhere(['tatum_virtual_account_id' => $validated_data['accountId']]);
 
         $txrecon_data = [
-            'txcontext' => 'onchain',
-            'operation_slug' => 'internalisation',
+            'txn_context' => 'onchain',
+            'operation_slug' => 'inbound_direct_transfer',
             'description' => isset($validated_data['description']) ? $validated_data['description'] : 'Transfer from external wallet to ankelli wallet',
             'destination_user_username' => $destination_user_asset_account->user_username,
             'destination_blockchain_address' => $validated_data['address'],
             'asset_code' => $destination_user_asset_account->asset_code,
             'transfer_asset_value' => $validated_data['amount'],
             'is_recon' => true,
-            'blockchain_txid' => $validated_data['txId'],
+            'blockchain_txn_id' => $validated_data['txId'],
             'tatum_reference' => $validated_data['reference'],
             'transfer_datetime' => date('Y-m-d H:i:s', $validated_data['created'] / 1000)
         ];
 
         $used_destination_asset_account_address = _AssetAccountAddress::firstWhere(['blockchain_address' => $txrecon_data['destination_blockchain_address']]);
-        $used_destination_asset_account_address->update(['onchain_txcount' => $used_destination_asset_account_address->onchain_txcount + 1, 'last_active_datetime' => $txrecon_data['transfer_datetime']]);
+        $used_destination_asset_account_address->update(['onchain_txn_count' => $used_destination_asset_account_address->onchain_txn_count + 1, 'last_active_datetime' => $txrecon_data['transfer_datetime']]);
 
         return (new _TransactionController)->store(new Request($txrecon_data));
     }
 
-    
     /**
-     * Store a newly created resource in storage.
+     * Process a payment transaction
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function process(Request $request)
+    public function process_payment(Request $request)
+    {
+
+    }
+    
+    /**
+     * Process a direct transfer transaction
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function process_direct_transfer(Request $request)
     {
         $validated_data = $request->validate([
             'asset_code' => ['required', 'exists:__assets,code', 'string'],
@@ -384,12 +394,14 @@ class _TransactionController extends Controller
         
         $destination_asset_account_address = _AssetAccountAddress::firstWhere(['blockchain_address' => $validated_data['destination_blockchain_address']]);
         if ($destination_asset_account_address){
-            $validated_data['txcontext'] = 'offchain';
+            $validated_data['txn_context'] = 'offchain';
             $validated_data['destination_user_username'] = $destination_asset_account_address->user_username;
             $validated_data['operation_slug'] = 'direct_transfer';
+            $validated_data['txn_fee_fctr'] = _PrefItem::firstWhere('key_slug', 'drct_xfer_offchain_txn_fee_fctr')->value_f();
         } else {
-            $validated_data['txcontext'] = 'onchain';
-            $validated_data['operation_slug'] = 'externalisation';
+            $validated_data['txn_context'] = 'onchain';
+            $validated_data['operation_slug'] = 'outbound_direct_transfer';
+            $validated_data['txn_fee_fctr'] = _PrefItem::firstWhere('key_slug', 'drct_xfer_onchain_txn_fee_fctr')->value_f();
         }
 
         $validated_data['description'] = $validated_data['recipient_note'];

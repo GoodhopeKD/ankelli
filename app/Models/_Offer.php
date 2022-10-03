@@ -26,6 +26,7 @@ class _Offer extends Model
         'asset_code',
         'currency_code',
         'offer_price',
+        'trade_txn_fee_fctr',
 
         'min_trade_purchase_amount',
         'max_trade_purchase_amount',
@@ -64,6 +65,7 @@ class _Offer extends Model
      */
     protected $casts = [
         'offer_price' => 'float',
+        'trade_txn_fee_fctr' => 'float',
         'min_trade_sell_value' => 'float',
         'max_trade_sell_value' => 'float',
         'offer_total_sell_value' => 'float',

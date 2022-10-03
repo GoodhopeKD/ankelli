@@ -30,10 +30,11 @@ class _Trade extends Model
         'asset_code',
         'currency_code',
         'asset_value',
-        'asset_value_escrowed',
-        'trade_txn_fee_factor',
         'currency_amount',
+        'asset_value_escrowed',
         'offer_price',
+        'trade_txn_fee_fctr',
+        'buyer_cmplt_trade_mins_tmt',
         'pymt_method_slug',
         'pymt_details',
         'pymt_declared_datetime',
@@ -41,6 +42,7 @@ class _Trade extends Model
         'visible_to_creator',
         'visible_to_offer_creator',
         'buyer_opened_datetime',
+        'closed_datetime',
         '_status',
         'flag_raiser_username',
         'offer_creator_username',
@@ -56,12 +58,16 @@ class _Trade extends Model
      * @var array
      */
     protected $casts = [
+        'pymt_declared_datetime' => 'datetime',
+        'pymt_confirmed_datetime' => 'datetime',
+        'buyer_opened_datetime' => 'datetime',
+        'closed_datetime' => 'datetime',
         'visible_to_creator' => 'boolean',
         'visible_to_offer_creator' => 'boolean',
         'asset_value' => 'float',
         'asset_value_escrowed' => 'float',
-        'trade_txn_fee_factor' => 'float',
         'offer_price' => 'float',
+        'trade_txn_fee_fctr' => 'float',
         'pymt_details' => 'array',
     ];
 

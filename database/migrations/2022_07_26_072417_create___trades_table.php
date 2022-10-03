@@ -44,10 +44,12 @@ return new class extends Migration
                     ->onUpdate('cascade')
                     ->onDelete('set null');
             $table->string('asset_value', 32); // unsignedDecimal
-            $table->string('asset_value_escrowed', 32); // unsignedDecimal
-            $table->string('trade_txn_fee_factor', 32); // unsignedDecimal
             $table->unsignedBigInteger('currency_amount');
+            $table->string('asset_value_escrowed', 32); // unsignedDecimal
             $table->string('offer_price', 32)->nullable(); // unsignedDecimal
+            $table->string('trade_txn_fee_fctr', 32); // unsignedDecimal
+
+            $table->unsignedTinyInteger('buyer_cmplt_trade_mins_tmt');
 
             $table->string('pymt_method_slug', 64)->nullable();
             $table->foreign('pymt_method_slug')
@@ -62,6 +64,7 @@ return new class extends Migration
             $table->boolean('visible_to_creator')->default(true);
             $table->boolean('visible_to_offer_creator')->default(true);
             $table->timestamp('buyer_opened_datetime')->nullable();
+            $table->timestamp('closed_datetime')->nullable();
             $table->enum('_status', ['active', 'cancelled', 'flagged', 'completed'])->default('active');
 
             $table->string('flag_raiser_username', 64)->nullable();

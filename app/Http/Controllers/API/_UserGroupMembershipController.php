@@ -57,7 +57,7 @@ class _UserGroupMembershipController extends Controller
         $creator_admin_extension = _AdminExtension::firstWhere([ 'user_username' => $validated_data['creator_username'] ]);
         if ($creator_admin_extension){
             if ($creator_admin_extension->_status!='active'){
-                return abort(422,"Current user cannot add member to any group because _AdminExtension is " . $creator_admin_extension->_status);
+                return abort(422,"Current user cannot add member to any group because _AdminExtension is ".$creator_admin_extension->_status);
             }
         } else {
             return abort(403,"Current user is not an admin");
@@ -79,7 +79,7 @@ class _UserGroupMembershipController extends Controller
             $new_member_admin_extension = _AdminExtension::firstWhere([ 'user_username' => $validated_data['user_username'] ]);
             if ($new_member_admin_extension){
                 if ($new_member_admin_extension->_status!='active'){
-                    return abort(422,"User cannot be added to group because _AdminExtension is " . $new_member_admin_extension->_status);
+                    return abort(422,"User cannot be added to group because _AdminExtension is ".$new_member_admin_extension->_status);
                 }
             } else {
                 return abort(422,"User needs to be added as admin to be  added to this group");

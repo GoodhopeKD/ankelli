@@ -66,7 +66,7 @@ class _UserController extends Controller
      */
     public function store(Request $request)
     {
-        $token_reg_enabled = (boolean)_PrefItem::firstWhere('key_slug', 'token_reg_enabled')->value;
+        $token_reg_enabled = _PrefItem::firstWhere('key_slug', 'token_reg_enabled')->value_f();
         // Request Validation
         $validated_data = $request->validate([
             'reg_token' => [ $token_reg_enabled ? 'required' : 'sometimes', 'string', 'max:16'],

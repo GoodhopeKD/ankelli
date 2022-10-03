@@ -41,7 +41,7 @@ class RouteServiceProvider extends ServiceProvider
             $api_location = env('MIX_API_URL') ? Route::domain(env('MIX_API_URL')) : Route::prefix('api');
             $api_location
                 ->middleware('api')
-                ->namespace($this->namespace . '\\API')
+                ->namespace($this->namespace.'\\API')
                 ->group(base_path('routes/api.php'));
 
             Route::middleware('web')

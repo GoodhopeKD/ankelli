@@ -84,7 +84,7 @@ class __TatumAPIController extends Controller
 
             curl_setopt_array($curl, [
                 CURLOPT_HTTPHEADER => [
-                    "x-api-key: " . $this->x_api_key,
+                    "x-api-key: ".$this->x_api_key,
                 ],
                 CURLOPT_URL => $wallet_config['blockchain_wallet_generate_url'],
                 CURLOPT_RETURNTRANSFER => true,
@@ -131,9 +131,9 @@ class __TatumAPIController extends Controller
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
-                "x-api-key: " . $this->x_api_key,
+                "x-api-key: ".$this->x_api_key,
             ],
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/customer?" . http_build_query(['type' => 'testnet', 'pageSize' => 50]),
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/customer?".http_build_query(['type' => 'testnet', 'pageSize' => 50]),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "GET",
         ]);
@@ -180,9 +180,9 @@ class __TatumAPIController extends Controller
             curl_setopt_array($curl, [
                 CURLOPT_HTTPHEADER => [
                     "Content-Type: application/json",
-                    "x-api-key: " . $this->x_api_key,
+                    "x-api-key: ".$this->x_api_key,
                 ],
-                CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/customer/" . $validated_data['customerId'] . "?" . http_build_query(['type' => 'testnet', 'currency' => isset($validated_data['currency']) ? $validated_data['currency'] : null, 'pageSize' => 50]),
+                CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/customer/".$validated_data['customerId']."?".http_build_query(['type' => 'testnet', 'currency' => isset($validated_data['currency']) ? $validated_data['currency'] : null, 'pageSize' => 50]),
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_CUSTOMREQUEST => "GET",
             ]);
@@ -190,9 +190,9 @@ class __TatumAPIController extends Controller
             $curl = curl_init();
             curl_setopt_array($curl, [
                 CURLOPT_HTTPHEADER => [
-                    "x-api-key: " . $this->x_api_key,
+                    "x-api-key: ".$this->x_api_key,
                 ],
-                CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account?" . http_build_query(['type' => 'testnet', 'currency' => isset($validated_data['currency']) ? $validated_data['currency'] : null]),
+                CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account?".http_build_query(['type' => 'testnet', 'currency' => isset($validated_data['currency']) ? $validated_data['currency'] : null]),
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_CUSTOMREQUEST => "GET",
             ]);
@@ -252,7 +252,7 @@ class __TatumAPIController extends Controller
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
-                "x-api-key: " . $this->x_api_key,
+                "x-api-key: ".$this->x_api_key,
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account?type=testnet",
@@ -280,9 +280,9 @@ class __TatumAPIController extends Controller
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
-                "x-api-key: " . $this->x_api_key,
+                "x-api-key: ".$this->x_api_key,
             ],
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/" . $validated_data['virtual_account_id'] . "/deactivate",
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/".$validated_data['virtual_account_id']."/deactivate",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "PUT",
         ]);
@@ -315,10 +315,10 @@ class __TatumAPIController extends Controller
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
-                "x-api-key: " . $this->x_api_key,
+                "x-api-key: ".$this->x_api_key,
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/block/" . $validated_data['virtual_account_id'],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/block/".$validated_data['virtual_account_id'],
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);
@@ -343,9 +343,9 @@ class __TatumAPIController extends Controller
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
-                "x-api-key: " . $this->x_api_key,
+                "x-api-key: ".$this->x_api_key,
             ],
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/block/" . $validated_data['block_id'],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/block/".$validated_data['block_id'],
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "DELETE",
         ]);
@@ -370,9 +370,9 @@ class __TatumAPIController extends Controller
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
-                "x-api-key: " . $this->x_api_key,
+                "x-api-key: ".$this->x_api_key,
             ],
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/offchain/account/" . $validated_data['virtual_account_id'] . "/address?type=testnet",
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/offchain/account/".$validated_data['virtual_account_id']."/address?type=testnet",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "GET",
         ]);
@@ -397,9 +397,9 @@ class __TatumAPIController extends Controller
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
-                "x-api-key: " . $this->x_api_key,
+                "x-api-key: ".$this->x_api_key,
             ],
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/offchain/account/" . $validated_data['virtual_account_id'] . "/address?type=testnet",
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/offchain/account/".$validated_data['virtual_account_id']."/address?type=testnet",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);
@@ -441,7 +441,7 @@ class __TatumAPIController extends Controller
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
-                "x-api-key: " . $this->x_api_key,
+                "x-api-key: ".$this->x_api_key,
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
             CURLOPT_URL => $wallet_config['blockchain_transfer_to_url'],
@@ -474,7 +474,7 @@ class __TatumAPIController extends Controller
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
-                "x-api-key: " . $this->x_api_key,
+                "x-api-key: ".$this->x_api_key,
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/transaction?type=testnet",
@@ -508,10 +508,10 @@ class __TatumAPIController extends Controller
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
-                "x-api-key: " . $this->x_api_key,
+                "x-api-key: ".$this->x_api_key,
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/transaction/account?" . http_build_query(['type' => 'testnet', 'pageSize'=>50]),
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/transaction/account?".http_build_query(['type' => 'testnet', 'pageSize'=>50]),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);
@@ -534,10 +534,10 @@ class __TatumAPIController extends Controller
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
-                "x-api-key: " . $this->x_api_key,
+                "x-api-key: ".$this->x_api_key,
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/transaction/ledger?" . http_build_query(['type' => 'testnet', 'pageSize'=>50]),
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/transaction/ledger?".http_build_query(['type' => 'testnet', 'pageSize'=>50]),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);
@@ -571,10 +571,10 @@ class __TatumAPIController extends Controller
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
-                "x-api-key: " . $this->x_api_key,
+                "x-api-key: ".$this->x_api_key,
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/subscription?" . http_build_query(['type' => 'testnet']),
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/subscription?".http_build_query(['type' => 'testnet']),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);
@@ -595,9 +595,9 @@ class __TatumAPIController extends Controller
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
-                "x-api-key: " . $this->x_api_key,
+                "x-api-key: ".$this->x_api_key,
             ],
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/subscription?" . http_build_query(['type' => 'testnet', 'pageSize' => '50']),
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/subscription?".http_build_query(['type' => 'testnet', 'pageSize' => '50']),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "GET",
         ]);
@@ -622,9 +622,9 @@ class __TatumAPIController extends Controller
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
-                "x-api-key: " . $this->x_api_key,
+                "x-api-key: ".$this->x_api_key,
             ],
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/subscription/" . $validated_data['subscription_id'],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/subscription/".$validated_data['subscription_id'],
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "DELETE",
         ]);
@@ -645,9 +645,9 @@ class __TatumAPIController extends Controller
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
-                "x-api-key: " . $this->x_api_key,
+                "x-api-key: ".$this->x_api_key,
             ],
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/subscription/webhook?" . http_build_query(['type' => 'testnet', 'pageSize' => 50]),
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/subscription/webhook?".http_build_query(['type' => 'testnet', 'pageSize' => 50]),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "GET",
         ]);

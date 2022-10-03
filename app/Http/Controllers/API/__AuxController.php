@@ -87,8 +87,8 @@ class __AuxController extends Controller
 
     public function platform_dashboard()
     {
-        $platform_charge_stats_start_date = request()->platform_charge_stats_start_date;
-        $platform_charge_stats = [
+        $txn_fee_stats_start_date = request()->txn_fee_stats_start_date;
+        $txn_fee_stats = [
             'start_date' => now()->toDateTimeString(),
             'end_date' => now()->toDateTimeString(),
             'daily_totals' => [
@@ -123,7 +123,7 @@ class __AuxController extends Controller
                     }
                 }
                 $available = !_User::where('username', $request->param_value )->exists() && !in_array( $request->param_value , $reserved_usernames ) && $regex_passes;
-                $message = $available ? 'Username available for use.' : ( in_array( $request->param_value , $reserved_usernames ) ? 'Chosen username is reserved word and can\'t be used.' : ( !$regex_passes ? 'Username contains "' . $regex_failed_username . '" which is a reserved word' : 'Username already in use in the system.' ) );
+                $message = $available ? 'Username available for use.' : ( in_array( $request->param_value , $reserved_usernames ) ? 'Chosen username is reserved word and can\'t be used.' : ( !$regex_passes ? 'Username contains "'.$regex_failed_username.'" which is a reserved word' : 'Username already in use in the system.' ) );
                 break;
 
             case 'email_address':
@@ -469,7 +469,7 @@ class __AuxController extends Controller
 
         foreach ($simple_users as $key => $username) {
             (new _UserController)->store( new Request([
-                'username' => $username, 'email_address' => $username . '@example.com',
+                'username' => $username, 'email_address' => $username.'@example.com',
                 'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
             ]));
         }
@@ -480,7 +480,7 @@ class __AuxController extends Controller
             ['reserves', 3000, 'Transfer from Coinbase wallet to Ankelli Reserves Wallet.', 'c83f8818db43d9ba4accfe454aa44fc33123d47a4f89d47b314d6748eb0e9bc9'],
             ['guddaz', 218.87587867, 'Transfer from Coinbase wallet to Ankelli wallet.', '62BD544D1B9031EFC330A3E855CC3A0D51CA5131455C1AB3BCAC6D243F65460D'],
             ['paywyze', 967.86579, 'Transfer from Ledger wallet to Ankelli wallet.', '62BD544D1B9031EFC330A3E855CC3A0D51CA5131455C1AB3BCAC6D243F65s60D'],
-            ['flint', 400, 'Transfer from Coinbase wallet to Ankelli wallet.', 'c83f8818db43d9ba4accfe454aa44fc33123d47a4f89d47b314d6748eb0e9bcd'],
+            ['flint', 498.6678, 'Transfer from Coinbase wallet to Ankelli wallet.', 'c83f8818db43d9ba4accfe454aa44fc33123d47a4f89d47b314d6748eb0e9bcd'],
             ['guddaz', 98.9012, 'Transfer from Exodus wallet to Ankelli wallet.', 'c83f8818db43d9ba4accfe454aa44fc33123d47a4f89d47b314f6748eb0e9bc9'],
             ['paywyze', 106.76, 'Transfer from Coinbase wallet to Ankelli wallet.', 'c83f8818db43d9be4accfe454aa44fc33123d47a4f89d47b314d6748eb0e9bc9'],
         ];
@@ -488,15 +488,15 @@ class __AuxController extends Controller
         foreach ($internalisations as $key => $internalisation) {
             session()->put('api_auth_user_username', $internalisation[0]);
             (new _TransactionController)->store( new Request([
-                'txcontext' => 'onchain',
-                'blockchain_txid' => $internalisation[3],
+                'txn_context' => 'onchain',
+                'blockchain_txn_id' => $internalisation[3],
                 'description' => $internalisation[2],
-                'operation_slug' => 'internalisation',
+                'operation_slug' => 'inbound_direct_transfer',
                 'destination_user_username' => $internalisation[0], 
                 'asset_code' => 'USDT',
                 'transfer_asset_value' => $internalisation[1],
             ]));
-            sleep(1);
+            sleep(3);
         }
 
         // Deposit token transactioins,
@@ -519,7 +519,7 @@ class __AuxController extends Controller
             ],[],[],['HTTP_accept'=>'application/json']))->getData();
             session()->put('api_auth_user_username', $deposit_tokener[0]);
             (new _DepositTokenController)->use( $deposit_token->token, 'USDT' );
-            sleep(1);
+            sleep(3);
         }
         
 
@@ -545,32 +545,32 @@ class __AuxController extends Controller
             'parent_uid' => $trade->ref_code,
             'body' => "I'm sending the cash in a couple of minutes."
         ]));
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
-        sleep(1);
+        sleep(3);
         (new _MessageController)->store( new Request([
             'parent_table' => '__trades',
             'parent_uid' => $trade->ref_code,
             'body' => "I've sent the cash.\nPlease confirm receiving it."
         ]));
-        sleep(1);
-        session()->put('api_auth_user_username', 'ross');
+        sleep(3);
+        session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _MessageController)->store( new Request([
             'parent_table' => '__trades',
             'parent_uid' => $trade->ref_code,
             'body' => "I've collected the money."
         ]));
-        sleep(1);
+        sleep(3);
         (new _MessageController)->store( new Request([
             'parent_table' => '__trades',
             'parent_uid' => $trade->ref_code,
             'body' => "Pleasure doing business with you."
         ]));
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123' ]), $trade->ref_code );
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -580,7 +580,7 @@ class __AuxController extends Controller
             'rating' => 5,
             'comment' => 'Quick trade. Buyer was very responsive.'
         ]));
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -590,7 +590,7 @@ class __AuxController extends Controller
             'rating' => 5,
             'comment' => 'Seller ensured a fast trade.',
         ]));
-        sleep(1);
+        sleep(3);
 
         session()->put('api_auth_user_username', 'guddaz');
         $offer = (new _OfferController)->store( Request::create('','',[
@@ -599,7 +599,7 @@ class __AuxController extends Controller
             'offer_to' => 'sell',
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
-            'offer_price' => 1.04,
+            'offer_price' => 0.96,
             'buyer_cmplt_trade_mins_tmt' => 120,
             'min_trade_sell_value' => 50,
             'max_trade_sell_value' => 200,
@@ -625,14 +625,14 @@ class __AuxController extends Controller
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'paywyze');
         $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 100, 'source_user_password' => 'Def-Pass#123'],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
-        session()->put('api_auth_user_username', 'raymond');
+        session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -641,7 +641,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -650,7 +650,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 5,
         ]));
-        sleep(1);
+        sleep(3);
 
 
         // Offer -> trade -> transaction
@@ -670,14 +670,14 @@ class __AuxController extends Controller
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'paywyze');
         $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 140, 'source_user_password' => 'Def-Pass#123' ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
-        session()->put('api_auth_user_username', 'keith');
+        session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -686,7 +686,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -695,7 +695,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 3,
         ]));
-        sleep(1);
+        sleep(3);
 
 
         // Offer -> trade -> transaction
@@ -715,14 +715,14 @@ class __AuxController extends Controller
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'paywyze');
         $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 600, 'source_user_password' => 'Def-Pass#123' ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
-        session()->put('api_auth_user_username', 'jimmy');
+        session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -731,7 +731,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 5,
         ]));
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -740,7 +740,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(1);
+        sleep(3);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'clarence');
@@ -760,14 +760,14 @@ class __AuxController extends Controller
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'ross');
         $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 200, 'source_user_password' => 'Def-Pass#123' ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
-        session()->put('api_auth_user_username', 'clarence');
+        session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -776,7 +776,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 5,
         ]));
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -785,7 +785,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 3,
         ]));
-        sleep(1);
+        sleep(3);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'paywyze');
@@ -805,14 +805,14 @@ class __AuxController extends Controller
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'keith');
         $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 3000, 'source_user_password' => 'Def-Pass#123' ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
-        session()->put('api_auth_user_username', 'paywyze');
+        session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -821,7 +821,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 5,
         ]));
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -830,7 +830,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 5,
         ]));
-        sleep(1);
+        sleep(3);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'peter');
@@ -849,14 +849,14 @@ class __AuxController extends Controller
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'keith');
         $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 250, 'source_user_password' => 'Def-Pass#123' ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
-        session()->put('api_auth_user_username', 'peter');
+        session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -865,7 +865,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 3,
         ]));
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -874,7 +874,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(1);
+        sleep(3);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'flint');
@@ -893,14 +893,14 @@ class __AuxController extends Controller
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'keith');
         $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 2500, 'source_user_password' => 'Def-Pass#123' ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
-        session()->put('api_auth_user_username', 'flint');
+        session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -909,7 +909,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -918,7 +918,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(1);
+        sleep(3);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'paywyze');
@@ -937,14 +937,14 @@ class __AuxController extends Controller
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'jimmy');
         $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 2800, 'source_user_password' => 'Def-Pass#123' ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
-        session()->put('api_auth_user_username', 'paywyze');
+        session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -953,7 +953,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 5,
         ]));
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -962,7 +962,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(1);
+        sleep(3);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'raymond');
@@ -981,14 +981,14 @@ class __AuxController extends Controller
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'jimmy');
         $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 200, 'source_user_password' => 'Def-Pass#123' ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
-        session()->put('api_auth_user_username', 'raymond');
+        session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -997,7 +997,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -1006,7 +1006,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 3,
         ]));
-        sleep(1);
+        sleep(3);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'nassim');
@@ -1025,14 +1025,14 @@ class __AuxController extends Controller
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'jimmy');
         $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 36000, 'source_user_password' => 'Def-Pass#123' ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
-        session()->put('api_auth_user_username', 'nassim');
+        session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -1041,7 +1041,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 5,
         ]));
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -1050,7 +1050,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 3,
         ]));
-        sleep(1);
+        sleep(3);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'guddaz');
@@ -1061,7 +1061,7 @@ class __AuxController extends Controller
             'asset_code' => 'USDT',
             'currency_code' => 'USD',
             'offer_price' => 0.94,
-            'min_trade_purchase_amount' => 100,
+            'min_trade_purchase_amount' => 50,
             'max_trade_purchase_amount' => 200,
             'offer_total_purchase_amount' => 200,
             'buyer_cmplt_trade_mins_tmt' => 120,
@@ -1069,15 +1069,15 @@ class __AuxController extends Controller
             'pymt_details' => [ 'fullname' => 'Tamari Karongo', 'address' => 'Opposite OK Marondera', 'phone_no' => '+263 7658 357' ],
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'flint');
-        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 200, 'source_user_password' => 'Def-Pass#123' ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(1);
+        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 150, 'source_user_password' => 'Def-Pass#123' ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
-        session()->put('api_auth_user_username', 'guddaz');
+        session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -1086,7 +1086,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 3,
         ]));
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -1095,7 +1095,37 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(1);
+        sleep(3);
+
+        // Trade -> transaction
+        session()->put('api_auth_user_username', 'keith');
+        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 50, 'source_user_password' => 'Def-Pass#123' ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        sleep(3);
+        session()->put('api_auth_user_username', $trade->offer_creator_username);
+        (new _TradeController)->show($trade->ref_code);
+        session()->put('api_auth_user_username', $trade->creator_username);
+        (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
+        session()->put('api_auth_user_username', $trade->offer_creator_username);
+        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
+        sleep(3);
+        session()->put('api_auth_user_username', $trade->creator_username);
+        (new _ReviewController)->store( new Request([ 
+            'parent_table' => '__users',
+            'parent_uid' => $trade->offer_creator_username,
+            'pivot_parent_table' => '__trades',
+            'pivot_parent_uid' => $trade->ref_code,
+            'rating' => 3,
+        ]));
+        sleep(3);
+        session()->put('api_auth_user_username', $trade->offer_creator_username);
+        (new _ReviewController)->store( new Request([ 
+            'parent_table' => '__users',
+            'parent_uid' => $trade->creator_username,
+            'pivot_parent_table' => '__trades',
+            'pivot_parent_uid' => $trade->ref_code,
+            'rating' => 4,
+        ]));
+        sleep(3);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'peter');
@@ -1114,14 +1144,14 @@ class __AuxController extends Controller
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'flint');
         $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 35000, 'source_user_password' => 'Def-Pass#123' ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
-        session()->put('api_auth_user_username', 'peter');
+        session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -1130,7 +1160,7 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(1);
+        sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store( new Request([ 
             'parent_table' => '__users',
@@ -1139,7 +1169,56 @@ class __AuxController extends Controller
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 3,
         ]));
-        sleep(1);
+        sleep(3);
+
+        // Offer -> trade
+        session()->put('api_auth_user_username', 'raymond');
+        $offer = (new _OfferController)->store( Request::create('','',[
+            'country_name' => 'Zimbabwe',
+            'offer_to' => 'buy',
+            'asset_code' => 'USDT',
+            'currency_code' => 'USD',
+            'offer_price' => 0.94,
+            'min_trade_purchase_amount' => 100,
+            'max_trade_purchase_amount' => 100,
+            'offer_total_purchase_amount' => 100,
+            'buyer_cmplt_trade_mins_tmt' => 30,
+            'pymt_method_slug' => 'mukuru',
+            'pymt_details' => [ 'fullname' => 'Kudakwashe Magadze', 'phone_no' => '+263 765 357',],
+        ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        session()->put('api_auth_user_username', 'guddaz');
+        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 100, 'source_user_password' => 'Def-Pass#123'],[],[],['HTTP_accept'=>'application/json']))->getData();
+        sleep(3);
+        session()->put('api_auth_user_username', $trade->offer_creator_username);
+        (new _TradeController)->show($trade->ref_code);
+        sleep(3);
+        (new _TradeController)->update( new Request([ '_status' => 'cancelled', ]), $trade->ref_code );
+        sleep(3);
+
+        // Offer -> trade
+        session()->put('api_auth_user_username', 'guddaz');
+        $offer = (new _OfferController)->store( Request::create('','',[
+            'country_name' => 'Zimbabwe',
+            'location' => 'Marondera', 
+            'offer_to' => 'buy',
+            'asset_code' => 'USDT',
+            'currency_code' => 'USD',
+            'offer_price' => 0.95,
+            'min_trade_purchase_amount' => 200,
+            'max_trade_purchase_amount' => 200,
+            'offer_total_purchase_amount' => 200,
+            'buyer_cmplt_trade_mins_tmt' => 90,
+            'pymt_method_slug' => 'cash_in_person',
+            'pymt_details' => [ 'fullname' => 'Tamari Karongo', 'address' => 'Opposite OK Marondera', 'phone_no' => '+263 7658 357' ],
+        ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        session()->put('api_auth_user_username', 'flint');
+        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 200, 'source_user_password' => 'Def-Pass#123' ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        sleep(3);
+        session()->put('api_auth_user_username', $trade->offer_creator_username);
+        (new _TradeController)->show($trade->ref_code);
+        session()->put('api_auth_user_username', $trade->creator_username);
+        (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
+        sleep(3);
 
         if ($token_reg_changed){
             (new _PrefItemController)->update( new Request([

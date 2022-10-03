@@ -60,7 +60,7 @@ class _VerifToken extends Model
                 $recipient_resource_value = ( $this->email_address ) ? $this->email_address->email_address : null;
                 break;
             case '__phone_nos':
-                $recipient_resource_value = ( $this->phone_no ) ? '+' . ltrim($this->phone_no->country_calling_code, '+') . ltrim($this->phone_no->number, '0');
+                $recipient_resource_value = ( $this->phone_no ) ? '+'.ltrim($this->phone_no->country_calling_code, '+').ltrim($this->phone_no->number, '0');
                 break;
         }
         return $recipient_resource_value;

@@ -33,7 +33,7 @@ class _MessageController extends Controller
         if (!isset($request->has_attachment)) $request->has_attachment = false;
         $validated_data = $request->validate([
             'parent_table' => ['sometimes', 'string', Rule::in(['__chats', '__trades'])],
-            'parent_uid' => ['required', 'exists:' . $request->parent_table . ','.($request->parent_table=='__chats'?'id':'ref_code').''],
+            'parent_uid' => ['required', 'exists:'.$request->parent_table.','.($request->parent_table=='__chats'?'id':'ref_code').''],
             'body' => ['required_if:has_attachment,==,false', 'nullable', 'string'],
         ]);
 

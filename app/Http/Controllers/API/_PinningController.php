@@ -23,7 +23,7 @@ class _PinningController extends Controller
         $validated_data = $request->validate([
             'user_username' => ['required', 'string', 'exists:__users,username'],
             'item_table' => ['required', 'string', Rule::in(['__listings', '__events'])],
-            'item_reference_code' => ['required', 'exists:' . $request->item_table . ',reference_code', 'string'],
+            'item_reference_code' => ['required', 'exists:'.$request->item_table.',reference_code', 'string'],
             'pinning_type'      => ['required', 'string', Rule::in(['favourite', 'cart'])],
             'product_quantity'   => ['integer'],
         ]);

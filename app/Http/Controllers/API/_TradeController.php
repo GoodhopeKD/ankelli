@@ -90,9 +90,9 @@ class _TradeController extends Controller
 
         $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
 
-        $validated_data['trade_txn_fee_factor'] = (float)_PrefItem::firstWhere('key_slug', 'trade_txn_fee_factor')->value;
+        $validated_data['trade_txn_fee_fctr'] = $offer->trade_txn_fee_fctr ?? _PrefItem::firstWhere('key_slug', 'trade_txn_fee_fctr')->value_f();
         $validated_data['asset_value'] = $validated_data['currency_amount'] / $offer->offer_price;
-        $validated_data['asset_value_escrowed'] = $validated_data['asset_value'] * (1 + $validated_data['trade_txn_fee_factor']);
+        $validated_data['asset_value_escrowed'] = $validated_data['asset_value'] * (1 + $validated_data['trade_txn_fee_fctr']);
 
         if ($offer->offer_to == 'buy'){
             if (!($validated_data['currency_amount'] >= $offer->min_trade_purchase_amount && $validated_data['currency_amount'] <= $offer->max_trade_purchase_amount)){
@@ -126,10 +126,10 @@ class _TradeController extends Controller
                 session()->put('api_auth_user_username', 'system');
                 (new _OfferController)->update(new Request([
                     '_status' => 'offline', 
-                    'update_note' => 'Set offline by the system because _SellerExtension is ' . $seller_seller_extension->_status
+                    'update_note' => 'Set offline by the system because _SellerExtension is '.$seller_seller_extension->_status
                 ]), $offer->ref_code );
                 session()->put('api_auth_user_username', $api_auth_user_username);
-                return abort(422,"Selected seller cannot sell because _SellerExtension is " . $seller_seller_extension->_status);
+                return abort(422,"Selected seller cannot sell because _SellerExtension is ".$seller_seller_extension->_status);
             }
         } else {
             (new _SellerExtensionController)->store( new Request([ 'user_username' => $seller_username ]));
@@ -142,10 +142,10 @@ class _TradeController extends Controller
                 session()->put('api_auth_user_username', 'system');
                 (new _OfferController)->update(new Request([
                     '_status' => 'offline', 
-                    'update_note' => 'Set offline by the system because _BuyerExtension is ' . $buyer_buyer_extension->_status
+                    'update_note' => 'Set offline by the system because _BuyerExtension is '.$buyer_buyer_extension->_status
                 ]), $offer->ref_code );
                 session()->put('api_auth_user_username', $api_auth_user_username);
-                return abort(422,"Selected buyer cannot buy because _BuyerExtension is " . $buyer_buyer_extension->_status);
+                return abort(422,"Selected buyer cannot buy because _BuyerExtension is ".$buyer_buyer_extension->_status);
             }
         } else {
             (new _BuyerExtensionController)->store( new Request([ 'user_username' => $buyer_username ]));
@@ -157,7 +157,7 @@ class _TradeController extends Controller
             'asset_code' => $offer->asset_code
         ]);
 
-        if ( !$seller_asset_account ){ return abort(422, 'Current ' . $offer->asset_code . ' balance insufficient for transaction.'); }
+        if ( !$seller_asset_account ){ return abort(422, 'Current '.$offer->asset_code.' balance insufficient for transaction.'); }
         if ( $seller_asset_account->_status == 'frozen' ){ return abort(422, 'Selected asset is frozen.'); }
 
         $validated_data['was_offer_to'] = $offer->offer_to;
@@ -165,11 +165,10 @@ class _TradeController extends Controller
         $validated_data['ref_code'] = random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
         $seller_new_usable_balance_asset_value = $seller_asset_account->usable_balance_asset_value - $validated_data['asset_value_escrowed'];
 
-        if ( $seller_new_usable_balance_asset_value < 0 ){ return abort(422, 'Current ' . $offer->asset_code . ' balance insufficient for transaction.'); }
+        if ( $seller_new_usable_balance_asset_value < 0 ){ return abort(422, 'Current '.$offer->asset_code.' balance insufficient for transaction.'); }
         (new _AssetAccountController)->blockAssetValue( new Request([
             'asset_value' => $validated_data['asset_value_escrowed'],
         ]), $seller_asset_account->id );
-        sleep(1);
         // End lock in escrow
 
         // Update fill
@@ -219,8 +218,8 @@ class _TradeController extends Controller
             'user_username' => $validated_data['offer_creator_username'],
             'content' => [
                 'title' => 'Trade initiated',
-                'subtitle' => 'Someone accepted your offer ref: '.$validated_data['offer_ref_code'].' for asset value '.$validated_data['asset_value'] . ' '.$validated_data['asset_code'],
-                'body' => 'Your offer '.$validated_data['offer_ref_code'].' has been accepted. Trade '.$validated_data['ref_code'].' initiated for asset value '.$validated_data['asset_value'] . ' '.$validated_data['asset_code'],
+                'subtitle' => 'Someone accepted your offer ref: '.$validated_data['offer_ref_code'].' for asset value '.$validated_data['asset_value'].' '.$validated_data['asset_code'],
+                'body' => 'Your offer '.$validated_data['offer_ref_code'].' has been accepted. Trade '.$validated_data['ref_code'].' initiated for asset value '.$validated_data['asset_value'].' '.$validated_data['asset_code'],
             ],
         ]));
         // End Create notification
@@ -354,6 +353,7 @@ class _TradeController extends Controller
             
             if ( in_array($validated_data['updater_username'], [$buyer_username, $seller_username, 'system']) ){
                 $trade_was_cancelled = true;
+                $validated_data['closed_datetime'] = now()->toDateTimeString();
                 // Unlock asset from escrow
                 $seller_asset_account = _AssetAccount::firstWhere([
                     'user_username' => $seller_username,
@@ -362,7 +362,6 @@ class _TradeController extends Controller
                 (new _AssetAccountController)->unblockAssetValue( new Request([
                     'asset_value' => $element->asset_value_escrowed,
                 ]), $seller_asset_account->id );
-                sleep(1);
                 // End unlock asset from escrow
 
                 // Update fill
@@ -413,24 +412,25 @@ class _TradeController extends Controller
             (new _AssetAccountController)->unblockAssetValue( new Request([
                 'asset_value' => $element->asset_value_escrowed,
             ]), $seller_asset_account->id );
-            sleep(1);
+            sleep(2);
             // End unlock asset from escrow
             
             (new _TransactionController)->store( new Request([
-                'txcontext' => 'offchain',
-                'description' => 'Asset release for trade ' . $ref_code . '',
+                'txn_context' => 'offchain',
+                'description' => 'Asset release for trade '.$ref_code,
                 'operation_slug' => 'trade_asset_release',
                 'source_user_username' => $seller_username, 
                 'source_user_password' => $validated_data['source_user_password'],
                 'destination_user_username' => $buyer_username, 
                 'asset_code' => $element->asset_code,
                 'transfer_asset_value' => $element->asset_value,
-                'trade_txn_fee_factor' => $element->trade_txn_fee_factor,
+                'txn_fee_fctr' => $element->trade_txn_fee_fctr,
             ]));
         }
 
         if ( ($element->_status == 'active' || ($element->_status == 'flagged' && isset($validated_data['_status']) && $validated_data['_status'] === 'active' && in_array($validated_data['updater_username'], [$element->flag_raiser_username]) )) && ( isset($validated_data['pymt_declared_datetime']) || isset($element->pymt_declared_datetime) ) && ( isset($validated_data['pymt_confirmed_datetime']) || isset($element->pymt_confirmed_datetime) )){
             $validated_data['_status'] = 'completed';
+            $validated_data['closed_datetime'] = now()->toDateTimeString();
         }
         
         if ( $element->_status == 'active' && ( isset($validated_data['pymt_declared_datetime']) || isset($element->pymt_declared_datetime) ) && ( isset($validated_data['pymt_confirmed_datetime']) || isset($element->pymt_confirmed_datetime) )){

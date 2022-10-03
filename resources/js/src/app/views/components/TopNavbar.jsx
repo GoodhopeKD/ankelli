@@ -34,7 +34,7 @@ export default withRouter(class TopNavbar extends React.Component {
 
                         {this.props.curr_auth_state ?
                             <div className="col-1 col-sm-1 col-md-1 dropdown text-end">
-                                <a href="#" className="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <a href="#" className="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" >
                                     <img src={require("app/assets/img/user_avatar/" + (window.padNumber(this.props.auth_user.avatar_image_id ?? '0')) + ".png").default} alt="User avatar" width="32" height="32" className="rounded-circle" />
                                 </a>
                                 <ul className="dropdown-menu text-small dropdown-menu-end">

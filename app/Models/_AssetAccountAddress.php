@@ -21,7 +21,7 @@ class _AssetAccountAddress extends Model
         'user_username',
         'blockchain_address',
         'tatum_derivation_key',
-        'onchain_txcount',
+        'onchain_txn_count',
         'last_active_datetime',
     ];
 

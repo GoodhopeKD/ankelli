@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::group(['domain' => 'https://www.' . env('MIX_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://www.'.env('MIX_DOMAIN_NAME')], function(){
     Route::view('/', 'scaffolding_app');
     Route::view('/about', 'main/about');
     Route::view('/contact', 'main/contact');
@@ -13,7 +13,7 @@ Route::group(['domain' => 'https://www.' . env('MIX_DOMAIN_NAME')], function(){
     Route::view('/blog_posts/{id}', 'main/blog');
 });
 
-Route::group(['domain' => 'https://p2p.' . env('MIX_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://p2p.'.env('MIX_DOMAIN_NAME')], function(){
     $p2p_scaffolding_app_paths = [
         '/',
         '/offers',
@@ -30,7 +30,7 @@ Route::group(['domain' => 'https://p2p.' . env('MIX_DOMAIN_NAME')], function(){
     }
 });
 
-Route::group(['domain' => 'https://pay.' . env('MIX_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://pay.'.env('MIX_DOMAIN_NAME')], function(){
     $pay_scaffolding_app_paths = [
         '/',
         '/merchants',
@@ -45,7 +45,7 @@ Route::group(['domain' => 'https://pay.' . env('MIX_DOMAIN_NAME')], function(){
     }
 });
 
-Route::group(['domain' => 'https://admin.' . env('MIX_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://admin.'.env('MIX_DOMAIN_NAME')], function(){
     $admin_scaffolding_app_paths = [
         '/',
         '/analytics/users',
@@ -71,7 +71,7 @@ Route::group(['domain' => 'https://admin.' . env('MIX_DOMAIN_NAME')], function()
     }
 });
 
-Route::group(['domain' => 'https://banking.' . env('MIX_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://banking.'.env('MIX_DOMAIN_NAME')], function(){
     $banking_scaffolding_app_paths = [
         '/',
         '/my-crypto-wallets',
@@ -89,7 +89,7 @@ Route::group(['domain' => 'https://banking.' . env('MIX_DOMAIN_NAME')], function
     }
 });
 
-Route::group(['domain' => 'https://support.' . env('MIX_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://support.'.env('MIX_DOMAIN_NAME')], function(){
     $support_scaffolding_app_paths = [
         '/',
         '/flagged-elements/users',
@@ -106,7 +106,7 @@ Route::group(['domain' => 'https://support.' . env('MIX_DOMAIN_NAME')], function
     }
 });
 
-Route::group(['domain' => 'https://accounts.' . env('MIX_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://accounts.'.env('MIX_DOMAIN_NAME')], function(){
     $support_scaffolding_app_paths = [
         '/auth/signup',
         '/auth/signin',

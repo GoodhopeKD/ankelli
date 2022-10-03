@@ -24,7 +24,7 @@ return new class extends Migration
                     ->onDelete('set null');
             $table->string('blockchain_address', 96)->unique()->nullable();
             $table->unsignedInteger('tatum_derivation_key')->nullable();
-            $table->unsignedTinyInteger('onchain_txcount')->default(0);
+            $table->unsignedTinyInteger('onchain_txn_count')->default(0);
 
             $table->timestamp('created_datetime')->useCurrent();
             $table->timestamp('last_active_datetime')->nullable();

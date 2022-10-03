@@ -31,8 +31,8 @@ class OffersViewSingleScreen extends React.Component {
 
     assetToCurrency = (asset_value, key_prefix = '') => {
         const offer_price = this.focused_offer.offer_price
-        const trade_txn_fee_factor = this.props.sysconfig_params.trade_txn_fee_factor
-        const currency_amount = this.focused_offer.offer_to == 'buy' ? (asset_value * offer_price) / (1 + trade_txn_fee_factor) : (asset_value * offer_price)
+        const trade_txn_fee_fctr = this.props.sysconfig_params.trade_txn_fee_fctr
+        const currency_amount = this.focused_offer.offer_to == 'buy' ? (asset_value * offer_price) / (1 + trade_txn_fee_fctr) : (asset_value * offer_price)
         const update_object = {}
         update_object[key_prefix + 'asset_value'] = asset_value
         update_object[key_prefix + 'currency_amount'] = currency_amount
@@ -41,8 +41,8 @@ class OffersViewSingleScreen extends React.Component {
 
     currencyToAsset = (currency_amount, key_prefix = '') => {
         const offer_price = this.focused_offer.offer_price
-        const trade_txn_fee_factor = this.props.sysconfig_params.trade_txn_fee_factor
-        const asset_value = this.focused_offer.offer_to == 'buy' ? (currency_amount / offer_price) * (1 + trade_txn_fee_factor) : (currency_amount / offer_price)
+        const trade_txn_fee_fctr = this.props.sysconfig_params.trade_txn_fee_fctr
+        const asset_value = this.focused_offer.offer_to == 'buy' ? (currency_amount / offer_price) * (1 + trade_txn_fee_fctr) : (currency_amount / offer_price)
         const update_object = {}
         update_object[key_prefix + 'asset_value'] = asset_value
         update_object[key_prefix + 'currency_amount'] = currency_amount
@@ -192,7 +192,7 @@ class OffersViewSingleScreen extends React.Component {
                                             />}
                                             <span className="input-group-text">{asset.code}</span>
                                         </div>
-                                        {this.focused_offer.offer_to == 'buy' && <div className="form-text">= &#123;<b>purchase_amount</b>&#125; * ( <b>1</b> + &#123;<b>a {this.props.sysconfig_params.trade_txn_fee_factor} platform_fee</b>&#125; ) / &#123;<b>price</b>&#125;</div>}
+                                        {this.focused_offer.offer_to == 'buy' && <div className="form-text">= &#123;<b>purchase_amount</b>&#125; * ( <b>1</b> + &#123;<b>a {this.props.sysconfig_params.trade_txn_fee_fctr} platform_fee</b>&#125; ) / &#123;<b>price</b>&#125;</div>}
                                     </div>
                                     <div className="col-lg-6">
                                         <label htmlFor="input_currency_amount" className="form-label">Amount you'll {this.focused_offer.offer_to == 'buy' ? 'receive' : 'pay'}</label>
@@ -208,7 +208,7 @@ class OffersViewSingleScreen extends React.Component {
                                             />
                                             {!currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
                                         </div>
-                                        {this.focused_offer.offer_to == 'buy' && <div className="form-text">= &#123;<b>asset_value</b>&#125; * &#123;<b>price</b>&#125; / ( <b>1</b> + &#123;<b>a {this.props.sysconfig_params.trade_txn_fee_factor} platform_fee</b>&#125; )</div>}
+                                        {this.focused_offer.offer_to == 'buy' && <div className="form-text">= &#123;<b>asset_value</b>&#125; * &#123;<b>price</b>&#125; / ( <b>1</b> + &#123;<b>a {this.props.sysconfig_params.trade_txn_fee_fctr} platform_fee</b>&#125; )</div>}
                                     </div>
                                 </div>
                             </div>

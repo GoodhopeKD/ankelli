@@ -20,8 +20,8 @@ class _Transaction extends Model
      */
     protected $fillable = [
         'ref_code',
-        'txcontext',
-        'blockchain_txid',
+        'txn_context',
+        'blockchain_txn_id',
         'tatum_reference',
         'session_token',
         'description',
@@ -45,7 +45,7 @@ class _Transaction extends Model
      * @var array
      */
     protected $hidden = [
-        'blockchain_txid',
+        'blockchain_txn_id',
         'tatum_reference',
     ];
     

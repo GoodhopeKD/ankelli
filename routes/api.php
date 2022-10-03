@@ -94,7 +94,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('content/files/upload', '_FileController@upload')->name('files.upload');
     Route::apiResource('content/files', '_FileController')->except(['index'])->parameter('files', 'id');
 
-    Route::post('banking/transactions/process', '_TransactionController@process')->name('process_transaction');
+    Route::post('banking/transactions/process_direct_transfer', '_TransactionController@process_direct_transfer')->name('process_direct_transfer_transaction');
     Route::get('banking/transactions', '_TransactionController@index')->name('banking.transactions.index');
 
     Route::get('banking/deposit_tokens/{token}/use/{asset_code}', '_DepositTokenController@use')->name('use_deposit_token');

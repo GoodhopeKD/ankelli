@@ -113,7 +113,7 @@ class BCSendCryptoScreen extends React.Component {
                                         />
                                     </div>
                                     <div className="col">
-                                        <label htmlFor="output_current_balance" className="form-label">Current usable balance</label>
+                                        <label htmlFor="output_current_balance" className="form-label">Usable balance</label>
                                         <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
                                     </div>
                                 </div>
@@ -123,12 +123,12 @@ class BCSendCryptoScreen extends React.Component {
                                 <div className="bd-example">
                                     <nav>
                                         <div className="nav nav-tabs mb-3" id="nav-tab" role="tablist">
-                                            <button onClick={() => this.handleInputChange('send_to', 'user', true)} className="nav-link active" id="nav-send-to-user-tab" data-bs-toggle="tab" data-bs-target="#nav-send-to-user" type="button" role="tab" aria-controls="nav-send-to-user" aria-selected="true">To platform user</button>
-                                            <button onClick={() => this.handleInputChange('send_to', 'address', true)} className="nav-link" id="nav-send-to-address-tab" data-bs-toggle="tab" data-bs-target="#nav-send-to-address" type="button" role="tab" aria-controls="nav-send-to-address" aria-selected="false" tabIndex="-1">To blockchain address</button>
+                                            <button onClick={() => this.handleInputChange('send_to', 'user', true)} className="nav-link active" id="nav-send-to-user-tab" data-bs-toggle="tab" data-bs-target="#nav-send-to-user" type="button" role="tab" >To platform user</button>
+                                            <button onClick={() => this.handleInputChange('send_to', 'address', true)} className="nav-link" id="nav-send-to-address-tab" data-bs-toggle="tab" data-bs-target="#nav-send-to-address" type="button" role="tab" tabIndex="-1">To blockchain address</button>
                                         </div>
                                     </nav>
                                     <div className="tab-content" id="nav-tabContent">
-                                        <div className="tab-pane fade active show" id="nav-send-to-user" role="tabpanel" aria-labelledby="nav-send-to-user-tab">
+                                        <div className="tab-pane fade active show" id="nav-send-to-user" role="tabpanel" >
                                             <div className="mb-3">
                                                 <label htmlFor="input_destination_user_username" className="form-label">Destination user username</label>
                                                 <div className="input-group">
@@ -141,7 +141,7 @@ class BCSendCryptoScreen extends React.Component {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div className="tab-pane fade" id="nav-send-to-address" role="tabpanel" aria-labelledby="nav-send-to-address-tab">
+                                        <div className="tab-pane fade" id="nav-send-to-address" role="tabpanel" >
                                             <div className="mb-3">
                                                 <label htmlFor="input_destination_blockchain_address" className="form-label">Destination blockchain address</label>
                                                 <div className="input-group">
@@ -165,7 +165,7 @@ class BCSendCryptoScreen extends React.Component {
                                                 type="number" className="form-control" id="input_asset_value"
                                                 min={asset.smallest_display_unit}
                                                 required
-                                                max={parseFloat(window.assetValueString(((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value) / (1 + this.props.sysconfig_params.trade_txn_fee_factor), asset, false))}
+                                                max={parseFloat(window.assetValueString(((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value) / (1 + this.props.sysconfig_params.trade_txn_fee_fctr), asset, false))}
                                                 step={asset.smallest_display_unit}
                                                 value={this.state.input.asset_value ? parseFloat(window.assetValueString(this.state.input.asset_value, asset, false)) : 0}
                                                 onChange={e => this.handleInputChange('asset_value', e.target.value)}
@@ -173,8 +173,8 @@ class BCSendCryptoScreen extends React.Component {
                                         </div>
                                     </div>
                                     <div className="col">
-                                        <label htmlFor="output_current_balance" className="form-label">Total to be debited from account. (Incl. {this.props.sysconfig_params.trade_txn_fee_factor} platform charge) </label>
-                                        <span className="form-control" id='output_current_balance'>{window.assetValueString((this.state.input.asset_value ?? 0) * (1 + this.props.sysconfig_params.trade_txn_fee_factor), asset)}</span>
+                                        <label htmlFor="output_current_balance" className="form-label">Total to be debited from account. (Incl. {this.props.sysconfig_params.trade_txn_fee_fctr} platform charge) </label>
+                                        <span className="form-control" id='output_current_balance'>{window.assetValueString((this.state.input.asset_value ?? 0) * (1 + this.props.sysconfig_params.trade_txn_fee_fctr), asset)}</span>
                                     </div>
                                 </div>
 
@@ -204,7 +204,7 @@ class BCSendCryptoScreen extends React.Component {
                                         </div>
                                         <form onSubmit={e => { e.preventDefault(); this.handleSubmit2() }}>
                                             <div className="modal-body">
-                                                <p>{window.assetValueString(this.state.input.asset_value * (1 + this.props.sysconfig_params.trade_txn_fee_factor), asset)} is about to be debited from your account. Enter password to continue.</p>
+                                                <p>{window.assetValueString(this.state.input.asset_value * (1 + this.props.sysconfig_params.trade_txn_fee_fctr), asset)} is about to be debited from your account. Enter password to continue.</p>
                                                 <div className="form-floating mb-3">
                                                     <input
                                                         type="password"

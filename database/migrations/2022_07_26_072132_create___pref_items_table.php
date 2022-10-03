@@ -217,7 +217,7 @@ return new class extends Migration
             ],
             [
                 'key_name' => 'Platform fee factor on trade transactions',
-                'key_slug' => 'trade_txn_fee_factor',
+                'key_slug' => 'trade_txn_fee_fctr',
                 'value' => 0.01,
                 'value_type' => 'float',
                 'parent_table' => '__users',
@@ -226,7 +226,7 @@ return new class extends Migration
             ],
             [
                 'key_name' => 'Platform fee factor on direct onchain transactions',
-                'key_slug' => 'direct_onchain_txn_fee_factor',
+                'key_slug' => 'drct_xfer_onchain_txn_fee_fctr',
                 'value' => 0.01,
                 'value_type' => 'float',
                 'parent_table' => '__users',
@@ -235,7 +235,7 @@ return new class extends Migration
             ],
             [
                 'key_name' => 'Platform fee factor on direct offchain transactions',
-                'key_slug' => 'direct_offchain_txn_fee_factor',
+                'key_slug' => 'drct_xfer_offchain_txn_fee_fctr',
                 'value' => 0.01,
                 'value_type' => 'float',
                 'parent_table' => '__users',
@@ -244,7 +244,7 @@ return new class extends Migration
             ],
             [
                 'key_name' => 'Platform fee factor on payments',
-                'key_slug' => 'pymt_txn_fee_factor',
+                'key_slug' => 'pymt_txn_fee_fctr',
                 'value' => 0.01,
                 'value_type' => 'float',
                 'parent_table' => '__users',
@@ -253,7 +253,7 @@ return new class extends Migration
             ],
             [
                 'key_name' => 'Platform fee factor on crypto-fiat conversions',
-                'key_slug' => 'crypto_fiat_conv_txn_fee_factor',
+                'key_slug' => 'crypto_fiat_conv_txn_fee_fctr',
                 'value' => 0.01,
                 'value_type' => 'float',
                 'parent_table' => '__users',

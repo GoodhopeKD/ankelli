@@ -120,8 +120,8 @@ class _DepositTokenController extends Controller
         $validated_data['used_datetime'] = now()->toDateTimeString();
 
         (new _TransactionController)->store( new Request([
-            'txcontext' => 'offchain',
-            'description' => 'Wallet topup using deposit token "' . $token . '"',
+            'txn_context' => 'offchain',
+            'description' => 'Wallet topup using deposit token "'.$token.'"',
             'operation_slug' => 'deposit_token_topup',
             'source_user_username' => 'reserves', 
             'destination_user_username' => $validated_data['user_username'], 

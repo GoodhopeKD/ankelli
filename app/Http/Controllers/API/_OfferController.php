@@ -9,6 +9,8 @@ use Illuminate\Validation\Rule;
 use App\Models\_BuyerExtension;
 use App\Models\_SellerExtension;
 use App\Models\_PrefItem;
+use App\Models\_Asset;
+use App\Models\_AssetAccount;
 
 use App\Models\_Offer;
 use App\Http\Resources\_OfferResource;
@@ -62,22 +64,34 @@ class _OfferController extends Controller
      */
     public function store(Request $request)
     {
+        if (!($request->asset_code && _Asset::where(['code' => $request->asset_code])->exists())){
+            return abort(422, "Asset with provided code doesn't exist");
+        }
+        $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $asset_account = (object)['usable_balance_asset_value' => 0];
+        if($request->offer_to == 'sell'){
+            $asset_account = _AssetAccount::firstWhere(['user_username' => $api_auth_user_username, 'asset_code' => $request->asset_code]);
+            if (!$asset_account){
+                return abort(422, 'Current '.$request->asset_code.' balance insufficient to create offer');
+            }
+        }
 
         $validated_data = $request->validate([
             'country_name' => ['required', 'exists:__countries,name', 'string'],
             'location' => ['required_if:pymt_method_slug,==,cash_in_person', 'string'],
             'offer_to' => ['required', 'string', Rule::in(['buy', 'sell'])],
-            'asset_code' => ['required', 'exists:__assets,code', 'string'],
+            'asset_code' => ['required', 'string'],
+            //'asset_code' => ['required', 'exists:__assets,code', 'string'],
             'currency_code' => ['required', 'exists:__currencies,code', 'string'],
             'offer_price' => ['required', 'numeric'],
             // for offer_to = buy
-            'min_trade_purchase_amount' => ['required_if:offer_to,==,buy', 'integer'],
-            'max_trade_purchase_amount' => ['required_if:offer_to,==,buy', 'integer'],
-            'offer_total_purchase_amount' => ['required_if:offer_to,==,buy', 'integer'],
+            'min_trade_purchase_amount' => ['required_if:offer_to,==,buy', 'integer', 'min:0', 'max:'.$request->max_trade_purchase_amount],
+            'max_trade_purchase_amount' => ['required_if:offer_to,==,buy', 'integer', 'min:'.$request->min_trade_purchase_amount, 'max:'.$request->offer_total_purchase_amount],
+            'offer_total_purchase_amount' => ['required_if:offer_to,==,buy', 'integer', 'min:'.$request->max_trade_purchase_amount, 'max:'.$request->offer_total_purchase_amount],
             // for offer_to = sell
-            'min_trade_sell_value' => ['required_if:offer_to,==,sell', 'numeric'],
-            'max_trade_sell_value' => ['required_if:offer_to,==,sell', 'numeric'],
-            'offer_total_sell_value' => ['required_if:offer_to,==,sell', 'numeric'],
+            'min_trade_sell_value' => ['required_if:offer_to,==,sell', 'numeric', 'min:0', 'max:'.$request->max_trade_sell_value],
+            'max_trade_sell_value' => ['required_if:offer_to,==,sell', 'numeric', 'min:'.$request->min_trade_sell_value, 'max:'.$request->offer_total_sell_value],
+            'offer_total_sell_value' => ['required_if:offer_to,==,sell', 'numeric', 'min:'.$request->max_trade_sell_value, 'max:'.$asset_account->usable_balance_asset_value],
             'buyer_cmplt_trade_mins_tmt' => ['required', 'integer', 'min:'._PrefItem::firstWhere('key_slug', 'buyer_open_trade_min_mins_tmt')->value_f(), 'max:'._PrefItem::firstWhere('key_slug', 'buyer_cmplt_trade_max_mins_tmt')->value_f() ],
             'pymt_method_slug' => ['required', 'exists:__pymt_methods,slug', 'string'],
             'pymt_details' => ['required_if:offer_to,==,sell|pymt_method_slug,==,cash_in_person', 'array'],
@@ -86,13 +100,14 @@ class _OfferController extends Controller
         ]);
 
         $validated_data['ref_code'] = random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
-        $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $validated_data['creator_username'] = $api_auth_user_username;
+        $validated_data['trade_txn_fee_fctr'] = _PrefItem::firstWhere('key_slug', 'trade_txn_fee_fctr')->value_f();
 
         // Check if seller is allowed to sell
         if ($validated_data['offer_to'] == 'sell'){
             $seller_seller_extension = _SellerExtension::firstWhere([ 'user_username' => $validated_data['creator_username'] ]);
             if ($seller_seller_extension && $seller_seller_extension->_status!='active'){
-                return abort(403,"Current user cannot sell because _SellerExtension is " . $seller_seller_extension->_status);
+                return abort(403,"Current user cannot sell because _SellerExtension is ".$seller_seller_extension->_status);
             }
         }
 
@@ -100,7 +115,7 @@ class _OfferController extends Controller
         if ($validated_data['offer_to'] == 'buy'){
             $buyer_buyer_extension = _BuyerExtension::firstWhere([ 'user_username' => $validated_data['creator_username'] ]);
             if ($buyer_buyer_extension && $buyer_buyer_extension->_status!='active'){
-                return abort(403,"Current user cannot buy because _BuyerExtension is " . $buyer_buyer_extension->_status);
+                return abort(403,"Current user cannot buy because _BuyerExtension is ".$buyer_buyer_extension->_status);
             }
         }
 

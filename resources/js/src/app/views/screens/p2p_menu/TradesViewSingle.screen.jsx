@@ -181,7 +181,7 @@ class TradesViewSingleScreen extends React.Component {
                                                     <p>Last activity: {this.focused_trade.last_activity_datetime.prettyDatetime()}</p>
                                                     <p>Status: {window.ucfirst(this.focused_trade._status)}</p>
                                                     <div className="progress">
-                                                        <div className={"progress-bar bg-" + btn_class + " w-" + this.focused_trade.progress} role="progressbar" aria-valuenow={this.focused_trade.progress} aria-valuemin="0" aria-valuemax="100">{this.focused_trade.progress}%</div>
+                                                        <div className={"progress-bar bg-" + btn_class + " w-" + this.focused_trade.progress} role="progressbar">{this.focused_trade.progress}%</div>
                                                     </div>
                                                 </div>
                                             </div>

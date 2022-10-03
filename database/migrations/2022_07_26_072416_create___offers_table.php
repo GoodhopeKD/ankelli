@@ -38,7 +38,8 @@ return new class extends Migration
                     ->onUpdate('cascade')
                     ->onDelete('set null');
 
-            $table->string('offer_price', 32)->nullable(); // unsignedDecimal
+            $table->string('offer_price', 32); // unsignedDecimal
+            $table->string('trade_txn_fee_fctr', 32); // unsignedDecimal
 
             // for offer_to = buy
             $table->unsignedBigInteger('min_trade_purchase_amount')->nullable();
@@ -52,7 +53,7 @@ return new class extends Migration
             $table->string('offer_total_sell_value', 32)->nullable(); // unsignedDecimal
             $table->string('filled_value', 32)->default(0); // unsignedDecimal
             
-            $table->unsignedTinyInteger('buyer_cmplt_trade_mins_tmt')->nullable();
+            $table->unsignedTinyInteger('buyer_cmplt_trade_mins_tmt');
 
             $table->string('pymt_method_slug', 64)->nullable();
             $table->foreign('pymt_method_slug')

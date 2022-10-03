@@ -115,7 +115,7 @@ class OffersViewListScreen extends React.Component {
         this.datetimeUpdater = setInterval(() => { this.setState({ datetime_update_seconds: this.state.datetime_update_seconds + 1 }) }, 1);
     }
 
-    componentWillUnmount(){
+    componentWillUnmount() {
         clearInterval(this.datetimeUpdater)
     }
 
@@ -252,7 +252,7 @@ class OffersViewListScreen extends React.Component {
                                 <tr>
                                     {(this.props.path == '/p2p/offers' || this.props.path == '/') && <th scope="col">{this.state.showing_offer_to === 'buy' ? 'Buyer' : 'Seller'}</th>}
                                     {this.props.path == '/p2p/my-offers' && <th scope="col">Location</th>}
-                                    <th scope="col">Trading</th>
+                                    <th scope="col">{this.props.path == '/p2p/my-offers' ? 'Trading' : "You'll be trading"}</th>
                                     <th scope="col">Price</th>
                                     <th scope="col">Limits</th>
                                     {this.props.path == '/p2p/my-offers' && <th scope="col">Fill</th>}
@@ -288,7 +288,7 @@ class OffersViewListScreen extends React.Component {
                                                     {window.currencyAmountString(offer.filled_amount, currency)}
                                                     <br />
                                                     <div className="progress mt-1">
-                                                        <div className={"progress-bar bg-primary"} style={{ width: progress + '%' }} role="progressbar" aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100">{progress}%</div>
+                                                        <div className={"progress-bar text-bg-info"} style={{ width: progress + '%' }} role="progressbar" >{progress}%</div>
                                                     </div>
                                                 </td>}
                                             </> : <>
@@ -306,13 +306,13 @@ class OffersViewListScreen extends React.Component {
                                                     {offer.filled_value} {offer.asset_code}
                                                     <br />
                                                     <div className="progress mt-1">
-                                                        <div className={"progress-bar bg-primary"} style={{ width: progress + '%' }} role="progressbar" aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100">{progress}%</div>
+                                                        <div className={"progress-bar text-bg-info"} style={{ width: progress + '%' }} role="progressbar" >{progress}%</div>
                                                     </div>
                                                 </td>}
                                             </>}
-                                            <td className="align-middle">
-                                                <img src={pymt_method.icon.uri} alt={pymt_method.name + " icon"} width="40" height="40" className="rounded-1 me-2" />
-                                                {pymt_method.name}
+                                            <td className="align-middle d-flex gap-2">
+                                                <img src={pymt_method.icon.uri} alt={pymt_method.name + " icon"} width="40" height="40" className="rounded-1" />
+                                                <span><b>{pymt_method.name}</b><br /><small className='text-muted'>🕑 Trade: {offer.buyer_cmplt_trade_mins_tmt} mins</small></span>
                                             </td>
                                             <td className="align-middle">
                                                 <div className="btn-group">
@@ -368,11 +368,11 @@ class OffersViewListScreen extends React.Component {
                             <nav>
                                 <ul className="pagination">
                                     <li className={"page-item" + ((this.state._collecion.meta.current_page == 1 || !this.state.list_loaded) ? ' disabled' : '')}>
-                                        <a className="page-link" href="#" aria-label="Previous" onClick={() => this.setState({ page_select: { page: 1, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} > <span aria-hidden="true">«</span> </a>
+                                        <a className="page-link" href="#" onClick={() => this.setState({ page_select: { page: 1, } }, () => { this.populateScreenWithItems() })} > <span>«</span> </a>
                                     </li>
-                                    {pagination_pages.map(page => <li key={page} className={"page-item" + (this.state._collecion.meta.current_page == page ? ' active' : '') + (!this.state.list_loaded ? ' disabled' : '')} onClick={() => this.setState({ page_select: { page } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} ><a className="page-link" href="#">{page}</a> </li>)}
+                                    {pagination_pages.map(page => <li key={page} className={"page-item" + (this.state._collecion.meta.current_page == page ? ' active' : '') + (!this.state.list_loaded ? ' disabled' : '')} onClick={() => this.setState({ page_select: { page } }, () => { this.populateScreenWithItems() })} ><a className="page-link" href="#">{page}</a> </li>)}
                                     <li className={"page-item" + ((this.state._collecion.meta.current_page == this.state._collecion.meta.last_page || !this.state.list_loaded) ? ' disabled' : '')}>
-                                        <a className="page-link" href="#" aria-label="Next" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.last_page, } }, () => { this.should_load_items = true; this.populateScreenWithItems() })} > <span aria-hidden="true">»</span> </a>
+                                        <a className="page-link" href="#" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.last_page, } }, () => { this.populateScreenWithItems() })} > <span>»</span> </a>
                                     </li>
                                 </ul>
                             </nav>

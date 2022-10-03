@@ -13,7 +13,7 @@ function SideBar(props) {
                     {menu.menu_items.map((item_i, ii) => {
                         const id = menu.menu_title.replace(/ /g, "_") + ii
                         const has_childred = item_i.children && item_i.children.length ? true : false
-                        const childclass = has_childred ? "with-dropdown" : "";
+                        const childclass = has_childred ? "with-dropdown" : '';
                         const is_active = has_childred && useLocation().pathname.includes(item_i.path)
                         return (
                             <li className={`mb-1 ${childclass}`} key={ii}>
