@@ -92,12 +92,12 @@ class BCSendCryptoScreen extends React.Component {
         const asset = this.props.datalists.active_assets[this.state.input.asset_code]
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
-            <div className="container py-3">
+            <div className="container-xl py-3">
                 <div className="row">
-                    <div className="col-2">
+                    <div className="col-lg-2">
                         <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'banking_menu')]} />
                     </div>
-                    <div className="col-10">
+                    <div className="col-lg-10">
                         {this.props.auth_user.asset_accounts.length !== 0 && <>
                             <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
                                 <div className="row mb-3">

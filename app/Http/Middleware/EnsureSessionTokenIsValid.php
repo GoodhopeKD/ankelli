@@ -23,8 +23,8 @@ class EnsureSessionTokenIsValid
         if (!$session_token) return abort(401,'Session token header required');
 
         $session = _Session::find( $session_token );
-        if (!$session) return abort(401,'Invalid session token given');
-        if ($session['_status'] == "ended") abort(401,'Session with given token is marked as ended');
+        if (!$session) return abort(401,'Invalid session token provided');
+        if ($session['_status'] == "ended") abort(401,'Session with provided token is marked as ended');
 
         session()->put('active_session_token', $session_token);
 

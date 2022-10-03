@@ -27,7 +27,6 @@ return new class extends Migration
                     ->on('__user_groups')
                     ->onUpdate('cascade')
                     ->onDelete('cascade');
-            $table->unique(['user_username', 'user_group_slug']);
             $table->enum('_status', ['active', 'revoked'])->default('active');
 
             $table->string('creator_username', 64)->nullable();
@@ -38,6 +37,8 @@ return new class extends Migration
                     ->onDelete('set null');
             $table->timestamp('created_datetime')->useCurrent();
             $table->timestamp('updated_datetime')->nullable()->useCurrentOnUpdate();
+            
+            $table->unique(['user_username', 'user_group_slug']);
         });
     }
 

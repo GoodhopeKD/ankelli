@@ -50,7 +50,7 @@ class _PymtMethod extends Model
 
     public function icon_f()
     {
-        return $this->icon ? json_decode(( new _FileResourceCollection( [$this->icon] ))->toJson(),true)['data'][0] : NULL;
+        return $this->icon ? json_decode(( new _FileResourceCollection( [$this->icon] ))->toJson(),true)['data'][0] : null;
     }
 
 

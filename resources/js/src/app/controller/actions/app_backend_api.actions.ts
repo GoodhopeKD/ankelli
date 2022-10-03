@@ -182,8 +182,8 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
                             message: e.message
                         }
                     }
-                    if (error.response && error.response.message == 'Session ended or session token invalid') {
-                        await dispatch({ type: 'APP_BACKEND_API_CALL', method: 'POST', endpoint: '' })
+                    if (error.response && error.response.message == 'Invalid session token provided') {
+                        await dispatch({ type: 'APP_BACKEND_API_CALL', method: 'POST', endpoint: 'accounts' })
                         return dispatch(action)
                     }
                     console.log(error)

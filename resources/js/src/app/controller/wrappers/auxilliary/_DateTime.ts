@@ -71,7 +71,7 @@ export default class _DateTime extends _Date {
 		if (rel_offset_minutes <= time_diff && time_diff >= 0) {
 			if (
 				rel_offset_minutes <= time_diff &&
-				time_diff <= 1 // Just now
+				time_diff <= 2 // Just now
 			)
 				return 'just now'
 
@@ -79,7 +79,7 @@ export default class _DateTime extends _Date {
 				rel_offset_minutes <= time_diff &&
 				time_diff < 60 // Time is in a minute
 			)
-				return 'a few seconds ago'
+				return time_diff + ' seconds ago'
 
 			if (
 				rel_offset_minutes <= time_diff &&

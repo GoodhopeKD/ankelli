@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class _Chat extends Model
 {
     const CREATED_AT = 'created_datetime';
-    const UPDATED_AT = NULL;
+    const UPDATED_AT = null;
 
     /**
      * The attributes that are mass assignable.

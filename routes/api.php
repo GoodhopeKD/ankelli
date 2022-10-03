@@ -85,7 +85,8 @@ Route::get('content/datalists/currencies', '_CurrencyController@index')->name('c
 Route::get('content/datalists/pymt_methods', '_PymtMethodController@index')->name('content.pymt_methods');
 
 Route::apiResource('p2p/offers', '_OfferController')->only(['show', 'index'])->parameter('offers', 'ref_code');
-Route::get('content/users/{uid}', '_UserController@show')->name('content.users.show');
+Route::get('accounts/profiles/{uid}', '_UserController@show')->name('content.users.show');
+Route::apiResource('content/reviews', '_ReviewController')->only(['index'])->parameter('reviews', 'id');
 
 // Auth:true accessible routes
 Route::group(['middleware' => 'auth:api'], function () {
@@ -111,6 +112,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('banking/asset_account_addresses', '_AssetAccountAddressController')->only('store','index')->parameter('asset_account_addresses', 'id');
     Route::apiResource('content/messages', '_MessageController')->only(['index', 'store'])->parameter('messages', 'id');
     Route::apiResource('content/pinnings', '_PinningController')->only(['store', 'update', 'destroy'])->parameter('pinnings', 'id');
+    Route::apiResource('content/reviews', '_ReviewController')->only(['store', 'update'])->parameter('reviews', 'id');
     Route::apiResource('content/pref_items', '_PrefItemController')->except(['destroy'])->parameter('pref_items', 'id');
     Route::apiResource('content/logs', '_LogController')->only(['index'])->parameter('logs', 'id');
 

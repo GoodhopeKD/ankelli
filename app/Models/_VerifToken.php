@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class _VerifToken extends Model
 {
     const CREATED_AT = 'created_datetime';
-    const UPDATED_AT = NULL;
+    const UPDATED_AT = null;
     
     /**
      * The attributes that are mass assignable.
@@ -54,10 +54,10 @@ class _VerifToken extends Model
 
     public function recipient_resource_value_f()
     {
-        $recipient_resource_value = NULL;
+        $recipient_resource_value = null;
         switch ( $this->recipient_resource_table ) {
             case '__email_addresses':
-                $recipient_resource_value = ( $this->email_address ) ? $this->email_address->email_address : NULL;
+                $recipient_resource_value = ( $this->email_address ) ? $this->email_address->email_address : null;
                 break;
             case '__phone_nos':
                 $recipient_resource_value = ( $this->phone_no ) ? '+' . ltrim($this->phone_no->country_calling_code, '+') . ltrim($this->phone_no->number, '0');

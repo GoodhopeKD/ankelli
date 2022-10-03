@@ -49,14 +49,18 @@ window.padNumber = (number = undefined) => {
 	}
 }
 
-window.currencyAmountString = (amount, currency) => {
-	currency = currency ?? { symbol: '' }
-	return (currency.symbol_before_number ? currency.symbol : '') + (Math.round((parseFloat(amount) + Number.EPSILON) * 100) / 100).toLocaleString('zw-ZW') + (currency.symbol_before_number ? '' : currency.symbol)
+window.roundTo2dp = (value) => {
+	return (Math.round((parseFloat(value) + Number.EPSILON) * 100) / 100).toLocaleString('zw-ZW')
 }
 
-window.assetValueString = (value, asset, show_code = true) => {
-	asset = asset ?? { code: '', smallest_display_unit: 0.01 }
-	return (Math.round((parseFloat(value)) * (1 / asset.smallest_display_unit)) / (1 / asset.smallest_display_unit)) + (show_code ? ' ' + asset.code : '')
+window.currencyAmountString = (amount, currency = { symbol: '' }, show_symbol = true, round_down = false) => {
+	const rounder = round_down ? Math.floor : Math.round
+	return (currency.symbol_before_number ? (show_symbol ? currency.symbol : '') : '') + (rounder((parseFloat(amount) + Number.EPSILON) * 100) / 100).toLocaleString('zw-ZW') + (currency.symbol_before_number ? '' : (show_symbol ? currency.symbol : ''))
+}
+
+window.assetValueString = (value, asset = { code: '', smallest_display_unit: 0.01 }, show_code = true, round_down = false) => {
+	const rounder = round_down ? Math.floor : Math.round
+	return (rounder((parseFloat(value)) * (1 / asset.smallest_display_unit)) / (1 / asset.smallest_display_unit)) + (show_code ? ' ' + asset.code : '')
 }
 
 window.instanceToRespObj = (obj) => {

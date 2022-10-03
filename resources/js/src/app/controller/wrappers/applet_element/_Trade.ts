@@ -5,6 +5,7 @@ import _Wrapper_ from 'app/controller/wrappers/_Wrapper_'
 /* Element Imports */
 import _Message, { _MessageRespObj } from 'app/controller/wrappers/addons/_Message'
 import _File, { _FileRespObj } from 'app/controller/wrappers/addons/_File'
+import _Review, { _ReviewRespObj } from 'app/controller/wrappers/addons/_Review'
 /* Logger Imports */
 import _Log, { _LogRespObj } from 'app/controller/wrappers/addons/_Log'
 /* Actions, Configs imports */
@@ -14,7 +15,7 @@ import { _dataless_resource_collection_wrapper } from 'app/controller/redux_redu
 /*
     Type Definitions
 */
-type casts_t = 'pymt_declared_datetime' | 'pymt_confirmed_datetime' | 'created_datetime' | 'updated_datetime'
+type casts_t = 'pymt_declared_datetime' | 'pymt_confirmed_datetime' | 'last_activity_datetime' | 'completion_review_on_offer_creator' | 'completion_review_on_trade_creator' | 'created_datetime' | 'updated_datetime'
 type was_offer_to_t = 'buy' | 'sell'
 type _status_t = 'active' | 'cancelled' | 'flagged' | 'completed'
 type pymt_details_t = { key: string, value: string | number }[]
@@ -44,12 +45,16 @@ export const _TradeRespObj = {
     pymt_details: undefined as undefined | null | pymt_details_t,
     pymt_declared_datetime: undefined as undefined | null | string,
     pymt_confirmed_datetime: undefined as undefined | null | string,
+    last_activity_datetime: undefined as undefined | null | string,
     visible_to_creator: undefined as undefined | null | boolean,
     visible_to_offer_creator: undefined as undefined | null | boolean,
+    completion_review_on_trade_creator: undefined as undefined | null | typeof _ReviewRespObj,
+    completion_review_on_offer_creator: undefined as undefined | null | typeof _ReviewRespObj,
     _status: undefined as undefined | null | _status_t,
 
+    flag_raiser_username: undefined as undefined | null | string,
     offer_creator_username: undefined as undefined | null | string,
-    creator_username: undefined as undefined | null | string, // Seller
+    creator_username: undefined as undefined | null | string,
     created_datetime: undefined as undefined | null | string,
     updated_datetime: undefined as undefined | null | string,
 }
@@ -91,11 +96,15 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
     pymt_details: pymt_details_t | null = null
     pymt_declared_datetime: _DateTime | null = null
     pymt_confirmed_datetime: _DateTime | null = null
+    last_activity_datetime: _DateTime | null = null
     visible_to_creator: boolean | null = null
     visible_to_offer_creator: boolean | null = null
+    completion_review_on_trade_creator: _Review | null = null
+    completion_review_on_offer_creator: _Review | null = null
     _status: _status_t | null = null
     progress: number = 0
 
+    flag_raiser_username: string | null = null
     offer_creator_username: string | null = null
     creator_username: string | null = null
     created_datetime: _DateTime | null = null
@@ -115,6 +124,7 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
         this.pymt_confirmed_datetime = args.pymt_confirmed_datetime && typeof args.pymt_confirmed_datetime === 'string' ? new _DateTime(args.pymt_confirmed_datetime) : null
         this.created_datetime = args.created_datetime && typeof args.created_datetime === 'string' ? new _DateTime(args.created_datetime) : null
         this.updated_datetime = args.updated_datetime && typeof args.updated_datetime === 'string' ? new _DateTime(args.updated_datetime) : null
+        this.last_activity_datetime = args.last_activity_datetime && typeof args.last_activity_datetime === 'string' ? new _DateTime(args.last_activity_datetime) : null
 
         if (this.created_datetime)
             this.progress = 25
@@ -122,8 +132,11 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
             this.progress = this.progress + 25
         if (this.pymt_confirmed_datetime)
             this.progress = this.progress + 25
-        if (this._status == 'completed')
+        if (this._status === 'completed')
             this.progress = this.progress + 25
+
+        this.completion_review_on_trade_creator = args.completion_review_on_trade_creator && typeof args.completion_review_on_trade_creator === typeof _ReviewRespObj ? new _Review(args.completion_review_on_trade_creator) : null
+        this.completion_review_on_offer_creator = args.completion_review_on_offer_creator && typeof args.completion_review_on_offer_creator === typeof _ReviewRespObj ? new _Review(args.completion_review_on_offer_creator) : null
     }
 
     /* Creator(s) */
@@ -163,13 +176,23 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
 
     public async update(args: typeof _TradeRespObj | any, update_note: string) {
         const data = {} as typeof args
-        if (typeof args.source_user_password == 'string') data.source_user_password = args.source_user_password
-        if (typeof args.pymt_declared == 'boolean') data.pymt_declared = args.pymt_declared
-        if (typeof args.pymt_confirmed == 'boolean') data.pymt_confirmed = args.pymt_confirmed
-        if (typeof args.visible_to_creator === typeof this.visible_to_creator && args.visible_to_creator !== this.visible_to_creator) data.visible_to_creator = args.visible_to_creator
-        if (typeof args.visible_to_offer_creator === typeof this.visible_to_offer_creator && args.visible_to_offer_creator !== this.visible_to_offer_creator) data.visible_to_offer_creator = args.visible_to_offer_creator
+        if (typeof args.source_user_password === 'string') data.source_user_password = args.source_user_password
+        if (typeof args.pymt_declared === 'boolean') data.pymt_declared = args.pymt_declared
+        if (typeof args.pymt_confirmed === 'boolean') data.pymt_confirmed = args.pymt_confirmed
+        if (typeof args.visible_to_creator === 'boolean' && args.visible_to_creator !== this.visible_to_creator) data.visible_to_creator = args.visible_to_creator
+        if (typeof args.visible_to_offer_creator === 'boolean' && args.visible_to_offer_creator !== this.visible_to_offer_creator) data.visible_to_offer_creator = args.visible_to_offer_creator
         if (typeof args._status === typeof this._status && args._status !== this._status) data._status = args._status
         return this._mainLaravelDBAPIUpdate('p2p/trades/' + this.ref_code, update_note, data)
+    }
+
+    public async reviewPeer(args: { trade_peer_username: string, rating?: number, comment?: string }) {
+        if (args.trade_peer_username === this.creator_username && this.completion_review_on_trade_creator !== null) {
+            return this.completion_review_on_trade_creator.update({ rating: args.rating, comment: args.comment }, 'Updating user review')
+        }
+        if (args.trade_peer_username === this.offer_creator_username && this.completion_review_on_offer_creator !== null) {
+            return this.completion_review_on_offer_creator.update({ rating: args.rating, comment: args.comment }, 'Updating user review')
+        }
+        return _Review.create({ parent_table: '__users', parent_uid: args.trade_peer_username, pivot_parent_table: '__trades', pivot_parent_uid: this.ref_code, rating: args.rating, comment: args.comment } as typeof _ReviewRespObj)
     }
 
     public async declarePymt() {

@@ -40,9 +40,9 @@ $valid_paths = [
     "/faq",
     "/support",
     "/find-us",
-    "/supported-payment-methods",
-    "/supported-fiat-currencies",
-    "/supported-crypto-assets",
+    "/accepted-payments",
+    "/accepted-currencies",
+    "/supported-crypto",
     "/serviced-countries",
 
     // p2p

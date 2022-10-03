@@ -23,7 +23,6 @@ return new class extends Migration
                     ->onDelete('cascade');
             $table->enum('item_table', ['__users', '__offers']);
             $table->string('item_uid', 16)->nullable();
-            $table->unique(['user_username', 'item_table', 'item_uid']);
             $table->enum('pinning_type', ['favourite', 'blocking']);
 
             $table->string('creator_username', 64)->nullable();
@@ -34,6 +33,8 @@ return new class extends Migration
                     ->onDelete('set null');
             $table->timestamp('created_datetime')->useCurrent();
             $table->timestamp('updated_datetime')->nullable()->useCurrentOnUpdate();
+            
+            $table->unique(['user_username', 'item_table', 'item_uid']);
         });
     }
 

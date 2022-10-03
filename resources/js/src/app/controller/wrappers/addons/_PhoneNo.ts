@@ -77,8 +77,8 @@ export default class _PhoneNo extends _Wrapper_ implements Omit<typeof _PhoneNoR
 
     public async update(args: typeof _PhoneNoRespObj, update_note: string ) {
         const data = {} as typeof args
-        if (typeof args.country_calling_code === typeof this.country_calling_code && args.country_calling_code !== this.country_calling_code) data['country_calling_code'] = args.country_calling_code
-        if (typeof args.number === typeof this.number && args.number !== this.number) data.number = args.number
+        if (typeof args.country_calling_code === 'string' && args.country_calling_code !== this.country_calling_code) data['country_calling_code'] = args.country_calling_code
+        if (typeof args.number === 'string' && args.number !== this.number) data.number = args.number
         if (typeof args.tag === typeof this.tag && args.tag !== this.tag) data.tag = args.tag
         return this._mainLaravelDBAPIUpdate('accounts/phone_nos/' + this.id, update_note, data)
     }

@@ -48,6 +48,6 @@ class _Message extends Model
 
     public function attachment_f()
     {
-        return $this->attachment ? json_decode(( new _FileResourceCollection( [$this->attachment] ))->toJson(),true)['data'][0] : NULL;
+        return $this->attachment ? json_decode(( new _FileResourceCollection( [$this->attachment] ))->toJson(),true)['data'][0] : null;
     }
 }

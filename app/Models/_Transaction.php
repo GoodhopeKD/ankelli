@@ -10,7 +10,7 @@ class _Transaction extends Model
     use SoftDeletes;
 
     const CREATED_AT = 'transfer_datetime';
-    const UPDATED_AT = NULL;
+    const UPDATED_AT = null;
     const DELETED_AT = 'deleted_datetime';
 
     /**

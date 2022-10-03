@@ -16,11 +16,26 @@ class _TradeResourceCollection extends ResourceCollection
     {
         return [
             'data' => $this->collection->transform(function($_this){
-                return array_filter(array_merge(
-                    is_array($_this->resource) ? $_this->resource: $_this->resource->toArray(), [
-                    //'created_datetime'      => null,
-                    //'updated_datetime'      => null,
-                ]), static function($var){ return $var !== null;} );
+                return array_filter([
+                    'ref_code' => $_this->ref_code,
+                    'country_name' => $_this->country_name,
+                    'location' => $_this->location,
+                    'was_offer_to' => $_this->was_offer_to,
+                    'asset_code' => $_this->asset_code,
+                    'asset_value' => $_this->asset_value,
+                    'currency_code' => $_this->currency_code,
+                    'currency_amount' => $_this->currency_amount,
+                    'offer_price' => $_this->offer_price,
+                    'pymt_method_slug' => $_this->pymt_method_slug,
+                    'buyer_opened_datetime' => $_this->buyer_opened_datetime,
+                    '_status' => $_this->_status,
+                    'offer_creator_username' => $_this->offer_creator_username,
+                    'creator_username' => $_this->creator_username,
+
+                    'completion_review_on_trade_creator' => $_this->completion_review_on_trade_creator_f(),
+                    'completion_review_on_offer_creator' => $_this->completion_review_on_offer_creator_f(),
+                    'last_activity_datetime' => $_this->last_activity_datetime_f(),
+                ], static function($var){ return $var !== null;} );
             }),
         ];
     }

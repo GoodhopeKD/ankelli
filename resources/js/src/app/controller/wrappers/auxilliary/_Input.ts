@@ -5,7 +5,7 @@ import { mainLaravelDBRestAPICallWrapper } from 'app/controller/actions/rest_api
 /*
 	Type Definitions
 */
-type local_validation_param_type_t = 'email_address' | 'phone_no' | 'surname' | 'name_s' | 'name' | 'username' | 'password' | 'datetime' | 'number' | 'url' | 'passport_number' | 'reg_token' | 'verif_token'
+type local_validation_param_type_t = 'email_address' | 'phone_no' | 'surname' | 'name_s' | 'name' | 'username' | 'password' | 'datetime' | 'number' | 'url' | 'reg_token' | 'verif_token'
 type available_param_type_t = 'email_address' | 'username' | 'reg_token'
 type usable_param_type_t = 'reg_token'
 
@@ -50,18 +50,14 @@ export const validation_param_lengths = {
 		min_length: 8,
 		max_length: 32,
 	},
-	passport_number: {
-		min_length: 8,
-		max_length: 8,
-	},
-	item_name: {
-		min_length: 4,
-		max_length: 64,
-	},
-	item_description: {
+	peer_review_comment: {
 		min_length: 0,
-		max_length: 128,
-	}
+		max_length: 255,
+	},
+	message_body: {
+		min_length: 0,
+		max_length: 1024,
+	},
 }
 
 /* 
@@ -106,6 +102,10 @@ export default class _Input {
 	}
 
 	toString(): string {
+		return this._input
+	}
+
+	toRaw(): any {
 		return this._input
 	}
 

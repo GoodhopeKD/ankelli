@@ -36,6 +36,6 @@ class _UserGroup extends Model
 
     public function profile_image_f()
     {
-        return $this->profile_image ? json_decode(( new _FileResourceCollection( [$this->profile_image] ))->toJson(),true)['data'][0] : NULL;
+        return $this->profile_image ? json_decode(( new _FileResourceCollection( [$this->profile_image] ))->toJson(),true)['data'][0] : null;
     }
 }

@@ -23,7 +23,6 @@ return new class extends Migration
                     ->on('__permissions')
                     ->onUpdate('cascade')
                     ->onDelete('cascade');
-            $table->unique(['parent_table', 'parent_uid', 'permission_slug'], 'parent_table_parent_uid_permission_slug_unique');
             $table->enum('_status', ['active', 'revoked'])->default('active');
 
             $table->string('creator_username', 64)->nullable();
@@ -34,6 +33,8 @@ return new class extends Migration
                     ->onDelete('set null');
             $table->timestamp('created_datetime')->useCurrent();
             $table->timestamp('updated_datetime')->nullable()->useCurrentOnUpdate();
+            
+            $table->unique(['parent_table', 'parent_uid', 'permission_slug'], 'parent_table_parent_uid_permission_slug_unique');
         });
 
         DB::table('__permission_instances')->insert([

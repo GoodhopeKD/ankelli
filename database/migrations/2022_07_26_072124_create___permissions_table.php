@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->string('name', 64)->unique();
             $table->string('slug', 64)->unique();
-            $table->unique(['name', 'slug']);
             $table->text('description');
             $table->enum('_status', ['active', 'deactivated'])->default('active');
 
@@ -30,6 +29,8 @@ return new class extends Migration
             $table->timestamp('created_datetime')->useCurrent();
             $table->timestamp('updated_datetime')->nullable()->useCurrentOnUpdate();
             $table->softDeletes('deleted_datetime');
+            
+            $table->unique(['name', 'slug']);
         });
 
         DB::table('__permissions')->insert([

@@ -31,11 +31,12 @@ return new class extends Migration
                     ->onDelete('set null');
             $table->string('usable_balance_asset_value', 32)->default(0); // unsignedDecimal
             $table->string('total_balance_asset_value', 32)->default(0); // unsignedDecimal
-            $table->unique(['user_username', 'asset_code']);
             $table->enum('_status', ['active', 'frozen'])->default('active');
 
             $table->timestamp('created_datetime')->useCurrent();
             $table->timestamp('updated_datetime')->nullable()->useCurrentOnUpdate();
+            
+            $table->unique(['user_username', 'asset_code']);
         });
     }
 

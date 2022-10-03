@@ -61,11 +61,15 @@ return new class extends Migration
             $table->timestamp('pymt_confirmed_datetime')->nullable();
             $table->boolean('visible_to_creator')->default(true);
             $table->boolean('visible_to_offer_creator')->default(true);
-            $table->unsignedTinyInteger('completion_rating_on_trade_creator')->nullable();
-            $table->unsignedTinyInteger('completion_rating_on_offer_creator')->nullable();
             $table->timestamp('buyer_opened_datetime')->nullable();
             $table->enum('_status', ['active', 'cancelled', 'flagged', 'completed'])->default('active');
 
+            $table->string('flag_raiser_username', 64)->nullable();
+            $table->foreign('flag_raiser_username')
+                    ->references('username')
+                    ->on('__users')
+                    ->onUpdate('cascade')
+                    ->onDelete('set null');
             $table->string('offer_creator_username', 64)->nullable();
             $table->foreign('offer_creator_username')
                     ->references('username')

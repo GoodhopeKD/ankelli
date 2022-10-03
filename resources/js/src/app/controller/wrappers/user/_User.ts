@@ -345,9 +345,9 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 
 	public async update(args: typeof _UserRespObj, update_note: string) {
 		const data = {} as typeof args
-		if (typeof args.email_address === typeof this.email_address && args.email_address !== this.email_address) data.email_address = args.email_address
+		if (typeof args.email_address === 'string' && args.email_address !== this.email_address) data.email_address = args.email_address
 		if (typeof args._status === typeof this._status && args._status !== this._status) data._status = args._status
-		if (typeof args.avatar_image_id === typeof this.avatar_image_id && args.avatar_image_id !== this.avatar_image_id) data.avatar_image_id = args.avatar_image_id
+		if (typeof args.avatar_image_id === 'number' && args.avatar_image_id !== this.avatar_image_id) data.avatar_image_id = args.avatar_image_id
 		return this._mainLaravelDBAPIUpdate('accounts/users/' + this.id, update_note, data)
 	}
 

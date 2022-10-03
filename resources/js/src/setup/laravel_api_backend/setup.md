@@ -57,6 +57,7 @@ php artisan make:model _Trade -m
 php artisan make:model _Chat -m
 php artisan make:model _Message -m
 php artisan make:model _Pinning -m
+php artisan make:model _Review -m
 php artisan make:model _Transaction -m
 
 php artisan make:model _Log -m
@@ -155,6 +156,7 @@ php artisan make:controller API/_DepositTokenController --api
 php artisan make:controller API/_FeedbackReportController --api
 php artisan make:controller API/_OfferController --api
 php artisan make:controller API/_PinningController --api
+php artisan make:controller API/_ReviewController --api
 php artisan make:controller API/_PostController --api
 php artisan make:controller API/_TradeController --api
 php artisan make:controller API/_TransactionController --api
@@ -222,6 +224,8 @@ php artisan make:resource _OfferResource
 php artisan make:resource _OfferResourceCollection --collection
 php artisan make:resource _PinningResource
 php artisan make:resource _PinningResourceCollection --collection
+php artisan make:resource _ReviewResource
+php artisan make:resource _ReviewResourceCollection --collection
 php artisan make:resource _PostResource
 php artisan make:resource _PostResourceCollection --collection
 php artisan make:resource _TradeResource

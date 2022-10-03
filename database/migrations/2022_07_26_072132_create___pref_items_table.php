@@ -21,7 +21,6 @@ return new class extends Migration
             $table->string('key_slug', 32);
             $table->string('value', 64);
             $table->string('value_type', 64);
-            $table->unique(['parent_table', 'parent_uid', 'key_slug']);
             
             $table->string('creator_username', 64)->nullable();
             $table->foreign('creator_username')
@@ -31,6 +30,8 @@ return new class extends Migration
                     ->onDelete('set null');
             $table->timestamp('created_datetime')->useCurrent();
             $table->timestamp('updated_datetime')->nullable()->useCurrentOnUpdate();
+            
+            $table->unique(['parent_table', 'parent_uid', 'key_slug']);
         });
 
         DB::table('__pref_items')->insert([
@@ -172,7 +173,7 @@ return new class extends Migration
             [
                 'key_name' => 'Offers to sell enabled',
                 'key_slug' => 'offer_to_sell_enabled',
-                'value' => false,
+                'value' => true,
                 'value_type' => 'boolean',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
@@ -199,7 +200,7 @@ return new class extends Migration
             [
                 'key_name' => 'Max timeout (minutes) for buyer to complete trade (auto flags)',
                 'key_slug' => 'buyer_cmplt_trade_max_mins_tmt',
-                'value' => 300,
+                'value' => 240,
                 'value_type' => 'integer',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',

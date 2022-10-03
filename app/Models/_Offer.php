@@ -26,18 +26,18 @@ class _Offer extends Model
         'asset_code',
         'currency_code',
         'offer_price',
-        'buyer_cmplt_trade_mins_tmt',
 
         'min_trade_purchase_amount',
         'max_trade_purchase_amount',
         'offer_total_purchase_amount',
-        'fill_amount',
+        'filled_amount',
 
         'min_trade_sell_value',
         'max_trade_sell_value',
         'offer_total_sell_value',
-        'fill_value',
+        'filled_value',
 
+        'buyer_cmplt_trade_mins_tmt',
         'pymt_method_slug',
         'pymt_details',
         'note',
@@ -67,7 +67,7 @@ class _Offer extends Model
         'min_trade_sell_value' => 'float',
         'max_trade_sell_value' => 'float',
         'offer_total_sell_value' => 'float',
-        'fill_value' => 'float',
+        'filled_value' => 'float',
         'pymt_details' => 'array',
     ];
 
@@ -77,5 +77,20 @@ class _Offer extends Model
     public function logs()
     {
         return $this->hasMany( _Log::class, 'entry_uid' )->where('entry_table', '__offers');
+    }
+
+    public function creator_rating_f()
+    {
+        return _User::firstWhere('username',$this->creator_username)->rating_f();
+    }
+
+    public function creator_completion_rate_f()
+    {
+        return _User::firstWhere('username',$this->creator_username)->completion_rate_f();
+    }
+
+    public function creator_trades_as_buyer_stats_f()
+    {
+        return _User::firstWhere('username',$this->creator_username)->trades_as_buyer_stats_f();
     }
 }

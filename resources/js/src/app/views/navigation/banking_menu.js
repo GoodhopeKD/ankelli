@@ -5,19 +5,19 @@ import BCReceiveCryptoScreen from "app/views/screens/banking_menu/BCReceiveCrypt
 import BCSendCryptoScreen from "app/views/screens/banking_menu/BCSendCrypto.screen"
 import DepositTokenTopupScreen from 'app/views/screens/banking_menu/DepositTokenTopup.screen'
 import WithdrawalsScreen from 'app/views/screens/banking_menu/Withdrawals.screen'
-import TransactionsListViewScreen from 'app/views/screens/banking_menu/TransactionsListView.screen'
+import TransactionsViewListScreen from 'app/views/screens/banking_menu/TransactionsViewList.screen'
 
 import SideBar from 'app/views/components/SideBar'
 
 class ExampleElement extends React.Component {
     render() {
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
-            <div className="container py-3">
+            <div className="container-xl py-3">
                 <div className="row">
-                    <div className="col-2">
+                    <div className="col-lg-2">
                         <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'banking_menu')]} />
                     </div>
-                    <div className="col-10">
+                    <div className="col-lg-10">
                         {this.props.title} screen
                     </div>
                 </div>
@@ -107,7 +107,7 @@ export const banking_menu = {
         {
             title: 'Transactions',
             path: '/transactions',
-            element: (props) => <TransactionsListViewScreen {...props} />,
+            element: (props) => <TransactionsViewListScreen {...props} />,
         },
         {
             title: 'Ankelli Pay',

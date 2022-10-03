@@ -17,6 +17,9 @@ class _TradeResource extends JsonResource
         return array_filter(array_merge(
         parent::toArray($request), [
             'messages' => $this->messages_f(),
+            'completion_review_on_trade_creator' => $this->completion_review_on_trade_creator_f(),
+            'completion_review_on_offer_creator' => $this->completion_review_on_offer_creator_f(),
+            'last_activity_datetime' => $this->last_activity_datetime_f(),
         ]), static function($var){ return $var !== null;} );
     }
 }

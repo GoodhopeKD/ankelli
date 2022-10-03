@@ -16,32 +16,32 @@ import ResetLostPasswordModal from 'app/views/components/ResetLostPassword.modal
 import RecoverLostUsernameModal from 'app/views/components/RecoverLostUsername.modal'
 
 // stack not in menues
-import { virtual_menu } from 'app/views/navigation/virtual_menu'
+import { _virtual_menu } from 'app/views/navigation/_virtual_menu'
 // top_navbar
-import { top_navbar_menu } from 'app/views/navigation/top_navbar_menu'
-import { top_navbar_user_menu } from 'app/views/navigation/top_navbar_user_menu'
+import { _top_navbar_menu } from 'app/views/navigation/_top_navbar_menu'
+import { _top_navbar_user_menu } from 'app/views/navigation/_top_navbar_user_menu'
 // sidebar
 import { pay_menu } from 'app/views/navigation/pay_menu'
 import { banking_menu } from 'app/views/navigation/banking_menu'
 import { accounts_menu } from 'app/views/navigation/accounts_menu'
 import { admin_menu } from 'app/views/navigation/admin_menu'
 // footer
-import { footer_menu } from 'app/views/navigation/footer_menu'
+import { _footer_menu } from 'app/views/navigation/_footer_menu'
 import { support_menu } from 'app/views/navigation/support_menu'
 
 const nav_menus_raw = [
     // top_navbar
-    top_navbar_menu,
-    top_navbar_user_menu,
+    _top_navbar_menu,
+    _top_navbar_user_menu,
     // sidebar
     pay_menu,
     banking_menu,
     accounts_menu,
     admin_menu,
     // virtual stack
-    virtual_menu,
+    _virtual_menu,
     // footer
-    footer_menu,
+    _footer_menu,
     support_menu,
 ]
 
@@ -240,15 +240,15 @@ function Navigator(props) {
                 curr_auth_state={curr_auth_state}
                 auth_user={auth_user}
                 curr_path={useLocation().pathname}
-                top_navbar_menu={nav_menus_filtered.find(menu => menu.slug === 'top_navbar_menu')}
-                top_navbar_user_menu={nav_menus_filtered.find(menu => menu.slug === 'top_navbar_user_menu')}
+                _top_navbar_menu={nav_menus_filtered.find(menu => menu.slug === '_top_navbar_menu')}
+                _top_navbar_user_menu={nav_menus_filtered.find(menu => menu.slug === '_top_navbar_user_menu')}
             />
             <div className="bg-white shadow" style={{ borderBottomColor: 'black', borderBottomWidth: 1 }}>
                 <div className="b-example-divider" style={{ height: 105 }}></div>
                 {props.children}
             </div>
             {/*<div style={{ minHeight: 379, zIndex: -2 }} />*/}
-            <Footer footer_menu={nav_menus_filtered.find(menu => menu.slug === 'footer_menu')} />
+            <Footer _footer_menu={nav_menus_filtered.find(menu => menu.slug === '_footer_menu')} />
             {!curr_auth_state && <>
                 <div className="modal fade" id="signin_modal" tabIndex="-1" >
                     <SignInModal />

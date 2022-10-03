@@ -129,12 +129,12 @@ class BCReceiveCryptoScreen extends React.Component {
         }
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
-            <div className="container py-3">
+            <div className="container-xl py-3">
                 <div className="row">
-                    <div className="col-2">
+                    <div className="col-lg-2">
                         <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'banking_menu')]} />
                     </div>
-                    <div className="col-10">
+                    <div className="col-lg-10">
                         {this.props.auth_user.asset_accounts.length !== 0 && <>
                             <div className="row mb-3">
                                 <div className="col">
@@ -158,33 +158,35 @@ class BCReceiveCryptoScreen extends React.Component {
 
                             <hr className="mb-0" />
 
-                            <table className="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Address</th>
-                                        <th scope="col">Onchain transaction count</th>
-                                        <th scope="col">Created datetime</th>
-                                        <th scope="col">Last used datetime</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {this.state.list.map((asset_account_address, index) => {
-                                        return <tr key={index} >
-                                            <td className="align-middle" style={{ maxWidth: 300 }}>
-                                                <div className="input-group input-group-sm">
-                                                    <input type="text" className="form-control" value={asset_account_address.blockchain_address} onChange={() => { }} />
-                                                    <span className="input-group-text p-0">
-                                                        <button className="btn btn-light" style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, border: 'none' }} onClick={() => { navigator.clipboard.writeText(asset_account_address.blockchain_address); _Notification.flash({ message: 'Address copied to clipboard', duration: 2000 }); }} >📋</button>
-                                                    </span>
-                                                </div>
-                                            </td>
-                                            <td className="align-middle">{asset_account_address.onchain_txcount}</td>
-                                            <td className="align-middle">{window.ucfirst(new _DateTime(asset_account_address.created_datetime).prettyDatetime())}</td>
-                                            <td className="align-middle">{window.isset(asset_account_address.last_active_datetime) ? window.ucfirst(new _DateTime(asset_account_address.last_active_datetime).prettyDatetime()) : '-'}</td>
+                            <div className="table-responsive">
+                                <table className="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Address</th>
+                                            <th scope="col">Onchain transaction count</th>
+                                            <th scope="col">Created datetime</th>
+                                            <th scope="col">Last used datetime</th>
                                         </tr>
-                                    })}
-                                </tbody>
-                            </table>
+                                    </thead>
+                                    <tbody>
+                                        {this.state.list.map((asset_account_address, index) => {
+                                            return <tr key={index} >
+                                                <td className="align-middle" style={{ maxWidth: 300 }}>
+                                                    <div className="input-group input-group-sm">
+                                                        <input type="text" className="form-control" value={asset_account_address.blockchain_address} onChange={() => { }} />
+                                                        <span className="input-group-text p-0">
+                                                            <button className="btn btn-light" style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, border: 'none' }} onClick={() => { navigator.clipboard.writeText(asset_account_address.blockchain_address); _Notification.flash({ message: 'Address copied to clipboard', duration: 2000 }); }} >📋</button>
+                                                        </span>
+                                                    </div>
+                                                </td>
+                                                <td className="align-middle">{asset_account_address.onchain_txcount}</td>
+                                                <td className="align-middle">{window.ucfirst(new _DateTime(asset_account_address.created_datetime).prettyDatetime())}</td>
+                                                <td className="align-middle">{window.isset(asset_account_address.last_active_datetime) ? window.ucfirst(new _DateTime(asset_account_address.last_active_datetime).prettyDatetime()) : '-'}</td>
+                                            </tr>
+                                        })}
+                                    </tbody>
+                                </table>
+                            </div>
 
                             <div className="d-flex gap-2" >
 

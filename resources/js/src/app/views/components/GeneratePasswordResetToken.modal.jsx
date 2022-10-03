@@ -44,7 +44,7 @@ export default withRouter(class GeneratePasswordResetTokenModal extends React.Co
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
             _User.generatePasswordResetToken(_Input.flatten(input))
                 .then(() => {
-                    _Notification.flash({ message: 'Token sent to given  ' + (input.recipient_addon_name === 'email_address' ? 'email address' : 'phone number'), duration: 2000 })
+                    _Notification.flash({ message: 'Token sent to provided  ' + (input.recipient_addon_name === 'email_address' ? 'email address' : 'phone number'), duration: 2000 })
                     if (this.props.component_context == "screen") {
                         this.props.navigate('/recovery/reset_lost_password' + this.props.location.search)
                     } else {

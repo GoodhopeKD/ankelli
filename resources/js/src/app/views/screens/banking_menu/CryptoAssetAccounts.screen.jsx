@@ -72,31 +72,35 @@ class CryptoAssetAccountsScreen extends React.Component {
         })
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
-            <div className="container py-3">
+            <div className="container-xl py-3">
                 <div className="row">
-                    <div className="col-2">
+                    <div className="col-lg-2">
                         <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'banking_menu')]} />
                     </div>
-                    <div className="col-10">
+                    <div className="col-lg-10">
                         <h4>My crypto wallets</h4>
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Asset Code</th>
-                                    <th scope="col">Usable Balance</th>
-                                    <th scope="col">Total Balance</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {this.props.auth_user.asset_accounts.map((asset_account, index) => {
-                                    return <tr key={index} >
-                                        <td className="align-middle">{asset_account.asset_code}</td>
-                                        <td className="align-middle">{asset_account.usable_balance_asset_value}</td>
-                                        <td className="align-middle">{asset_account.total_balance_asset_value}</td>
+                        
+                        <div className="table-responsive">
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Asset Code</th>
+                                        <th scope="col">Usable Balance</th>
+                                        <th scope="col">Total Balance</th>
                                     </tr>
-                                })}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {this.props.auth_user.asset_accounts.map((asset_account, index) => {
+                                        return <tr key={index} >
+                                            <td className="align-middle">{asset_account.asset_code}</td>
+                                            <td className="align-middle">{asset_account.usable_balance_asset_value}</td>
+                                            <td className="align-middle">{asset_account.total_balance_asset_value}</td>
+                                        </tr>
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+
                         <div className="d-flex gap-2" >
                             <div>
                                 <button type="button" className='btn btn-success' data-bs-toggle="modal" data-bs-target="#add_new_wallet_modal">Add</button>

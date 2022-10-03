@@ -24,12 +24,13 @@ return new class extends Migration
                     ->onDelete('set null');
             $table->string('blockchain_address', 96)->unique()->nullable();
             $table->unsignedInteger('tatum_derivation_key')->nullable();
-            $table->unique(['asset_account_id', 'blockchain_address', 'tatum_derivation_key'], 'asset_account_id_blockchain_address_tatum_derivation_key_unique');
             $table->unsignedTinyInteger('onchain_txcount')->default(0);
 
             $table->timestamp('created_datetime')->useCurrent();
             $table->timestamp('last_active_datetime')->nullable();
             $table->softDeletes('deleted_datetime');
+            
+            $table->unique(['asset_account_id', 'blockchain_address', 'tatum_derivation_key'], 'asset_account_id_blockchain_address_tatum_derivation_key_unique');
         });
     }
 

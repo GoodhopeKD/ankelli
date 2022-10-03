@@ -19,8 +19,8 @@ function SideBar(props) {
                             <li className={`mb-1 ${childclass}`} key={ii}>
                                 <NavLink
                                     to={item_i.path}
-                                    className={"btn " + (has_childred ? "btn-toggle" : "btn-toggle-alt") + " d-inline-flex align-items-center rounded border-0 w-100"}
-                                    data-bs-toggle={has_childred ? "collapse" : undefined} data-bs-target={has_childred ? "#" + id : undefined} aria-expanded={has_childred ? "false" : undefined}
+                                    className={"btn " + (has_childred ? "btn-toggle" : "btn-toggle-alt") + " d-inline-flex justify-content-between align-items-center rounded border-0 w-100"}
+                                    data-bs-toggle={has_childred ? "collapse" : undefined} data-bs-target={has_childred ? "#" + id : undefined}
                                 >
                                     {item_i.title}
                                 </NavLink>
@@ -34,7 +34,7 @@ function SideBar(props) {
                                                         <NavLink
                                                             to={item_j.path}
                                                             className="link-dark d-inline-flex text-decoration-none rounded"
-                                                            style={{ width: '85%' }}
+                                                            style={{ width: '90%' }}
                                                         >
                                                             {item_j.title}
                                                         </NavLink>

@@ -133,8 +133,4 @@ export default class _Chat extends _Wrapper_ implements Omit<typeof _ChatRespObj
             return Promise.reject({ message: 'Addon not recognized' })
         }
     }
-
-    public async update() {
-
-    }
 }

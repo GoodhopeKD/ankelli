@@ -164,7 +164,8 @@ class _AssetAccountController extends Controller
      */
     public function show(int $id)
     {
-        $element = _AssetAccount::findOrFail($id);
+        $element = _AssetAccount::find($id);
+        if (!$element) return abort(404, 'Asset account with specified id not found');
         return response()->json( new _AssetAccountResource( $element ) );
     }
 

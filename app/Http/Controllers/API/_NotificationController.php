@@ -71,7 +71,8 @@ class _NotificationController extends Controller
      */
     public function show(string $id)
     {
-        $element = _Notification::findOrFail($id);
+        $element = _Notification::find($id);
+        if (!$element) return abort(404, 'Notification with specified id not found');
         if (!$element->read_datetime){
             $element->update(['read_datetime' => now()->toDateTimeString()]);
         }

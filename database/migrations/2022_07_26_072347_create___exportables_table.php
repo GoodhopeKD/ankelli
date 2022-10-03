@@ -17,7 +17,6 @@ return new class extends Migration
             $table->id();
             $table->string('name', 64)->unique();
             $table->string('slug', 64)->unique();
-            $table->unique(['name', 'slug']);
             $table->text('description');
             $table->enum('_status', ['active', 'deactivated']);
 
@@ -29,6 +28,8 @@ return new class extends Migration
                     ->onDelete('set null');
             $table->timestamp('created_datetime')->useCurrent();
             $table->timestamp('updated_datetime')->nullable()->useCurrentOnUpdate();
+            
+            $table->unique(['name', 'slug']);
         });
     }
 

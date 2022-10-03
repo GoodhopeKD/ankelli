@@ -39,19 +39,20 @@ return new class extends Migration
                     ->onDelete('set null');
 
             $table->string('offer_price', 32)->nullable(); // unsignedDecimal
-            $table->unsignedTinyInteger('buyer_cmplt_trade_mins_tmt')->nullable();
 
             // for offer_to = buy
             $table->unsignedBigInteger('min_trade_purchase_amount')->nullable();
             $table->unsignedBigInteger('max_trade_purchase_amount')->nullable();
             $table->unsignedBigInteger('offer_total_purchase_amount')->nullable();
-            $table->unsignedBigInteger('fill_amount')->default(0);
+            $table->unsignedBigInteger('filled_amount')->default(0);
 
             // for offer_to = sell
             $table->string('min_trade_sell_value', 32)->nullable(); // unsignedDecimal
             $table->string('max_trade_sell_value', 32)->nullable(); // unsignedDecimal
             $table->string('offer_total_sell_value', 32)->nullable(); // unsignedDecimal
-            $table->string('fill_value', 32)->default(0); // unsignedDecimal
+            $table->string('filled_value', 32)->default(0); // unsignedDecimal
+            
+            $table->unsignedTinyInteger('buyer_cmplt_trade_mins_tmt')->nullable();
 
             $table->string('pymt_method_slug', 64)->nullable();
             $table->foreign('pymt_method_slug')

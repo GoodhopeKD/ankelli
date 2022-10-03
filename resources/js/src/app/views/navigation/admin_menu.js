@@ -1,9 +1,9 @@
 import React from "react"
-import DepositTokensListViewScreen from 'app/views/screens/admin_menu/banking-admin/DepositTokensListView.screen'
+import DepositTokensViewListScreen from 'app/views/screens/admin_menu/banking-admin/DepositTokensViewList.screen'
 import DepositTokensCreateNewScreen from 'app/views/screens/admin_menu/banking-admin/DepositTokensCreateNew.screen'
-import RegTokensListViewScreen from 'app/views/screens/admin_menu/accounts-admin/RegTokensListView.screen'
-import DatalistListViewScreen from "app/views/screens/admin_menu/datalists/DatalistListView.screen"
-import SysToolsListViewScreen from "app/views/screens/admin_menu/systools/SysToolsListView.screen"
+import RegTokensViewListScreen from 'app/views/screens/admin_menu/accounts-admin/RegTokensViewList.screen'
+import DatalistViewListScreen from "app/views/screens/admin_menu/datalists/DatalistViewList.screen"
+import SysToolsViewListScreen from "app/views/screens/admin_menu/systools/SysToolsViewList.screen"
 
 import EditSysConfigParamsScreen from "app/views/screens/admin_menu/sysconfig/EditSysConfigParams.screen"
 
@@ -12,12 +12,12 @@ import SideBar from 'app/views/components/SideBar'
 class ExampleElement extends React.Component {
     render() {
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
-            <div className="container py-3">
+            <div className="container-xl py-3">
                 <div className="row">
-                    <div className="col-2">
+                    <div className="col-lg-2">
                         <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'admin_menu')]} />
                     </div>
-                    <div className="col-10">
+                    <div className="col-lg-10">
                         {this.props.title} screen
                     </div>
                 </div>
@@ -83,7 +83,7 @@ export const admin_menu = {
                 {
                     title: 'Deposit Tokens',
                     path: '/banking-admin/deposit_tokens',
-                    element: (props) => <DepositTokensListViewScreen {...props} />,
+                    element: (props) => <DepositTokensViewListScreen {...props} />,
                     required_active_user_group_membership_slugs: ['business_administrators'],
                     show_in_menu: true,
                 },
@@ -128,7 +128,7 @@ export const admin_menu = {
                 {
                     title: 'Registration Tokens',
                     path: '/accounts-admin/reg_tokens',
-                    element: (props) => <RegTokensListViewScreen {...props} />,
+                    element: (props) => <RegTokensViewListScreen {...props} />,
                     show_in_menu: true,
                 },
                 {
@@ -170,7 +170,7 @@ export const admin_menu = {
             ]
         },
         {
-            title: 'System Configuration',
+            title: 'System config',
             path: '/sysconfig',
             required_active_user_group_membership_slugs: ['system_administrators'],
             children: [
@@ -191,7 +191,7 @@ export const admin_menu = {
                 {
                     title: 'User Groups',
                     path: '/systools/user_groups',
-                    element: (props) => <SysToolsListViewScreen {...props} />,
+                    element: (props) => <SysToolsViewListScreen {...props} />,
                     show_in_menu: true,
                 },
                 {
@@ -215,7 +215,7 @@ export const admin_menu = {
                 {
                     title: 'View User Group Members',
                     path: '/systools/user_groups/:user_group_slug/user-group-memberships',
-                    element: (props) => <SysToolsListViewScreen {...props} />,
+                    element: (props) => <SysToolsViewListScreen {...props} />,
                     show_in_menu: false,
                 },
                 {
@@ -228,7 +228,7 @@ export const admin_menu = {
                 {
                     title: 'Permissions',
                     path: '/systools/permissions',
-                    element: (props) => <SysToolsListViewScreen {...props} />,
+                    element: (props) => <SysToolsViewListScreen {...props} />,
                     show_in_menu: true,
                 },
                 {
@@ -298,25 +298,25 @@ export const admin_menu = {
                 {
                     title: 'Assets List',
                     path: '/datalists/assets',
-                    element: (props) => <DatalistListViewScreen {...props} />,
+                    element: (props) => <DatalistViewListScreen {...props} />,
                     show_in_menu: true,
                 },
                 {
                     title: 'Currencies List',
                     path: '/datalists/currencies',
-                    element: (props) => <DatalistListViewScreen {...props} />,
+                    element: (props) => <DatalistViewListScreen {...props} />,
                     show_in_menu: true,
                 },
                 {
                     title: 'Payment Methods List',
                     path: '/datalists/payment_methods',
-                    element: (props) => <DatalistListViewScreen {...props} />,
+                    element: (props) => <DatalistViewListScreen {...props} />,
                     show_in_menu: true,
                 },
                 {
                     title: 'Countries List',
                     path: '/datalists/countries',
-                    element: (props) => <DatalistListViewScreen {...props} />,
+                    element: (props) => <DatalistViewListScreen {...props} />,
                     show_in_menu: true,
                 },
             ]

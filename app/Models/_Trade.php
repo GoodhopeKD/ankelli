@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use App\Http\Resources\_MessageResourceCollection;
+use App\Http\Resources\_ReviewResourceCollection;
 
 class _Trade extends Model
 {
@@ -39,10 +40,9 @@ class _Trade extends Model
         'pymt_confirmed_datetime',
         'visible_to_creator',
         'visible_to_offer_creator',
-        'completion_rating_on_trade_creator',
-        'completion_rating_on_offer_creator',
         'buyer_opened_datetime',
         '_status',
+        'flag_raiser_username',
         'offer_creator_username',
         'creator_username',
     ];
@@ -74,6 +74,22 @@ class _Trade extends Model
     }
 
     /**
+     * Get the completion_review_on_trade_creator associated with the user.
+     */
+    public function completion_review_on_trade_creator()
+    {
+        return $this->hasOne( _Review::class, 'parent_uid', 'creator_username' )->where(['parent_table' => '__users', 'pivot_parent_table' => '__trades', 'pivot_parent_uid' => $this->ref_code]);
+    }
+
+    /**
+     * Get the completion_review_on_offer_creator associated with the user.
+     */
+    public function completion_review_on_offer_creator()
+    {
+        return $this->hasOne( _Review::class, 'parent_uid', 'offer_creator_username' )->where(['parent_table' => '__users', 'pivot_parent_table' => '__trades', 'pivot_parent_uid' => $this->ref_code]);
+    }
+
+    /**
      * Get the logs associated with the city.
      */
     public function logs()
@@ -85,4 +101,27 @@ class _Trade extends Model
     {
         return count($this->messages) ? json_decode(( new _MessageResourceCollection( $this->messages()->orderBy('created_datetime')->get() ))->toJson(),true)['data']: null;
     }
+
+    public function completion_review_on_trade_creator_f()
+    {
+        return $this->completion_review_on_trade_creator ? json_decode(( new _ReviewResourceCollection( [$this->completion_review_on_trade_creator] ))->toJson(),true)['data'][0] : null;
+    }
+
+    public function completion_review_on_offer_creator_f()
+    {
+        return $this->completion_review_on_offer_creator ? json_decode(( new _ReviewResourceCollection( [$this->completion_review_on_offer_creator] ))->toJson(),true)['data'][0] : null;
+    }
+
+    public function last_activity_datetime_f()
+    {
+        $last_message_datetime = null;
+        $last_message = $this->messages()->orderByRaw('ifnull(read_datetime, created_datetime) DESC')->first();
+        if ($last_message){
+            $last_message_datetime = $last_message->read_datetime ?? $last_message->created_datetime;
+        }
+        $all_datetimes = array_filter([$last_message_datetime, $this->created_datetime, $this->updated_datetime]);
+        rsort($all_datetimes);
+        return ($all_datetimes[0]);
+    }
+    
 }
