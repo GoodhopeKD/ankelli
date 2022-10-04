@@ -8,7 +8,7 @@ import withRouter from 'app/views/navigation/withRouter'
 class TradesViewSingleScreen extends React.Component {
 
     default_input = {
-        source_user_password: new _Input('Def-Pass#123'),
+        sender_password: new _Input('Def-Pass#123'),
         message_body: new _Input(),
         message_attachment: undefined,
 
@@ -18,7 +18,7 @@ class TradesViewSingleScreen extends React.Component {
 
     state = {
         focused_trade_loaded: false,
-        source_user_password_prompt_open: false,
+        sender_password_prompt_open: false,
         input: _.cloneDeep(this.default_input),
         errors: [],
     }
@@ -73,12 +73,12 @@ class TradesViewSingleScreen extends React.Component {
         this.setState({ btn_confirm_pymt_working: true })
         const errors = []
         const input = this.state.input
-        if (!input.source_user_password.isValid('password')) { errors.push("Invalid password") }
+        if (!input.sender_password.isValid('password')) { errors.push("Invalid password") }
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
             const _input = _Input.flatten(input)
             const password_confirmation_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('password_confirmation_modal'));
-            this.focused_trade.confirmPymt(_input.source_user_password)
+            this.focused_trade.confirmPymt(_input.sender_password)
                 .then(() => { password_confirmation_modal.hide(); this.setState({ btn_confirm_pymt_working: false }); _Notification.flash({ message: 'Payment confirmed.', duration: 2000 }); })
                 .catch((error) => {
                     if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
@@ -368,15 +368,15 @@ class TradesViewSingleScreen extends React.Component {
                                                                         <div className="form-floating mb-3">
                                                                             <input
                                                                                 type="password"
-                                                                                className={"form-control" + (this.state.input.source_user_password.failedValidation() ? ' is-invalid' : '')}
-                                                                                id="input_source_user_password"
-                                                                                value={this.state.input.source_user_password + ''}
-                                                                                onChange={elem => this.handleInputChange('source_user_password', elem.target.value)}
-                                                                                required={this.state.source_user_password_prompt_open}
+                                                                                className={"form-control" + (this.state.input.sender_password.failedValidation() ? ' is-invalid' : '')}
+                                                                                id="input_sender_password"
+                                                                                value={this.state.input.sender_password + ''}
+                                                                                onChange={elem => this.handleInputChange('sender_password', elem.target.value)}
+                                                                                required={this.state.sender_password_prompt_open}
                                                                                 placeholder="Pasword"
                                                                             />
-                                                                            <span className="btn btn-sm" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_source_user_password').setAttribute('type', document.getElementById('input_source_user_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
-                                                                            <label htmlFor="input_source_user_password">Password</label>
+                                                                            <span className="btn btn-sm" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_sender_password').setAttribute('type', document.getElementById('input_sender_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
+                                                                            <label htmlFor="input_sender_password">Password</label>
                                                                         </div>
 
                                                                         <div className="mb-1">
@@ -614,7 +614,7 @@ const mapStateToProps = (state) => {
     return {
         datalists: state.datalists_data,
         sysconfig_params: state.sysconfig_params_data,
-        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_accounts']) : null,
+        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_wallets']) : null,
     }
 }
 

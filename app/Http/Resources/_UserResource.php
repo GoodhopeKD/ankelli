@@ -18,7 +18,7 @@ class _UserResource extends JsonResource
         parent::toArray($request), [
             'rating' => $this->rating_f(),
             'completion_rate' => $this->completion_rate_f(),
-            'asset_accounts' => $this->asset_accounts_f(),
+            'asset_wallets' => $this->asset_wallets_f(),
             'user_group_memberships' => $this->user_group_memberships_f(),
             'active_user_group_membership_slugs' => $this->active_user_group_membership_slugs_f(),
         ]), static function($var){ return $var !== null;} );

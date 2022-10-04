@@ -26,22 +26,22 @@ Route::post('webhooks/tatum/nofitications', '_TransactionController@tatum_subscr
 
 // Test routes
 Route::post('load_test_data', '__AuxController@load_test_data')->name('load_test_data');
-/*Route::get('get_customers', '_AssetAccountController@get_customers')->name('get_customers');
-Route::get('get_accounts', '_AssetAccountController@get_accounts')->name('get_accounts');
-Route::get('get_addresses', '_AssetAccountController@get_addresses')->name('get_addresses');
-Route::get('get_transactions', '_AssetAccountController@get_transactions')->name('get_transactions');
-Route::get('get_subscriptions', '_AssetAccountController@get_subscriptions')->name('get_subscriptions');
-Route::get('get_subscription_notifications', '_AssetAccountController@get_subscription_notifications')->name('get_subscription_notifications');
-Route::get('redo_tatum_txrecon_transactions', '_AssetAccountController@redo_tatum_txrecon_transactions')->name('redo_tatum_txrecon_transactions');
-Route::get('redo_tatum_subscription_webhook_txrecon_requests', '_AssetAccountController@redo_tatum_subscription_webhook_txrecon_requests')->name('redo_tatum_subscription_webhook_txrecon_requests');*/
+Route::get('get_customers', '_AssetWalletController@get_customers')->name('get_customers');
+Route::get('get_accounts', '_AssetWalletController@get_accounts')->name('get_accounts');
+Route::get('get_addresses', '_AssetWalletController@get_addresses')->name('get_addresses');
+Route::get('get_transactions', '_AssetWalletController@get_transactions')->name('get_transactions');
+Route::get('get_subscriptions', '_AssetWalletController@get_subscriptions')->name('get_subscriptions');
+Route::get('get_subscription_notifications', '_AssetWalletController@get_subscription_notifications')->name('get_subscription_notifications');
+Route::get('redo_tatum_txrecon_transactions', '_AssetWalletController@redo_tatum_txrecon_transactions')->name('redo_tatum_txrecon_transactions');
+Route::get('redo_tatum_subscription_webhook_txrecon_requests', '_AssetWalletController@redo_tatum_subscription_webhook_txrecon_requests')->name('redo_tatum_subscription_webhook_txrecon_requests');
 
 // User authentication routes
 Route::post('accounts/auth/signup', '_UserController@store')->name('accounts.auth.signup');
 Route::post('accounts/auth/signin', '_UserController@signin')->name('accounts.auth.signin');
 
 // User recovery routes
-Route::get('accounts/recovery/username/get/send_to/{recipient_addon_name}/{recipient_addon_value}', '_UserController@get_lost_username')->name('accounts.recovery.get_lost_username');
-Route::get('accounts/recovery/password/generate_reset_token/for_user/{username}/send_to/{recipient_addon_name}/{recipient_addon_value}', '_VerifTokenController@generate_password_reset_token')->name('accounts.recovery.generate_password_reset_token');
+Route::get('accounts/recovery/username/get/send_to/{receiving_addon_name}/{receiving_addon_value}', '_UserController@get_lost_username')->name('accounts.recovery.get_lost_username');
+Route::get('accounts/recovery/password/generate_reset_token/for_user/{username}/send_to/{receiving_addon_name}/{receiving_addon_value}', '_VerifTokenController@generate_password_reset_token')->name('accounts.recovery.generate_password_reset_token');
 Route::post('accounts/recovery/password/reset', '_UserController@reset_lost_password')->name('accounts.recovery.reset_lost_password');
 
 // User addon verification routes (email_address, phone_no)
@@ -76,7 +76,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 Route::get('content/param_checks/availability/{param_name}/{param_value}', '__AuxController@availability_check')->name('availability_check');
 Route::get('content/param_checks/usability/{param_name}/{param_value}', '__AuxController@usability_check')->name('usability_check');
 Route::get('content/sysconfig_params', '__AuxController@sysconfig_params')->name('sysconfig_params');
-Route::get('content/sysconfig_params_enum_options', '__AuxController@sysconfig_params_enum_options')->name('sysconfig_params_enum_options');
+Route::get('admin/sysconfig_params_enum_options', '__AuxController@sysconfig_params_enum_options')->name('sysconfig_params_enum_options');
 Route::get('content/datalists', '__AuxController@datalists')->name('datalists');
 
 Route::get('content/datalists/assets', '_AssetController@index')->name('content.assets');
@@ -108,8 +108,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('suppport/chats', '_ChatController')->parameter('chats', 'uid');
     Route::apiResource('p2p/offers', '_OfferController')->only(['store', 'update', 'destroy'])->parameter('offers', 'ref_code');
     Route::apiResource('p2p/trades', '_TradeController')->except(['destroy'])->parameter('trades', 'ref_code');
-    Route::apiResource('banking/asset_accounts', '_AssetAccountController')->only('store')->parameter('asset_accounts', 'id');
-    Route::apiResource('banking/asset_account_addresses', '_AssetAccountAddressController')->only('store','index')->parameter('asset_account_addresses', 'id');
+    Route::apiResource('banking/asset_wallets', '_AssetWalletController')->only('store')->parameter('asset_wallets', 'id');
+    Route::apiResource('banking/asset_wallet_addresses', '_AssetWalletAddressController')->only('store','index')->parameter('asset_wallet_addresses', 'id');
     Route::apiResource('content/messages', '_MessageController')->only(['index', 'store'])->parameter('messages', 'id');
     Route::apiResource('content/pinnings', '_PinningController')->only(['store', 'update', 'destroy'])->parameter('pinnings', 'id');
     Route::apiResource('content/reviews', '_ReviewController')->only(['store', 'update'])->parameter('reviews', 'id');
@@ -124,6 +124,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('accounts/systools/user-group-memberships', '_UserGroupMembershipController')->only(['index', 'show'])->parameter('user-group-memberships', 'id');
     Route::apiResource('content/posts', '_PostController')->only(['index', 'show'])->parameter('posts', 'id');
 
+    Route::apiResource('admin/sysconfig_params', '_PrefItemController')->only(['index', 'update'])->parameter('sysconfig_params', 'id');
+    Route::get('admin/sysconfig_params_enum_options', '__AuxController@sysconfig_params_enum_options')->name('sysconfig_params_enum_options');
     Route::apiResource('admin/systools/permissions', '_PermissionController')->parameter('permissions', 'uid');
     Route::apiResource('admin/systools/permission-instances', '_PermissionInstanceController')->parameter('permission-instances', 'id');
     Route::apiResource('admin/systools/user_groups', '_UserGroupController')->parameter('user_groups', 'uid');

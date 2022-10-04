@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Hash;
 
 use App\Models\_BuyerExtension;
 use App\Models\_SellerExtension;
-use App\Models\_AssetAccount;
+use App\Models\_AssetWallet;
 use App\Models\_PrefItem;
 use App\Models\_User;
 use App\Models\_Offer;
@@ -71,7 +71,7 @@ class _TradeController extends Controller
         $validated_data = $request->validate([
             'offer_ref_code' => ['required', 'exists:__offers,ref_code', 'string'],
             'currency_amount' => ['required', 'numeric'],
-            'source_user_password' => ['sometimes', 'string', 'min:8', 'max:32'],
+            'sender_password' => ['sometimes', 'string', 'min:8', 'max:32'],
             'pymt_details' => ['sometimes', 'array'],
             'pymt_details.physical_address' => ['sometimes', 'string', 'max:255'],
             'pymt_details.email_address' => ['sometimes', 'string', 'email', 'max:64'],
@@ -98,8 +98,8 @@ class _TradeController extends Controller
             if (!($validated_data['currency_amount'] >= $offer->min_trade_purchase_amount && $validated_data['currency_amount'] <= $offer->max_trade_purchase_amount)){
                 return abort(422, 'Amount not within limits.');
             }
-            if (isset($validated_data['source_user_password'])){
-                if (!Hash::check($validated_data['source_user_password'], _User::firstWhere('username', $api_auth_user_username)->makeVisible(['password'])->password)) {
+            if (isset($validated_data['sender_password'])){
+                if (!Hash::check($validated_data['sender_password'], _User::firstWhere('username', $api_auth_user_username)->makeVisible(['password'])->password)) {
                     return abort(422, 'Password incorrect');
                 }
             } else {
@@ -152,23 +152,23 @@ class _TradeController extends Controller
         }
 
         // Lock seller asset in escrow
-        $seller_asset_account = _AssetAccount::firstWhere([
+        $seller_asset_wallet = _AssetWallet::firstWhere([
             'user_username' => $seller_username,
             'asset_code' => $offer->asset_code
         ]);
 
-        if ( !$seller_asset_account ){ return abort(422, 'Current '.$offer->asset_code.' balance insufficient for transaction.'); }
-        if ( $seller_asset_account->_status == 'frozen' ){ return abort(422, 'Selected asset is frozen.'); }
+        if ( !$seller_asset_wallet ){ return abort(422, 'Current '.$offer->asset_code.' balance insufficient for transaction.'); }
+        if ( $seller_asset_wallet->_status == 'frozen' ){ return abort(422, 'Selected asset is frozen.'); }
 
         $validated_data['was_offer_to'] = $offer->offer_to;
         $validated_data['offer_creator_username'] = $offer->creator_username;
         $validated_data['ref_code'] = random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
-        $seller_new_usable_balance_asset_value = $seller_asset_account->usable_balance_asset_value - $validated_data['asset_value_escrowed'];
+        $seller_new_usable_balance_asset_value = $seller_asset_wallet->usable_balance_asset_value - $validated_data['asset_value_escrowed'];
 
         if ( $seller_new_usable_balance_asset_value < 0 ){ return abort(422, 'Current '.$offer->asset_code.' balance insufficient for transaction.'); }
-        (new _AssetAccountController)->blockAssetValue( new Request([
+        (new _AssetWalletController)->blockAssetValue( new Request([
             'asset_value' => $validated_data['asset_value_escrowed'],
-        ]), $seller_asset_account->id );
+        ]), $seller_asset_wallet->id );
         // End lock in escrow
 
         // Update fill
@@ -278,7 +278,7 @@ class _TradeController extends Controller
         $validated_data = $request->validate([
             'pymt_declared' => ['sometimes', 'boolean'],
             'pymt_confirmed' => ['sometimes', 'boolean'],
-            'source_user_password' => ['sometimes', 'string', 'min:8', 'max:32'],
+            'sender_password' => ['sometimes', 'string', 'min:8', 'max:32'],
             'visible_to_creator' => ['sometimes', 'boolean'],
             'visible_to_offer_creator' => ['sometimes', 'boolean'],
             '_status' => ['sometimes', 'string', Rule::in(['active', 'cancelled', 'flagged'])],
@@ -355,13 +355,13 @@ class _TradeController extends Controller
                 $trade_was_cancelled = true;
                 $validated_data['closed_datetime'] = now()->toDateTimeString();
                 // Unlock asset from escrow
-                $seller_asset_account = _AssetAccount::firstWhere([
+                $seller_asset_wallet = _AssetWallet::firstWhere([
                     'user_username' => $seller_username,
                     'asset_code' => $element->asset_code,
                 ]);
-                (new _AssetAccountController)->unblockAssetValue( new Request([
+                (new _AssetWalletController)->unblockAssetValue( new Request([
                     'asset_value' => $element->asset_value_escrowed,
-                ]), $seller_asset_account->id );
+                ]), $seller_asset_wallet->id );
                 // End unlock asset from escrow
 
                 // Update fill
@@ -386,8 +386,8 @@ class _TradeController extends Controller
 
         if ( !$trade_was_cancelled && isset($validated_data['pymt_confirmed']) && $validated_data['pymt_confirmed'] == true){
 
-            if (isset($validated_data['source_user_password'])){
-                if (!Hash::check($validated_data['source_user_password'], _User::firstWhere('username', session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null ))->makeVisible(['password'])->password)) {
+            if (isset($validated_data['sender_password'])){
+                if (!Hash::check($validated_data['sender_password'], _User::firstWhere('username', session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null ))->makeVisible(['password'])->password)) {
                     return abort(422, 'Password incorrect');
                 }
             } else {
@@ -405,13 +405,13 @@ class _TradeController extends Controller
             session()->put('api_auth_user_username', $api_auth_user_username);
 
             // Unlock asset from escrow
-            $seller_asset_account = _AssetAccount::firstWhere([
+            $seller_asset_wallet = _AssetWallet::firstWhere([
                 'user_username' => $seller_username,
                 'asset_code' => $element->asset_code,
             ]);
-            (new _AssetAccountController)->unblockAssetValue( new Request([
+            (new _AssetWalletController)->unblockAssetValue( new Request([
                 'asset_value' => $element->asset_value_escrowed,
-            ]), $seller_asset_account->id );
+            ]), $seller_asset_wallet->id );
             usleep(500);
             // End unlock asset from escrow
             
@@ -419,11 +419,11 @@ class _TradeController extends Controller
                 'txn_context' => 'offchain',
                 'description' => 'Asset release for trade '.$ref_code,
                 'operation_slug' => 'trade_asset_release',
-                'source_user_username' => $seller_username, 
-                'source_user_password' => $validated_data['source_user_password'],
-                'destination_user_username' => $buyer_username, 
+                'sender_username' => $seller_username, 
+                'sender_password' => $validated_data['sender_password'],
+                'recipient_username' => $buyer_username, 
                 'asset_code' => $element->asset_code,
-                'transfer_asset_value' => $element->asset_value,
+                'xfer_asset_value' => $element->asset_value,
                 'txn_fee_fctr' => $element->trade_txn_fee_fctr,
             ]));
         }

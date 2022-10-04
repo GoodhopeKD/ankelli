@@ -8,9 +8,9 @@ const auth_token_returning_endpoints = ['accounts/auth/signup', 'accounts/auth/s
 // Endpoints that require no auth_token i.e they shouldn't be accessed with the auth_token
 const strictly_auth_clear_endpoints = [
     ...auth_token_returning_endpoints,
-    'accounts/recovery/password/generate_reset_token/for_user/{username}/send_to/{recipient_addon_name}/{recipient_addon_value}',
+    'accounts/recovery/password/generate_reset_token/for_user/{username}/send_to/{receiving_addon_name}/{receiving_addon_value}',
     'accounts/recovery/password/reset',
-    'accounts/recovery/username/get/send_to/{recipient_addon_name}/{recipient_addon_value}'
+    'accounts/recovery/username/get/send_to/{receiving_addon_name}/{receiving_addon_value}'
 ]
 
 // Endpoints that don't require an auth_token i.e they work with or without the auth_token

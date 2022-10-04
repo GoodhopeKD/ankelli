@@ -189,7 +189,7 @@ export default class RegTokensViewListScreen extends React.Component {
 
                         <hr />
 
-                        <div >
+                        <div>
 
                             <div className="table-responsive">
                                 <table className="table">

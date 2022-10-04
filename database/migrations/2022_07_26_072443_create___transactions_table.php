@@ -24,25 +24,26 @@ return new class extends Migration
                     ->on('__sessions')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->string('description', 255);
             $table->string('operation_slug', 64);
-            $table->string('source_user_username', 64)->nullable(); 
-            $table->foreign('source_user_username')
+            $table->string('sender_username', 64)->nullable(); 
+            $table->foreign('sender_username')
                     ->references('username')
                     ->on('__users')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
+            $table->string('sender_note', 255)->nullable();
             $table->string('source_blockchain_address', 96)->nullable(); 
-            $table->string('destination_user_username', 64)->nullable(); 
-            $table->foreign('destination_user_username')
+            $table->string('recipient_username', 64)->nullable(); 
+            $table->foreign('recipient_username')
                     ->references('username')
                     ->on('__users')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
+            $table->string('recipient_note', 255)->nullable();
             $table->string('destination_blockchain_address', 96)->nullable();
             $table->foreign('destination_blockchain_address')
                     ->references('blockchain_address')
-                    ->on('__asset_account_addresses')
+                    ->on('__asset_wallet_addresses')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
             $table->string('asset_code', 64)->nullable();
@@ -51,7 +52,7 @@ return new class extends Migration
                     ->on('__assets')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->string('transfer_asset_value', 32)->nullable(); // unsignedDecimal
+            $table->string('xfer_asset_value', 38)->nullable(); // unsignedDecimal
             $table->text('transfer_result');
             $table->timestamp('transfer_datetime')->useCurrent()->nullable();
             $table->softDeletes('deleted_datetime');

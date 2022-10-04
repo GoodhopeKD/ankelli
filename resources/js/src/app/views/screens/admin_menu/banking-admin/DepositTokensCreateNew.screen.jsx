@@ -14,13 +14,13 @@ class DepositTokensCreateNewScreen extends React.Component {
         asset_value: new _Input(),
         currency_code: 'USD',
         currency_amount: new _Input(),
-        source_user_password: new _Input()
+        sender_password: new _Input()
     }
 
     state = {
         btn_create_deposit_token_working: false,
         input: _.cloneDeep(this.default_input),
-        ankelli_reserves_user_asset_accounts: [],
+        ankelli_reserves_user_asset_wallets: [],
         errors: [],
     }
 
@@ -43,7 +43,7 @@ class DepositTokensCreateNewScreen extends React.Component {
         const asset = this.props.datalists.active_assets[this.state.input.asset_code]
 
         if (!(input.asset_value > 0)) { errors.push('Asset value invalid') }
-        if (!input.asset_value.isValid('number', 0, (this.state.ankelli_reserves_user_asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value)) { errors.push("Asset value not within bounds") }
+        if (!input.asset_value.isValid('number', 0, (this.state.ankelli_reserves_user_asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value)) { errors.push("Asset value not within bounds") }
 
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
@@ -60,7 +60,7 @@ class DepositTokensCreateNewScreen extends React.Component {
         const errors = []
         const input = this.state.input
 
-        if (!input.source_user_password.isValid('password')) { errors.push("Invalid password") }
+        if (!input.sender_password.isValid('password')) { errors.push("Invalid password") }
 
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
@@ -78,7 +78,7 @@ class DepositTokensCreateNewScreen extends React.Component {
 
     componentDidMount = async () => {
         await _User.getOne({ username: 'reserves' })
-            .then(ankelli_reserves_user => this.setState({ ankelli_reserves_user_asset_accounts: ankelli_reserves_user.asset_accounts }))
+            .then(ankelli_reserves_user => this.setState({ ankelli_reserves_user_asset_wallets: ankelli_reserves_user.asset_wallets }))
             .catch(e => console.log(e))
     }
 
@@ -156,7 +156,7 @@ class DepositTokensCreateNewScreen extends React.Component {
                                             </div>
                                             <div className="col">
                                                 <label htmlFor="output_current_balance" className="form-label">Reserves balance</label>
-                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.state.ankelli_reserves_user_asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
+                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.state.ankelli_reserves_user_asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -166,7 +166,7 @@ class DepositTokensCreateNewScreen extends React.Component {
                                             required
                                             value={this.state.input.asset_value}
                                             min={asset.smallest_display_unit}
-                                            max={window.assetValueInput((this.state.ankelli_reserves_user_asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}
+                                            max={window.assetValueInput((this.state.ankelli_reserves_user_asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}
                                             onChange={elem => this.handleInputChange('asset_value', elem.target.value)}
                                         />
                                     </div>
@@ -197,15 +197,15 @@ class DepositTokensCreateNewScreen extends React.Component {
                                                     <div className="form-floating mb-3">
                                                         <input
                                                             type="password"
-                                                            className={"form-control rounded-3" + (this.state.input.source_user_password.failedValidation() ? ' is-invalid' : '')}
-                                                            id="input_source_user_password"
-                                                            value={this.state.input.source_user_password + ''}
-                                                            onChange={elem => this.handleInputChange('source_user_password', elem.target.value)}
-                                                            required={this.state.source_user_password_prompt_open}
+                                                            className={"form-control rounded-3" + (this.state.input.sender_password.failedValidation() ? ' is-invalid' : '')}
+                                                            id="input_sender_password"
+                                                            value={this.state.input.sender_password + ''}
+                                                            onChange={elem => this.handleInputChange('sender_password', elem.target.value)}
+                                                            required={this.state.sender_password_prompt_open}
                                                             placeholder="Pasword"
                                                         />
-                                                        <span className="btn btn-sm" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_source_user_password').setAttribute('type', document.getElementById('input_source_user_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
-                                                        <label htmlFor="input_source_user_password">Password</label>
+                                                        <span className="btn btn-sm" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_sender_password').setAttribute('type', document.getElementById('input_sender_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
+                                                        <label htmlFor="input_sender_password">Password</label>
                                                     </div>
 
                                                     <div className="mb-1">

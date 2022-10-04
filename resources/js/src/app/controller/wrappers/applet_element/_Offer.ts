@@ -105,8 +105,8 @@ export default class _Offer extends _Wrapper_ implements Omit<typeof _OfferRespO
         return this._mainLaravelDBAPIGetCollection('p2p/offers', params, page_select, per_page)
     }
 
-    public async accept(args: { currency_amount: number, pymt_details?: any, source_user_password?: string }) {
-        return _Trade.create({ offer_ref_code: this.ref_code as string, currency_amount: args.currency_amount, pymt_details: args.pymt_details, source_user_password: args.source_user_password })
+    public async accept(args: { currency_amount: number, pymt_details?: any, sender_password?: string }) {
+        return _Trade.create({ offer_ref_code: this.ref_code as string, currency_amount: args.currency_amount, pymt_details: args.pymt_details, sender_password: args.sender_password })
     }
 
     /* Updaters */

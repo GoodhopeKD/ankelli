@@ -13,9 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('__asset_account_addresses', function (Blueprint $table) {
+        Schema::create('__asset_wallet_addresses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('asset_account_id')->references('id')->on('__asset_accounts');
+            $table->foreignId('asset_wallet_id')->references('id')->on('__asset_wallets');
             $table->string('user_username', 64)->nullable();
             $table->foreign('user_username')
                     ->references('username')
@@ -30,7 +30,7 @@ return new class extends Migration
             $table->timestamp('last_active_datetime')->nullable();
             $table->softDeletes('deleted_datetime');
             
-            $table->unique(['asset_account_id', 'blockchain_address', 'tatum_derivation_key'], 'asset_account_id_blockchain_address_tatum_derivation_key_unique');
+            $table->unique(['asset_wallet_id', 'blockchain_address', 'tatum_derivation_key'], 'asset_wallet_id_blockchain_address_tatum_derivation_key_unique');
         });
     }
 
@@ -41,6 +41,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('__asset_account_addresses');
+        Schema::dropIfExists('__asset_wallet_addresses');
     }
 };

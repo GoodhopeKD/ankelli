@@ -3,20 +3,22 @@ import { connect } from 'react-redux'
 
 import SideBar from 'app/views/components/SideBar'
 
-import { _User, _PrefItem, _Input } from 'app/controller'
+import { _User, _PrefItem, _Input, _Notification } from 'app/controller'
 
 class EditSysConfigParamsScreen extends React.Component {
 
+    default_input = {
+        password: new _Input('Def-Pass#123'),
+        update_note: new _Input('Maintenance'),
+    }
     state = {
         sysconfig_params: [],
         sysconfig_params_enum_options: [],
-        input: {
-            password: new _Input()
-        }
+        input: _.cloneDeep(this.default_input),
+        errors: [],
     }
 
     handleInputChange(field = 'field.deep_field', value, use_raw = false) {
-        console.log(value)
         const input = this.state.input
         const fields = field.split('.')
         const val = use_raw ? value : new _Input(value)
@@ -61,6 +63,9 @@ class EditSysConfigParamsScreen extends React.Component {
                                 <tbody>
                                     {(this.state.sysconfig_params.length > 0 && this.state.sysconfig_params_enum_options.length > 0) ? (
                                         this.state.sysconfig_params.map((param, index) => {
+
+                                            const value_modified = window.isset(this.state.input[param.key_slug]) && (this.state.input[param.key_slug] + '' != param.value + '')
+
                                             return <tr key={index} >
                                                 <td className="align-middle">{param.key_name}</td>
                                                 <td className="align-middle">
@@ -90,7 +95,27 @@ class EditSysConfigParamsScreen extends React.Component {
                                                                     <h5 className="modal-title" >Modify system param</h5>
                                                                     <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
                                                                 </div>
-                                                                <form onSubmit={e => { e.preventDefault(); }}>
+                                                                <form
+                                                                    onSubmit={e => {
+                                                                        e.preventDefault();
+                                                                        this.setState({ btn_modify_param_working: true })
+                                                                        const errors = []
+                                                                        const _input = _Input.flatten(this.state.input);
+                                                                        (new _PrefItem(param)).sysConfigParamUpdate({ value: _input[param.key_slug], value_type: param.value_type }, _input.update_note, _input.password)
+                                                                            .then(() => {
+                                                                                bootstrap.Modal.getOrCreateInstance(document.getElementById("sysconfig_param_" + index)).hide()
+                                                                                _Notification.flash({ message: 'Param updated!', duration: 2000 })
+                                                                                this.setState({ input: _.cloneDeep(this.default_input), btn_modify_param_working: false, errors: [] })
+                                                                                this.componentDidMount()
+                                                                            })
+                                                                            .catch((error) => {
+                                                                                if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
+                                                                                    Object.keys(error.request._response.errors).forEach(input_key => { error.request._response.errors[input_key].forEach(input_key_error => { errors.push(input_key_error) }) })
+                                                                                } else { errors.push(error.message) }
+                                                                                this.setState({ btn_modify_param_working: false, errors })
+                                                                            })
+                                                                    }}
+                                                                >
                                                                     <div className="modal-body">
                                                                         <div className="mb-3">
 
@@ -102,12 +127,13 @@ class EditSysConfigParamsScreen extends React.Component {
                                                                                             type="checkbox"
                                                                                             className="form-check-input"
                                                                                             id={"input_param_" + index}
-                                                                                            value={window.isset(this.state.input[param.key_slug]) ? this.state.input[param.key_slug] : param.value}
+                                                                                            checked={window.isset(this.state.input[param.key_slug]) ? this.state.input[param.key_slug] : param.value}
                                                                                             onChange={elem => this.handleInputChange(param.key_slug, elem.target.checked, true)}
                                                                                         />
                                                                                     </div>
                                                                                 </div>
                                                                             </>}
+
                                                                             {param.value_type.includes('enum:') && <>
                                                                                 <label htmlFor={"input_param_" + index}>{param.key_name}</label>
                                                                                 <select
@@ -121,6 +147,7 @@ class EditSysConfigParamsScreen extends React.Component {
                                                                                     })}
                                                                                 </select>
                                                                             </>}
+
                                                                             {(param.value_type == 'integer' || param.value_type == 'float') && <>
                                                                                 <label htmlFor={"input_param_" + index}>{param.key_name}</label>
                                                                                 <input
@@ -132,7 +159,23 @@ class EditSysConfigParamsScreen extends React.Component {
                                                                                 />
                                                                             </>}
                                                                         </div>
-                                                                        <div >
+
+                                                                        <div className="mb-3">
+                                                                            <label htmlFor={"input_update_note_" + index}>Enter an update note</label>
+                                                                            <input
+                                                                                type="text"
+                                                                                className={"form-control"}
+                                                                                id={"input_update_note_" + index}
+                                                                                value={this.state.input.update_note + ''}
+                                                                                onChange={elem => this.handleInputChange('update_note', elem.target.value)}
+                                                                                required
+                                                                                disabled={!value_modified}
+                                                                                placeholder="Update note"
+                                                                                style={{ paddingRight: 70 }}
+                                                                            />
+                                                                        </div>
+
+                                                                        <div>
                                                                             <label htmlFor={"input_password_" + index}>Enter your password to confirm update</label>
                                                                             <input
                                                                                 type="password"
@@ -141,16 +184,26 @@ class EditSysConfigParamsScreen extends React.Component {
                                                                                 value={this.state.input.password + ''}
                                                                                 onChange={elem => this.handleInputChange('password', elem.target.value)}
                                                                                 required
-                                                                                disabled={!(window.isset(this.state.input[param.key_slug]) && (this.state.input[param.key_slug] + '' != param.value + ''))}
+                                                                                disabled={!value_modified}
                                                                                 placeholder="Password"
                                                                                 style={{ paddingRight: 70 }}
                                                                             />
                                                                             <span className="btn btn-sm" style={{ position: 'absolute', bottom: 20, right: 20 }} onClick={() => document.getElementById("input_password_" + index).setAttribute('type', document.getElementById("input_password_" + index).getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
                                                                         </div>
+
+                                                                        {this.state.errors.length > 0 && (<div className="mt-3">
+                                                                            {this.state.errors.map((error, key) => (
+                                                                                <div key={key}>• <span style={{ color: 'red' }}>{error}</span></div>
+                                                                            ))}
+                                                                        </div>)}
+
                                                                     </div>
+
                                                                     <div className="modal-footer justify-content-between">
                                                                         <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                                        <button type="submit" className="btn btn-primary" formNoValidate={param.value_type == 'float'} >Save</button>
+                                                                        <button type="submit" className="btn btn-primary" formNoValidate={param.value_type == 'float'} disabled={this.state.btn_modify_param_working || !value_modified} >
+                                                                            {this.state.btn_modify_param_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Update</>}
+                                                                        </button>
                                                                     </div>
                                                                 </form>
                                                             </div>

@@ -19,8 +19,8 @@ class _VerifToken extends Model
         'user_username',
         'charge',
         '_status',
-        'recipient_resource_table',
-        'recipient_resource_id',
+        'receiving_resource_table',
+        'receiving_resource_id',
         'verified_datetime',
     ];
     public $incrementing = false;
@@ -41,7 +41,7 @@ class _VerifToken extends Model
      */
     public function email_address()
     {
-        return $this->belongsTo( _EmailAddress::class, 'recipient_resource_id' );
+        return $this->belongsTo( _EmailAddress::class, 'receiving_resource_id' );
     }
 
     /**
@@ -49,20 +49,20 @@ class _VerifToken extends Model
      */
     public function phone_no()
     {
-        return $this->belongsTo( _PhoneNo::class, 'recipient_resource_id' );
+        return $this->belongsTo( _PhoneNo::class, 'receiving_resource_id' );
     }
 
-    public function recipient_resource_value_f()
+    public function receiving_resource_value_f()
     {
-        $recipient_resource_value = null;
-        switch ( $this->recipient_resource_table ) {
+        $receiving_resource_value = null;
+        switch ( $this->receiving_resource_table ) {
             case '__email_addresses':
-                $recipient_resource_value = ( $this->email_address ) ? $this->email_address->email_address : null;
+                $receiving_resource_value = ( $this->email_address ) ? $this->email_address->email_address : null;
                 break;
             case '__phone_nos':
-                $recipient_resource_value = ( $this->phone_no ) ? '+'.ltrim($this->phone_no->country_calling_code, '+').ltrim($this->phone_no->number, '0');
+                $receiving_resource_value = ( $this->phone_no ) ? '+'.ltrim($this->phone_no->country_calling_code, '+').ltrim($this->phone_no->number, '0');
                 break;
         }
-        return $recipient_resource_value;
+        return $receiving_resource_value;
     }
 }

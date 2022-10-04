@@ -52,8 +52,8 @@ class __AuxController extends Controller
         
             // Response Structure
             $response = [
-                //'sysconfig_params_data' => ( new __AuxController )->sysconfig_params()->getData()->data,
-                //'datalists_data' => ( new __AuxController )->datalists()->getData(),
+                'sysconfig_params_data' => ( new __AuxController )->sysconfig_params()->getData()->data,
+                'datalists_data' => ( new __AuxController )->datalists()->getData(),
                 'active_session_data' => null,
                 'auth_user_data' => null,
             ];
@@ -269,7 +269,10 @@ class __AuxController extends Controller
             'code' => 'USDT',
             'tatum_currency' => 'ETH',
             'smallest_display_unit' => 0.0001,
-            'onchain_disclaimer' => "Our USDT is hosted on the Ethereum network.\nAll blockchain transactions should be handled accordingly."
+            'onchain_disclaimer' => "This platform is still in test mode using the testnet chain.
+USDT doesn't exist on testnet so we're using ETH but referring to it here as USDT.
+The system does an internal conversion such that 1 ETH = 2000 USDT.
+Handle all internal transactions normally but know that these values will be reflected differently outside this platform."
         ]));
 
         $token_reg_changed = false;
@@ -335,7 +338,7 @@ class __AuxController extends Controller
             'email_address' => 'reserves@ankelli.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
-        (new _AssetAccountController)->store( new Request([
+        (new _AssetWalletController)->store( new Request([
             'asset_code' => 'USDT',
             'user_username' => 'reserves',
         ]));
@@ -392,7 +395,7 @@ class __AuxController extends Controller
             'username' => 'guddaz', 'email_address' => 'goodhopedhliwayo@gmail.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
-        (new _AssetAccountController)->store( new Request([
+        (new _AssetWalletController)->store( new Request([
             'asset_code' => 'USDT',
             'user_username' => 'guddaz',
         ]));
@@ -409,7 +412,7 @@ class __AuxController extends Controller
             'username' => 'paywyze', 'email_address' => 'paywyze@ankelli.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
-        (new _AssetAccountController)->store( new Request([
+        (new _AssetWalletController)->store( new Request([
             'asset_code' => 'USDT',
             'user_username' => 'paywyze',
         ]));
@@ -431,7 +434,7 @@ class __AuxController extends Controller
             'username' => 'sekuru', 'email_address' => 'sekuru@ankelli.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
-        (new _AssetAccountController)->store( new Request([
+        (new _AssetWalletController)->store( new Request([
             'asset_code' => 'USDT',
             'user_username' => 'sekuru',
         ]));
@@ -492,9 +495,9 @@ class __AuxController extends Controller
                 'blockchain_txn_id' => $internalisation[3],
                 'description' => $internalisation[2],
                 'operation_slug' => 'inbound_direct_transfer',
-                'destination_user_username' => $internalisation[0], 
+                'recipient_username' => $internalisation[0], 
                 'asset_code' => 'USDT',
-                'transfer_asset_value' => $internalisation[1],
+                'xfer_asset_value' => $internalisation[1],
             ]));
             sleep(3);
         }
@@ -538,7 +541,7 @@ class __AuxController extends Controller
             'pymt_method_slug' => 'mukuru',
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'guddaz');
-        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 100, 'source_user_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Kudakwashe Magadze', 'phone_no' => '+263 7658 357' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 100, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Kudakwashe Magadze', 'phone_no' => '+263 7658 357' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
         (new _MessageController)->store( new Request([
             'parent_table' => '__trades',
             'parent_uid' => $trade->ref_code,
@@ -568,7 +571,7 @@ class __AuxController extends Controller
             'parent_uid' => $trade->ref_code,
             'body' => "Pleasure doing business with you."
         ]));
-        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123' ]), $trade->ref_code );
+        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123' ]), $trade->ref_code );
         sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
@@ -623,14 +626,14 @@ class __AuxController extends Controller
             'pymt_method_slug' => 'world_remit',
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'paywyze');
-        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 100, 'source_user_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Kudakwashe Magadze', 'phone_no' => '+263 765 357' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 100, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Kudakwashe Magadze', 'phone_no' => '+263 765 357' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
         sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
+        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code );
         sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
@@ -667,14 +670,14 @@ class __AuxController extends Controller
             'pymt_method_slug' => 'paypal',
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'paywyze');
-        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 150, 'source_user_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Tawanda Chakatsva', 'email_address' => 'tawanda@example.com' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 150, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Tawanda Chakatsva', 'email_address' => 'tawanda@example.com' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
         sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
+        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code );
         sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
@@ -711,14 +714,14 @@ class __AuxController extends Controller
             'pymt_method_slug' => 'skrill',
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'paywyze');
-        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 600, 'source_user_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Mulenga Mwamba', 'email_address' => 'mulenga@example.com' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 600, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Mulenga Mwamba', 'email_address' => 'mulenga@example.com' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
         sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
+        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code );
         sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
@@ -755,14 +758,14 @@ class __AuxController extends Controller
             'pymt_method_slug' => 'cash_in_person',
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'ross');
-        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 200, 'source_user_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Mulenga Mwamba', 'phone_no' => 'mulenga@example.com', ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 200, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Mulenga Mwamba', 'phone_no' => 'mulenga@example.com', ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
         sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
+        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code );
         sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
@@ -799,14 +802,14 @@ class __AuxController extends Controller
             'pymt_method_slug' => 'cash_in_person',
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'keith');
-        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 3000, 'source_user_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Mulenga Mwamba', 'phone_no' => 'mulenga@example.com', ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 3000, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Mulenga Mwamba', 'phone_no' => 'mulenga@example.com', ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
         sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
+        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code );
         sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
@@ -842,14 +845,14 @@ class __AuxController extends Controller
             'pymt_method_slug' => 'fbc_bank',
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'keith');
-        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 250, 'source_user_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Tadiwa Magodi', 'account_no' => '506788965445' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 250, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Tadiwa Magodi', 'account_no' => '506788965445' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
         sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
+        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code );
         sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
@@ -885,14 +888,14 @@ class __AuxController extends Controller
             'pymt_method_slug' => 'fnb_bank',
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'keith');
-        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 2500, 'source_user_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'William Mbeki', 'account_no' => '6507890898', ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 2500, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'William Mbeki', 'account_no' => '6507890898', ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
         sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
+        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code );
         sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
@@ -928,14 +931,14 @@ class __AuxController extends Controller
             'pymt_method_slug' => 'fnb_bank',
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'jimmy');
-        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 3000, 'source_user_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'William Mbeki', 'account_no' => '6507890898' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 3000, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'William Mbeki', 'account_no' => '6507890898' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
         sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
+        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code );
         sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
@@ -971,14 +974,14 @@ class __AuxController extends Controller
             'pymt_method_slug' => 'world_remit'
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'jimmy');
-        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 200, 'source_user_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Panashe Gabvu', 'phone_no' => '+78 568 6503', ], ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 200, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Panashe Gabvu', 'phone_no' => '+78 568 6503', ], ],[],[],['HTTP_accept'=>'application/json']))->getData();
         sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
+        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code );
         sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
@@ -1014,14 +1017,14 @@ class __AuxController extends Controller
             'pymt_method_slug' => 'algerie_poste',
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'jimmy');
-        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 35000, 'source_user_password' => 'Def-Pass#123', 'pymt_details' => [ 'account_holder_name' => 'Djenna Moulad', 'account_no' => '22657899', 'account_key' => '67', ], ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 35000, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'account_holder_name' => 'Djenna Moulad', 'account_no' => '22657899', 'account_key' => '67', ], ],[],[],['HTTP_accept'=>'application/json']))->getData();
         sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
+        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code );
         sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
@@ -1058,14 +1061,14 @@ class __AuxController extends Controller
             'pymt_method_slug' => 'cash_in_person'
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'flint');
-        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 150, 'source_user_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Tamari Karongo', 'address' => 'Opposite OK Marondera', 'phone_no' => '+263 7658 357' ], ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 150, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Tamari Karongo', 'address' => 'Opposite OK Marondera', 'phone_no' => '+263 7658 357' ], ],[],[],['HTTP_accept'=>'application/json']))->getData();
         sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
+        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code );
         sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
@@ -1088,14 +1091,14 @@ class __AuxController extends Controller
 
         // Trade -> transaction
         session()->put('api_auth_user_username', 'keith');
-        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 50, 'source_user_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Samuel Kaviya', 'phone_no' => '+263 772 234 677' ], ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 50, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Samuel Kaviya', 'phone_no' => '+263 772 234 677' ], ],[],[],['HTTP_accept'=>'application/json']))->getData();
         sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
+        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code );
         sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
@@ -1131,14 +1134,14 @@ class __AuxController extends Controller
             'pymt_method_slug' => 'algerie_poste',
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'flint');
-        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 36000, 'source_user_password' => 'Def-Pass#123', 'pymt_details' => [ 'account_holder_name' => 'Timothy Tambo', 'account_number' => '22508678', 'account_key' => '87' ], ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 36000, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'account_holder_name' => 'Timothy Tambo', 'account_number' => '22508678', 'account_key' => '87' ], ],[],[],['HTTP_accept'=>'application/json']))->getData();
         sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update( new Request([ 'pymt_declared' => true, ]), $trade->ref_code );
         session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'source_user_password' => 'Def-Pass#123']), $trade->ref_code );
+        (new _TradeController)->update( new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code );
         sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store( new Request([ 
@@ -1174,7 +1177,7 @@ class __AuxController extends Controller
             'pymt_method_slug' => 'mukuru',
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'guddaz');
-        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 100, 'source_user_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Kudakwashe Magadze', 'phone_no' => '+263 765 357' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 100, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Kudakwashe Magadze', 'phone_no' => '+263 765 357' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
         sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
@@ -1198,7 +1201,7 @@ class __AuxController extends Controller
             'pymt_method_slug' => 'cash_in_person',
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'flint');
-        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 200, 'source_user_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Tamari Karongo', 'phone_no' => '+263 7658 357' ], ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        $trade = (new _TradeController)->store( Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 200, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Tamari Karongo', 'phone_no' => '+263 7658 357' ], ],[],[],['HTTP_accept'=>'application/json']))->getData();
         sleep(3);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);

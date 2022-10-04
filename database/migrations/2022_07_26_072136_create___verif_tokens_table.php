@@ -21,8 +21,8 @@ return new class extends Migration
                     ->on('__users')
                     ->onUpdate('cascade')
                     ->onDelete('cascade');
-            $table->enum('recipient_resource_table', ['__phone_nos', '__email_addresses']);
-            $table->unsignedBigInteger('recipient_resource_id');
+            $table->enum('receiving_resource_table', ['__phone_nos', '__email_addresses']);
+            $table->unsignedBigInteger('receiving_resource_id');
             $table->enum('charge', ['email_address_verification', 'phone_no_verification', 'password_reset']);
             $table->enum('_status', ['unused', 'verified', 'annulled'])->default('unused');
             $table->timestamp('created_datetime')->useCurrent();

@@ -93,7 +93,7 @@ class DepositTokenTopupScreen extends React.Component {
                             <div className="card-body">
                                 <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
 
-                                    <div className="bd-example">
+                                    <div>
                                         <nav>
                                             <div className="nav nav-tabs mb-3" id="nav-tab" role="tablist">
                                                 <button onClick={() => this.handleInputChange('deposit_type', 'crypto', true)} className="nav-link active" id="nav-crypto-topup-tab" data-bs-toggle="tab" data-bs-target="#nav-crypto-topup" type="button" role="tab" >Crypto topup</button>
@@ -116,7 +116,7 @@ class DepositTokenTopupScreen extends React.Component {
                                                     </div>
                                                     <div className="col">
                                                         <label htmlFor="output_current_balance" className="form-label">Total balance</label>
-                                                        <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { total_balance_asset_value: 0 }).total_balance_asset_value, asset)}</span>
+                                                        <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { total_balance_asset_value: 0 }).total_balance_asset_value, asset)}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -175,7 +175,7 @@ class DepositTokenTopupScreen extends React.Component {
 const mapStateToProps = (state) => {
     return {
         datalists: state.datalists_data,
-        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_accounts']) : null,
+        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_wallets']) : null,
     }
 }
 

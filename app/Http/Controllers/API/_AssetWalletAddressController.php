@@ -5,13 +5,13 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\_AssetAccount;
+use App\Models\_AssetWallet;
 
-use App\Models\_AssetAccountAddress;
-use App\Http\Resources\_AssetAccountAddressResource;
-use App\Http\Resources\_AssetAccountAddressResourceCollection;
+use App\Models\_AssetWalletAddress;
+use App\Http\Resources\_AssetWalletAddressResource;
+use App\Http\Resources\_AssetWalletAddressResourceCollection;
 
-class _AssetAccountAddressController extends Controller
+class _AssetWalletAddressController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -25,14 +25,14 @@ class _AssetAccountAddressController extends Controller
         if ( $result === null ){
             $simple_query_args = [];
 
-            if ( request()->asset_account_id ){ $simple_query_args = array_merge( $simple_query_args, [ 'asset_account_id' => request()->asset_account_id ]); }
+            if ( request()->asset_wallet_id ){ $simple_query_args = array_merge( $simple_query_args, [ 'asset_wallet_id' => request()->asset_wallet_id ]); }
 
-            $eloquent_query = _AssetAccountAddress::where($simple_query_args);
+            $eloquent_query = _AssetWalletAddress::where($simple_query_args);
             
             $result = $eloquent_query->orderByDesc('created_datetime')->paginate(request()->per_page)->withQueryString();
         }
 
-        return $result ? _AssetAccountAddressResource::collection( $result ) : null;
+        return $result ? _AssetWalletAddressResource::collection( $result ) : null;
     }
 
     /**
@@ -44,30 +44,30 @@ class _AssetAccountAddressController extends Controller
     public function store(Request $request)
     {
         $validated_data = $request->validate([
-            'asset_account_id' => ['required', 'integer', 'exists:__asset_accounts,id'],
+            'asset_wallet_id' => ['required', 'integer', 'exists:__asset_wallets,id'],
             'user_username' => ['required', 'string', 'exists:__users,username'],
             'blockchain_address' => ['sometimes', 'string'],
             'tatum_derivation_key' => ['sometimes', 'integer'],
         ]);
 
         if ( !( isset($validated_data['blockchain_address']) && isset($validated_data['tatum_derivation_key'])) ){
-            $asset_account = _AssetAccount::find($validated_data['asset_account_id'])->makeVisible(['tatum_virtual_account_id']);
-            $tatum_element = (new __TatumAPIController)->createVirtualAccountDepositAddress(new Request(['virtual_account_id' => $asset_account->tatum_virtual_account_id]))->getData();
+            $asset_wallet = _AssetWallet::find($validated_data['asset_wallet_id'])->makeVisible(['tatum_virtual_account_id']);
+            $tatum_element = (new __TatumAPIController)->createVirtualAccountDepositAddress(new Request(['virtual_account_id' => $asset_wallet->tatum_virtual_account_id]))->getData();
             $validated_data['blockchain_address'] = $tatum_element->address;
             $validated_data['tatum_derivation_key'] = $tatum_element->derivationKey;
         }
 
-        $element = _AssetAccountAddress::create($validated_data);
+        $element = _AssetWalletAddress::create($validated_data);
         // Handle _Log
         (new _LogController)->store( new Request([
-            'action_note' => 'Addition of _AssetAccountAddress entry to database.',
+            'action_note' => 'Addition of _AssetWalletAddress entry to database.',
             'action_type' => 'entry_create',
             'entry_table' => $element->getTable(),
             'entry_uid' => $element->id,
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        if ($request->expectsJson()) return response()->json( new _AssetAccountAddressResource( $element ) );
+        if ($request->expectsJson()) return response()->json( new _AssetWalletAddressResource( $element ) );
     }
 
     /**

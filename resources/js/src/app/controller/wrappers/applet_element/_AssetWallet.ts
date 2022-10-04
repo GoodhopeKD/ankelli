@@ -17,7 +17,7 @@ type get_collection_params = {
 /* 
     RespObj Export
 */
-export const _AssetAccountRespObj = {
+export const _AssetWalletRespObj = {
     id: undefined as undefined | null | number,
     user_username: undefined as undefined | null | string,
     asset_code: undefined as undefined | null | string,
@@ -32,7 +32,7 @@ export const _AssetAccountRespObj = {
 /*
     Exported Default Class
 */
-export default class _AssetAccount extends _Wrapper_ implements Omit<typeof _AssetAccountRespObj, casts_t> {
+export default class _AssetWallet extends _Wrapper_ implements Omit<typeof _AssetWalletRespObj, casts_t> {
     id: number | null = null
     user_username: string | null = null
     asset_code: string | null = null
@@ -44,9 +44,9 @@ export default class _AssetAccount extends _Wrapper_ implements Omit<typeof _Ass
     updated_datetime: _DateTime | null = null
 
     /* Class Constructor */
-    constructor(args: typeof _AssetAccountRespObj) { super(); this.populate(args) }
+    constructor(args: typeof _AssetWalletRespObj) { super(); this.populate(args) }
 
-    protected populate(args: typeof _AssetAccountRespObj) {
+    protected populate(args: typeof _AssetWalletRespObj) {
         this._populate(args)
         this.created_datetime = typeof args.created_datetime === 'string' ? new _DateTime(args.created_datetime) : null
         this.updated_datetime = typeof args.updated_datetime === 'string' ? new _DateTime(args.updated_datetime) : null
@@ -54,13 +54,13 @@ export default class _AssetAccount extends _Wrapper_ implements Omit<typeof _Ass
 
     /* Creator(s) */
 
-    public static async create(args: typeof _AssetAccountRespObj) {
-        return this._mainLaravelDBAPICreate('banking/asset_accounts', args)
+    public static async create(args: typeof _AssetWalletRespObj) {
+        return this._mainLaravelDBAPICreate('banking/asset_wallets', args)
     }
 
     /* Readers */
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('banking/asset_accounts', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('banking/asset_wallets', params, page_select, per_page)
     }
 }

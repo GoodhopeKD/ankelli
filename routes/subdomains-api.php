@@ -109,8 +109,8 @@ Route::group(['domain' => 'https://accounts.'.env('MIX_DOMAIN_NAME')], function(
     Route::post('auth/signin', '_UserController@signin')->name('accounts.auth.signin');
 
     // User recovery routes
-    Route::get('recovery/username/get/send_to/{recipient_addon_name}/{recipient_addon_value}', '_UserController@get_lost_username')->name('accounts.recovery.get_lost_username');
-    Route::get('recovery/password/generate_reset_token/for_user/{username}/send_to/{recipient_addon_name}/{recipient_addon_value}', '_VerifTokenController@generate_password_reset_token')->name('accounts.recovery.generate_password_reset_token');
+    Route::get('recovery/username/get/send_to/{receiving_addon_name}/{receiving_addon_value}', '_UserController@get_lost_username')->name('accounts.recovery.get_lost_username');
+    Route::get('recovery/password/generate_reset_token/for_user/{username}/send_to/{receiving_addon_name}/{receiving_addon_value}', '_VerifTokenController@generate_password_reset_token')->name('accounts.recovery.generate_password_reset_token');
     Route::post('recovery/password/reset', '_UserController@reset_lost_password')->name('accounts.recovery.reset_lost_password');
 
     // User addon verification routes (email_address, phone_no)

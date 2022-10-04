@@ -67,7 +67,7 @@ class _PrefItemController extends Controller
     {
         $validated_data = $request->validate([
             'update_note' => ['required', 'string', 'max:255'],
-            'value' => ['required'],
+            'value' => ['required', $request->value_type],
             'value_type' => ['required', 'string', 'max:64'],
         ]);
 

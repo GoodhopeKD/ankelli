@@ -91,11 +91,34 @@ export default class _PrefItem extends _Wrapper_ implements Omit<typeof _PrefIte
             .dispatch({
                 type: 'APP_BACKEND_API_CALL',
                 method: 'GET',
-                endpoint: 'content/sysconfig_params_enum_options',
+                endpoint: 'admin/sysconfig_params_enum_options',
             })
             .then((collection: any) => {
                 return Promise.resolve(collection);
             })
             .catch((e: any) => { return Promise.reject(e); })
+    }
+
+    public async sysConfigParamUpdate(args: { value: any, value_type: string }, update_note: string, updater_password: string) {
+        const data = {} as typeof args
+        if (typeof args.value !== undefined && args.value !== this.value) data.value = args.value
+        if (typeof args.value_type === 'string' && args.value_type === this.value_type) data.value_type = args.value_type
+        if (!Object.keys(data).length) return Promise.reject({ message: 'No values were changed' })
+        return await mainLaravelDBRestAPICallWrapper
+            .dispatch({
+                type: 'APP_BACKEND_API_CALL',
+                method: 'PUT',
+                endpoint: 'admin/sysconfig_params/' + this.id,
+                data: { ...data, update_note, updater_password }
+            })
+            .then((resp: any) => { this.populate(resp); return Promise.resolve({ message: 'Update complete' }) })
+            .catch((e: any) => { return Promise.reject(e) })
+    }
+
+    public async update(args: { value: any, value_type: string }, update_note: string) {
+        const data = {} as typeof args
+        if (typeof args.value !== undefined && args.value !== this.value) data.value = args.value
+        if (typeof args.value_type === 'string' && args.value_type === this.value_type) data.value_type = args.value_type
+        return this._mainLaravelDBAPIUpdate('content/pref_items/' + this.id, update_note, data)
     }
 }

@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class _AssetAccountAddress extends Model
+class _AssetWalletAddress extends Model
 {
     const CREATED_AT = 'created_datetime';
     const UPDATED_AT = null;
@@ -17,7 +17,7 @@ class _AssetAccountAddress extends Model
      * @var array
      */
     protected $fillable = [
-        'asset_account_id',
+        'asset_wallet_id',
         'user_username',
         'blockchain_address',
         'tatum_derivation_key',

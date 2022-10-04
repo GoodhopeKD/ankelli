@@ -10,7 +10,7 @@ use App\Models\_BuyerExtension;
 use App\Models\_SellerExtension;
 use App\Models\_PrefItem;
 use App\Models\_Asset;
-use App\Models\_AssetAccount;
+use App\Models\_AssetWallet;
 
 use App\Models\_Offer;
 use App\Http\Resources\_OfferResource;
@@ -68,10 +68,10 @@ class _OfferController extends Controller
             return abort(422, "Asset with provided code doesn't exist");
         }
         $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
-        $asset_account = (object)['usable_balance_asset_value' => 0];
+        $asset_wallet = (object)['usable_balance_asset_value' => 0];
         if($request->offer_to == 'sell'){
-            $asset_account = _AssetAccount::firstWhere(['user_username' => $api_auth_user_username, 'asset_code' => $request->asset_code]);
-            if (!$asset_account){
+            $asset_wallet = _AssetWallet::firstWhere(['user_username' => $api_auth_user_username, 'asset_code' => $request->asset_code]);
+            if (!$asset_wallet){
                 return abort(422, 'Current '.$request->asset_code.' balance insufficient to create offer');
             }
         }
@@ -91,7 +91,7 @@ class _OfferController extends Controller
             // for offer_to = sell
             'min_trade_sell_value' => ['required_if:offer_to,==,sell', 'numeric', 'min:0', 'max:'.$request->max_trade_sell_value],
             'max_trade_sell_value' => ['required_if:offer_to,==,sell', 'numeric', 'min:'.$request->min_trade_sell_value, 'max:'.$request->offer_total_sell_value],
-            'offer_total_sell_value' => ['required_if:offer_to,==,sell', 'numeric', 'min:'.$request->max_trade_sell_value, 'max:'.$asset_account->usable_balance_asset_value],
+            'offer_total_sell_value' => ['required_if:offer_to,==,sell', 'numeric', 'min:'.$request->max_trade_sell_value, 'max:'.$asset_wallet->usable_balance_asset_value],
             'buyer_cmplt_trade_mins_tmt' => ['required', 'integer', 'min:'._PrefItem::firstWhere('key_slug', 'buyer_open_trade_min_mins_tmt')->value_f(), 'max:'._PrefItem::firstWhere('key_slug', 'buyer_cmplt_trade_max_mins_tmt')->value_f() ],
             'pymt_method_slug' => ['required', 'exists:__pymt_methods,slug', 'string'],
             'pymt_details' => ['required_if:offer_to,==,sell|pymt_method_slug,==,cash_in_person', 'array'],

@@ -10,13 +10,13 @@ import { _User, _DateTime, _Session, _Notification, _Input, _Transaction } from 
 class BCSendCryptoScreen extends React.Component {
 
     default_input = {
-        send_to: 'user', // address
+        send_to: 'platform_username', // blockchain_address
         asset_code: 'USDT',
         asset_value: 5,
-        destination_blockchain_address: new _Input('0x06d64d1d5eb807e10eb59f38a448830d9888d7da'),
-        destination_user_username: new _Input('reserves'),
-        source_user_password: new _Input('Def-Pass#123'),
-        recipient_note: new _Input('Test send.'),
+        destination_blockchain_address: new _Input('0x9210f311eae66d5ebed753842e6ba9ae03dd3637'),
+        recipient_username: new _Input('reserves'),
+        sender_password: new _Input('Def-Pass#123'),
+        receiving_note: new _Input('Test send.'),
     }
 
     state = {
@@ -41,7 +41,7 @@ class BCSendCryptoScreen extends React.Component {
         const input = this.state.input
 
         if (errors.length === 0) {
-            this.setState({ errors, source_user_password_prompt_open: true }) // Remove input error indicators under text inputs            
+            this.setState({ errors, sender_password_prompt_open: true }) // Remove input error indicators under text inputs            
             bootstrap.Modal.getOrCreateInstance(document.getElementById('password_confirmation_modal')).show();
         } else {
             this.setState({ errors, input })
@@ -53,13 +53,26 @@ class BCSendCryptoScreen extends React.Component {
         const errors = []
         const input = this.state.input
 
-        if (!input.source_user_password.isValid('password')) { errors.push("Invalid password") }
+        if (!input.sender_password.isValid('password')) { errors.push("Invalid password") }
+
+
 
         if (errors.length === 0) {
-            this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs 
-            const password_confirmation_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('password_confirmation_modal'));
-            _Transaction.process(_Input.flatten(input))
-                .then(() => { password_confirmation_modal.hide(); _Notification.flash({ message: 'Funds sent.', duration: 2000 }); _Session.refresh(); this.setState({ input: _.cloneDeep(this.default_input) }) })
+            this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
+            const _input = _Input.flatten(input)
+            if (_input.send_to == 'platform_username') {
+                delete _input.destination_blockchain_address
+            }
+            if (_input.send_to == 'blockchain_address') {
+                delete _input.recipient_username
+            }
+
+            _Transaction.process_direct_transfer(_input)
+                .then(() => {
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('password_confirmation_modal')).hide();
+                    _Notification.flash({ message: 'Funds sent.', duration: 2000 });
+                    _Session.refresh(); this.setState({ input: _.cloneDeep(this.default_input) })
+                })
                 .catch((error) => {
                     if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
                         Object.keys(error.request._response.errors).forEach(input_key => { error.request._response.errors[input_key].forEach(input_key_error => { errors.push(input_key_error) }) })
@@ -80,7 +93,7 @@ class BCSendCryptoScreen extends React.Component {
         const asset_options = [];
         Object.keys(this.props.datalists.active_assets).forEach(asset_code => {
             const asset = this.props.datalists.active_assets[asset_code]
-            if (this.props.auth_user.hasAssetAccount(asset_code)) {
+            if (this.props.auth_user.hasAssetWallet(asset_code)) {
                 asset_options.push({
                     value: asset_code,
                     searchable_text: asset_code + asset.name + asset.description,
@@ -98,7 +111,7 @@ class BCSendCryptoScreen extends React.Component {
                         <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'banking_menu')]} />
                     </div>
                     <div className="col-lg-10">
-                        {this.props.auth_user.asset_accounts.length !== 0 && <>
+                        {this.props.auth_user.asset_wallets.length !== 0 && <>
                             <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
                                 <div className="row mb-3">
                                     <div className="col">
@@ -114,29 +127,29 @@ class BCSendCryptoScreen extends React.Component {
                                     </div>
                                     <div className="col">
                                         <label htmlFor="output_current_balance" className="form-label">Usable balance</label>
-                                        <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
+                                        <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
                                     </div>
                                 </div>
 
                                 <p style={{ whiteSpace: 'pre-wrap' }}><b><i>{asset.onchain_disclaimer}</i></b></p>
 
-                                <div className="bd-example">
+                                <div>
                                     <nav>
                                         <div className="nav nav-tabs mb-3" id="nav-tab" role="tablist">
-                                            <button onClick={() => this.handleInputChange('send_to', 'user', true)} className="nav-link active" id="nav-send-to-user-tab" data-bs-toggle="tab" data-bs-target="#nav-send-to-user" type="button" role="tab" >To platform user</button>
-                                            <button onClick={() => this.handleInputChange('send_to', 'address', true)} className="nav-link" id="nav-send-to-address-tab" data-bs-toggle="tab" data-bs-target="#nav-send-to-address" type="button" role="tab" tabIndex="-1">To blockchain address</button>
+                                            <button onClick={() => this.handleInputChange('send_to', 'platform_username', true)} className="nav-link active" id="nav-send-to-user-tab" data-bs-toggle="tab" data-bs-target="#nav-send-to-user" type="button" role="tab" >To platform user</button>
+                                            <button onClick={() => this.handleInputChange('send_to', 'blockchain_address', true)} className="nav-link" id="nav-send-to-address-tab" data-bs-toggle="tab" data-bs-target="#nav-send-to-address" type="button" role="tab" tabIndex="-1">To blockchain address</button>
                                         </div>
                                     </nav>
                                     <div className="tab-content" id="nav-tabContent">
                                         <div className="tab-pane fade active show" id="nav-send-to-user" role="tabpanel" >
                                             <div className="mb-3">
-                                                <label htmlFor="input_destination_user_username" className="form-label">Destination user username</label>
+                                                <label htmlFor="input_recipient_username" className="form-label">Destination user username</label>
                                                 <div className="input-group">
                                                     <input
-                                                        type="text" className="form-control" id="input_destination_user_username"
-                                                        value={this.state.input.destination_user_username + ''}
-                                                        required={this.state.input.send_to == 'user'}
-                                                        onChange={elem => this.handleInputChange('destination_user_username', elem.target.value)}
+                                                        type="text" className="form-control" id="input_recipient_username"
+                                                        value={this.state.input.recipient_username + ''}
+                                                        required={this.state.input.send_to == 'platform_username'}
+                                                        onChange={elem => this.handleInputChange('recipient_username', elem.target.value)}
                                                     />
                                                 </div>
                                             </div>
@@ -148,7 +161,7 @@ class BCSendCryptoScreen extends React.Component {
                                                     <input
                                                         type="text" className="form-control" id="input_destination_blockchain_address"
                                                         value={this.state.input.destination_blockchain_address + ''}
-                                                        required={this.state.input.send_to == 'address'}
+                                                        required={this.state.input.send_to == 'blockchain_address'}
                                                         onChange={elem => this.handleInputChange('destination_blockchain_address', elem.target.value)}
                                                     />
                                                 </div>
@@ -165,7 +178,7 @@ class BCSendCryptoScreen extends React.Component {
                                                 type="number" className="form-control" id="input_asset_value"
                                                 min={asset.smallest_display_unit}
                                                 required
-                                                max={window.assetValueInput(((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value) / (1 + this.props.sysconfig_params.trade_txn_fee_fctr), asset)}
+                                                max={window.assetValueInput(((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value) / (1 + this.props.sysconfig_params.trade_txn_fee_fctr), asset)}
                                                 step={asset.smallest_display_unit}
                                                 value={window.assetValueInput(this.state.input.asset_value, asset)}
                                                 onChange={elem => this.handleInputChange('asset_value', elem.target.value)}
@@ -179,13 +192,13 @@ class BCSendCryptoScreen extends React.Component {
                                 </div>
 
                                 <div className="mb-3">
-                                    <label htmlFor="input_recipient_note" className="form-label">Sender note</label>
+                                    <label htmlFor="input_receiving_note" className="form-label">Sender note</label>
                                     <div className="input-group">
                                         <input
-                                            type="text" className="form-control" id="input_recipient_note"
-                                            value={this.state.input.recipient_note + ''}
+                                            type="text" className="form-control" id="input_receiving_note"
+                                            value={this.state.input.receiving_note + ''}
                                             required
-                                            onChange={elem => this.handleInputChange('recipient_note', elem.target.value)}
+                                            onChange={elem => this.handleInputChange('receiving_note', elem.target.value)}
                                         />
                                     </div>
                                 </div>
@@ -208,15 +221,15 @@ class BCSendCryptoScreen extends React.Component {
                                                 <div className="form-floating mb-3">
                                                     <input
                                                         type="password"
-                                                        className={"form-control rounded-3" + (this.state.input.source_user_password.failedValidation() ? ' is-invalid' : '')}
-                                                        id="input_source_user_password"
-                                                        value={this.state.input.source_user_password + ''}
-                                                        onChange={elem => this.handleInputChange('source_user_password', elem.target.value)}
-                                                        required={this.state.source_user_password_prompt_open}
+                                                        className={"form-control rounded-3" + (this.state.input.sender_password.failedValidation() ? ' is-invalid' : '')}
+                                                        id="input_sender_password"
+                                                        value={this.state.input.sender_password + ''}
+                                                        onChange={elem => this.handleInputChange('sender_password', elem.target.value)}
+                                                        required={this.state.sender_password_prompt_open}
                                                         placeholder="Pasword"
                                                     />
-                                                    <span className="btn btn-sm" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_source_user_password').setAttribute('type', document.getElementById('input_source_user_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
-                                                    <label htmlFor="input_source_user_password">Password</label>
+                                                    <span className="btn btn-sm" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_sender_password').setAttribute('type', document.getElementById('input_sender_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
+                                                    <label htmlFor="input_sender_password">Password</label>
                                                 </div>
 
                                                 <div className="mb-1">
@@ -251,7 +264,7 @@ const mapStateToProps = (state) => {
     return {
         sysconfig_params: state.sysconfig_params_data,
         datalists: state.datalists_data,
-        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_accounts']) : null,
+        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_wallets']) : null,
     }
 }
 

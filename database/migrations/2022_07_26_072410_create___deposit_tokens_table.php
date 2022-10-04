@@ -21,7 +21,7 @@ return new class extends Migration
                     ->on('__assets')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->string('asset_value', 32); // unsignedDecimal
+            $table->string('asset_value', 38); // unsignedDecimal
             $table->string('currency_code', 3)->nullable();
             $table->foreign('currency_code')
                     ->references('code')

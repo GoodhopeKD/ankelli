@@ -3,11 +3,11 @@ import { connect } from 'react-redux'
 
 import SideBar from 'app/views/components/SideBar'
 
-import { _User, _Session, _Input, _AssetAccount, _Notification } from 'app/controller'
+import { _User, _Session, _Input, _AssetWallet, _Notification } from 'app/controller'
 
 import CustomSelect from 'app/views/components/CustomSelect'
 
-class CryptoAssetAccountsScreen extends React.Component {
+class CryptoAssetWalletsScreen extends React.Component {
 
     default_input = {
         asset_code: 'USDT',
@@ -40,7 +40,7 @@ class CryptoAssetAccountsScreen extends React.Component {
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
             const add_new_wallet_modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('add_new_wallet_modal'));
-            _AssetAccount.create({ ..._Input.flatten(input), user_username: this.props.auth_user.username }).then(() => { add_new_wallet_modal.hide(); _Session.refresh(); _Notification.flash({ message: 'Asset wallet created', duration: 2000 }); this.setState({ btn_create_wallet_working, input: _.cloneDeep(this.default_input) }) })
+            _AssetWallet.create({ ..._Input.flatten(input), user_username: this.props.auth_user.username }).then(() => { add_new_wallet_modal.hide(); _Session.refresh(); _Notification.flash({ message: 'Asset wallet created', duration: 2000 }); this.setState({ btn_create_wallet_working, input: _.cloneDeep(this.default_input) }) })
                 .catch((error) => {
                     if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
                         Object.keys(error.request._response.errors).forEach(input_key => { error.request._response.errors[input_key].forEach(input_key_error => { errors.push(input_key_error) }) })
@@ -90,11 +90,11 @@ class CryptoAssetAccountsScreen extends React.Component {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {this.props.auth_user.asset_accounts.map((asset_account, index) => {
+                                    {this.props.auth_user.asset_wallets.map((asset_wallet, index) => {
                                         return <tr key={index} >
-                                            <td className="align-middle">{asset_account.asset_code}</td>
-                                            <td className="align-middle">{asset_account.usable_balance_asset_value}</td>
-                                            <td className="align-middle">{asset_account.total_balance_asset_value}</td>
+                                            <td className="align-middle">{asset_wallet.asset_code}</td>
+                                            <td className="align-middle">{asset_wallet.usable_balance_asset_value}</td>
+                                            <td className="align-middle">{asset_wallet.total_balance_asset_value}</td>
                                         </tr>
                                     })}
                                 </tbody>
@@ -126,7 +126,7 @@ class CryptoAssetAccountsScreen extends React.Component {
                                                         />
                                                     </div>
                                                     <div className="col">
-                                                        <button className="btn btn-success w-100" disabled={this.state.btn_create_wallet_working || this.props.auth_user.hasAssetAccount(this.state.input.asset_code)} onClick={this.handleSubmit} >
+                                                        <button className="btn btn-success w-100" disabled={this.state.btn_create_wallet_working || this.props.auth_user.hasAssetWallet(this.state.input.asset_code)} onClick={this.handleSubmit} >
                                                             {this.state.btn_create_wallet_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Generate {this.state.input.asset_code} wallet</>}
                                                         </button>
                                                     </div>
@@ -156,8 +156,8 @@ class CryptoAssetAccountsScreen extends React.Component {
 const mapStateToProps = (state) => {
     return {
         datalists: state.datalists_data,
-        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_accounts']) : null,
+        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_wallets']) : null,
     }
 }
 
-export default connect(mapStateToProps)(CryptoAssetAccountsScreen)
+export default connect(mapStateToProps)(CryptoAssetWalletsScreen)

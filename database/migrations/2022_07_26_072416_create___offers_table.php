@@ -48,10 +48,10 @@ return new class extends Migration
             $table->unsignedBigInteger('filled_amount')->default(0);
 
             // for offer_to = sell
-            $table->string('min_trade_sell_value', 32)->nullable(); // unsignedDecimal
-            $table->string('max_trade_sell_value', 32)->nullable(); // unsignedDecimal
-            $table->string('offer_total_sell_value', 32)->nullable(); // unsignedDecimal
-            $table->string('filled_value', 32)->default(0); // unsignedDecimal
+            $table->string('min_trade_sell_value', 38)->nullable(); // unsignedDecimal
+            $table->string('max_trade_sell_value', 38)->nullable(); // unsignedDecimal
+            $table->string('offer_total_sell_value', 38)->nullable(); // unsignedDecimal
+            $table->string('filled_value', 38)->default(0); // unsignedDecimal
             
             $table->unsignedTinyInteger('buyer_cmplt_trade_mins_tmt');
 

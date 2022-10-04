@@ -8,13 +8,13 @@ use Illuminate\Validation\Rule;
 
 use App\Models\_PrefItem;
 use App\Models\_User;
-use App\Models\_AssetAccountAddress;
+use App\Models\_AssetWalletAddress;
 
-use App\Models\_AssetAccount;
-use App\Http\Resources\_AssetAccountResource;
-use App\Http\Resources\_AssetAccountResourceCollection;
+use App\Models\_AssetWallet;
+use App\Http\Resources\_AssetWalletResource;
+use App\Http\Resources\_AssetWalletResourceCollection;
 
-class _AssetAccountController extends Controller
+class _AssetWalletController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -88,7 +88,7 @@ class _AssetAccountController extends Controller
             '_status' => ['sometimes', 'string', Rule::in(['active', 'frozen'])],
         ]);
 
-        if (_AssetAccount::where(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']])->exists()){
+        if (_AssetWallet::where(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']])->exists()){
             return abort(422, 'Account with given params already exists');
         }
 
@@ -123,37 +123,37 @@ class _AssetAccountController extends Controller
             $validated_data['tatum_subscription_id'] = $tatum_element->id;
         }
 
-        $element = _AssetAccount::create($validated_data);
+        $element = _AssetWallet::create($validated_data);
 
         if ( _PrefItem::firstWhere('key_slug', 'use_tatum_api')->value_f() ){
-            $asset_account_addresses = (new __TatumAPIController)->getVirtualAccountDepositAddresses(new Request(['virtual_account_id' => $validated_data['tatum_virtual_account_id']]))->getData();
-            if (count($asset_account_addresses)){
-                foreach ($asset_account_addresses as $asset_account_address) {
-                    $asset_account_address_params = [
-                        'asset_account_id' => $element->id, 
+            $asset_wallet_addresses = (new __TatumAPIController)->getVirtualAccountDepositAddresses(new Request(['virtual_account_id' => $validated_data['tatum_virtual_account_id']]))->getData();
+            if (count($asset_wallet_addresses)){
+                foreach ($asset_wallet_addresses as $asset_wallet_address) {
+                    $asset_wallet_address_params = [
+                        'asset_wallet_id' => $element->id, 
                         'user_username' => $validated_data['user_username'],
-                        'blockchain_address' => $asset_account_address->address,
-                        'tatum_derivation_key' => $asset_account_address->derivationKey,
+                        'blockchain_address' => $asset_wallet_address->address,
+                        'tatum_derivation_key' => $asset_wallet_address->derivationKey,
                     ];
-                    if ( !_AssetAccountAddress::where($asset_account_address_params)->exists() ){
-                        (new _AssetAccountAddressController)->store(new Request($asset_account_address_params));
+                    if ( !_AssetWalletAddress::where($asset_wallet_address_params)->exists() ){
+                        (new _AssetWalletAddressController)->store(new Request($asset_wallet_address_params));
                     }
                 }
             } else {
-                (new _AssetAccountAddressController)->store(new Request(['asset_account_id' => $element->id, 'user_username' => $validated_data['user_username']]));
+                (new _AssetWalletAddressController)->store(new Request(['asset_wallet_id' => $element->id, 'user_username' => $validated_data['user_username']]));
             }
         }
         
         // Handle _Log
         (new _LogController)->store( new Request([
-            'action_note' => 'Addition of _AssetAccount entry to database.',
+            'action_note' => 'Addition of _AssetWallet entry to database.',
             'action_type' => 'entry_create',
             'entry_table' => $element->getTable(),
             'entry_uid' => $element->id,
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        if ($request->expectsJson()) return response()->json( new _AssetAccountResource( $element ) );
+        if ($request->expectsJson()) return response()->json( new _AssetWalletResource( $element ) );
     }
 
     /**
@@ -164,9 +164,9 @@ class _AssetAccountController extends Controller
      */
     public function show(int $id)
     {
-        $element = _AssetAccount::find($id);
+        $element = _AssetWallet::find($id);
         if (!$element) return abort(404, 'Asset account with specified id not found');
-        return response()->json( new _AssetAccountResource( $element ) );
+        return response()->json( new _AssetWalletResource( $element ) );
     }
 
     /**
@@ -181,8 +181,8 @@ class _AssetAccountController extends Controller
         $validated_data = $request->validate([
             'asset_value' => ['required', 'numeric'],
         ]);
-        $element = _AssetAccount::findOrFail($id);
-        return (new _AssetAccountController)->update( new Request([
+        $element = _AssetWallet::findOrFail($id);
+        return (new _AssetWalletController)->update( new Request([
             'action_note' => 'Block an asset value',
             'usable_balance_asset_value' => $element->usable_balance_asset_value - $validated_data['asset_value'],
         ]), $id );
@@ -200,8 +200,8 @@ class _AssetAccountController extends Controller
         $validated_data = $request->validate([
             'asset_value' => ['required', 'numeric'],
         ]);
-        $element = _AssetAccount::findOrFail($id);
-        return (new _AssetAccountController)->update( new Request([
+        $element = _AssetWallet::findOrFail($id);
+        return (new _AssetWalletController)->update( new Request([
             'action_note' => 'Unblock an asset value',
             'usable_balance_asset_value' => $element->usable_balance_asset_value + $validated_data['asset_value'],
         ]), $id );
@@ -222,7 +222,7 @@ class _AssetAccountController extends Controller
             '_status' => ['sometimes', 'string', Rule::in(['active', 'frozen'])],
         ]);
 
-        $element = _AssetAccount::findOrFail($id);
+        $element = _AssetWallet::findOrFail($id);
 
         // Handle _Log
         $log_entry_update_result = [];
@@ -236,7 +236,7 @@ class _AssetAccountController extends Controller
             }
         }
         (new _LogController)->store( new Request([
-            'action_note' => 'Updating of _AssetAccount entry in database.',
+            'action_note' => 'Updating of _AssetWallet entry in database.',
             'action_type' => 'entry_update',
             'entry_table' => $element->getTable(),
             'entry_uid' => $element->id,
@@ -245,7 +245,7 @@ class _AssetAccountController extends Controller
         ]));
         // End _Log Handling
         $element->update($validated_data);
-        if ($request->expectsJson()) return response()->json( new _AssetAccountResource( $element ) );
+        if ($request->expectsJson()) return response()->json( new _AssetWalletResource( $element ) );
     }
 
     /**

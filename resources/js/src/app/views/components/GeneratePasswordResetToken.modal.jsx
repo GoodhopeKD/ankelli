@@ -12,8 +12,8 @@ export default withRouter(class GeneratePasswordResetTokenModal extends React.Co
         btn_generate_token_working: false,
         input: {
             username: new _Input(),
-            recipient_addon_name: 'email_address',
-            recipient_addon_value: new _Input(),
+            receiving_addon_name: 'email_address',
+            receiving_addon_value: new _Input(),
         },
         errors: [],
     };
@@ -38,13 +38,13 @@ export default withRouter(class GeneratePasswordResetTokenModal extends React.Co
         const input = this.state.input
 
         if (!input.username.isValid('username')) { errors.push("Invalid username") }
-        if (!input.recipient_addon_value.isValid(input.recipient_addon_name)) { errors.push('Invalid ' + (input.recipient_addon_name === 'email_address' ? 'email address' : 'phone number')) }
+        if (!input.receiving_addon_value.isValid(input.receiving_addon_name)) { errors.push('Invalid ' + (input.receiving_addon_name === 'email_address' ? 'email address' : 'phone number')) }
 
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
             _User.generatePasswordResetToken(_Input.flatten(input))
                 .then(() => {
-                    _Notification.flash({ message: 'Token sent to provided  ' + (input.recipient_addon_name === 'email_address' ? 'email address' : 'phone number'), duration: 2000 })
+                    _Notification.flash({ message: 'Token sent to provided  ' + (input.receiving_addon_name === 'email_address' ? 'email address' : 'phone number'), duration: 2000 })
                     if (this.props.component_context == "screen") {
                         this.props.navigate('/recovery/reset_lost_password' + this.props.location.search)
                     } else {
@@ -57,7 +57,7 @@ export default withRouter(class GeneratePasswordResetTokenModal extends React.Co
                         Object.keys(error.request._response.errors).forEach(input_key => { error.request._response.errors[input_key].forEach(input_key_error => { errors.push(input_key_error) }) })
                     } else { errors.push(error.message) }
                     input.username.clearValidation()
-                    input.recipient_addon_value.clearValidation()
+                    input.receiving_addon_value.clearValidation()
                     this.setState({ btn_generate_token_working, errors, input })
                 })
         } else {
@@ -72,7 +72,7 @@ export default withRouter(class GeneratePasswordResetTokenModal extends React.Co
                     <h3 className="fw-bold mb-0">Generate password reset token</h3>
                 </div>
                 <div className="modal-body p-4 pt-0">
-                    <p className="text-muted">Enter your username and user associated {this.state.input.recipient_addon_name === "email_address" ? "email address" : "phone number"} to send the token to.</p>
+                    <p className="text-muted">Enter your username and user associated {this.state.input.receiving_addon_name === "email_address" ? "email address" : "phone number"} to send the token to.</p>
                     <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
                         <div className="form-floating mb-3">
                             <input
@@ -90,18 +90,18 @@ export default withRouter(class GeneratePasswordResetTokenModal extends React.Co
                         </div>
                         <div className="form-floating mb-3">
                             <input
-                                type={this.state.input.recipient_addon_name === "email_address" ? "email" : 'tel'}
-                                className={"form-control" + (this.state.input.recipient_addon_value.failedValidation() ? ' is-invalid' : '') + (this.state.input.recipient_addon_value.passedValidation() ? ' is-valid' : '')}
-                                id={this.id_prefix + "input_recipient_addon_value"}
-                                minLength={_Input.validation_param_lengths[this.state.input.recipient_addon_name].min_length}
-                                maxLength={_Input.validation_param_lengths[this.state.input.recipient_addon_name].max_length}
-                                value={this.state.input.recipient_addon_value + ''}
-                                onChange={elem => this.handleInputChange('recipient_addon_value', elem.target.value)}
+                                type={this.state.input.receiving_addon_name === "email_address" ? "email" : 'tel'}
+                                className={"form-control" + (this.state.input.receiving_addon_value.failedValidation() ? ' is-invalid' : '') + (this.state.input.receiving_addon_value.passedValidation() ? ' is-valid' : '')}
+                                id={this.id_prefix + "input_receiving_addon_value"}
+                                minLength={_Input.validation_param_lengths[this.state.input.receiving_addon_name].min_length}
+                                maxLength={_Input.validation_param_lengths[this.state.input.receiving_addon_name].max_length}
+                                value={this.state.input.receiving_addon_value + ''}
+                                onChange={elem => this.handleInputChange('receiving_addon_value', elem.target.value)}
                                 required
-                                placeholder={this.state.input.recipient_addon_name === "email_address" ? "Email address" : "Phone number"}
+                                placeholder={this.state.input.receiving_addon_name === "email_address" ? "Email address" : "Phone number"}
                                 style={{ paddingRight: 40 }}
                             />
-                            <label htmlFor={this.id_prefix + "input_recipient_addon_value"}>{this.state.input.recipient_addon_name === "email_address" ? "Email address" : "Phone number (include country code)"}</label>
+                            <label htmlFor={this.id_prefix + "input_receiving_addon_value"}>{this.state.input.receiving_addon_name === "email_address" ? "Email address" : "Phone number (include country code)"}</label>
                         </div>
                         <div className="mb-3">
                             {this.state.errors.map((error, key) => (

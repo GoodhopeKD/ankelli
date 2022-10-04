@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { Link } from "react-router-dom";
 import _ from 'lodash'
 
-import { _Offer, _Notification, _DateTime, _User } from 'app/controller'
+import { _Offer, _Notification, _DateTime, _User, _Session } from 'app/controller'
 
 import withRouter from 'app/views/navigation/withRouter'
 import CustomSelect from 'app/views/components/CustomSelect'
@@ -113,6 +113,8 @@ class OffersViewListScreen extends React.Component {
 
         this.setState({ datetime_update_seconds: 1 })
         this.datetimeUpdater = setInterval(() => { this.setState({ datetime_update_seconds: this.state.datetime_update_seconds + 1 }) }, 1);
+
+        _Session.refresh()
     }
 
     componentWillUnmount() {
@@ -251,7 +253,7 @@ class OffersViewListScreen extends React.Component {
                             <thead>
                                 <tr>
                                     {(this.props.path == '/p2p/offers' || this.props.path == '/') && <th scope="col">{this.state.showing_offer_to === 'buy' ? 'Buyer' : 'Seller'}</th>}
-                                    {this.props.path == '/p2p/my-offers' && <th scope="col">Location</th>}
+                                    {this.props.path == '/p2p/my-offers' && <th scope="col">Type</th>}
                                     <th scope="col">{this.props.path == '/p2p/my-offers' ? 'Trading' : "You'll be trading"}</th>
                                     <th scope="col">Price</th>
                                     <th scope="col">Limits</th>
@@ -268,7 +270,10 @@ class OffersViewListScreen extends React.Component {
                                         const asset = this.props.datalists.active_assets[offer.asset_code]
                                         const pymt_method = this.props.datalists.active_pymt_methods[offer.pymt_method_slug]
                                         const progress = window.currencyAmountInput((offer.offer_to === 'buy' ? (offer.filled_amount / offer.offer_total_purchase_amount) : (offer.filled_value / offer.offer_total_sell_value)) * 100)
-                                        return <tr key={index} >
+
+                                        const offer_created_by_auth_user = window.isset(this.props.auth_user) && offer.creator_username == this.props.auth_user.username
+
+                                        return <tr key={index} className={((offer_created_by_auth_user && (this.props.path == '/p2p/offers' || this.props.path == '/')) ? ' table-info' : '')} >
                                             <td className="align-middle">
                                                 {(this.props.path == '/p2p/offers' || this.props.path == '/') && <i><b><Link to={'/accounts/profiles/' + offer.creator_username} style={{ textDecoration: 'none' }} target='_blank'>@{offer.creator_username}</Link></b> <small className='text-muted'>{window.isset(offer.creator_rating) ? (window.currencyAmountInput(offer.creator_rating) + '⭐') : ''} {window.isset(offer.creator_trades_as_buyer_stats) ? ('BTCR: ' + offer.creator_trades_as_buyer_stats.completed + '/' + offer.creator_trades_as_buyer_stats.total) : ''}</small></i>}
                                                 {this.props.path == '/p2p/my-offers' && <b><i>Offer to: {offer.offer_to}</i></b>}

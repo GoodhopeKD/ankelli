@@ -24,14 +24,15 @@ class _Transaction extends Model
         'blockchain_txn_id',
         'tatum_reference',
         'session_token',
-        'description',
         'operation_slug',
-        'source_user_username',
+        'sender_username',
+        'sender_note',
         'source_blockchain_address',
-        'destination_user_username',
+        'recipient_username',
+        'recipient_note',
         'destination_blockchain_address',
         'asset_code',
-        'transfer_asset_value',
+        'xfer_asset_value',
         'transfer_result',
         'transfer_datetime',
     ];
@@ -55,7 +56,7 @@ class _Transaction extends Model
      * @var array
      */
     protected $casts = [
-        'transfer_asset_value' => 'float',
+        'xfer_asset_value' => 'float',
         'transfer_result' => 'array',
     ];
 }

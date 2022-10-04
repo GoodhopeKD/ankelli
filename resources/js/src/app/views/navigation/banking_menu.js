@@ -1,6 +1,6 @@
 import React from "react"
 
-import CryptoAssetAccountsScreen from 'app/views/screens/banking_menu/CryptoAssetAccounts.screen'
+import CryptoAssetWalletsScreen from 'app/views/screens/banking_menu/CryptoAssetWallets.screen'
 import BCReceiveCryptoScreen from "app/views/screens/banking_menu/BCReceiveCrypto.screen"
 import BCSendCryptoScreen from "app/views/screens/banking_menu/BCSendCrypto.screen"
 import DepositTokenTopupScreen from 'app/views/screens/banking_menu/DepositTokenTopup.screen'
@@ -46,7 +46,7 @@ export const banking_menu = {
                     title: 'My crypto wallets',
                     path: '/e-wallets/crypto',
                     path_alias: '/',
-                    element: (props) => <CryptoAssetAccountsScreen {...props} />,
+                    element: (props) => <CryptoAssetWalletsScreen {...props} />,
                 },
                 {
                     title: 'My fiat accounts',
@@ -113,6 +113,7 @@ export const banking_menu = {
             title: 'Ankelli Pay',
             path: '/',
             subdomain: 'pay',
+            restricted_for_default_users: true,
         },
     ]
 }

@@ -21,9 +21,9 @@ class OffersCreateNewScreen extends React.Component {
 
         asset_code: 'USDT',
         currency_code: 'USD',
-        offer_price: new _Input(0),
+        offer_price: new _Input(200 / 209),
 
-        min_trade_purchase_amount: new _Input(0),
+        min_trade_purchase_amount: new _Input(100),
         max_trade_purchase_amount: new _Input(0),
         offer_total_purchase_amount: new _Input(0),
 
@@ -37,7 +37,6 @@ class OffersCreateNewScreen extends React.Component {
     }
 
     state = {
-        btn_post_offer_working: false,
         input: _.cloneDeep(this.default_input),
         errors: [],
     }
@@ -140,7 +139,7 @@ class OffersCreateNewScreen extends React.Component {
         const currency = this.props.datalists.active_currencies[this.state.input.currency_code]
         const pymt_method = this.props.datalists.active_pymt_methods[this.state.input.pymt_method_slug]
 
-        const max_offerable_asset_value = !window.isset(this.props.auth_user) ? null : (1 - this.props.sysconfig_params.trade_txn_fee_fctr) * window.assetValueInput((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)
+        const max_offerable_asset_value = !window.isset(this.props.auth_user) ? null : (1 - this.props.sysconfig_params.trade_txn_fee_fctr) * window.assetValueInput((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container-xl py-4 ">
@@ -149,7 +148,7 @@ class OffersCreateNewScreen extends React.Component {
 
                         {(this.props.sysconfig_params.offer_to_buy_enabled && this.props.sysconfig_params.offer_to_sell_enabled) &&
                             <div className="mb-3">
-                                <div className="bd-example">
+                                <div>
                                     <nav>
                                         <div className="nav nav-tabs mb-3" id="nav-tab" role="tablist">
                                             <button onClick={() => this.handleInputChange('offer_to', 'buy', true)} className={"nav-link" + (this.state.input.offer_to == 'buy' ? " active" : '')} id="nav-offer-to-buy-tab" data-bs-toggle="tab" data-bs-target="#nav-offer-to-buy" type="button" role="tab" tabIndex={this.state.input.offer_to == 'sell' ? "-1" : undefined}>Offer to buy</button>
@@ -255,7 +254,7 @@ class OffersCreateNewScreen extends React.Component {
                                             </div>
                                             {this.props.auth_user != null && <div className="col">
                                                 <label htmlFor="output_current_balance" className="form-label">Usable balance</label>
-                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
+                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
                                             </div>}
                                         </div>
 
@@ -304,9 +303,9 @@ class OffersCreateNewScreen extends React.Component {
                                     {currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
                                     <input
                                         type="number" className="form-control" id="input_offer_price"
-                                        min="0.01"
-                                        step="0.01"
-                                        value={window.currencyAmountInput(this.state.input.offer_price.toRaw())}
+                                        min={"0.0000000001"}
+                                        step={"0.0000000001"}
+                                        value={Math.round((parseFloat(this.state.input.offer_price.toRaw() ?? 0) + Number.EPSILON) * 10000000000) / 10000000000}
                                         required
                                         onChange={elem => this.handleInputChange('offer_price', elem.target.value)}
                                     />
@@ -466,7 +465,7 @@ const mapStateToProps = (state) => {
     return {
         datalists: state.datalists_data,
         sysconfig_params: state.sysconfig_params_data,
-        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_accounts']) : null,
+        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_wallets']) : null,
     }
 }
 

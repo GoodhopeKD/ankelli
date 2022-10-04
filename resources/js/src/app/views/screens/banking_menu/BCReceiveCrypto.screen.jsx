@@ -5,18 +5,18 @@ import { Link } from "react-router-dom";
 import SideBar from 'app/views/components/SideBar'
 import CustomSelect from 'app/views/components/CustomSelect'
 
-import { _User, _DateTime, _Session, _Notification, _AssetAccountAddress } from 'app/controller'
+import { _User, _DateTime, _Session, _Notification, _AssetWalletAddress } from 'app/controller'
 
 class BCReceiveCryptoScreen extends React.Component {
 
     default_input = {
         asset_code: 'USDT',
-        asset_account_id: this.props.auth_user.asset_accounts.length !== 0 ? ((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == 'USDT') ?? { id: null }).id) : null,
+        asset_wallet_id: this.props.auth_user.asset_wallets.length !== 0 ? ((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == 'USDT') ?? { id: null }).id) : null,
     }
 
     state = {
 
-        asset_account_addresses_list_loaded: false,
+        asset_wallet_addresses_list_loaded: false,
         list: [],
         list_loaded: false,
         list_full: false,
@@ -50,7 +50,7 @@ class BCReceiveCryptoScreen extends React.Component {
         if (!this.working) {
             this.working = true
             this.setState({
-                asset_account_addresses_list_loaded: false,
+                asset_wallet_addresses_list_loaded: false,
                 list: [],
                 list_loaded: false,
                 list_full: false,
@@ -89,20 +89,20 @@ class BCReceiveCryptoScreen extends React.Component {
 
     populateScreenWithItems = async (show_list_refreshing_loader = true) => {
         this.setState({ list_refreshing: show_list_refreshing_loader });
-        await this.universalGetCollection(_AssetAccountAddress, 'asset_account_addresses_list_loaded', JSON.parse(JSON.stringify(this.state.input)), this.state.page_select, this.state.per_page)
+        await this.universalGetCollection(_AssetWalletAddress, 'asset_wallet_addresses_list_loaded', JSON.parse(JSON.stringify(this.state.input)), this.state.page_select, this.state.per_page)
         if (show_list_refreshing_loader) this.setState({ list_refreshing: false })
     };
 
     generateNewAddress = async () => {
         this.setState({ btn_generating_address_working: true })
-        await _AssetAccountAddress.create({ asset_account_id: (this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == this.state.input.asset_code)).id, user_username: this.props.auth_user.username })
+        await _AssetWalletAddress.create({ asset_wallet_id: (this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == this.state.input.asset_code)).id, user_username: this.props.auth_user.username })
         await this.populateScreenWithItems()
         this.setState({ btn_generating_address_working: false })
     }
 
     componentDidMount = () => {
         _Session.refresh()
-        this.props.auth_user.asset_accounts
+        this.props.auth_user.asset_wallets
     }
 
     render() {
@@ -110,7 +110,7 @@ class BCReceiveCryptoScreen extends React.Component {
         const asset_options = [];
         Object.keys(this.props.datalists.active_assets).forEach(asset_code => {
             const asset = this.props.datalists.active_assets[asset_code]
-            if (this.props.auth_user.hasAssetAccount(asset_code)) {
+            if (this.props.auth_user.hasAssetWallet(asset_code)) {
                 asset_options.push({
                     value: asset_code,
                     searchable_text: asset_code + asset.name + asset.description,
@@ -135,7 +135,7 @@ class BCReceiveCryptoScreen extends React.Component {
                         <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'banking_menu')]} />
                     </div>
                     <div className="col-lg-10">
-                        {this.props.auth_user.asset_accounts.length !== 0 && <>
+                        {this.props.auth_user.asset_wallets.length !== 0 && <>
                             <div className="row mb-3">
                                 <div className="col">
                                     <label htmlFor="input_asset_code" className="form-label">Target asset account</label>
@@ -145,17 +145,19 @@ class BCReceiveCryptoScreen extends React.Component {
                                         has_none_option={false}
                                         max_shown_options_count={5}
                                         selected_option_value={this.state.input.asset_code}
-                                        onChange={asset_code => { this.setState({ list_loaded: false, asset_account_addresses_list_loaded: true }); this.handleInputChange('asset_code', asset_code, true); this.handleInputChange('asset_account_id', this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset_code).blockchain_address, true) }}
+                                        onChange={asset_code => { this.setState({ list_loaded: false, asset_wallet_addresses_list_loaded: true }); this.handleInputChange('asset_code', asset_code, true); this.handleInputChange('asset_wallet_id', this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset_code).blockchain_address, true) }}
                                     />
                                 </div>
                                 <div className="col">
                                     <label htmlFor="output_current_balance" className="form-label">Total balance</label>
-                                    <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { total_balance_asset_value: 0 }).total_balance_asset_value, asset)}</span>
+                                    <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { total_balance_asset_value: 0 }).total_balance_asset_value, asset)}</span>
                                 </div>
                             </div>
 
                             <p style={{ whiteSpace: 'pre-wrap' }}><b><i>{asset.onchain_disclaimer}</i></b></p>
 
+                            <p className="text-muted">One you send funds to selected address, give a little time (max 2 minutes) for our system to scan the blockchain and update your balances.</p>
+                            
                             <hr className="mb-0" />
 
                             <div className="table-responsive">
@@ -164,24 +166,24 @@ class BCReceiveCryptoScreen extends React.Component {
                                         <tr>
                                             <th scope="col">Address</th>
                                             <th scope="col">Onchain transaction count</th>
-                                            <th scope="col">Created datetime</th>
+                                            <th scope="col">Registered datetime</th>
                                             <th scope="col">Last used datetime</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {this.state.list.map((asset_account_address, index) => {
+                                        {this.state.list.map((asset_wallet_address, index) => {
                                             return <tr key={index} >
                                                 <td className="align-middle" style={{ maxWidth: 300 }}>
                                                     <div className="input-group input-group-sm">
-                                                        <input type="text" className="form-control" value={asset_account_address.blockchain_address} onChange={() => { }} />
+                                                        <input type="text" className="form-control" value={asset_wallet_address.blockchain_address} onChange={() => { }} />
                                                         <span className="input-group-text p-0">
-                                                            <button className="btn btn-light" style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, border: 'none' }} onClick={() => { navigator.clipboard.writeText(asset_account_address.blockchain_address); _Notification.flash({ message: 'Address copied to clipboard', duration: 2000 }); }} >📋</button>
+                                                            <button className="btn btn-light" style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, border: 'none' }} onClick={() => { navigator.clipboard.writeText(asset_wallet_address.blockchain_address); _Notification.flash({ message: 'Address copied to clipboard', duration: 2000 }); }} >📋</button>
                                                         </span>
                                                     </div>
                                                 </td>
-                                                <td className="align-middle">{asset_account_address.onchain_txn_count}</td>
-                                                <td className="align-middle">{window.ucfirst(new _DateTime(asset_account_address.created_datetime).prettyDatetime())}</td>
-                                                <td className="align-middle">{window.isset(asset_account_address.last_active_datetime) ? window.ucfirst(new _DateTime(asset_account_address.last_active_datetime).prettyDatetime()) : '-'}</td>
+                                                <td className="align-middle">{asset_wallet_address.onchain_txn_count}</td>
+                                                <td className="align-middle">{window.ucfirst(new _DateTime(asset_wallet_address.created_datetime).prettyDatetime())}</td>
+                                                <td className="align-middle">{window.isset(asset_wallet_address.last_active_datetime) ? window.ucfirst(new _DateTime(asset_wallet_address.last_active_datetime).prettyDatetime()) : '-'}</td>
                                             </tr>
                                         })}
                                     </tbody>
@@ -238,7 +240,7 @@ class BCReceiveCryptoScreen extends React.Component {
 const mapStateToProps = (state) => {
     return {
         datalists: state.datalists_data,
-        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_accounts']) : null,
+        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_wallets']) : null,
     }
 }
 

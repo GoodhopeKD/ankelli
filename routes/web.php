@@ -67,8 +67,8 @@ $valid_paths = [
 
     // banking
     "/banking/overview",
-    "/banking/my-crypto-wallets",
-    "/banking/my-fiat-accounts",
+    "/banking/e-wallets/crypto",
+    "/banking/e-wallets/fiat",
     "/banking/deposits/receive-crypto",
     "/banking/deposits/receive-fiat",
     "/banking/deposits/token-topup",

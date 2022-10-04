@@ -466,6 +466,8 @@ class __TatumAPIController extends Controller
             'senderAccountId' => ['required', 'string'],
             'recipientAccountId' => ['required', 'string'],
             'amount' => ['required', 'string'],
+            'recipientNote' => ['required', 'string'],
+            'senderNote' => ['required', 'string'],
         ]);
 
         $payload = $validated_data;

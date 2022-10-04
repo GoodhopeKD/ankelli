@@ -141,6 +141,11 @@ export const mainLaravelDBAPICallMiddleware = (store: any) => (next: any) => (ac
                             delete resp.data.sysconfig_params_data
                         }
 
+                        if (resp.data.datalists_data) {
+                            dispatch({ type: 'DATALISTS_DATA_UPDATE', datalists_data: resp.data.datalists_data })
+                            delete resp.data.datalists_data
+                        }
+
                         if (resp.data.active_session_data) {
                             dispatch({ type: 'ACTIVE_SESSION_DATA_UPDATE', active_session_data: resp.data.active_session_data })
                             delete resp.data.active_session_data

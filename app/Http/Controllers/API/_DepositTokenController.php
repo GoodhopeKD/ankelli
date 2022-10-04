@@ -123,10 +123,10 @@ class _DepositTokenController extends Controller
             'txn_context' => 'offchain',
             'description' => 'Wallet topup using deposit token "'.$token.'"',
             'operation_slug' => 'deposit_token_topup',
-            'source_user_username' => 'reserves', 
-            'destination_user_username' => $validated_data['user_username'], 
+            'sender_username' => 'reserves', 
+            'recipient_username' => $validated_data['user_username'], 
             'asset_code' => $element->asset_code,
-            'transfer_asset_value' => $element->asset_value,
+            'xfer_asset_value' => $element->asset_value,
         ]));
 
         // Handle _Log

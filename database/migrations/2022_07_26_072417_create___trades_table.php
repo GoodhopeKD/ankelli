@@ -43,7 +43,7 @@ return new class extends Migration
                     ->on('__currencies')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->string('asset_value', 32); // unsignedDecimal
+            $table->string('asset_value', 38); // unsignedDecimal
             $table->unsignedBigInteger('currency_amount');
             $table->string('asset_value_escrowed', 32); // unsignedDecimal
             $table->string('offer_price', 32)->nullable(); // unsignedDecimal

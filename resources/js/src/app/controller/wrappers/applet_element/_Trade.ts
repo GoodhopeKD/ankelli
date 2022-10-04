@@ -155,7 +155,7 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
 
     /* Creator(s) */
 
-    public static async create(args: { offer_ref_code: string, currency_amount: number, pymt_details?: pymt_details_t, source_user_password?: string }) {
+    public static async create(args: { offer_ref_code: string, currency_amount: number, pymt_details?: pymt_details_t, sender_password?: string }) {
         return this._mainLaravelDBAPICreate('p2p/trades', args)
     }
 
@@ -190,7 +190,7 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
 
     public async update(args: typeof _TradeRespObj | any, update_note: string) {
         const data = {} as typeof args
-        if (typeof args.source_user_password === 'string') data.source_user_password = args.source_user_password
+        if (typeof args.sender_password === 'string') data.sender_password = args.sender_password
         if (typeof args.pymt_declared === 'boolean') data.pymt_declared = args.pymt_declared
         if (typeof args.pymt_confirmed === 'boolean') data.pymt_confirmed = args.pymt_confirmed
         if (typeof args.visible_to_creator === 'boolean' && args.visible_to_creator !== this.visible_to_creator) data.visible_to_creator = args.visible_to_creator
@@ -213,8 +213,8 @@ export default class _Trade extends _Wrapper_ implements Omit<typeof _TradeRespO
         return this.update({ pymt_declared: true } as unknown as typeof _TradeRespObj, 'Set _Trade pymt_declared_datetime')
     }
 
-    public async confirmPymt(source_user_password: string) {
-        return this.update({ pymt_confirmed: true, source_user_password } as unknown as typeof _TradeRespObj, 'Set _Trade pymt_confirmed_datetime')
+    public async confirmPymt(sender_password: string) {
+        return this.update({ pymt_confirmed: true, sender_password } as unknown as typeof _TradeRespObj, 'Set _Trade pymt_confirmed_datetime')
     }
 
     public async cancel() {

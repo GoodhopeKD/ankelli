@@ -2,7 +2,7 @@ import React from "react"
 import { connect } from 'react-redux'
 import { Link } from "react-router-dom";
 
-import { _Trade, _Notification, _User, _DateTime, _Input } from 'app/controller'
+import { _Trade, _Notification, _User, _DateTime, _Input, _Session } from 'app/controller'
 
 class BgTaskHandler { static runInBackground = (fn) => fn() }
 
@@ -98,6 +98,8 @@ class TradesViewListScreen extends React.Component {
 
         this.setState({ datetime_update_seconds: 1 })
         this.datetimeUpdater = setInterval(() => { this.setState({ datetime_update_seconds: this.state.datetime_update_seconds + 1 }) }, 1);
+
+        _Session.refresh()
     }
 
     componentWillUnmount() {

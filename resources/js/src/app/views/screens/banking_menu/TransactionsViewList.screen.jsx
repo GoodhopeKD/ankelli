@@ -154,8 +154,8 @@ class TransactionsViewListScreen extends React.Component {
                                 <label htmlFor="input_focused_user_username_tag" className="form-label">Type</label>
                                 <select className="form-select" id="input_focused_user_username_tag" value={this.state.input.focused_user_username_tag} onChange={elem => this.handleInputChange('focused_user_username_tag', elem.target.value, true)} >
                                     <option value="user_username" >All</option>
-                                    <option value="source_user_username" >Debit</option>
-                                    <option value="destination_user_username" >Credit</option>
+                                    <option value="sender_username" >Debit</option>
+                                    <option value="recipient_username" >Credit</option>
                                 </select>
                             </div>
 
@@ -199,12 +199,12 @@ class TransactionsViewListScreen extends React.Component {
                                         {this.state.list_loaded ? (
                                             this.state.list.map((transaction, index) => {
                                                 const asset = this.props.datalists.active_assets[transaction.asset_code]
-                                                const debit = transaction.source_user_username == this.props.auth_user.username
+                                                const debit = transaction.sender_username == this.props.auth_user.username
                                                 const tr_group = debit ? 'Debit' : 'Credit'
                                                 return <tr key={index} >
                                                     <td className="align-middle">{transaction.ref_code}</td>
                                                     <td className="align-middle">{tr_group}</td>
-                                                    <td className="align-middle">{window.assetValueString(transaction.transfer_asset_value, asset)}</td>
+                                                    <td className="align-middle">{window.assetValueString(transaction.xfer_asset_value, asset)}</td>
                                                     <td className="align-middle">{transaction.operation_slug == 'trade_asset_release' ? (debit ? 'Outbound ' : 'Inbound ') : ''}{transaction.description}</td>
                                                     <td className="align-middle">{window.ucfirst(new _DateTime(transaction.transfer_datetime).prettyDatetime())}</td>
                                                     <td className="align-middle">{window.assetValueString(transaction.transfer_result.find(tr => tr.user_username == this.props.auth_user.username).new_total_balance_asset_value, asset)}</td>
