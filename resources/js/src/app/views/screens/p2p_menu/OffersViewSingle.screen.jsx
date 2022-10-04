@@ -158,10 +158,10 @@ class OffersViewSingleScreen extends React.Component {
                         {load_condition ? <>
 
                             {offer_created_by_auth_user && <div>
-                                <div class="alert alert-info" role="alert">
-                                    <h4 class="alert-heading">Note!</h4>
+                                <div className="alert alert-info" role="alert">
+                                    <h4 className="alert-heading">Note!</h4>
                                     <hr />
-                                    <p class="mb-0">You're the one who posted this offer, so this is only a preview of what others see when they click on it.</p>
+                                    <p className="mb-0">You're the one who posted this offer, so this is only a preview of what others see when they click on it.</p>
                                 </div>
                             </div>}
 
@@ -206,7 +206,6 @@ class OffersViewSingleScreen extends React.Component {
                                                 <label htmlFor="input_asset_value" className="form-label">Value of asset you'll {this.focused_offer.offer_to == 'buy' ? 'release' : 'get'}</label>
                                                 <div className="input-group mb-2">
                                                     <input
-                                                        disabled
                                                         type="number" className="form-control" id="input_asset_value"
                                                         min={window.assetValueInput(this.state.min_asset_value, asset)}
                                                         max={window.assetValueInput(this.focused_offer.offer_to == 'sell' ? this.state.max_asset_value : Math.min(this.state.max_asset_value, (this.props.auth_user ? (this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value : this.state.max_asset_value)), asset)}

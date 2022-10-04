@@ -111,7 +111,7 @@ export const banking_menu = {
         },
         {
             title: 'Ankelli Pay',
-            path: '/',
+            path: '/home',
             subdomain: 'pay',
             restricted_for_default_users: true,
         },

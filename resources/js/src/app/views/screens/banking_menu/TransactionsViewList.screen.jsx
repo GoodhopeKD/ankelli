@@ -190,7 +190,7 @@ class TransactionsViewListScreen extends React.Component {
                                             <th scope="col">Ref Code</th>
                                             <th scope="col">Type</th>
                                             <th scope="col">Asset Value</th>
-                                            <th scope="col">Description</th>
+                                            <th scope="col">Note</th>
                                             <th scope="col">Datetime</th>
                                             <th scope="col">New balance</th>
                                         </tr>
@@ -205,7 +205,7 @@ class TransactionsViewListScreen extends React.Component {
                                                     <td className="align-middle">{transaction.ref_code}</td>
                                                     <td className="align-middle">{tr_group}</td>
                                                     <td className="align-middle">{window.assetValueString(transaction.xfer_asset_value, asset)}</td>
-                                                    <td className="align-middle">{transaction.operation_slug == 'trade_asset_release' ? (debit ? 'Outbound ' : 'Inbound ') : ''}{transaction.description}</td>
+                                                    <td className="align-middle">{debit ? transaction.sender_note : transaction.recipient_note}</td>
                                                     <td className="align-middle">{window.ucfirst(new _DateTime(transaction.transfer_datetime).prettyDatetime())}</td>
                                                     <td className="align-middle">{window.assetValueString(transaction.transfer_result.find(tr => tr.user_username == this.props.auth_user.username).new_total_balance_asset_value, asset)}</td>
                                                 </tr>

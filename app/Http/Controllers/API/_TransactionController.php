@@ -18,6 +18,8 @@ use App\Http\Resources\_TransactionResourceCollection;
 
 class _TransactionController extends Controller
 {
+    private $ETHER_USDT_TEST_FACTOR = 2000;
+
     /**
      * Display a listing of the resource.
      *
@@ -52,7 +54,6 @@ class _TransactionController extends Controller
         return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _TransactionResource::collection( $result ) : new _TransactionResourceCollection( $result ) ) : null;
     }
 
-    private $ETHER_USDT_TEST_FACTOR = 2000;
     /**
      * Store a newly created resource in storage.
      *
@@ -75,12 +76,14 @@ class _TransactionController extends Controller
             'xfer_asset_value' => ['required', 'numeric'],
             'txn_fee_fctr' => ['sometimes', 'numeric'],
             'is_recon' => ['sometimes', 'boolean'],
-            'tatum_reference' => ['sometimes', 'string'],
-            'blockchain_txn_id' => ['required_if:is_recon,==,true', 'string', 'unique:__transactions,blockchain_txn_id'],
+            'tatum_reference' => ['sometimes', 'string', 'unique:__transactions,tatum_reference'],
+            'blockchain_txn_id' => ['sometimes', 'string', 'unique:__transactions,blockchain_txn_id'],
             'transfer_datetime' => ['required_if:is_recon,==,true', 'date:Y-m-d H:i:s'],
         ]);
 
-        if (isset($validated_data['sender_username']) && !in_array($validated_data['sender_username'], ['reserves']) ){
+        $is_recon = isset($validated_data['is_recon']) && $validated_data['is_recon'];
+
+        if (!$is_recon && isset($validated_data['sender_username']) && !in_array($validated_data['sender_username'], ['reserves']) ){
             if (isset($validated_data['sender_password'])){
                 if (!Hash::check($validated_data['sender_password'], _User::firstWhere('username', session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null ))->makeVisible(['password'])->password)) {
                     return abort(422, 'Password incorrect');
@@ -182,21 +185,24 @@ class _TransactionController extends Controller
                 'asset_code' => $validated_data['asset_code'],
                 'senderAccountId' => isset($sender_asset_wallet) ? $sender_asset_wallet->tatum_virtual_account_id : null,
                 'recipientAccountId' => isset($recipient_asset_wallet) ? $recipient_asset_wallet->tatum_virtual_account_id : null,
-                'recipientNote' => $validated_data['recipient_note'],
-                'senderNote' => $validated_data['sender_note'],
+                'recipientNote' => isset($validated_data['recipient_note']) ? $validated_data['recipient_note'] : null,
+                'senderNote' => isset($validated_data['sender_note']) ? $validated_data['sender_note'] : null,
                 'amount' => ($validated_data['xfer_asset_value'] / $this->ETHER_USDT_TEST_FACTOR).'',
             ];
             if ($validated_data['txn_context'] == 'onchain') {
                 if ($tatum_request_object['senderAccountId']){
                     $tatum_request_object['index'] = $sender_asset_wallet->tatum_derivation_key;
                     $tatum_request_object['address'] = $validated_data['destination_blockchain_address'];
-                    $tatum_element = (new __TatumAPIController)->transferAssetValueFromVirtualAccountToBlockchain(new Request($tatum_request_object))->getData();
-                    $validated_data['blockchain_txn_id'] = $tatum_element->txId;
+                    if (!$is_recon){
+                        $tatum_element = (new __TatumAPIController)->transferAssetValueFromVirtualAccountToBlockchain(new Request($tatum_request_object))->getData();
+                        $validated_data['blockchain_txn_id'] = $tatum_element->txId;
+                    }
                 }
-                // handles is_recon here
             } else {
-                $tatum_element = (new __TatumAPIController)->transferAssetValueOffchain(new Request($tatum_request_object))->getData();
-                $validated_data['tatum_reference'] = $tatum_element->reference;
+                if (!$is_recon){
+                    $tatum_element = (new __TatumAPIController)->transferAssetValueOffchain(new Request($tatum_request_object))->getData();
+                    $validated_data['tatum_reference'] = $tatum_element->reference;
+                }
             }
         }
         $element = _Transaction::create($validated_data);
@@ -234,9 +240,9 @@ class _TransactionController extends Controller
                 'operation_slug' => 'transaction_fee_charge',
                 'sender_username' => $validated_data['sender_username'],
                 'sender_password' => $validated_data['sender_password'],
-                'sender_note' => 'Platform charge fee for transaction '.$element->ref_code,
+                'sender_note' => 'Outbound platform charge fee for transaction '.$element->ref_code,
                 'recipient_username' => 'reserves',
-                'recipient_note' => 'Platform charge fee for transaction '.$element->ref_code,
+                'recipient_note' => 'Inbound platform charge fee for transaction '.$element->ref_code,
                 'asset_code' => $validated_data['asset_code'],
                 'xfer_asset_value' => $validated_data['txn_fee_asset_value'],
             ]));
@@ -327,43 +333,72 @@ class _TransactionController extends Controller
     public function tatum_txrecon(Request $request)
     {
         $validated_data = $request->validate([
-            'accountId' => ['required', 'exists:__asset_wallets,tatum_virtual_account_id', 'string'],
             'amount' => ['required', 'numeric'],
-            'currency' => ['sometimes', 'string', 'exists:__assets,tatum_currency'],
-            'txId' => ['required', 'string', 'unique:__transactions,blockchain_txn_id'],
-            'reference' => ['required', 'string'],
-            'marketValue' => ['sometimes', 'array'],
-            'address' => ['required', 'string', 'exists:__asset_wallet_addresses,blockchain_address'],
+            'operationType' => ['required', 'string'],
+            'currency' => ['required', 'string', 'exists:__assets,tatum_currency'],
+            'transactionType' => ['required', 'string'],
+            'accountId' => ['required', 'string', 'exists:__asset_wallets,tatum_virtual_account_id'],
+            'reference' => ['required', 'string'/*, 'unique:__transactions,tatum_reference'*/],
+            'txId' => ['sometimes', 'string', 'unique:__transactions,blockchain_txn_id'],
+            'address' => ['sometimes', 'string', 'exists:__asset_wallet_addresses,blockchain_address'],
+            'marketValue' => ['required', 'array'],
             'created' => ['required'],
+            'counterAccountId' => ['sometimes', 'exists:__asset_wallets,tatum_virtual_account_id', 'string'],
+            'senderNote' => ['nullable', 'string'],
+            'recipientNote' => ['nullable', 'string'],
         ]);
-
-        $recipient_asset_wallet = _AssetWallet::firstWhere(['tatum_virtual_account_id' => $validated_data['accountId']]);
-        $recipient_asset_wallet_address = _AssetWalletAddress::firstWhere(['blockchain_address' => $validated_data['address']]);
-        
-        if ( $recipient_asset_wallet->user_username !== $recipient_asset_wallet_address->user_username ){
-            return abort( 422, 'accountId and destination address not belonging to the same user');
-        }
-
-        $validated_data['recipient_note'] = $validated_data['marketValue'] && $validated_data['marketValue']['source'] ? 'Transfer from '.$validated_data['marketValue']['source'].' wallet to Ankelli wallet' : null;
 
         $recipient_asset_wallet = _AssetWallet::firstWhere(['tatum_virtual_account_id' => $validated_data['accountId']]);
 
         $txrecon_data = [
-            'txn_context' => 'onchain',
-            'operation_slug' => 'inbound_direct_transfer',
-            'recipient_username' => $recipient_asset_wallet->user_username,
-            'recipient_note' => isset($validated_data['recipient_note']) ? $validated_data['recipient_note'] : 'Transfer from external wallet to Ankelli wallet',
-            'destination_blockchain_address' => $validated_data['address'],
+            'is_recon' => true,
+            'tatum_reference' => $validated_data['reference'],
+            'transfer_datetime' => date('Y-m-d H:i:s', $validated_data['created'] / 1000),
             'asset_code' => $recipient_asset_wallet->asset_code,
             'xfer_asset_value' => $validated_data['amount'] * $this->ETHER_USDT_TEST_FACTOR,
-            'is_recon' => true,
-            'blockchain_txn_id' => $validated_data['txId'],
-            'tatum_reference' => $validated_data['reference'],
-            'transfer_datetime' => date('Y-m-d H:i:s', $validated_data['created'] / 1000)
+            'recipient_username' => $recipient_asset_wallet->user_username,
         ];
 
-        $used_destination_asset_wallet_address = _AssetWalletAddress::firstWhere(['blockchain_address' => $txrecon_data['destination_blockchain_address']]);
-        $used_destination_asset_wallet_address->update(['onchain_txn_count' => $used_destination_asset_wallet_address->onchain_txn_count + 1, 'last_active_datetime' => $txrecon_data['transfer_datetime']]);
+        if ($validated_data['operationType'] === 'PAYMENT'){
+            if ($validated_data['transactionType'] === 'CREDIT_PAYMENT'){
+                $sender_asset_wallet = _AssetWallet::firstWhere(['tatum_virtual_account_id' => $validated_data['counterAccountId']]);
+                if( session()->get('temp_tatum_reference') == $validated_data['reference']){
+                    $validated_data['senderNote'] = session()->get('temp_senderNote');
+                    session()->forget('temp_tatum_reference');
+                    session()->forget('temp_senderNote');
+                }
+                $txrecon_data['txn_context'] = 'offchain';
+                $txrecon_data['sender_username'] = $sender_asset_wallet->user_username;
+                $txrecon_data['sender_note'] = isset($validated_data['senderNote']) ? $validated_data['senderNote'] : 'Reconciled payment';
+                $txrecon_data['recipient_note'] = isset($validated_data['recipientNote']) ? $validated_data['recipientNote'] : 'Reconciled payment';
+                $txrecon_data['operation_slug'] = 'payment_reconciliation';
+            }
+            if ($validated_data['transactionType'] === 'DEBIT_PAYMENT'){
+                $transaction = _Transaction::firstWhere(['tatum_reference' => $validated_data['reference']]);
+                if ($transaction){
+                    $transaction->update(['sender_note' => $validated_data['senderNote']]);
+                    session()->forget('temp_tatum_reference');
+                    session()->forget('temp_senderNote');
+                } else {
+                    session()->put('temp_tatum_reference', $validated_data['reference']);
+                    session()->put('temp_senderNote', $validated_data['senderNote']);
+                }
+                return response()->json();
+            }
+        }
+
+        if ($validated_data['operationType'] === 'DEPOSIT' && $validated_data['transactionType'] === 'CREDIT_DEPOSIT'){
+            $txrecon_data['txn_context'] = 'onchain';
+            $txrecon_data['recipient_note'] = $validated_data['marketValue'] && $validated_data['marketValue']['source'] ? 'Transfer from '.$validated_data['marketValue']['source'].' wallet to Ankelli wallet' : null;
+            $txrecon_data['operation_slug'] = 'inbound_direct_transfer';
+            $txrecon_data['destination_blockchain_address'] = $validated_data['address'];
+            $txrecon_data['blockchain_txn_id'] = $validated_data['txId'];
+        }
+
+        if (isset($txrecon_data['destination_blockchain_address'])){
+            $used_destination_asset_wallet_address = _AssetWalletAddress::firstWhere(['blockchain_address' => $txrecon_data['destination_blockchain_address']]);
+            $used_destination_asset_wallet_address->update(['onchain_txn_count' => $used_destination_asset_wallet_address->onchain_txn_count + 1, 'last_active_datetime' => $txrecon_data['transfer_datetime']]);
+        }
 
         return (new _TransactionController)->store(new Request($txrecon_data));
     }
@@ -399,11 +434,13 @@ class _TransactionController extends Controller
         ]);
 
         $validated_data['sender_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+
+        if ( isset($validated_data['destination_blockchain_address']) && _AssetWalletAddress::where(['blockchain_address' => $validated_data['destination_blockchain_address']])->exists()){
+            return abort(422, 'Provided address belongs to a user on this platform. Use their username instead');
+        }
         
-        $destination_asset_wallet_address = _AssetWalletAddress::firstWhere(['blockchain_address' => $validated_data['destination_blockchain_address']]);
-        if ($destination_asset_wallet_address){
+        if (isset($validated_data['recipient_username'])){
             $validated_data['txn_context'] = 'offchain';
-            $validated_data['recipient_username'] = $destination_asset_wallet_address->user_username;
             $validated_data['operation_slug'] = 'direct_transfer';
             $validated_data['txn_fee_fctr'] = _PrefItem::firstWhere('key_slug', 'drct_xfer_offchain_txn_fee_fctr')->value_f();
         } else {

@@ -166,9 +166,13 @@ class _TradeController extends Controller
         $seller_new_usable_balance_asset_value = $seller_asset_wallet->usable_balance_asset_value - $validated_data['asset_value_escrowed'];
 
         if ( $seller_new_usable_balance_asset_value < 0 ){ return abort(422, 'Current '.$offer->asset_code.' balance insufficient for transaction.'); }
-        (new _AssetWalletController)->blockAssetValue( new Request([
+        $tatum_element = (new _AssetWalletController)->blockAssetValue( new Request([
             'asset_value' => $validated_data['asset_value_escrowed'],
-        ]), $seller_asset_wallet->id );
+            'blockage_type_slug' => 'trade_escrow',
+        ]), $seller_asset_wallet->id )->getData();
+        if ( _PrefItem::firstWhere('key_slug', 'use_tatum_api')->value_f() ){
+            $validated_data['tatum_amount_blockage_id'] = $tatum_element->id;
+        }
         // End lock in escrow
 
         // Update fill
@@ -361,6 +365,7 @@ class _TradeController extends Controller
                 ]);
                 (new _AssetWalletController)->unblockAssetValue( new Request([
                     'asset_value' => $element->asset_value_escrowed,
+                    'tatum_amount_blockage_id' => $element->tatum_amount_blockage_id,
                 ]), $seller_asset_wallet->id );
                 // End unlock asset from escrow
 
@@ -411,17 +416,19 @@ class _TradeController extends Controller
             ]);
             (new _AssetWalletController)->unblockAssetValue( new Request([
                 'asset_value' => $element->asset_value_escrowed,
+                'tatum_amount_blockage_id' => $element->tatum_amount_blockage_id,
             ]), $seller_asset_wallet->id );
             usleep(500);
             // End unlock asset from escrow
             
             (new _TransactionController)->store( new Request([
                 'txn_context' => 'offchain',
-                'description' => 'Asset release for trade '.$ref_code,
                 'operation_slug' => 'trade_asset_release',
                 'sender_username' => $seller_username, 
                 'sender_password' => $validated_data['sender_password'],
-                'recipient_username' => $buyer_username, 
+                'sender_note' => 'Outbound asset release for trade '.$ref_code,
+                'recipient_username' => $buyer_username,
+                'recipient_note' => 'Inbound asset release for trade '.$ref_code,
                 'asset_code' => $element->asset_code,
                 'xfer_asset_value' => $element->asset_value,
                 'txn_fee_fctr' => $element->trade_txn_fee_fctr,

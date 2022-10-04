@@ -32,6 +32,7 @@ class _Trade extends Model
         'currency_code',
         'asset_value',
         'currency_amount',
+        'tatum_amount_blockage_id',
         'asset_value_escrowed',
         'offer_price',
         'trade_txn_fee_fctr',

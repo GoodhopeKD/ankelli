@@ -50,7 +50,7 @@ window.padUserAvatarImageId = (number = undefined) => {
 }
 
 window.currencyAmountInput = (amount, round_down = false) => {
-	if (!window.isNumeric(amount)) return 0
+	if (!window.isNumeric(amount)) return ''
 	const rounder = round_down ? Math.floor : Math.round
 	return rounder((parseFloat(amount) + Number.EPSILON) * 100) / 100
 }
@@ -60,7 +60,7 @@ window.currencyAmountString = (amount, currency = { symbol: '' }, show_symbol = 
 }
 
 window.assetValueInput = (value, asset = { smallest_display_unit: 0.01 }, round_down = false) => {
-	if (!window.isNumeric(value)) return 0
+	if (!window.isNumeric(value)) return ''
 	const rounder = round_down ? Math.floor : Math.round
 	return rounder((parseFloat(value)) * (1 / asset.smallest_display_unit)) / (1 / asset.smallest_display_unit)
 }

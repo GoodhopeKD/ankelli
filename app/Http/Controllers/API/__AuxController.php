@@ -493,7 +493,7 @@ Handle all internal transactions normally but know that these values will be ref
             (new _TransactionController)->store( new Request([
                 'txn_context' => 'onchain',
                 'blockchain_txn_id' => $internalisation[3],
-                'description' => $internalisation[2],
+                'recipient_note' => $internalisation[2],
                 'operation_slug' => 'inbound_direct_transfer',
                 'recipient_username' => $internalisation[0], 
                 'asset_code' => 'USDT',

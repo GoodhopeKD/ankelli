@@ -121,10 +121,11 @@ class _DepositTokenController extends Controller
 
         (new _TransactionController)->store( new Request([
             'txn_context' => 'offchain',
-            'description' => 'Wallet topup using deposit token "'.$token.'"',
             'operation_slug' => 'deposit_token_topup',
-            'sender_username' => 'reserves', 
             'recipient_username' => $validated_data['user_username'], 
+            'recipient_note' => 'Wallet topup using deposit token "'.$token.'"',
+            'sender_username' => 'reserves', 
+            'sender_note' => 'Wallet topup using deposit token "'.$token.'"',
             'asset_code' => $element->asset_code,
             'xfer_asset_value' => $element->asset_value,
         ]));

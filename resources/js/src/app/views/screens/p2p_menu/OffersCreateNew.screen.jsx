@@ -21,17 +21,17 @@ class OffersCreateNewScreen extends React.Component {
 
         asset_code: 'USDT',
         currency_code: 'USD',
-        offer_price: new _Input(200 / 209),
+        offer_price: new _Input(),
 
-        min_trade_purchase_amount: new _Input(100),
-        max_trade_purchase_amount: new _Input(0),
-        offer_total_purchase_amount: new _Input(0),
+        min_trade_purchase_amount: new _Input(),
+        max_trade_purchase_amount: new _Input(),
+        offer_total_purchase_amount: new _Input(),
 
-        min_trade_sell_value: new _Input(0),
-        max_trade_sell_value: new _Input(0),
-        offer_total_sell_value: new _Input(0),
+        min_trade_sell_value: new _Input(),
+        max_trade_sell_value: new _Input(),
+        offer_total_sell_value: new _Input(),
 
-        buyer_cmplt_trade_mins_tmt: new _Input(30),
+        buyer_cmplt_trade_mins_tmt: new _Input(),
 
         note: new _Input(),
     }
@@ -305,7 +305,7 @@ class OffersCreateNewScreen extends React.Component {
                                         type="number" className="form-control" id="input_offer_price"
                                         min={"0.0000000001"}
                                         step={"0.0000000001"}
-                                        value={Math.round((parseFloat(this.state.input.offer_price.toRaw() ?? 0) + Number.EPSILON) * 10000000000) / 10000000000}
+                                        value={this.state.input.offer_price.toRaw() ? (Math.round((parseFloat(this.state.input.offer_price.toRaw() ?? 0) + Number.EPSILON) * 10000000000) / 10000000000) : ''}
                                         required
                                         onChange={elem => this.handleInputChange('offer_price', elem.target.value)}
                                     />

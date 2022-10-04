@@ -290,69 +290,6 @@ class __TatumAPIController extends Controller
         return $this->curl_call_tail($curl);
     }
 
-
-    /**
-     * Block an amount in an account
-     * https://apidoc.tatum.io/tag/Account#operation/blockAmount
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function blockAmountInAccount(Request $request)
-    {
-        $validated_data = $request->validate([
-            'virtual_account_id' => ['required', 'string'],
-            'amount' => ['required', 'numeric'],
-            'type' => ['required', 'string'],
-        ]);
-
-        $payload = [
-            'amount' => $validated_data['amount'],
-            'type' => $validated_data['type'],
-        ];
-
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_HTTPHEADER => [
-                "Content-Type: application/json",
-                "x-api-key: ".$this->x_api_key,
-            ],
-            CURLOPT_POSTFIELDS => json_encode($payload),
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/block/".$validated_data['virtual_account_id'],
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => "POST",
-        ]);
-
-        return $this->curl_call_tail($curl);
-    }
-
-    /**
-     * Unblock a blocked amount in an account
-     * https://apidoc.tatum.io/tag/Account#operation/deleteBlockAmount
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function unblockAmountInAccount(Request $request)
-    {
-        $validated_data = $request->validate([
-            'block_id' => ['required', 'string'],
-        ]);
-
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_HTTPHEADER => [
-                "Content-Type: application/json",
-                "x-api-key: ".$this->x_api_key,
-            ],
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/block/".$validated_data['block_id'],
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => "DELETE",
-        ]);
-
-        return $this->curl_call_tail($curl);
-    }
-
     /**
      * Create a deposit address for a virtual account.
      * https://apidoc.tatum.io/tag/Blockchain-addresses#operation/generateDepositAddress
@@ -407,6 +344,96 @@ class __TatumAPIController extends Controller
         return $this->curl_call_tail($curl);
     }
 
+    /**
+     * Block an amount in a virtual account.
+     * https://apidoc.tatum.io/tag/Account#operation/blockAmount
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function blockAmountInVirtualAccount(Request $request)
+    {
+        $validated_data = $request->validate([
+            'virtual_account_id' => ['required', 'string'],
+            'amount' => ['required', 'string'],
+            'type' => ['required', 'string'],
+        ]);
+
+        $payload = [
+            "amount" => $validated_data['amount'],
+            "type" => $validated_data['type'],
+        ];
+
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json",
+                "x-api-key: ".$this->x_api_key,
+            ],
+            CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/block/".$validated_data['virtual_account_id']."?type=testnet",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "POST",
+        ]);
+
+        return $this->curl_call_tail($curl);
+    }
+
+    /**
+     * Get all blocked amounts in a virtual account.
+     * https://apidoc.tatum.io/tag/Account#operation/getBlockAmount
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getBlockedAmountsInVirtualAccount(Request $request)
+    {
+        $validated_data = $request->validate([
+            'virtual_account_id' => ['required', 'string'],
+        ]);
+
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json",
+                "x-api-key: ".$this->x_api_key,
+            ],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/block/".$validated_data['virtual_account_id']."?".http_build_query(['type' => 'testnet', 'pageSize'=>50]),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+
+        return $this->curl_call_tail($curl);
+    }
+
+
+    /**
+     * Unblock an amount in a virtual account.
+     * https://apidoc.tatum.io/tag/Account#operation/deleteBlockAmount
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function unblockAmountInVirtualAccount(Request $request)
+    {
+        $validated_data = $request->validate([
+            'tatum_amount_blockage_id' => ['required', 'string'],
+        ]);
+
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json",
+                "x-api-key: ".$this->x_api_key,
+            ],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/block/".$validated_data['tatum_amount_blockage_id']."?type=testnet",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "DELETE",
+        ]);
+
+        return $this->curl_call_tail($curl);
+    }
+
 
     /**
      * Send ETH from a virtual account to the blockchain
@@ -423,6 +450,7 @@ class __TatumAPIController extends Controller
             'amount' => ['required', 'string'],
             'index' => ['required', 'integer'],
             'senderAccountId' => ['required', 'string'],
+            'senderNote' => ['required', 'string'],
         ]);
 
         $wallet_config = $this->supported_assets[$validated_data['asset_code']];
@@ -434,7 +462,8 @@ class __TatumAPIController extends Controller
             "amount" => $validated_data['amount'],
             "index" => $validated_data['index'],
             "mnemonic" => $asset->tatum_mnemonic,
-            "senderAccountId" => $validated_data['senderAccountId']
+            "senderAccountId" => $validated_data['senderAccountId'],
+            "senderNote" => $validated_data['senderNote'],
         ];
         
         $curl = curl_init();
@@ -565,7 +594,7 @@ class __TatumAPIController extends Controller
             "type" => "ACCOUNT_INCOMING_BLOCKCHAIN_TRANSACTION",
             "attr" => [
                 "id" => $validated_data['virtual_account_id'],
-                "url" => "https://www.ankelli.com/webhooks/tatum/nofitications"
+                "url" => "https://api.ankelli.com/webhooks/tatum/nofitications"
             ]
         ];
         

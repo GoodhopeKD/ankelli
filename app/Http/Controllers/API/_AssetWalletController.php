@@ -16,6 +16,8 @@ use App\Http\Resources\_AssetWalletResourceCollection;
 
 class _AssetWalletController extends Controller
 {
+    private $ETHER_USDT_TEST_FACTOR = 2000;
+
     /**
      * Display a listing of the resource.
      *
@@ -41,9 +43,14 @@ class _AssetWalletController extends Controller
         return (new __TatumAPIController)->getVirtualAccountDepositAddresses(new Request(['virtual_account_id' => '63296ef838931796fa9e5aed']))->getData();
     }
 
-    public function get_transactions()
+    public function get_vacc_transactions()
     {
         return (new __TatumAPIController)->getVirtualAccountTransactions(new Request(['virtual_account_id' => '63296ef838931796fa9e5aed', 'currency' => 'ETH']))->getData();
+    }
+
+    public function get_transactions()
+    {
+        return (new __TatumAPIController)->getAllTransactions(new Request(['virtual_account_id' => '63296ef838931796fa9e5aed', 'currency' => 'ETH']))->getData();
     }
 
     public function get_subscriptions()
@@ -58,6 +65,9 @@ class _AssetWalletController extends Controller
 
     public function redo_tatum_txrecon_transactions()
     {
+        foreach (_AssetWallet::get() as $asset_wallet) {
+            $asset_wallet->update(['usable_balance_asset_value' => 0, 'total_balance_asset_value' => 0]);
+        }
         foreach ( array_reverse((new __TatumAPIController)->getAllTransactions(new Request())->getData()) as $transaction) {
             (new _TransactionController)->tatum_txrecon(new Request( json_decode(json_encode($transaction), true) ));
             usleep(500);
@@ -104,8 +114,15 @@ class _AssetWalletController extends Controller
             $tatum_element = $tatum_element ?? (new __TatumAPIController)->createVirtualAccountXpub(new Request(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']]))->getData();
 
             $validated_data['tatum_virtual_account_id'] = $tatum_element->id;
-            //$validated_data['usable_balance_asset_value'] = $tatum_element->balance->availableBalance;
-            //$validated_data['total_balance_asset_value'] = $tatum_element->balance->accountBalance;
+            $validated_data['usable_balance_asset_value'] = $tatum_element->balance->availableBalance * $this->ETHER_USDT_TEST_FACTOR;
+            $validated_data['total_balance_asset_value'] = $tatum_element->balance->accountBalance * $this->ETHER_USDT_TEST_FACTOR;
+            if ($validated_data['total_balance_asset_value'] !== $validated_data['usable_balance_asset_value']){
+                foreach ( array_reverse((new __TatumAPIController)->getBlockedAmountsInVirtualAccount(new Request(['virtual_account_id' => $tatum_element->id]))->getData()) as $blockage) {
+                    (new __TatumAPIController)->unblockAmountInVirtualAccount(new Request( ['tatum_amount_blockage_id' => $blockage->id] ));
+                }
+                $validated_data['usable_balance_asset_value'] = $validated_data['total_balance_asset_value'];
+            }
+            
             $user = _User::firstWhere('username', $validated_data['user_username']);
             if (!$user->tatum_customer_id){
                 (new _UserController)->update(new Request(['tatum_customer_id' => $tatum_element->customerId]), $validated_data['user_username']);
@@ -180,12 +197,22 @@ class _AssetWalletController extends Controller
     {
         $validated_data = $request->validate([
             'asset_value' => ['required', 'numeric'],
+            'blockage_type_slug' => ['required', 'string'],
         ]);
         $element = _AssetWallet::findOrFail($id);
-        return (new _AssetWalletController)->update( new Request([
+        $update = (new _AssetWalletController)->update( new Request([
             'action_note' => 'Block an asset value',
             'usable_balance_asset_value' => $element->usable_balance_asset_value - $validated_data['asset_value'],
         ]), $id );
+        if ( _PrefItem::firstWhere('key_slug', 'use_tatum_api')->value_f() ){
+            return (new __TatumAPIController)->blockAmountInVirtualAccount(new Request([
+                'virtual_account_id' => $element->tatum_virtual_account_id,
+                'amount' => ($validated_data['asset_value'] / $this->ETHER_USDT_TEST_FACTOR).'',
+                'type' => $validated_data['blockage_type_slug'],
+            ]));
+        } else {
+            return $update;
+        }
     }
 
     /**
@@ -197,14 +224,21 @@ class _AssetWalletController extends Controller
      */
     public function unblockAssetValue(Request $request, int $id)
     {
+        $use_tatum_api = _PrefItem::firstWhere('key_slug', 'use_tatum_api')->value_f();
         $validated_data = $request->validate([
             'asset_value' => ['required', 'numeric'],
+            'tatum_amount_blockage_id' => [ ($use_tatum_api ? 'required' : 'nullable'), 'string'],
         ]);
         $element = _AssetWallet::findOrFail($id);
-        return (new _AssetWalletController)->update( new Request([
+        $update = (new _AssetWalletController)->update( new Request([
             'action_note' => 'Unblock an asset value',
             'usable_balance_asset_value' => $element->usable_balance_asset_value + $validated_data['asset_value'],
         ]), $id );
+        if ( $use_tatum_api ){
+            return (new __TatumAPIController)->unblockAmountInVirtualAccount(new Request([ 'tatum_amount_blockage_id' => $validated_data['tatum_amount_blockage_id'] ]));
+        } else {
+            return $update;
+        }
     }
 
     /**

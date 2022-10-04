@@ -340,7 +340,7 @@ class TradesViewSingleScreen extends React.Component {
                                             </div>
                                         </>}
 
-                                        {auth_user_is_seller && this.focused_trade.pymt_confirmed_datetime == null && <>
+                                        {auth_user_is_seller && this.focused_trade.pymt_confirmed_datetime == null && this.focused_trade.pymt_declared_datetime !== null && <>
                                             <div className="accordion-item">
                                                 <h4 className="accordion-header" >
                                                     <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_confirm_payment" >
@@ -399,7 +399,7 @@ class TradesViewSingleScreen extends React.Component {
                                             </div>
                                         </>}
 
-                                        {(auth_user_is_buyer && !['cancelled', 'completed'].includes(this.focused_trade._status) || (auth_user_is_seller && this.focused_trade.buyer_opened_datetime == null)) && <>
+                                        {(auth_user_is_buyer && !['cancelled', 'completed'].includes(this.focused_trade._status) && this.focused_trade.pymt_declared_datetime == null && this.focused_trade.pymt_confirmed_datetime == null || (auth_user_is_seller && this.focused_trade.buyer_opened_datetime == null)) && <>
                                             <div className="accordion-item">
                                                 <h4 className="accordion-header" >
                                                     <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_cancel_trade" >
@@ -442,7 +442,7 @@ class TradesViewSingleScreen extends React.Component {
                                             </div>
                                         </>}
 
-                                        {['active', 'completed'].includes(this.focused_trade._status) && (this.focused_trade.pymt_declared_datetime == null || (this.focused_trade.pymt_declared_datetime && ((_DateTime.nowUnixTimeStamp() - this.focused_trade.pymt_declared_datetime.unix_timestamp) < (10 * 60)))) && <>
+                                        {['active', 'completed_'].includes(this.focused_trade._status) && (this.focused_trade.pymt_declared_datetime == null || (this.focused_trade.pymt_declared_datetime && ((_DateTime.nowUnixTimeStamp() - this.focused_trade.pymt_declared_datetime.unix_timestamp) < (10 * 60)))) && <>
                                             <div className="accordion-item">
                                                 <h4 className="accordion-header" >
                                                     <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_flag_trade" >
