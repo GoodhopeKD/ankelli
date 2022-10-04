@@ -225,7 +225,7 @@ class TradesViewSingleScreen extends React.Component {
                                                                         required
                                                                         disabled
                                                                         value={this.state.input.pymt_details[detail_key]}
-                                                                        onChange={e => this.handleInputChange('pymt_details.' + detail_key, e.target.value, true)}
+                                                                        onChange={elem => this.handleInputChange('pymt_details.' + detail_key, elem.target.value, true)}
                                                                     />
                                                                     <label htmlFor={'input_pymt_method_detail_' + detail_key} className="form-label">{detail_key.replace(/_/g, " ").capitalize()}</label>
                                                                 </div>
@@ -300,7 +300,7 @@ class TradesViewSingleScreen extends React.Component {
                                                                     minLength={_Input.validation_param_lengths.peer_review_comment.min_length}
                                                                     maxLength={_Input.validation_param_lengths.peer_review_comment.max_length}
                                                                     value={this.state.input.peer_review_comment + ''}
-                                                                    onChange={e => this.handleInputChange('peer_review_comment', e.target.value)}
+                                                                    onChange={elem => this.handleInputChange('peer_review_comment', elem.target.value)}
                                                                 >
                                                                 </textarea>
                                                                 <label htmlFor={this.id_prefix + "input_peer_review_comment"}>Comment (optional)</label>
@@ -371,7 +371,7 @@ class TradesViewSingleScreen extends React.Component {
                                                                                 className={"form-control" + (this.state.input.source_user_password.failedValidation() ? ' is-invalid' : '')}
                                                                                 id="input_source_user_password"
                                                                                 value={this.state.input.source_user_password + ''}
-                                                                                onChange={e => this.handleInputChange('source_user_password', e.target.value)}
+                                                                                onChange={elem => this.handleInputChange('source_user_password', elem.target.value)}
                                                                                 required={this.state.source_user_password_prompt_open}
                                                                                 placeholder="Pasword"
                                                                             />
@@ -529,7 +529,7 @@ class TradesViewSingleScreen extends React.Component {
                                             </div>
                                         if (message.creator_username !== this.props.auth_user.username)
                                             return <div key={index} className="d-flex pt-2 border my-1">
-                                                <img src={require("app/assets/img/user_avatar/" + (window.padNumber(message.creator_avatar_image_id ?? '0')) + ".png").default} alt="User avater image" width="32" height="32" className="bd-placeholder-img flex-shrink-0 mx-2 my-1 rounded" />
+                                                <img src={require("app/assets/img/user_avatar/" + (window.padUserAvatarImageId(message.creator_avatar_image_id ?? '0')) + ".png").default} alt="User avater image" width="32" height="32" className="bd-placeholder-img flex-shrink-0 mx-2 my-1 rounded" />
                                                 <p className="pb-2 mb-0 lh-sm ">
                                                     <i className="d-flex text-muted small">@{message.creator_username} - {window.ucfirst((new _DateTime(message.created_datetime)).prettyDatetime())}</i>
                                                     {window.isset(message.attachment) && <><img src={message.attachment.uri} alt={message.attachment.title} height="300" className="bd-placeholder-img flex-shrink-0 my-1" /><br /></>}
@@ -547,7 +547,7 @@ class TradesViewSingleScreen extends React.Component {
                                                     <span style={{ whiteSpace: 'pre-wrap' }}>{message.body}</span>
                                                 </p>
                                             </div>
-                                            <img src={require("app/assets/img/user_avatar/" + (window.padNumber(message.creator_avatar_image_id ?? '0')) + ".png").default} alt="User avater image" width="32" height="32" className="bd-placeholder-img flex-shrink-0 mx-2 my-1 rounded" />
+                                            <img src={require("app/assets/img/user_avatar/" + (window.padUserAvatarImageId(message.creator_avatar_image_id ?? '0')) + ".png").default} alt="User avater image" width="32" height="32" className="bd-placeholder-img flex-shrink-0 mx-2 my-1 rounded" />
                                         </div>
                                     })}
                                 </div>
@@ -568,7 +568,7 @@ class TradesViewSingleScreen extends React.Component {
                                                         id="message_attachment_upload"
                                                         className="form-control d-none"
                                                         accept="image/*"
-                                                        onChange={e => this.handleInputChange('message_attachment', e.target.files[0], true)}
+                                                        onChange={elem => this.handleInputChange('message_attachment', elem.target.files[0], true)}
                                                     />
                                                 </label>
                                                 {window.isset(this.state.input.message_attachment) && <>
@@ -588,7 +588,7 @@ class TradesViewSingleScreen extends React.Component {
                                                 minLength={_Input.validation_param_lengths.message_body.min_length}
                                                 maxLength={_Input.validation_param_lengths.message_body.max_length}
                                                 value={this.state.input.message_body + ''}
-                                                onChange={e => this.handleInputChange('message_body', e.target.value)}
+                                                onChange={elem => this.handleInputChange('message_body', elem.target.value)}
                                             >
                                             </textarea>
                                             <button className="btn btn-primary" type="submit" disabled={this.state.btn_send_message_working}>

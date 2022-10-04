@@ -152,7 +152,7 @@ class TransactionsViewListScreen extends React.Component {
                             </div>
                             <div className="col">
                                 <label htmlFor="input_focused_user_username_tag" className="form-label">Type</label>
-                                <select className="form-select" id="input_focused_user_username_tag" value={this.state.input.focused_user_username_tag} onChange={rr => this.handleInputChange('focused_user_username_tag', rr.target.value, true)} >
+                                <select className="form-select" id="input_focused_user_username_tag" value={this.state.input.focused_user_username_tag} onChange={elem => this.handleInputChange('focused_user_username_tag', elem.target.value, true)} >
                                     <option value="user_username" >All</option>
                                     <option value="source_user_username" >Debit</option>
                                     <option value="destination_user_username" >Credit</option>

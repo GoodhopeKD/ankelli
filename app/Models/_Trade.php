@@ -152,4 +152,17 @@ class _Trade extends Model
         return round((( (new Carbon($this->created_datetime))->timestamp + ($this->buyer_cmplt_trade_mins_tmt * 60) ) - time()) / 60);
     }
     
+    public function peer_rating_f()
+    {
+        $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $peer_username = $api_auth_user_username == $this->creator_username ? $this->offer_creator_username : $this->creator_username;
+        return _User::firstWhere('username', $peer_username)->rating_f();
+    }
+
+    public function peer_trades_as_buyer_stats_f()
+    {
+        $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $peer_username = $api_auth_user_username == $this->creator_username ? $this->offer_creator_username : $this->creator_username;
+        return _User::firstWhere('username', $peer_username)->trades_as_buyer_stats_f();
+    }
 }

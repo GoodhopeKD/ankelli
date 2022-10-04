@@ -169,7 +169,7 @@ class OffersViewListScreen extends React.Component {
                         {(this.props.sysconfig_params.offer_to_buy_enabled && this.props.sysconfig_params.offer_to_sell_enabled) &&
                             <div className="col">
                                 <label htmlFor="input_offer_to" className="form-label">I wish to</label>
-                                <select className="form-select" id="input_offer_to" value={this.state.input.offer_to} onChange={rr => this.handleInputChange('offer_to', rr.target.value, true)} >
+                                <select className="form-select" id="input_offer_to" value={this.state.input.offer_to} onChange={elem => this.handleInputChange('offer_to', elem.target.value, true)} >
                                     <option value="buy">Sell</option>
                                     <option value="sell" >Buy</option>
                                 </select>
@@ -267,16 +267,18 @@ class OffersViewListScreen extends React.Component {
                                         const currency = this.props.datalists.active_currencies[offer.currency_code]
                                         const asset = this.props.datalists.active_assets[offer.asset_code]
                                         const pymt_method = this.props.datalists.active_pymt_methods[offer.pymt_method_slug]
-                                        const progress = window.roundTo2dp((offer.offer_to === 'buy' ? (offer.filled_amount / offer.offer_total_purchase_amount) : (offer.filled_value / offer.offer_total_sell_value)) * 100)
+                                        const progress = window.currencyAmountInput((offer.offer_to === 'buy' ? (offer.filled_amount / offer.offer_total_purchase_amount) : (offer.filled_value / offer.offer_total_sell_value)) * 100)
                                         return <tr key={index} >
                                             <td className="align-middle">
-                                                {(this.props.path == '/p2p/offers' || this.props.path == '/') && <i><b><Link to={'/accounts/profiles/' + offer.creator_username} style={{ textDecoration: 'none' }} target='_blank'>@{offer.creator_username}</Link></b> <small className='text-muted'>{window.isset(offer.creator_rating) ? (window.roundTo2dp(offer.creator_rating) + '⭐') : ''} {window.isset(offer.creator_trades_as_buyer_stats) ? ('BTCR: ' + offer.creator_trades_as_buyer_stats.completed + '/' + offer.creator_trades_as_buyer_stats.total) : ''}</small></i>}
-                                                {this.props.path == '/p2p/my-offers' && <i>Offer to: {offer.offer_to}</i>}
-                                                <br />In {window.isset(offer.location) && <> #{offer.location} - </>} {offer.country_name}
+                                                {(this.props.path == '/p2p/offers' || this.props.path == '/') && <i><b><Link to={'/accounts/profiles/' + offer.creator_username} style={{ textDecoration: 'none' }} target='_blank'>@{offer.creator_username}</Link></b> <small className='text-muted'>{window.isset(offer.creator_rating) ? (window.currencyAmountInput(offer.creator_rating) + '⭐') : ''} {window.isset(offer.creator_trades_as_buyer_stats) ? ('BTCR: ' + offer.creator_trades_as_buyer_stats.completed + '/' + offer.creator_trades_as_buyer_stats.total) : ''}</small></i>}
+                                                {this.props.path == '/p2p/my-offers' && <b><i>Offer to: {offer.offer_to}</i></b>}
+                                                <br /><small className="text-muted"><i>{this.props.auth_user && this.props.auth_user.username == offer.creator_username ? 'Last updated' : 'Posted'} {(new _DateTime(offer.updated_datetime).prettyDatetime())}</i></small>
                                             </td>
                                             {offer.offer_to === 'buy' ? <>
-                                                <td className="align-middle"><b>{offer.asset_code}</b> <i>for</i> <b>{offer.currency_code}</b>
-                                                    <br /><small className="text-muted"><i>{this.props.auth_user && this.props.auth_user.username == offer.creator_username ? 'Last updated' : 'Posted'} {(new _DateTime(offer.updated_datetime).prettyDatetime())}</i></small></td>
+                                                <td className="align-middle">
+                                                    <b>{offer.asset_code}</b> <i>for</i> <b>{offer.currency_code}</b>
+                                                    <br /><small className='text-muted'>🕑 Trade: {offer.buyer_cmplt_trade_mins_tmt} mins</small>
+                                                </td>
                                                 <td className="align-middle">{window.currencyAmountString(offer.offer_price, currency)}</td>
                                                 <td className="align-middle">
                                                     {window.currencyAmountString(offer.min_trade_purchase_amount, currency)} - {window.currencyAmountString(offer.max_trade_purchase_amount, currency)}
@@ -313,7 +315,10 @@ class OffersViewListScreen extends React.Component {
                                             </>}
                                             <td className="align-middle d-flex gap-2">
                                                 <img src={pymt_method.icon.uri} alt={pymt_method.name + " icon"} width="40" height="40" className="rounded-1" />
-                                                <span><b>{pymt_method.name}</b><br /><small className='text-muted'>🕑 Trade: {offer.buyer_cmplt_trade_mins_tmt} mins</small></span>
+                                                <span>
+                                                    <b>{pymt_method.name}</b>
+                                                    <br /><small className="text-muted">In {window.isset(offer.location) && <> #{offer.location} - </>} {offer.country_name}</small>
+                                                </span>
                                             </td>
                                             <td className="align-middle">
                                                 <div className="btn-group">

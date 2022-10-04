@@ -162,6 +162,8 @@ class OffersViewSingleScreen extends React.Component {
                                     <p>Offer price : {window.currencyAmountString(this.focused_offer.offer_price, currency)}</p>
                                     {this.focused_offer.offer_to == 'buy' && <p>Purchase limits per trade : {window.currencyAmountString(this.focused_offer.min_trade_purchase_amount, currency)} - {window.currencyAmountString(this.focused_offer.max_trade_purchase_amount, currency)}</p>}
                                     {this.focused_offer.offer_to == 'sell' && <p>Sale limits per trade : {window.assetValueString(this.focused_offer.min_trade_sell_value, asset)} - {window.assetValueString(this.focused_offer.max_trade_sell_value, asset)}</p>}
+                                    {this.focused_offer.offer_to == 'buy' && <p>Buyer indicated they'll process transaction in <b>{this.focused_offer.buyer_cmplt_trade_mins_tmt}</b> minutes</p>}
+                                    {this.focused_offer.offer_to == 'sell' && <p>Seller requests you to process transaction in <b>{this.focused_offer.buyer_cmplt_trade_mins_tmt}</b> minutes</p>}
                                     <p>Payment Method: {pymt_method.name}</p>
                                 </div>
                             </div>
@@ -180,11 +182,11 @@ class OffersViewSingleScreen extends React.Component {
                                                     {currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
                                                     <input
                                                         type="number" className="form-control" id="input_currency_amount"
-                                                        min={window.currencyAmountString(this.state.min_currency_amount, currency, false)}
-                                                        max={window.currencyAmountString(this.state.max_currency_amount, currency, false)}
-                                                        //step={this.focused_offer.pymt_method_slug == 'cash_in_person' ? currency.smallest_transactable_cash_denomination_amount : 1}
-                                                        value={window.currencyAmountString(this.state.currency_amount, currency, false, true)}
-                                                        onChange={el => this.currencyToAsset(el.target.value)}
+                                                        min={window.currencyAmountInput(this.state.min_currency_amount)}
+                                                        max={window.currencyAmountInput(this.state.max_currency_amount)}
+                                                        step={this.focused_offer.pymt_method_slug == 'cash_in_person' ? currency.smallest_transactable_cash_denomination_amount : 1}
+                                                        value={this.state.currency_amount}
+                                                        onChange={elem => this.currencyToAsset(elem.target.value)}
                                                     />
                                                     {!currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
                                                 </div>
@@ -197,11 +199,11 @@ class OffersViewSingleScreen extends React.Component {
                                                     <input
                                                         disabled
                                                         type="number" className="form-control" id="input_asset_value"
-                                                        min={window.assetValueString(this.state.min_asset_value, asset, false)}
-                                                        max={window.assetValueString(this.focused_offer.offer_to == 'sell' ? this.state.max_asset_value : Math.min(this.state.max_asset_value, (this.props.auth_user ? (this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value : this.state.max_asset_value)), asset, false)}
+                                                        min={window.assetValueInput(this.state.min_asset_value, asset)}
+                                                        max={window.assetValueInput(this.focused_offer.offer_to == 'sell' ? this.state.max_asset_value : Math.min(this.state.max_asset_value, (this.props.auth_user ? (this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value : this.state.max_asset_value)), asset)}
                                                         step={asset.smallest_display_unit}
-                                                        value={window.assetValueString(this.state.asset_value, asset, false)}
-                                                        onChange={el => this.assetToCurrency(el.target.value)}
+                                                        value={window.assetValueInput(this.state.asset_value, asset)}
+                                                        onChange={elem => this.assetToCurrency(elem.target.value)}
                                                     />
                                                     <span className="input-group-text">{asset.code}</span>
                                                 </div>
@@ -223,7 +225,7 @@ class OffersViewSingleScreen extends React.Component {
                                                     <input type="text" className="form-control" id={'input_pymt_method_detail_' + detail_key}
                                                         required
                                                         value={this.state.input.pymt_details[detail_key]}
-                                                        onChange={e => this.handleInputChange('pymt_details.' + detail_key, e.target.value, true)}
+                                                        onChange={elem => this.handleInputChange('pymt_details.' + detail_key, elem.target.value, true)}
                                                     />
                                                     <label htmlFor={'input_pymt_method_detail_' + detail_key} className="form-label">{detail_key.replace(/_/g, " ").capitalize()}</label>
                                                 </div>
@@ -263,7 +265,7 @@ class OffersViewSingleScreen extends React.Component {
                                                             className={"form-control rounded-3" + (this.state.input.source_user_password.failedValidation() ? ' is-invalid' : '')}
                                                             id="input_source_user_password"
                                                             value={this.state.input.source_user_password + ''}
-                                                            onChange={e => this.handleInputChange('source_user_password', e.target.value)}
+                                                            onChange={elem => this.handleInputChange('source_user_password', elem.target.value)}
                                                             required={this.state.source_user_password_prompt_open}
                                                             placeholder="Pasword"
                                                         />

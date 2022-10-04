@@ -144,8 +144,8 @@ class DepositTokensViewListScreen extends React.Component {
 
                             <div className="col">
                                 <label htmlFor="input__status" className="form-label">Status</label>
-                                <select className="form-select" id="input__status" value={this.state.input._status} onChange={rr => {
-                                    this.handleInputChange('_status', rr.target.value, true); setTimeout(() => {
+                                <select className="form-select" id="input__status" value={this.state.input._status} onChange={elem => {
+                                    this.handleInputChange('_status', elem.target.value, true); setTimeout(() => {
                                         this.populateScreenWithItems()
                                     }, 0);
                                 }} >

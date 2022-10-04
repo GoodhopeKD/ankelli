@@ -137,7 +137,7 @@ class DepositTokensCreateNewScreen extends React.Component {
                                         <input type="number" className="form-control" id={'input_currency_amount'}
                                             required
                                             value={this.state.input.currency_amount}
-                                            onChange={e => this.handleInputChange('currency_amount', e.target.value)}
+                                            onChange={elem => this.handleInputChange('currency_amount', elem.target.value)}
                                         />
                                     </div>
 
@@ -166,8 +166,8 @@ class DepositTokensCreateNewScreen extends React.Component {
                                             required
                                             value={this.state.input.asset_value}
                                             min={asset.smallest_display_unit}
-                                            max={window.assetValueString((this.state.ankelli_reserves_user_asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset, false)}
-                                            onChange={e => this.handleInputChange('asset_value', e.target.value)}
+                                            max={window.assetValueInput((this.state.ankelli_reserves_user_asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}
+                                            onChange={elem => this.handleInputChange('asset_value', elem.target.value)}
                                         />
                                     </div>
 
@@ -200,7 +200,7 @@ class DepositTokensCreateNewScreen extends React.Component {
                                                             className={"form-control rounded-3" + (this.state.input.source_user_password.failedValidation() ? ' is-invalid' : '')}
                                                             id="input_source_user_password"
                                                             value={this.state.input.source_user_password + ''}
-                                                            onChange={e => this.handleInputChange('source_user_password', e.target.value)}
+                                                            onChange={elem => this.handleInputChange('source_user_password', elem.target.value)}
                                                             required={this.state.source_user_password_prompt_open}
                                                             placeholder="Pasword"
                                                         />

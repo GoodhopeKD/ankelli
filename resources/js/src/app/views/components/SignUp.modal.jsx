@@ -99,7 +99,7 @@ class SignUpModal extends React.Component {
                                         minLength={_Input.validation_param_lengths.reg_token.min_length}
                                         maxLength={_Input.validation_param_lengths.reg_token.max_length}
                                         value={this.state.input.reg_token + ''}
-                                        onChange={e => this.handleInputChange('reg_token', e.target.value)}
+                                        onChange={elem => this.handleInputChange('reg_token', elem.target.value)}
                                         required={!this.props.sysconfig_params_data.open_reg_enabled}
                                         placeholder="Registration token"
                                     />
@@ -115,7 +115,7 @@ class SignUpModal extends React.Component {
                                     minLength={_Input.validation_param_lengths.username.min_length}
                                     maxLength={_Input.validation_param_lengths.username.max_length}
                                     value={this.state.input.username + ''}
-                                    onChange={e => this.handleInputChange('username', e.target.value)}
+                                    onChange={elem => this.handleInputChange('username', elem.target.value)}
                                     required
                                     placeholder="Username"
                                 />
@@ -129,7 +129,7 @@ class SignUpModal extends React.Component {
                                     minLength={_Input.validation_param_lengths.email_address.min_length}
                                     maxLength={_Input.validation_param_lengths.email_address.max_length}
                                     value={this.state.input.email_address + ''}
-                                    onChange={e => this.handleInputChange('email_address', e.target.value)}
+                                    onChange={elem => this.handleInputChange('email_address', elem.target.value)}
                                     required
                                     placeholder="Email address"
                                 />
@@ -143,7 +143,7 @@ class SignUpModal extends React.Component {
                                     minLength={_Input.validation_param_lengths.password.min_length}
                                     maxLength={_Input.validation_param_lengths.password.max_length}
                                     value={this.state.input.password + ''}
-                                    onChange={e => this.handleInputChange('password', e.target.value)}
+                                    onChange={elem => this.handleInputChange('password', elem.target.value)}
                                     required
                                     placeholder="Password"
                                     style={{ paddingRight: 40 }}
@@ -159,7 +159,7 @@ class SignUpModal extends React.Component {
                                     minLength={_Input.validation_param_lengths.password.min_length}
                                     maxLength={_Input.validation_param_lengths.password.max_length}
                                     value={this.state.input.password_confirmation + ''}
-                                    onChange={e => this.handleInputChange('password_confirmation', e.target.value)}
+                                    onChange={elem => this.handleInputChange('password_confirmation', elem.target.value)}
                                     required
                                     placeholder="Password again"
                                     style={{ paddingRight: 40 }}

@@ -225,7 +225,7 @@ return new class extends Migration
                 'creator_username' => 'system',
             ],
             [
-                'key_name' => 'Platform fee factor on direct onchain transactions',
+                'key_name' => 'Platform fee factor on direct onchain transfers',
                 'key_slug' => 'drct_xfer_onchain_txn_fee_fctr',
                 'value' => 0.01,
                 'value_type' => 'float',
@@ -234,8 +234,17 @@ return new class extends Migration
                 'creator_username' => 'system',
             ],
             [
-                'key_name' => 'Platform fee factor on direct offchain transactions',
+                'key_name' => 'Platform fee factor on direct offchain transfers',
                 'key_slug' => 'drct_xfer_offchain_txn_fee_fctr',
+                'value' => 0.01,
+                'value_type' => 'float',
+                'parent_table' => '__users',
+                'parent_uid' => 'system',
+                'creator_username' => 'system',
+            ],
+            [
+                'key_name' => 'Platform fee factor on withdrawals',
+                'key_slug' => 'withdrawal_txn_fee_fctr',
                 'value' => 0.01,
                 'value_type' => 'float',
                 'parent_table' => '__users',

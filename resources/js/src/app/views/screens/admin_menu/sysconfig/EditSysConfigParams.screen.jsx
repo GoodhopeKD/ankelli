@@ -3,13 +3,29 @@ import { connect } from 'react-redux'
 
 import SideBar from 'app/views/components/SideBar'
 
-import { _User, _PrefItem } from 'app/controller'
+import { _User, _PrefItem, _Input } from 'app/controller'
 
 class EditSysConfigParamsScreen extends React.Component {
 
     state = {
         sysconfig_params: [],
         sysconfig_params_enum_options: [],
+        input: {
+            password: new _Input()
+        }
+    }
+
+    handleInputChange(field = 'field.deep_field', value, use_raw = false) {
+        console.log(value)
+        const input = this.state.input
+        const fields = field.split('.')
+        const val = use_raw ? value : new _Input(value)
+        if (fields.length === 1) {
+            input[fields] = val
+        } else {
+            input[fields[0]][fields[1]] = val
+        }
+        this.setState({ input })
     }
 
     componentDidMount = async () => {
@@ -74,68 +90,69 @@ class EditSysConfigParamsScreen extends React.Component {
                                                                     <h5 className="modal-title" >Modify system param</h5>
                                                                     <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
                                                                 </div>
-                                                                <div className="modal-body">
-                                                                    <div className="mb-3">
-                                                                        {param.value_type == "boolean" && <>
-                                                                            <div className="d-flex form-control">
-                                                                                <label htmlFor={"input_param_" + index} className="col">{param.key_name}</label>
-                                                                                <div className="col form-check form-switch d-flex justify-content-end">
-                                                                                    <input
-                                                                                        type="checkbox"
-                                                                                        className="form-check-input"
-                                                                                        id={"input_param_" + index}
-                                                                                        //checked={param.value}
-                                                                                        //onChange={() => { }}
-                                                                                        defaultChecked={param.value}
-                                                                                    />
+                                                                <form onSubmit={e => { e.preventDefault(); }}>
+                                                                    <div className="modal-body">
+                                                                        <div className="mb-3">
+
+                                                                            {param.value_type == "boolean" && <>
+                                                                                <div className="d-flex form-control">
+                                                                                    <label htmlFor={"input_param_" + index} className="col">{param.key_name}</label>
+                                                                                    <div className="col form-check form-switch d-flex justify-content-end">
+                                                                                        <input
+                                                                                            type="checkbox"
+                                                                                            className="form-check-input"
+                                                                                            id={"input_param_" + index}
+                                                                                            value={window.isset(this.state.input[param.key_slug]) ? this.state.input[param.key_slug] : param.value}
+                                                                                            onChange={elem => this.handleInputChange(param.key_slug, elem.target.checked, true)}
+                                                                                        />
+                                                                                    </div>
                                                                                 </div>
-                                                                            </div>
-                                                                        </>}
-                                                                        {param.value_type.includes('enum:') && <>
-                                                                            <label htmlFor={"input_param_" + index}>{param.key_name}</label>
-                                                                            <select
-                                                                                className="form-select"
-                                                                                id={"input_param_" + index}
-                                                                                //value={this.state.input.offer_to}
-                                                                                //onChange={rr => this.handleInputChange('offer_to', rr.target.value, true)}
-                                                                                defaultValue={param.value}
-                                                                            >
-                                                                                {this.state.sysconfig_params_enum_options.find(option => option.slug == param.value_type.split('enum:')[1]).options.map((option, sub_index) => {
-                                                                                    return <option key={index + '-' + sub_index} value={option.slug} >{option.name}</option>
-                                                                                })}
-                                                                            </select>
-                                                                        </>}
-                                                                        {(param.value_type == 'integer' || param.value_type == 'float') && <>
-                                                                            <label htmlFor={"input_param_" + index}>{param.key_name}</label>
+                                                                            </>}
+                                                                            {param.value_type.includes('enum:') && <>
+                                                                                <label htmlFor={"input_param_" + index}>{param.key_name}</label>
+                                                                                <select
+                                                                                    className="form-select"
+                                                                                    id={"input_param_" + index}
+                                                                                    value={this.state.input[param.key_slug] ?? param.value}
+                                                                                    onChange={elem => this.handleInputChange(param.key_slug, elem.target.value, true)}
+                                                                                >
+                                                                                    {this.state.sysconfig_params_enum_options.find(option => option.slug == param.value_type.split('enum:')[1]).options.map((option, sub_index) => {
+                                                                                        return <option key={index + '-' + sub_index} value={option.slug} >{option.name}</option>
+                                                                                    })}
+                                                                                </select>
+                                                                            </>}
+                                                                            {(param.value_type == 'integer' || param.value_type == 'float') && <>
+                                                                                <label htmlFor={"input_param_" + index}>{param.key_name}</label>
+                                                                                <input
+                                                                                    type='number'
+                                                                                    className="form-control"
+                                                                                    id={"input_param_" + index}
+                                                                                    value={(this.state.input[param.key_slug] ?? param.value) + ''}
+                                                                                    onChange={elem => this.handleInputChange(param.key_slug, elem.target.value)}
+                                                                                />
+                                                                            </>}
+                                                                        </div>
+                                                                        <div >
+                                                                            <label htmlFor={"input_password_" + index}>Enter your password to confirm update</label>
                                                                             <input
-                                                                                type='number'
-                                                                                className="form-control"
-                                                                                id={"input_param_" + index}
-                                                                                //value={this.state.input.token + ''}
-                                                                                //onChange={e => this.handleInputChange('token', e.target.value)}
-                                                                                defaultValue={param.value}
+                                                                                type="password"
+                                                                                className={"form-control"}
+                                                                                id={"input_password_" + index}
+                                                                                value={this.state.input.password + ''}
+                                                                                onChange={elem => this.handleInputChange('password', elem.target.value)}
+                                                                                required
+                                                                                disabled={!(window.isset(this.state.input[param.key_slug]) && (this.state.input[param.key_slug] + '' != param.value + ''))}
+                                                                                placeholder="Password"
+                                                                                style={{ paddingRight: 70 }}
                                                                             />
-                                                                        </>}
+                                                                            <span className="btn btn-sm" style={{ position: 'absolute', bottom: 20, right: 20 }} onClick={() => document.getElementById("input_password_" + index).setAttribute('type', document.getElementById("input_password_" + index).getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
+                                                                        </div>
                                                                     </div>
-                                                                    <div >
-                                                                        <label htmlFor={"input_password_" + index}>Enter your password to confirm update</label>
-                                                                        <input
-                                                                            type="password"
-                                                                            className={"form-control"}
-                                                                            id={"input_password_" + index}
-                                                                            //value={this.state.input.password + ''}
-                                                                            //onChange={e => this.handleInputChange('password', e.target.value)}
-                                                                            required
-                                                                            placeholder="Password"
-                                                                            style={{ paddingRight: 70 }}
-                                                                        />
-                                                                        <span className="btn btn-sm" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById("input_password_" + index).setAttribute('type', document.getElementById("input_password_" + index).getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
+                                                                    <div className="modal-footer justify-content-between">
+                                                                        <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                                        <button type="submit" className="btn btn-primary" formNoValidate={param.value_type == 'float'} >Save</button>
                                                                     </div>
-                                                                </div>
-                                                                <div className="modal-footer justify-content-between">
-                                                                    <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                                                                    <button type="button" className="btn btn-primary" onClick={() => { }}>Save</button>
-                                                                </div>
+                                                                </form>
                                                             </div>
                                                         </div>
                                                     </div>

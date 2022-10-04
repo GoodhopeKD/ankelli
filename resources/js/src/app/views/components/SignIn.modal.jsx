@@ -87,7 +87,7 @@ export default withRouter(class SignInModal extends React.Component {
                                 minLength={_Input.validation_param_lengths.username.min_length}
                                 maxLength={_Input.validation_param_lengths.username.max_length}
                                 value={this.state.input.username + ''}
-                                onChange={e => this.handleInputChange('username', e.target.value)}
+                                onChange={elem => this.handleInputChange('username', elem.target.value)}
                                 required
                                 placeholder="Username"
                             />
@@ -101,7 +101,7 @@ export default withRouter(class SignInModal extends React.Component {
                                 minLength={_Input.validation_param_lengths.password.min_length}
                                 maxLength={_Input.validation_param_lengths.password.max_length}
                                 value={this.state.input.password + ''}
-                                onChange={e => this.handleInputChange('password', e.target.value)}
+                                onChange={elem => this.handleInputChange('password', elem.target.value)}
                                 required
                                 placeholder="Password"
                                 style={{ paddingRight: 40 }}

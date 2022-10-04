@@ -35,6 +35,8 @@ class _TradeResourceCollection extends ResourceCollection
                     'created_datetime' => $_this->created_datetime,
                     'creator_username' => $_this->creator_username,
 
+                    'peer_rating' => $_this->peer_rating_f(),
+                    'peer_trades_as_buyer_stats' => $_this->peer_trades_as_buyer_stats_f(),
                     'progress' => $_this->progress_f(),
                     'mins_remaining' => $_this->mins_remaining_f(),
                     'completion_review_on_trade_creator' => $_this->completion_review_on_trade_creator_f(),

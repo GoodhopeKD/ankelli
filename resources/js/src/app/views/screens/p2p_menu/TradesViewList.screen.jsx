@@ -119,7 +119,7 @@ class TradesViewListScreen extends React.Component {
                 <div className="d-flex gap-2">
                     <div className="d-flex gap-2">
                         <label htmlFor="input__status" className="align-self-center">Status</label>
-                        <select className="form-select" id="input__status" value={this.state.input._status} onChange={rr => { this.handleInputChange('_status', rr.target.value, true); this.should_load_items = true; this.populateScreenWithItems() }} >
+                        <select className="form-select" id="input__status" value={this.state.input._status} onChange={elem => { this.handleInputChange('_status', elem.target.value, true); this.should_load_items = true; this.populateScreenWithItems() }} >
                             <option value="all">All</option>
                             <option value="active" >Active</option>
                             <option value="cancelled" >Cancelled</option>
@@ -137,7 +137,7 @@ class TradesViewListScreen extends React.Component {
                             <thead>
                                 <tr>
                                     <th scope="col">Trade peer</th>
-                                    <th scope="col">You're trading</th>
+                                    <th scope="col">Trading</th>
                                     <th scope="col">Amount</th>
                                     <th scope="col">Asset value</th>
                                     <th scope="col">Pay via</th>
@@ -167,20 +167,26 @@ class TradesViewListScreen extends React.Component {
                                         const trade_closed = ['completed', 'cancelled'].includes(trade._status)
 
                                         return <tr key={index} className={((auth_user_is_buyer && trade.buyer_opened_datetime == null) ? ' table-secondary' : '')} >
-                                            <td className="align-middle"><i><Link to={'/accounts/profiles/' + trade_peer_username} style={{ textDecoration: 'none' }} target='_blank'>@{trade_peer_username}</Link></i><br />In {window.isset(trade.location) && <> #{trade.location} - </>} {trade.country_name}</td>
+                                            <td className="align-middle">
+                                                <i><Link to={'/accounts/profiles/' + trade_peer_username} style={{ textDecoration: 'none' }} target='_blank'><b>@{trade_peer_username}</b></Link> <small className='text-muted'>{window.isset(trade.peer_rating) ? (window.currencyAmountInput(trade.peer_rating) + '⭐') : ''} {window.isset(trade.peer_trades_as_buyer_stats) ? ('BTCR: ' + trade.peer_trades_as_buyer_stats.completed + '/' + trade.peer_trades_as_buyer_stats.total) : ''}</small></i>
+                                                <br /><small className="text-muted"><i>Last activity: {window.ucfirst(trade.last_activity_datetime.prettyDatetime())}</i></small>
+                                            </td>
                                             <td className="align-middle">
                                                 {auth_user_is_buyer ? <>
                                                     <b>{trade.currency_code}</b> <i>for</i> <b>{trade.asset_code}</b> <small className="text-muted">(buying)</small>
                                                 </> : <>
                                                     <b>{trade.asset_code}</b> <i>for</i> <b>{trade.currency_code}</b> <small className="text-muted">(selling)</small>
                                                 </>}
-                                                <br /><small className="text-muted"><i>Last activity: {window.ucfirst(trade.last_activity_datetime.prettyDatetime())}</i></small>
+                                                {!trade_closed && <><br /><small className='text-muted'>🕑 {(trade.mins_remaining > 0) ? trade.mins_remaining + ' mins remaining' : -1 * trade.mins_remaining + ' mins late'}</small></>}
                                             </td>
                                             <td className="align-middle">{window.currencyAmountString(trade.currency_amount, currency)}</td>
                                             <td className="align-middle">{window.assetValueString(trade.asset_value, asset)}</td>
-                                            <td className={(trade_closed ? 'align-middle' : "d-flex gap-2")}>
-                                                <img src={pymt_method.icon.uri} alt={pymt_method.name + " icon"} width="40" height="40" className={"rounded-1" + (trade_closed ? " me-2" : '')} />
-                                                <span><b>{pymt_method.name}</b>{!trade_closed && <><br /><small className='text-muted'>🕑 {(trade.mins_remaining > 0) ? trade.mins_remaining + ' mins remaining' : -1 * trade.mins_remaining + ' mins late'}</small></>}</span>
+                                            <td className="d-flex gap-2">
+                                                <img src={pymt_method.icon.uri} alt={pymt_method.name + " icon"} width="40" height="40" className="rounded-1" />
+                                                <span>
+                                                    <b>{pymt_method.name}</b>
+                                                    <br /><small className="text-muted">In {window.isset(trade.location) && <> #{trade.location} - </>} {trade.country_name}</small>
+                                                </span>
                                             </td>
                                             <td className="align-middle" width="100">
                                                 <button type="button" className={"btn w-100 btn-sm btn-outline-" + btn_class}>{window.ucfirst(trade._status)}</button>

@@ -147,7 +147,7 @@ class DepositTokenTopupScreen extends React.Component {
                                         <input type="text" className="form-control" id={'input_token'}
                                             required
                                             value={this.state.input.token}
-                                            onChange={e => this.handleInputChange('token', e.target.value, true)}
+                                            onChange={elem => this.handleInputChange('token', elem.target.value, true)}
                                         />
                                     </div>
 

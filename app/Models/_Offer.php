@@ -86,11 +86,6 @@ class _Offer extends Model
         return _User::firstWhere('username',$this->creator_username)->rating_f();
     }
 
-    public function creator_completion_rate_f()
-    {
-        return _User::firstWhere('username',$this->creator_username)->completion_rate_f();
-    }
-
     public function creator_trades_as_buyer_stats_f()
     {
         return _User::firstWhere('username',$this->creator_username)->trades_as_buyer_stats_f();

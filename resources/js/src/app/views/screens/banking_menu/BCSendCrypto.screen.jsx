@@ -136,7 +136,7 @@ class BCSendCryptoScreen extends React.Component {
                                                         type="text" className="form-control" id="input_destination_user_username"
                                                         value={this.state.input.destination_user_username + ''}
                                                         required={this.state.input.send_to == 'user'}
-                                                        onChange={e => this.handleInputChange('destination_user_username', e.target.value)}
+                                                        onChange={elem => this.handleInputChange('destination_user_username', elem.target.value)}
                                                     />
                                                 </div>
                                             </div>
@@ -149,7 +149,7 @@ class BCSendCryptoScreen extends React.Component {
                                                         type="text" className="form-control" id="input_destination_blockchain_address"
                                                         value={this.state.input.destination_blockchain_address + ''}
                                                         required={this.state.input.send_to == 'address'}
-                                                        onChange={e => this.handleInputChange('destination_blockchain_address', e.target.value)}
+                                                        onChange={elem => this.handleInputChange('destination_blockchain_address', elem.target.value)}
                                                     />
                                                 </div>
                                             </div>
@@ -165,10 +165,10 @@ class BCSendCryptoScreen extends React.Component {
                                                 type="number" className="form-control" id="input_asset_value"
                                                 min={asset.smallest_display_unit}
                                                 required
-                                                max={parseFloat(window.assetValueString(((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value) / (1 + this.props.sysconfig_params.trade_txn_fee_fctr), asset, false))}
+                                                max={window.assetValueInput(((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value) / (1 + this.props.sysconfig_params.trade_txn_fee_fctr), asset)}
                                                 step={asset.smallest_display_unit}
-                                                value={this.state.input.asset_value ? parseFloat(window.assetValueString(this.state.input.asset_value, asset, false)) : 0}
-                                                onChange={e => this.handleInputChange('asset_value', e.target.value)}
+                                                value={window.assetValueInput(this.state.input.asset_value, asset)}
+                                                onChange={elem => this.handleInputChange('asset_value', elem.target.value)}
                                             />
                                         </div>
                                     </div>
@@ -185,7 +185,7 @@ class BCSendCryptoScreen extends React.Component {
                                             type="text" className="form-control" id="input_recipient_note"
                                             value={this.state.input.recipient_note + ''}
                                             required
-                                            onChange={e => this.handleInputChange('recipient_note', e.target.value)}
+                                            onChange={elem => this.handleInputChange('recipient_note', elem.target.value)}
                                         />
                                     </div>
                                 </div>
@@ -211,7 +211,7 @@ class BCSendCryptoScreen extends React.Component {
                                                         className={"form-control rounded-3" + (this.state.input.source_user_password.failedValidation() ? ' is-invalid' : '')}
                                                         id="input_source_user_password"
                                                         value={this.state.input.source_user_password + ''}
-                                                        onChange={e => this.handleInputChange('source_user_password', e.target.value)}
+                                                        onChange={elem => this.handleInputChange('source_user_password', elem.target.value)}
                                                         required={this.state.source_user_password_prompt_open}
                                                         placeholder="Pasword"
                                                     />

@@ -156,8 +156,8 @@ export default class RegTokensViewListScreen extends React.Component {
 
                             <div>
                                 <label htmlFor="input__status" className="form-label">Status</label>
-                                <select className="form-select" id="input__status" value={this.state.input._status} onChange={rr => {
-                                    this.handleInputChange('_status', rr.target.value, true); setTimeout(() => {
+                                <select className="form-select" id="input__status" value={this.state.input._status} onChange={elem => {
+                                    this.handleInputChange('_status', elem.target.value, true); setTimeout(() => {
                                         this.populateScreenWithItems()
                                     }, 0);
                                 }} >
@@ -252,7 +252,7 @@ export default class RegTokensViewListScreen extends React.Component {
                                                                 className={"form-control rounded-3" + (this.state.input.token.failedValidation() ? ' is-invalid' : '')}
                                                                 id="input_token"
                                                                 value={this.state.input.token + ''}
-                                                                onChange={e => this.handleInputChange('token', e.target.value)}
+                                                                onChange={elem => this.handleInputChange('token', elem.target.value)}
                                                                 placeholder="Reg token"
                                                             />
                                                             <label htmlFor="input_token">Reg token (Leave empty to let system generate)</label>

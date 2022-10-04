@@ -40,7 +40,7 @@ window.isset = function (v) {
 	return !(v === null || v === undefined)
 }
 
-window.padNumber = (number = undefined) => {
+window.padUserAvatarImageId = (number = undefined) => {
 	if (!number) return undefined
 	switch ((number + '').length) {
 		case 1: return '00' + number
@@ -49,18 +49,24 @@ window.padNumber = (number = undefined) => {
 	}
 }
 
-window.roundTo2dp = (value) => {
-	return (Math.round((parseFloat(value) + Number.EPSILON) * 100) / 100).toLocaleString('zw-ZW')
+window.currencyAmountInput = (amount, round_down = false) => {
+	if (!window.isNumeric(amount)) return 0
+	const rounder = round_down ? Math.floor : Math.round
+	return rounder((parseFloat(amount) + Number.EPSILON) * 100) / 100
 }
 
 window.currencyAmountString = (amount, currency = { symbol: '' }, show_symbol = true, round_down = false) => {
+	return (currency.symbol_before_number ? (show_symbol ? currency.symbol : '') : '') + window.currencyAmountInput(amount, round_down).toLocaleString('zw-ZW') + (currency.symbol_before_number ? '' : (show_symbol ? currency.symbol : ''))
+}
+
+window.assetValueInput = (value, asset = { smallest_display_unit: 0.01 }, round_down = false) => {
+	if (!window.isNumeric(value)) return 0
 	const rounder = round_down ? Math.floor : Math.round
-	return (currency.symbol_before_number ? (show_symbol ? currency.symbol : '') : '') + (rounder((parseFloat(amount) + Number.EPSILON) * 100) / 100).toLocaleString('zw-ZW') + (currency.symbol_before_number ? '' : (show_symbol ? currency.symbol : ''))
+	return rounder((parseFloat(value)) * (1 / asset.smallest_display_unit)) / (1 / asset.smallest_display_unit)
 }
 
 window.assetValueString = (value, asset = { code: '', smallest_display_unit: 0.01 }, show_code = true, round_down = false) => {
-	const rounder = round_down ? Math.floor : Math.round
-	return (rounder((parseFloat(value)) * (1 / asset.smallest_display_unit)) / (1 / asset.smallest_display_unit)) + (show_code ? ' ' + asset.code : '')
+	return window.assetValueInput(value, asset, round_down) + (show_code ? ' ' + asset.code : '')
 }
 
 window.instanceToRespObj = (obj) => {

@@ -114,7 +114,7 @@ class UserNotificationsViewListScreen extends React.Component {
                 <div className="d-flex gap-2">
                     <div className="d-flex gap-2">
                         <label htmlFor="input__status" className="align-self-center">Status</label>
-                        <select className="form-select" id="input__status" value={this.state.input._status} onChange={rr => { this.handleInputChange('_status', rr.target.value, true); this.populateScreenWithItems() }} >
+                        <select className="form-select" id="input__status" value={this.state.input._status} onChange={elem => { this.handleInputChange('_status', elem.target.value, true); this.populateScreenWithItems() }} >
                             <option value="all">All</option>
                             <option value="read" >Read</option>
                             <option value="unread" >Unread</option>

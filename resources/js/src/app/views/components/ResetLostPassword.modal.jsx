@@ -88,7 +88,7 @@ export default withRouter(class ResetLostPasswordModal extends React.Component {
                                 minLength={_Input.validation_param_lengths.username.min_length}
                                 maxLength={_Input.validation_param_lengths.username.max_length}
                                 value={this.state.input.username + ''}
-                                onChange={e => this.handleInputChange('username', e.target.value)}
+                                onChange={elem => this.handleInputChange('username', elem.target.value)}
                                 required
                                 placeholder="Username"
                             />
@@ -102,7 +102,7 @@ export default withRouter(class ResetLostPasswordModal extends React.Component {
                                 minLength={_Input.validation_param_lengths.verif_token.min_length}
                                 maxLength={_Input.validation_param_lengths.verif_token.max_length}
                                 value={this.state.input.password_reset_token + ''}
-                                onChange={e => this.handleInputChange('password_reset_token', e.target.value)}
+                                onChange={elem => this.handleInputChange('password_reset_token', elem.target.value)}
                                 required
                                 placeholder="Password reset token"
                             />
@@ -116,7 +116,7 @@ export default withRouter(class ResetLostPasswordModal extends React.Component {
                                 minLength={_Input.validation_param_lengths.password.min_length}
                                 maxLength={_Input.validation_param_lengths.password.max_length}
                                 value={this.state.input.password + ''}
-                                onChange={e => this.handleInputChange('password', e.target.value)}
+                                onChange={elem => this.handleInputChange('password', elem.target.value)}
                                 required
                                 placeholder="Password"
                                 style={{ paddingRight: 40 }}
@@ -132,7 +132,7 @@ export default withRouter(class ResetLostPasswordModal extends React.Component {
                                 minLength={_Input.validation_param_lengths.password.min_length}
                                 maxLength={_Input.validation_param_lengths.password.max_length}
                                 value={this.state.input.password_confirmation + ''}
-                                onChange={e => this.handleInputChange('password_confirmation', e.target.value)}
+                                onChange={elem => this.handleInputChange('password_confirmation', elem.target.value)}
                                 required
                                 placeholder="Password again"
                                 style={{ paddingRight: 40 }}

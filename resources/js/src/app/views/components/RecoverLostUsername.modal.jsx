@@ -79,7 +79,7 @@ export default withRouter(class RecoverLostUsernameModal extends React.Component
                                 minLength={_Input.validation_param_lengths[this.state.input.recipient_addon_name].min_length}
                                 maxLength={_Input.validation_param_lengths[this.state.input.recipient_addon_name].max_length}
                                 value={this.state.input.recipient_addon_value + ''}
-                                onChange={e => this.handleInputChange('recipient_addon_value', e.target.value)}
+                                onChange={elem => this.handleInputChange('recipient_addon_value', elem.target.value)}
                                 required
                                 placeholder={this.state.input.recipient_addon_name === "email_address" ? "Email address" : "Phone number"}
                                 style={{ paddingRight: 40 }}

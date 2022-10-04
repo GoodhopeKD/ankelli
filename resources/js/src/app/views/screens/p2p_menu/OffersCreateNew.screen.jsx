@@ -21,17 +21,17 @@ class OffersCreateNewScreen extends React.Component {
 
         asset_code: 'USDT',
         currency_code: 'USD',
-        offer_price: new _Input(),
+        offer_price: new _Input(0),
 
-        min_trade_purchase_amount: new _Input(),
-        max_trade_purchase_amount: new _Input(),
-        offer_total_purchase_amount: new _Input(),
+        min_trade_purchase_amount: new _Input(0),
+        max_trade_purchase_amount: new _Input(0),
+        offer_total_purchase_amount: new _Input(0),
 
-        min_trade_sell_value: new _Input(),
-        max_trade_sell_value: new _Input(),
-        offer_total_sell_value: new _Input(),
+        min_trade_sell_value: new _Input(0),
+        max_trade_sell_value: new _Input(0),
+        offer_total_sell_value: new _Input(0),
 
-        buyer_cmplt_trade_mins_tmt: new _Input(),
+        buyer_cmplt_trade_mins_tmt: new _Input(30),
 
         note: new _Input(),
     }
@@ -140,7 +140,7 @@ class OffersCreateNewScreen extends React.Component {
         const currency = this.props.datalists.active_currencies[this.state.input.currency_code]
         const pymt_method = this.props.datalists.active_pymt_methods[this.state.input.pymt_method_slug]
 
-        const max_offerable_asset_value = !window.isset(this.props.auth_user) ? null : (1 - this.props.sysconfig_params.trade_txn_fee_fctr) * parseFloat(window.assetValueString((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset, false))
+        const max_offerable_asset_value = !window.isset(this.props.auth_user) ? null : (1 - this.props.sysconfig_params.trade_txn_fee_fctr) * window.assetValueInput((this.props.auth_user.asset_accounts.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container-xl py-4 ">
@@ -206,7 +206,7 @@ class OffersCreateNewScreen extends React.Component {
                                                 <input type="text" className="form-control" id={'input_pymt_method_detail_' + detail_key}
                                                     required
                                                     value={this.state.input.pymt_details[detail_key]}
-                                                    onChange={e => this.handleInputChange('pymt_details.' + detail_key, e.target.value, true)}
+                                                    onChange={elem => this.handleInputChange('pymt_details.' + detail_key, elem.target.value, true)}
                                                 />
                                                 <label htmlFor={'input_pymt_method_detail_' + detail_key} className="form-label">{detail_key.replace(/_/g, " ").capitalize()}</label>
                                             </div>
@@ -225,10 +225,10 @@ class OffersCreateNewScreen extends React.Component {
                                         <span className="input-group-text">#</span>
                                         <input
                                             type="text" className="form-control" id="input_location"
-                                            value={this.state.input.location + ''}
+                                            value={this.state.input.location.toRaw()}
                                             placeholder='Harare CBD'
                                             required
-                                            onChange={e => this.handleInputChange('location', e.target.value)}
+                                            onChange={elem => this.handleInputChange('location', elem.target.value)}
                                         />
                                     </div>
                                 </div>
@@ -275,14 +275,14 @@ class OffersCreateNewScreen extends React.Component {
                                 </div>
                             </div>
 
-                            <div className="accordion mb-3" id="accordion_offer_to_sell_calculator">
+                            <div className="accordion mb-3" id="accordion_input_info">
                                 <div className="accordion-item">
                                     <h4 className="accordion-header" >
-                                        <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_calculation_info" >
-                                            Calculation info
+                                        <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_input_info" >
+                                            Input info
                                         </button>
                                     </h4>
-                                    <div id="collapse_calculation_info" className="accordion-collapse collapse show" data-bs-parent="#accordion_offer_to_sell_calculator" >
+                                    <div id="collapse_input_info" className="accordion-collapse collapse show" data-bs-parent="#accordion_input_info" >
                                         <div className="accordion-body pb-0">
                                             {this.state.input.offer_to == 'buy' && <>
                                                 <p>The asset value you get is calculated as follows:</p>
@@ -306,9 +306,9 @@ class OffersCreateNewScreen extends React.Component {
                                         type="number" className="form-control" id="input_offer_price"
                                         min="0.01"
                                         step="0.01"
-                                        value={this.state.input.offer_price + ''}
+                                        value={window.currencyAmountInput(this.state.input.offer_price.toRaw())}
                                         required
-                                        onChange={e => this.handleInputChange('offer_price', e.target.value)}
+                                        onChange={elem => this.handleInputChange('offer_price', elem.target.value)}
                                     />
                                     {!currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
                                 </div>
@@ -324,12 +324,12 @@ class OffersCreateNewScreen extends React.Component {
                                             type="number" className="form-control" id="input_min_trade_purchase_amount"
                                             min={this.state.input.pymt_method_slug == 'cash_in_person' ? currency.min_transactable_cash_amount : "0.01"}
                                             step={this.state.input.pymt_method_slug == 'cash_in_person' ? currency.smallest_transactable_cash_denomination_amount : "0.01"}
-                                            value={this.state.input.min_trade_purchase_amount + ''}
+                                            value={window.currencyAmountInput(this.state.input.min_trade_purchase_amount.toRaw())}
                                             required
-                                            onChange={e => this.handleInputChange('min_trade_purchase_amount', e.target.value)}
+                                            onChange={elem => this.handleInputChange('min_trade_purchase_amount', elem.target.value)}
                                         />
                                         {!currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
-                                        <span className="input-group-text">You get {window.assetValueString(this.currencyToAsset(this.state.input.min_trade_purchase_amount + ''), asset, true, true)}</span>
+                                        <span className="input-group-text">You get {window.assetValueString(this.currencyToAsset(this.state.input.min_trade_purchase_amount.toRaw()), asset, true, true)}</span>
                                     </div>
                                 </div>
                                 <div className="mb-3">
@@ -338,14 +338,14 @@ class OffersCreateNewScreen extends React.Component {
                                         {currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
                                         <input
                                             type="number" className="form-control" id="input_max_trade_purchase_amount"
-                                            min={this.state.input.min_trade_purchase_amount + ''}
+                                            min={window.currencyAmountInput(this.state.input.min_trade_purchase_amount.toRaw())}
                                             step={this.state.input.pymt_method_slug == 'cash_in_person' ? currency.smallest_transactable_cash_denomination_amount : "0.01"}
-                                            value={this.state.input.max_trade_purchase_amount + ''}
+                                            value={window.currencyAmountInput(this.state.input.max_trade_purchase_amount.toRaw())}
                                             required
-                                            onChange={e => this.handleInputChange('max_trade_purchase_amount', e.target.value)}
+                                            onChange={elem => this.handleInputChange('max_trade_purchase_amount', elem.target.value)}
                                         />
                                         {!currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
-                                        <span className="input-group-text">You get {window.assetValueString(this.currencyToAsset(this.state.input.max_trade_purchase_amount + ''), asset, true, true)}</span>
+                                        <span className="input-group-text">You get {window.assetValueString(this.currencyToAsset(this.state.input.max_trade_purchase_amount.toRaw()), asset, true, true)}</span>
                                     </div>
                                 </div>
                                 <div className="mb-3">
@@ -354,14 +354,14 @@ class OffersCreateNewScreen extends React.Component {
                                         {currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
                                         <input
                                             type="number" className="form-control" id="input_offer_total_purchase_amount"
-                                            min={this.state.input.max_trade_purchase_amount + ''}
+                                            min={window.currencyAmountInput(this.state.input.max_trade_purchase_amount.toRaw())}
                                             step={this.state.input.pymt_method_slug == 'cash_in_person' ? currency.smallest_transactable_cash_denomination_amount : "0.01"}
-                                            value={this.state.input.offer_total_purchase_amount + ''}
+                                            value={window.currencyAmountInput(this.state.input.offer_total_purchase_amount.toRaw())}
                                             required
-                                            onChange={e => this.handleInputChange('offer_total_purchase_amount', e.target.value)}
+                                            onChange={elem => this.handleInputChange('offer_total_purchase_amount', elem.target.value)}
                                         />
                                         {!currency.symbol_before_number && <span className="input-group-text">{currency.symbol}</span>}
-                                        <span className="input-group-text">You get {window.assetValueString(this.currencyToAsset(this.state.input.offer_total_purchase_amount + ''), asset, true, true)}</span>
+                                        <span className="input-group-text">You get {window.assetValueString(this.currencyToAsset(this.state.input.offer_total_purchase_amount.toRaw()), asset, true, true)}</span>
                                     </div>
                                 </div>
                             </>}
@@ -375,12 +375,12 @@ class OffersCreateNewScreen extends React.Component {
                                             min={asset.smallest_display_unit}
                                             step={asset.smallest_display_unit}
                                             max={max_offerable_asset_value}
-                                            value={this.state.input.min_trade_sell_value + ''}
+                                            value={window.assetValueInput(this.state.input.min_trade_sell_value.toRaw(), asset)}
                                             required
-                                            onChange={e => this.handleInputChange('min_trade_sell_value', e.target.value)}
+                                            onChange={elem => this.handleInputChange('min_trade_sell_value', elem.target.value)}
                                         />
                                         <span className="input-group-text">{asset.code}</span>
-                                        <span className="input-group-text">You get {window.currencyAmountString(this.assetToCurrency(this.state.input.min_trade_sell_value + ''), currency, true, true)}</span>
+                                        <span className="input-group-text">You get {window.currencyAmountString(this.assetToCurrency(this.state.input.min_trade_sell_value.toRaw()), currency, true, true)}</span>
                                     </div>
                                 </div>
                                 <div className="mb-3">
@@ -391,12 +391,12 @@ class OffersCreateNewScreen extends React.Component {
                                             min={this.state.input.min_trade_sell_value}
                                             step={asset.smallest_display_unit}
                                             max={max_offerable_asset_value}
-                                            value={this.state.input.max_trade_sell_value + ''}
+                                            value={window.assetValueInput(this.state.input.max_trade_sell_value.toRaw(), asset)}
                                             required
-                                            onChange={e => this.handleInputChange('max_trade_sell_value', e.target.value)}
+                                            onChange={elem => this.handleInputChange('max_trade_sell_value', elem.target.value)}
                                         />
                                         <span className="input-group-text">{asset.code}</span>
-                                        <span className="input-group-text">You get {window.currencyAmountString(this.assetToCurrency(this.state.input.max_trade_sell_value + ''), currency, true, true)}</span>
+                                        <span className="input-group-text">You get {window.currencyAmountString(this.assetToCurrency(this.state.input.max_trade_sell_value.toRaw()), currency, true, true)}</span>
                                     </div>
                                 </div>
                                 <div className="mb-3">
@@ -407,12 +407,12 @@ class OffersCreateNewScreen extends React.Component {
                                             min={this.state.input.max_trade_sell_value}
                                             step={asset.smallest_display_unit}
                                             max={max_offerable_asset_value}
-                                            value={this.state.input.offer_total_sell_value + ''}
+                                            value={window.assetValueInput(this.state.input.offer_total_sell_value.toRaw(), asset)}
                                             required
-                                            onChange={e => this.handleInputChange('offer_total_sell_value', e.target.value)}
+                                            onChange={elem => this.handleInputChange('offer_total_sell_value', elem.target.value)}
                                         />
                                         <span className="input-group-text">{asset.code}</span>
-                                        <span className="input-group-text">You get {window.currencyAmountString(this.assetToCurrency(this.state.input.offer_total_sell_value + ''), currency, true, true)}</span>
+                                        <span className="input-group-text">You get {window.currencyAmountString(this.assetToCurrency(this.state.input.offer_total_sell_value.toRaw()), currency, true, true)}</span>
                                     </div>
                                 </div>
                             </>}
@@ -425,9 +425,9 @@ class OffersCreateNewScreen extends React.Component {
                                         min={this.props.sysconfig_params.buyer_open_trade_min_mins_tmt}
                                         max={this.props.sysconfig_params.buyer_cmplt_trade_max_mins_tmt}
                                         step="1"
-                                        value={this.state.input.buyer_cmplt_trade_mins_tmt + ''}
+                                        value={this.state.input.buyer_cmplt_trade_mins_tmt.toRaw()}
                                         required
-                                        onChange={e => this.handleInputChange('buyer_cmplt_trade_mins_tmt', e.target.value)}
+                                        onChange={elem => this.handleInputChange('buyer_cmplt_trade_mins_tmt', elem.target.value)}
                                     />
                                     <span className="input-group-text">Minutes</span>
                                 </div>
