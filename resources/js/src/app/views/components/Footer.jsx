@@ -10,7 +10,7 @@ export default class Footer extends React.Component {
                     <div className="row">
                         {this.props._footer_menu.menu_items.map((item_i, ii) => {
                             return (
-                                <div className={"col-12 col-sm-4 col-md-" + (ii == 2 ? '3' : '2') + " mb-2"} key={ii}>
+                                <div className={"col-" + (ii == 2 ? '12' : '6') + " col-sm-4 col-md-" + (ii == 2 ? '3' : '2') + " mb-2"} key={ii}>
                                     <h5>{item_i.title}</h5>
                                     <ul className="nav flex-column">
                                         {item_i.children.map((item_j, j) => {
@@ -27,11 +27,13 @@ export default class Footer extends React.Component {
                                             );
                                         })}
                                     </ul>
+                                    <hr className="d-sm-none" />
                                 </div>
                             );
                         })}
 
                         <div className="col-12 col-md-5 mb-2">
+                            <hr className="d-none d-sm-block d-md-none" />
                             <form>
                                 <h5>Subscribe to our newsletter</h5>
                                 <p>Monthly digest of what's new and exciting from us.</p>

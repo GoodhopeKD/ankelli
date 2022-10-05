@@ -15,17 +15,17 @@ export default withRouter(class TopNavbar extends React.Component {
         return <>
             <div className="container-fluid fixed-top bg-white shadow" style={{ borderBottomColor: 'black', borderBottomWidth: 1 }}>
                 <div className="container-xl">
-                    <header className="d-flex flex-wrap py-3 align-items-center" >
-                        <div className="d-none d-md-block col-1 col-sm-2 col-md-1">
-                            <Link to={'/'} className={'d-flex mb-2 mb-md-0 text-dark text-decoration-none'} >
+                    <header className={"d-flex flex-wrap " + (this.props.curr_auth_state ? 'pt-1 pb-2 py-sm-3' : 'py-3') + " align-items-center"} >
+                        <div className={"d-none d-sm-block col-1 col-md-" + (this.props.curr_auth_state ? '1' : '2') + " col-lg-2"}>
+                            <Link to={'/'} className={'d-flex text-dark text-decoration-none'} >
                                 <img src={Logo} alt="logo" width="32" height="32" className="rounded-circle" />
                             </Link>
                         </div>
 
-                        <ul className={"nav nav-pills col-" + (this.props.curr_auth_state ? '11' : '8') + " col-sm-" + (this.props.curr_auth_state ? '11' : '8') + " col-md-" + (this.props.curr_auth_state ? '10' : '8') + " justify-content-center"}>
+                        <ul className={"nav nav-pills col-" + (this.props.curr_auth_state ? '11' : '9') + " col-sm-" + (this.props.curr_auth_state ? '10' : '8') + " col-md-" + (this.props.curr_auth_state ? '10' : '8') + " col-lg-8 justify-content-center"}>
                             {this.props._top_navbar_menu.menu_items.map((item, index) => {
                                 return <li className="nav-item" key={index}>
-                                    <Link to={item.path} className={"nav-link " + ((item.path === this.props.curr_path || ((this.props.curr_path === '/' || this.props.curr_path === '/p2p') && item.path === '/p2p/offers')) ? 'active' : '')} >
+                                    <Link to={item.path} className={"nav-link px-1 px-sm-2 px-md-3 " + ((item.path === this.props.curr_path || ((this.props.curr_path === '/' || this.props.curr_path === '/p2p') && item.path === '/p2p/offers')) ? 'active' : '')} >
                                         {item.title}
                                     </Link>
                                 </li>
@@ -33,7 +33,7 @@ export default withRouter(class TopNavbar extends React.Component {
                         </ul>
 
                         {this.props.curr_auth_state ?
-                            <div className="col-1 col-sm-1 col-md-1 dropdown text-end">
+                            <div className="col-1 col-lg-2 d-flex justify-content-end dropdown">
                                 <a href="#" className="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" >
                                     <img src={require("app/assets/img/user_avatar/" + (window.padUserAvatarImageId(this.props.auth_user.avatar_image_id ?? '0')) + ".png").default} alt="User avatar" width="32" height="32" className="rounded-circle" />
                                 </a>
@@ -56,9 +56,11 @@ export default withRouter(class TopNavbar extends React.Component {
                                 </ul>
                             </div>
                             :
-                            <div className="col-4 col-sm-4 col-md-3 text-end">
-                                <Link to={'/accounts/auth/signin' + this.props.location.search} className={'btn btn-outline-primary me-2'} style={{ width: 75 }} >Login</Link>
-                                <Link to={'/accounts/auth/signup' + this.props.location.search} className={'btn btn-primary'} style={{ width: 75 }} >Signup</Link>
+                            <div className="col-3 col-md-2 col-lg-2">
+                                <div className="d-flex gap-1 justify-content-end">
+                                    <Link to={'/accounts/auth/signin' + this.props.location.search} className={'btn btn-outline-primary px-1'} style={{ width: 65 }} >Login</Link>
+                                    <Link to={'/accounts/auth/signup' + this.props.location.search} className={'btn btn-primary px-1 d-none d-sm-block'} style={{ width: 65 }} >Signup</Link>
+                                </div>
                             </div>
                         }
                     </header>
