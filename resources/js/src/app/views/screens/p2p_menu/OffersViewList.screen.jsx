@@ -252,13 +252,13 @@ class OffersViewListScreen extends React.Component {
                         <table className="table">
                             <thead>
                                 <tr>
-                                    {(this.props.path == '/p2p/offers' || this.props.path == '/') && <th scope="col">{this.state.showing_offer_to === 'buy' ? 'Buyer' : 'Seller'}</th>}
-                                    {this.props.path == '/p2p/my-offers' && <th scope="col">Type</th>}
-                                    <th scope="col">{this.props.path == '/p2p/my-offers' ? 'Trading' : "You'll be trading"}</th>
+                                    {(this.props.path == '/p2p/offers' || this.props.path == '/') && <th scope="col" style={{ minWidth: 220 }}>{this.state.showing_offer_to === 'buy' ? 'Buyer' : 'Seller'}</th>}
+                                    {this.props.path == '/p2p/my-offers' && <th scope="col" style={{ minWidth: 205 }}>Type</th>}
+                                    <th scope="col" style={{ minWidth: 145 }}>{this.props.path == '/p2p/my-offers' ? 'Trading' : "You'll be trading"}</th>
                                     <th scope="col">Price</th>
-                                    <th scope="col">Limits</th>
+                                    <th scope="col" style={{ minWidth: 150 }}>Limits</th>
                                     {this.props.path == '/p2p/my-offers' && <th scope="col">Fill</th>}
-                                    <th scope="col">Pay via</th>
+                                    <th scope="col" style={{ minWidth: 250 }}>Pay via</th>
                                     <th scope="col">Trade</th>
                                     {this.props.path == '/p2p/my-offers' && <th scope="col">Status</th>}
                                 </tr>

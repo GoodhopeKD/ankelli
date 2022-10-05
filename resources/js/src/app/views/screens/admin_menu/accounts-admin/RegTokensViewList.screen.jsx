@@ -195,11 +195,11 @@ export default class RegTokensViewListScreen extends React.Component {
                                 <table className="table">
                                     <thead>
                                         <tr>
-                                            <th scope="col">Token</th>
-                                            <th scope="col">Use count</th>
+                                            <th scope="col" style={{ minWidth: 200 }}>Token</th>
+                                            <th scope="col" style={{ minWidth: 100 }}>Use count</th>
                                             <th scope="col">Status</th>
                                             <th scope="col">Creator</th>
-                                            <th scope="col">Created datetime</th>
+                                            <th scope="col" style={{ minWidth: 205 }}>Created</th>
                                         </tr>
                                     </thead>
                                     <tbody>

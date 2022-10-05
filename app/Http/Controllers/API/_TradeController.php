@@ -166,12 +166,12 @@ class _TradeController extends Controller
         $seller_new_usable_balance_asset_value = $seller_asset_wallet->usable_balance_asset_value - $validated_data['asset_value_escrowed'];
 
         if ( $seller_new_usable_balance_asset_value < 0 ){ return abort(422, 'Current '.$offer->asset_code.' balance insufficient for transaction.'); }
-        $tatum_element = (new _AssetWalletController)->blockAssetValue( new Request([
+        $tatum_response = (new _AssetWalletController)->blockAssetValue( new Request([
             'asset_value' => $validated_data['asset_value_escrowed'],
             'blockage_type_slug' => 'trade_escrow',
-        ]), $seller_asset_wallet->id )->getData();
+        ]), $seller_asset_wallet->id );
         if ( _PrefItem::firstWhere('key_slug', 'use_tatum_api')->value_f() ){
-            $validated_data['tatum_amount_blockage_id'] = $tatum_element->id;
+            $validated_data['tatum_amount_blockage_id'] = $tatum_response->getData()->id;
         }
         // End lock in escrow
 

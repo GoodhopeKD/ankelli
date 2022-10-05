@@ -242,7 +242,7 @@ class _TransactionController extends Controller
                 'sender_password' => $validated_data['sender_password'],
                 'sender_note' => 'Outbound platform charge fee for transaction '.$element->ref_code,
                 'recipient_username' => 'reserves',
-                'recipient_note' => 'Inbound platform charge fee for transaction '.$element->ref_code,
+                'recipient_note' => 'Platform charge fee for transaction '.$element->ref_code,
                 'asset_code' => $validated_data['asset_code'],
                 'xfer_asset_value' => $validated_data['txn_fee_asset_value'],
             ]));

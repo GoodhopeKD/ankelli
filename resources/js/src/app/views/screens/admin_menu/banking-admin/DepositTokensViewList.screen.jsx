@@ -209,9 +209,9 @@ class DepositTokensViewListScreen extends React.Component {
                                             <th scope="col">Asset</th>
                                             <th scope="col">Purchase Amount</th>
                                             <th scope="col">Creator</th>
-                                            <th scope="col">Created datetime</th>
+                                            <th scope="col"style={{ minWidth: 205 }}>Created time</th>
                                             {this.state.input._status != 'unused' && <th scope="col text-center">User</th>}
-                                            {this.state.input._status != 'unused' && <th scope="col text-center">Used datetime</th>}
+                                            {this.state.input._status != 'unused' && <th scope="col text-center"style={{ minWidth: 205 }}>Used time</th>}
                                         </tr>
                                     </thead>
                                     <tbody>

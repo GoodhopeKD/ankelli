@@ -110,6 +110,7 @@ $valid_paths = [
     "/admin/analytics/banking",
     "/admin/analytics/pay",
     "/admin/analytics/p2p",
+    "/admin/banking-admin/mother-wallets-management",
     "/admin/banking-admin/deposit_tokens",
     "/admin/banking-admin/deposit_tokens/new",
     "/admin/banking-admin/deposit_tokens/{deposit_token_id}/edit",

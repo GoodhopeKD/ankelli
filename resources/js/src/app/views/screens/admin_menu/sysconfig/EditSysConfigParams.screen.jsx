@@ -56,7 +56,7 @@ class EditSysConfigParamsScreen extends React.Component {
                                 <thead>
                                     <tr>
                                         <th scope="col">Param name</th>
-                                        <th scope="col">Current value</th>
+                                        <th scope="col" style={{ minWidth: 115 }}>Current value</th>
                                         <th scope="col">Action</th>
                                     </tr>
                                 </thead>

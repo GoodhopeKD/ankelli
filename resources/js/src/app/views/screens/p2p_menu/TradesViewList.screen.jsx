@@ -138,11 +138,11 @@ class TradesViewListScreen extends React.Component {
                         <table className="table">
                             <thead>
                                 <tr>
-                                    <th scope="col">Trade peer</th>
-                                    <th scope="col">Trading</th>
+                                    <th scope="col" style={{ minWidth: 220 }}>Trade peer</th>
+                                    <th scope="col" style={{ minWidth: 190 }}>Trading</th>
                                     <th scope="col">Amount</th>
-                                    <th scope="col">Asset value</th>
-                                    <th scope="col">Pay via</th>
+                                    <th scope="col" style={{ minWidth: 110 }}>Asset value</th>
+                                    <th scope="col" style={{ minWidth: 250 }}>Pay via</th>
                                     <th scope="col">Status</th>
                                     <th scope="col">Action</th>
                                 </tr>

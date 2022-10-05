@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import SideBar from 'app/views/components/SideBar'
 import CustomSelect from 'app/views/components/CustomSelect'
 
-import { _User, _DateTime, _Session, _Notification, _AssetWalletAddress } from 'app/controller'
+import { _User, _Input, _DateTime, _Session, _Notification, _AssetWalletAddress } from 'app/controller'
 
 class BCReceiveCryptoScreen extends React.Component {
 
@@ -95,14 +95,13 @@ class BCReceiveCryptoScreen extends React.Component {
 
     generateNewAddress = async () => {
         this.setState({ btn_generating_address_working: true })
-        await _AssetWalletAddress.create({ asset_wallet_id: (this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == this.state.input.asset_code)).id, user_username: this.props.auth_user.username })
+        await _AssetWalletAddress.create({ asset_wallet_id: this.state.input.asset_wallet_id, user_username: this.props.auth_user.username })
         await this.populateScreenWithItems()
         this.setState({ btn_generating_address_working: false })
     }
 
     componentDidMount = () => {
         _Session.refresh()
-        this.props.auth_user.asset_wallets
     }
 
     render() {
@@ -145,7 +144,7 @@ class BCReceiveCryptoScreen extends React.Component {
                                         has_none_option={false}
                                         max_shown_options_count={5}
                                         selected_option_value={this.state.input.asset_code}
-                                        onChange={asset_code => { this.setState({ list_loaded: false, asset_wallet_addresses_list_loaded: true }); this.handleInputChange('asset_code', asset_code, true); this.handleInputChange('asset_wallet_id', this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset_code).blockchain_address, true) }}
+                                        onChange={asset_code => { this.setState({ list_loaded: false, asset_wallet_addresses_list_loaded: false }); this.handleInputChange('asset_code', asset_code, true); this.handleInputChange('asset_wallet_id', this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset_code).id, true) }}
                                     />
                                 </div>
                                 <div className="col">
@@ -157,17 +156,17 @@ class BCReceiveCryptoScreen extends React.Component {
                             <p style={{ whiteSpace: 'pre-wrap' }}><b><i>{asset.onchain_disclaimer}</i></b></p>
 
                             <p className="text-muted">One you send funds to selected address, give a little time (max 2 minutes) for our system to scan the blockchain and update your balances.</p>
-                            
+
                             <hr className="mb-0" />
 
                             <div className="table-responsive">
                                 <table className="table">
                                     <thead>
                                         <tr>
-                                            <th scope="col">Address</th>
-                                            <th scope="col">Onchain transaction count</th>
-                                            <th scope="col">Registered datetime</th>
-                                            <th scope="col">Last used datetime</th>
+                                            <th scope="col" style={{ minWidth: 250 }}>Address</th>
+                                            <th scope="col" style={{ minWidth: 160 }}>Onchain txn count</th>
+                                            <th scope="col" style={{ minWidth: 205 }}>Registered time</th>
+                                            <th scope="col" style={{ minWidth: 205 }}>Last used time</th>
                                         </tr>
                                     </thead>
                                     <tbody>

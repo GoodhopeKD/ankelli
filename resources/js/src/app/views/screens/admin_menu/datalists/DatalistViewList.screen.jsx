@@ -138,8 +138,8 @@ export default class DatalistViewListScreen extends React.Component {
                                             {this.props.title == 'Assets List' && <>
                                                 <th scope="col">Name</th>
                                                 <th scope="col">Code</th>
-                                                <th scope="col">Smallest Display Unit</th>
-                                                <th scope="col">Onchain Disclaimer</th>
+                                                <th scope="col" style={{ minWidth: 185 }}>Smallest Display Unit</th>
+                                                <th scope="col" style={{ minWidth: 200 }}>Onchain Disclaimer</th>
                                                 <th scope="col">Status</th>
                                             </>}
                                             {this.props.title == 'Currencies List' && <>

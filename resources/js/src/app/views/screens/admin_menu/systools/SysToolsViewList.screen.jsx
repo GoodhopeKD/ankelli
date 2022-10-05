@@ -151,16 +151,16 @@ export default withRouter(class SysToolsViewListScreen extends React.Component {
                                         <tr>
                                             {this.props.title == 'User Groups' && <>
                                                 <th scope="col">Name</th>
-                                                <th scope="col">Description</th>
+                                                <th scope="col"style={{ minWidth: 300 }}>Description</th>
                                                 <th scope="col">Status</th>
-                                                <th scope="col" style={{ width: 140 }}>View members</th>
+                                                <th scope="col" style={{ minWidth: 140 }}>View members</th>
                                             </>}
                                             {this.props.title == 'View User Group Members' && <>
                                                 <th scope="col">Username</th>
                                                 <th scope="col">Post Title</th>
                                                 <th scope="col">Status</th>
                                                 <th scope="col">Adder</th>
-                                                <th scope="col">Added datetime</th>
+                                                <th scope="col"style={{ minWidth: 205 }}>Added time</th>
                                             </>}
                                             {this.props.title == 'Permissions' && <>
                                                 <th scope="col">Name</th>
@@ -182,7 +182,7 @@ export default withRouter(class SysToolsViewListScreen extends React.Component {
                                                         <td className="align-middle">{system_tools_item.name}</td>
                                                         <td className="align-middle" style={{ whiteSpace: 'pre-wrap' }}>{system_tools_item.description}</td>
                                                         <td className="align-middle">{system_tools_item._status}</td>
-                                                        <td className="align-middle"><Link className="btn btn-sm btn-info" to={"/systools/user_groups/" + system_tools_item.slug + "/user-group-memberships"}>Open</Link></td>
+                                                        <td className="align-middle"><Link className="btn btn-sm btn-info" to={"/admin/systools/user_groups/" + system_tools_item.slug + "/user-group-memberships"}>Open</Link></td>
                                                     </>}
                                                     {this.props.title == 'View User Group Members' && <>
                                                         <td className="align-middle">{system_tools_item.user_username}</td>
