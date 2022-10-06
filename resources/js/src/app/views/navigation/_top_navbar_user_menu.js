@@ -24,9 +24,9 @@ export const _top_navbar_user_menu = {
             path: '/profile',
         },
         {
-            title: 'Banking',
-            subdomain: 'banking',
-            path: '/overview',
+            title: 'Funds',
+            subdomain: 'funds',
+            path: '/dashboard',
         },
         {
             title: 'Support center',

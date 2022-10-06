@@ -285,6 +285,12 @@ Handle all internal transactions normally but know that these values will be ref
             ]), $token_reg_enabled_pref_item->id);
             $token_reg_changed = true;
         }
+
+        // user:hot-wallets-user
+        (new _AssetWalletController)->store( new Request([
+            'asset_code' => 'USDT',
+            'user_username' => 'hot-wallets-user',
+        ]));
         
         // user:developer
         (new _UserController)->store( new Request([
@@ -332,7 +338,7 @@ Handle all internal transactions normally but know that these values will be ref
             'user_group_slug' => 'system_administrators',
         ]));
 
-        // user:reserves
+        // user:reserves // used for collecting platform fees and deposit token topups
         (new _UserController)->store( new Request([
             'username' => 'reserves',
             'email_address' => 'reserves@ankelli.com',

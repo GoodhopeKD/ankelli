@@ -131,7 +131,7 @@ class BCReceiveCryptoScreen extends React.Component {
             <div className="container-xl py-3">
                 <div className="row">
                     <div className="col-lg-2">
-                        <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'banking_menu')]} />
+                        <SideBar nav_menus={this.props.nav_menus.filter(menu => menu.slug === 'funds_menu')} />
                     </div>
                     <div className="col-lg-10">
                         {this.props.auth_user.asset_wallets.length !== 0 && <>
@@ -155,7 +155,7 @@ class BCReceiveCryptoScreen extends React.Component {
 
                             <p style={{ whiteSpace: 'pre-wrap' }}><b><i>{asset.onchain_disclaimer}</i></b></p>
 
-                            <p className="text-muted">One you send funds to selected address, give a little time (max 2 minutes) for our system to scan the blockchain and update your balances.</p>
+                            <p className="text-muted">After sending crypto to selected address, give a little time (max 2 minutes) for our system to scan the blockchain and update your balances.</p>
 
                             <hr className="mb-0" />
 
@@ -228,7 +228,7 @@ class BCReceiveCryptoScreen extends React.Component {
 
                             <hr />
                         </>}
-                        <p className="my-3">Go to <Link to='/banking/e-wallets/crypto'>crypto wallets</Link> screen to create asset accounts</p>
+                        <p className="my-3">Go to <Link to='/funds/dashboard'>Funds dashboard</Link> screen to create crypto wallets</p>
                     </div>
                 </div>
             </div>

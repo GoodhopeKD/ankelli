@@ -7,13 +7,11 @@ import CustomSelect from 'app/views/components/CustomSelect'
 
 import { _User, _DateTime, _Session, _Notification, _Input, _Transaction } from 'app/controller'
 
-class BCSendCryptoScreen extends React.Component {
+class PlatformSendPaymentScreen extends React.Component {
 
     default_input = {
-        send_to: 'platform_username', // blockchain_address
         asset_code: 'USDT',
         asset_value: new _Input(),
-        destination_blockchain_address: new _Input(),
         recipient_username: new _Input(),
         recipient_note: new _Input(),
         sender_password: new _Input('Def-Pass#123'),
@@ -50,7 +48,7 @@ class BCSendCryptoScreen extends React.Component {
     }
 
     handleSubmit2 = async () => {
-        this.setState({ btn_send_funds_working: true })
+        this.setState({ btn_send_crypto_working: true })
         const errors = []
         const input = this.state.input
 
@@ -58,28 +56,20 @@ class BCSendCryptoScreen extends React.Component {
 
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
-            const _input = _Input.flatten(input)
-            if (_input.send_to == 'platform_username') {
-                delete _input.destination_blockchain_address
-            }
-            if (_input.send_to == 'blockchain_address') {
-                delete _input.recipient_username
-            }
-
-            _Transaction.process_direct_transfer(_input)
+            _Transaction.process_direct_transfer(_Input.flatten(input))
                 .then(() => {
                     bootstrap.Modal.getOrCreateInstance(document.getElementById('password_confirmation_modal')).hide();
-                    _Notification.flash({ message: 'Funds sent.', duration: 2000 });
-                    _Session.refresh(); this.setState({ input: _.cloneDeep(this.default_input), btn_send_funds_working: false, })
+                    _Notification.flash({ message: 'Transaction successful.', duration: 2000 });
+                    _Session.refresh(); this.setState({ input: _.cloneDeep(this.default_input), btn_send_crypto_working: false, })
                 })
                 .catch((error) => {
                     if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
                         Object.keys(error.request._response.errors).forEach(input_key => { error.request._response.errors[input_key].forEach(input_key_error => { errors.push(input_key_error) }) })
                     } else { errors.push(error.message) }
-                    this.setState({ btn_send_funds_working: false, errors })
+                    this.setState({ btn_send_crypto_working: false, errors })
                 })
         } else {
-            this.setState({ btn_send_funds_working: false, errors, input })
+            this.setState({ btn_send_crypto_working: false, errors, input })
         }
     }
 
@@ -108,7 +98,7 @@ class BCSendCryptoScreen extends React.Component {
             <div className="container-xl py-3">
                 <div className="row">
                     <div className="col-lg-2">
-                        <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'banking_menu')]} />
+                        <SideBar nav_menus={this.props.nav_menus.filter(menu => menu.slug === 'funds_menu')} />
                     </div>
                     <div className="col-lg-10">
                         {this.props.auth_user.asset_wallets.length !== 0 && <>
@@ -131,55 +121,27 @@ class BCSendCryptoScreen extends React.Component {
                                     </div>
                                 </div>
 
-                                <p style={{ whiteSpace: 'pre-wrap' }}><b><i>{asset.onchain_disclaimer}</i></b></p>
+                                <div className="mb-3">
+                                    <label htmlFor="input_recipient_username" className="form-label">Destination user username</label>
+                                    <div className="input-group">
+                                        <input
+                                            type="text" className="form-control" id="input_recipient_username"
+                                            value={this.state.input.recipient_username + ''}
+                                            required
+                                            onChange={elem => this.handleInputChange('recipient_username', elem.target.value)}
+                                        />
+                                    </div>
+                                </div>
 
-                                <div>
-                                    <nav>
-                                        <div className="nav nav-tabs mb-3" id="nav-tab" role="tablist">
-                                            <button onClick={() => this.handleInputChange('send_to', 'platform_username', true)} className="nav-link active" id="nav-send-to-user-tab" data-bs-toggle="tab" data-bs-target="#nav-send-to-user" type="button" role="tab" >To platform user</button>
-                                            <button onClick={() => this.handleInputChange('send_to', 'blockchain_address', true)} className="nav-link" id="nav-send-to-address-tab" data-bs-toggle="tab" data-bs-target="#nav-send-to-address" type="button" role="tab" tabIndex="-1">To blockchain address</button>
-                                        </div>
-                                    </nav>
-                                    <div className="tab-content" id="nav-tabContent">
-                                        <div className="tab-pane fade active show" id="nav-send-to-user" role="tabpanel" >
-                                            <div className="mb-3">
-                                                <label htmlFor="input_recipient_username" className="form-label">Destination user username</label>
-                                                <div className="input-group">
-                                                    <input
-                                                        type="text" className="form-control" id="input_recipient_username"
-                                                        value={this.state.input.recipient_username + ''}
-                                                        required={this.state.input.send_to == 'platform_username'}
-                                                        onChange={elem => this.handleInputChange('recipient_username', elem.target.value)}
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div className="mb-3">
-                                                <label htmlFor="input_recipient_note" className="form-label">Recipient note (Description that's sent to recipient)</label>
-                                                <div className="input-group">
-                                                    <input
-                                                        type="text" className="form-control" id="input_recipient_note"
-                                                        value={this.state.input.recipient_note + ''}
-                                                        required
-                                                        onChange={elem => this.handleInputChange('recipient_note', elem.target.value)}
-                                                    />
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                        <div className="tab-pane fade" id="nav-send-to-address" role="tabpanel" >
-                                            <div className="mb-3">
-                                                <label htmlFor="input_destination_blockchain_address" className="form-label">Destination blockchain address</label>
-                                                <div className="input-group">
-                                                    <input
-                                                        type="text" className="form-control" id="input_destination_blockchain_address"
-                                                        value={this.state.input.destination_blockchain_address + ''}
-                                                        required={this.state.input.send_to == 'blockchain_address'}
-                                                        onChange={elem => this.handleInputChange('destination_blockchain_address', elem.target.value)}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </div>
+                                <div className="mb-3">
+                                    <label htmlFor="input_recipient_note" className="form-label">Recipient note (Description that's sent to recipient)</label>
+                                    <div className="input-group">
+                                        <input
+                                            type="text" className="form-control" id="input_recipient_note"
+                                            value={this.state.input.recipient_note + ''}
+                                            required
+                                            onChange={elem => this.handleInputChange('recipient_note', elem.target.value)}
+                                        />
                                     </div>
                                 </div>
 
@@ -216,8 +178,8 @@ class BCSendCryptoScreen extends React.Component {
                                     </div>
                                 </div>
 
-                                <button type="submit" className="btn btn-primary" disabled={this.state.btn_send_funds_working} >
-                                    {this.state.btn_send_funds_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Send Funds</>}
+                                <button type="submit" className="btn btn-primary" disabled={this.state.btn_send_crypto_working} >
+                                    {this.state.btn_send_crypto_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Send crypto</>}
                                 </button>
                             </form>
 
@@ -253,8 +215,8 @@ class BCSendCryptoScreen extends React.Component {
                                             </div>
                                             <div className="modal-footer justify-content-between">
                                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" >Cancel</button>
-                                                <button type="submit" className="btn btn-primary" disabled={this.state.btn_send_funds_working} >
-                                                    {this.state.btn_send_funds_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Send Funds</>}
+                                                <button type="submit" className="btn btn-primary" disabled={this.state.btn_send_crypto_working} >
+                                                    {this.state.btn_send_crypto_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Send crypto</>}
                                                 </button>
                                             </div>
                                         </form>
@@ -265,7 +227,7 @@ class BCSendCryptoScreen extends React.Component {
                             <hr />
 
                         </>}
-                        <p className="my-3">Go to <Link to='/banking/e-wallets/crypto'>crypto wallets</Link> screen to create asset accounts</p>
+                        <p className="my-3">Go to <Link to='/funds/dashboard'>Funds dashboard</Link> screen to create crypto wallets</p>
                     </div>
                 </div>
             </div>
@@ -281,4 +243,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(BCSendCryptoScreen)
+export default connect(mapStateToProps)(PlatformSendPaymentScreen)

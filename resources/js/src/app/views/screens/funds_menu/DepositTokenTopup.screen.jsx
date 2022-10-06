@@ -10,7 +10,6 @@ import CustomSelect from 'app/views/components/CustomSelect'
 class DepositTokenTopupScreen extends React.Component {
 
     default_input = {
-        deposit_type: 'crypto', // fiat
         asset_code: 'USDT',
         currency_code: 'USD',
         token: new _Input(),
@@ -83,7 +82,7 @@ class DepositTokenTopupScreen extends React.Component {
             <div className="container-xl py-3">
                 <div className="row">
                     <div className="col-lg-2">
-                        <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'banking_menu')]} />
+                        <SideBar nav_menus={this.props.nav_menus.filter(menu => menu.slug === 'funds_menu')} />
                     </div>
                     <div className="col-lg-10">
                         <div className="card mb-3">
@@ -93,51 +92,22 @@ class DepositTokenTopupScreen extends React.Component {
                             <div className="card-body">
                                 <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
 
-                                    <div>
-                                        <nav>
-                                            <div className="nav nav-tabs mb-3" id="nav-tab" role="tablist">
-                                                <button onClick={() => this.handleInputChange('deposit_type', 'crypto', true)} className="nav-link active" id="nav-crypto-topup-tab" data-bs-toggle="tab" data-bs-target="#nav-crypto-topup" type="button" role="tab" >Crypto topup</button>
-                                                <button onClick={() => this.handleInputChange('deposit_type', 'fiat', true)} className="nav-link" id="nav-fiat-topup-tab" data-bs-toggle="tab" data-bs-target="#nav-fiat-topup" type="button" role="tab" tabIndex="-1">Fiat topup</button>
+                                    <div className="tab-pane fade active show" id="nav-crypto-topup" role="tabpanel">
+                                        <div className="mb-3 row">
+                                            <div className="col">
+                                                <label htmlFor="input_asset_code" className="form-label">Asset</label>
+                                                <CustomSelect
+                                                    id="input_asset_code"
+                                                    has_none_option={false}
+                                                    options={asset_options}
+                                                    max_shown_options_count={5}
+                                                    selected_option_value={this.state.input.asset_code}
+                                                    onChange={asset_code => this.handleInputChange('asset_code', asset_code, true)}
+                                                />
                                             </div>
-                                        </nav>
-                                        <div className="tab-content" id="nav-tabContent">
-                                            <div className="tab-pane fade active show" id="nav-crypto-topup" role="tabpanel">
-                                                <div className="mb-3 row">
-                                                    <div className="col">
-                                                        <label htmlFor="input_asset_code" className="form-label">Asset</label>
-                                                        <CustomSelect
-                                                            id="input_asset_code"
-                                                            has_none_option={false}
-                                                            options={asset_options}
-                                                            max_shown_options_count={5}
-                                                            selected_option_value={this.state.input.asset_code}
-                                                            onChange={asset_code => this.handleInputChange('asset_code', asset_code, true)}
-                                                        />
-                                                    </div>
-                                                    <div className="col">
-                                                        <label htmlFor="output_current_balance" className="form-label">Total balance</label>
-                                                        <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { total_balance_asset_value: 0 }).total_balance_asset_value, asset)}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="tab-pane fade" id="nav-fiat-topup" role="tabpanel" >
-                                                <div className="mb-3 row">
-                                                    <div className="col">
-                                                        <label htmlFor="input_currency_code" className="form-label">Currency</label>
-                                                        <CustomSelect
-                                                            id="input_currency_code"
-                                                            has_none_option={false}
-                                                            options={currency_options}
-                                                            max_shown_options_count={5}
-                                                            selected_option_value={this.state.input.currency_code}
-                                                            onChange={currency_code => this.handleInputChange('currency_code', currency_code, true)}
-                                                        />
-                                                    </div>
-                                                    <div className="col">
-                                                        <label htmlFor="output_current_balance" className="form-label">Total balance</label>
-                                                        <span className="form-control" id='output_current_balance'>{window.currencyAmountString(0, currency)}</span>
-                                                    </div>
-                                                </div>
+                                            <div className="col">
+                                                <label htmlFor="output_current_balance" className="form-label">Total balance</label>
+                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { total_balance_asset_value: 0 }).total_balance_asset_value, asset)}</span>
                                             </div>
                                         </div>
                                     </div>

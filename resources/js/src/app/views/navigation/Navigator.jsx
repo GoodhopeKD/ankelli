@@ -22,7 +22,7 @@ import { _top_navbar_menu } from 'app/views/navigation/_top_navbar_menu'
 import { _top_navbar_user_menu } from 'app/views/navigation/_top_navbar_user_menu'
 // sidebar
 import { pay_menu } from 'app/views/navigation/pay_menu'
-import { banking_menu } from 'app/views/navigation/banking_menu'
+import { funds_menu } from 'app/views/navigation/funds_menu'
 import { accounts_menu } from 'app/views/navigation/accounts_menu'
 import { admin_menu } from 'app/views/navigation/admin_menu'
 // footer
@@ -35,7 +35,7 @@ const nav_menus_raw = [
     _top_navbar_user_menu,
     // sidebar
     pay_menu,
-    banking_menu,
+    funds_menu,
     accounts_menu,
     admin_menu,
     // virtual stack

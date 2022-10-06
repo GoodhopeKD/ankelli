@@ -110,7 +110,7 @@ class DepositTokensCreateNewScreen extends React.Component {
             <div className="container-xl py-3">
                 <div className="row">
                     <div className="col-lg-2">
-                        <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'admin_menu')]} />
+                        <SideBar nav_menus={this.props.nav_menus.filter(menu => menu.slug === 'admin_menu')} />
                     </div>
                     <div className="col-lg-10">
 

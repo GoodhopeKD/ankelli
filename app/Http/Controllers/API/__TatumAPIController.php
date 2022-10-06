@@ -18,6 +18,9 @@ class __TatumAPIController extends Controller
         'USDT' => [
             'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent',
             'xpub' => 'xpub6ERKWaEy6mLBzYWoo5P19QTexUufpijY5qod5xaH2ksiYtekeFYAoT3JoK87XKULgG7g3yvvxKwsGEVdkTqcC3BFjthMtJendsN1WH9nHoX',
+            'addresses' => [
+                
+            ],
 
             'blockchain_wallet_generate_url'    => 'https://api-eu1.tatum.io/v3/ethereum/wallet?type=testnet',
             'blockchain_transfer_to_url'        => 'https://api-eu1.tatum.io/v3/offchain/ethereum/transfer?type=testnet',
@@ -113,6 +116,63 @@ class __TatumAPIController extends Controller
 
 
     /**
+     * Generate Ethereum account address from Extended public key
+     * https://apidoc.tatum.io/tag/Ethereum#operation/EthGenerateAddress
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getBlockchainWalletAddress(Request $request)
+    {
+        $validated_data = $request->validate([
+            'asset_code' => ['required', 'string', 'exists:__assets,code'],
+            'index' => ['required', 'integer'],
+        ]);
+
+        $asset = _Asset::firstWhere('code',$validated_data['asset_code'])->makeVisible(['tatum_xpub']);
+       
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "x-api-key: ".$this->x_api_key,
+            ],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ethereum/address/".$asset->tatum_xpub."/".$validated_data['index']."?".http_build_query(['type' => 'testnet']),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+
+        return $this->curl_call_tail($curl);
+    }
+
+
+    /**
+     * Get Ethereum account balance
+     * https://apidoc.tatum.io/tag/Ethereum#operation/EthGetBalance
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function getBlockchainWalletBalance(Request $request)
+    {
+        $validated_data = $request->validate([
+            'address' => ['required', 'string'],
+        ]);
+
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "x-api-key: ".$this->x_api_key,
+            ],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ethereum/account/balance/".$validated_data['address']."?".http_build_query(['type' => 'testnet']),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+
+        return $this->curl_call_tail($curl);
+    }
+    
+
+    /**
      * List all accounts
      * https://apidoc.tatum.io/tag/Account#operation/getAccounts
      * 
@@ -124,10 +184,6 @@ class __TatumAPIController extends Controller
      */
     public function getCustomers(Request $request)
     {
-        $validated_data = $request->validate([
-            'customer_id' => ['sometimes', 'string'],
-        ]);
-       
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
@@ -157,7 +213,7 @@ class __TatumAPIController extends Controller
         $validated_data = $request->validate([
             'externalId' => ['sometimes', 'string', 'exists:__users,username'],
             'customerId' => ['sometimes', 'string'],
-            'asset_code' => ['sometimes', 'exists:__assets,code', 'string'],
+            'asset_code' => ['sometimes', 'string', 'exists:__assets,code'],
         ]);
 
         if (isset($validated_data['externalId']) && isset($this->saved_customer_ids[$validated_data['externalId']])){

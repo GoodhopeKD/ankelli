@@ -113,7 +113,7 @@ class OffersViewSingleScreen extends React.Component {
             const _input = _Input.flatten(input)
             const password_confirmation_modal = this.focused_offer.offer_to == 'buy' ? bootstrap.Modal.getOrCreateInstance(document.getElementById('password_confirmation_modal')) : null;
             this.focused_offer.accept({ currency_amount: this.state.currency_amount, pymt_details: _input.pymt_details, sender_password: _input.sender_password })
-                .then(resp => { if (password_confirmation_modal) { password_confirmation_modal.hide(); } _Notification.flash({ message: 'Trade initialized.', duration: 2000 }); this.props.navigate('/p2p/trades/' + resp.ref_code) })
+                .then(resp => { if (password_confirmation_modal) { password_confirmation_modal.hide(); } _Notification.flash({ message: 'Trade created.', duration: 2000 }); this.props.navigate('/p2p/trades/' + resp.ref_code) })
                 .catch((error) => {
                     if (error.request && error.request._response && error.request._response.errors && Object.keys(error.request._response.errors).length) {
                         Object.keys(error.request._response.errors).forEach(input_key => { error.request._response.errors[input_key].forEach(input_key_error => { errors.push(input_key_error) }) })
@@ -266,7 +266,7 @@ class OffersViewSingleScreen extends React.Component {
                                             </div>
                                             <form onSubmit={e => { e.preventDefault(); this.handleSubmit2() }}>
                                                 <div className="modal-body">
-                                                    <p>{window.assetValueString(this.state.asset_value, asset)} is about to be locked in your account for new trade until it is complete. Enter password to continue.</p>
+                                                    <p>{window.assetValueString(this.state.asset_value, asset)} is about to be locked in escrow until trade is complete. Enter password to continue.</p>
                                                     <div className="form-floating mb-3">
                                                         <input
                                                             type="password"

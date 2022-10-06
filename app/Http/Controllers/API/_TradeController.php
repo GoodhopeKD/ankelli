@@ -221,9 +221,9 @@ class _TradeController extends Controller
         (new _NotificationController)->store( new Request([
             'user_username' => $validated_data['offer_creator_username'],
             'content' => [
-                'title' => 'Trade initialized',
+                'title' => 'Trade created',
                 'subtitle' => 'Someone accepted your offer ref: '.$validated_data['offer_ref_code'].' for asset value '.$validated_data['asset_value'].' '.$validated_data['asset_code'],
-                'body' => 'Your offer '.$validated_data['offer_ref_code'].' has been accepted. Trade '.$validated_data['ref_code'].' initialized for asset value '.$validated_data['asset_value'].' '.$validated_data['asset_code'],
+                'body' => 'Your offer '.$validated_data['offer_ref_code'].' has been accepted. Trade '.$validated_data['ref_code'].' created for asset value '.$validated_data['asset_value'].' '.$validated_data['asset_code'],
             ],
         ]));
         // End Create notification
@@ -233,7 +233,7 @@ class _TradeController extends Controller
         (new _MessageController)->store( new Request([
             'parent_table' => '__trades',
             'parent_uid' => $element->ref_code,
-            'body' => 'Trade has been initialized. Use this chat space to communicate with trade peer.'
+            'body' => 'Trade has been created. Use this chat space to communicate with trade peer.'
         ]));
         session()->put('api_auth_user_username', $api_auth_user_username);
         // End Create message

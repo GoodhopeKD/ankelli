@@ -8,7 +8,7 @@ class ExampleElement extends React.Component {
             <div className="container-xl py-3">
                 <div className="row">
                     <div className="col-lg-2">
-                        <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'pay_menu')]} />
+                        <SideBar nav_menus={this.props.nav_menus.filter(menu => menu.slug === 'pay_menu')} />
                     </div>
                     <div className="col-lg-10">
                         {this.props.title} screen
@@ -32,23 +32,27 @@ export const pay_menu = {
             element: (props) => <ExampleElement {...props} />,
         },
         {
+            disabled: true,
             title: 'Merchants',
             path: '/merchants',
             element: (props) => <ExampleElement {...props} />,
         },
         {
-            title: 'Registered store',
+            disabled: true,
+            title: 'Registered merchant',
             path: '/merchants/:username',
             element: (props) => <ExampleElement {...props} />,
             show_in_menu: false,
         },
         {
+            disabled: true,
             title: 'Virtual cards',
             path: '/virtual-cards',
             element: (props) => <ExampleElement {...props} />,
             show_when_auth_state_is: true,
         },
         {
+            disabled: true,
             title: 'Virtual card',
             path: '/virtual-cards/:virtual_card_id',
             element: (props) => <ExampleElement {...props} />,
@@ -56,21 +60,21 @@ export const pay_menu = {
             show_in_menu: false,
         },
         {
-            title: 'QR payments',
-            path: '/qr-payments',
+            title: 'Platform payments',
+            path: '/platform-payments',
             show_when_auth_state_is: true,
             children: [
                 {
                     title: 'Receive payment',
-                    path: '/qr-payments/receive',
+                    path: '/platform-payments/receive',
                     element: (props) => <ExampleElement {...props} />,
                 },
                 {
                     title: 'Send payment',
-                    path: '/qr-payments/send',
+                    path: '/platform-payments/send',
                     element: (props) => <ExampleElement {...props} />,
                 },
             ]
-        },
+        }
     ]
 }

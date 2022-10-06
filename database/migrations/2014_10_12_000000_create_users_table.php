@@ -35,6 +35,12 @@ return new class extends Migration
                 'email_address' => 'system',
                 'password' => '',
             ],
+            // Hot Wallet User
+            [
+                'username' => 'hot-wallets-user',
+                'email_address' => 'hot-wallets-user',
+                'password' => '',
+            ],
         ]);
     }
 

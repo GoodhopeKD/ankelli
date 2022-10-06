@@ -34,8 +34,8 @@ Route::group(['domain' => 'https://pay.'.env('MIX_DOMAIN_NAME')], function(){
         '/merchants/{username}',
         '/virtual-cards',
         '/virtual-cards/{id}',
-        '/qr-payments/receive',
-        '/qr-payments/send',
+        '/platform-payments/receive',
+        '/platform-payments/send',
     ];
     foreach ($pay_scaffolding_app_paths as $path) {
         //Route::view($path, 'pay/scaffolding_app');
@@ -46,7 +46,7 @@ Route::group(['domain' => 'https://admin.'.env('MIX_DOMAIN_NAME')], function(){
     $admin_scaffolding_app_paths = [
         '/',
         '/analytics/users',
-        '/analytics/banking',
+        '/analytics/funds',
         '/analytics/pay',
         '/analytics/p2p',
         '/sysconfig',
@@ -68,20 +68,18 @@ Route::group(['domain' => 'https://admin.'.env('MIX_DOMAIN_NAME')], function(){
     }
 });
 
-Route::group(['domain' => 'https://banking.'.env('MIX_DOMAIN_NAME')], function(){
-    $banking_scaffolding_app_paths = [
+Route::group(['domain' => 'https://funds.'.env('MIX_DOMAIN_NAME')], function(){
+    $funds_scaffolding_app_paths = [
         '/',
         '/my-crypto-wallets',
-        '/my-fiat-accounts',
         '/transactions',
         '/statements',
         '/deposits/receive-crypto',
         '/deposits/token-topup',
-        '/withdrawals/send-crypto',
-        '/withdrawals/via-agent',
+        '/withdrawals',
     ];
-    foreach ($banking_scaffolding_app_paths as $path) {
-        //Route::view($path, 'banking/scaffolding_app');
+    foreach ($funds_scaffolding_app_paths as $path) {
+        //Route::view($path, 'funds/scaffolding_app');
     }
 });
 

@@ -28,6 +28,11 @@ class _AssetWalletController extends Controller
         //
     }
 
+    public function getBlockchainWalletBalance()
+    {
+        return (new __TatumAPIController)->getBlockchainWalletBalance(new Request(['address' => '0x0688af85d9fc2805151f5ffa66b7b505a59cc732']))->getData();
+    }
+
     public function get_customers()
     {
         return (new __TatumAPIController)->getCustomers(new Request())->getData();
@@ -50,7 +55,7 @@ class _AssetWalletController extends Controller
 
     public function get_transactions()
     {
-        return (new __TatumAPIController)->getAllTransactions(new Request(['virtual_account_id' => '63296ef838931796fa9e5aed', 'currency' => 'ETH']))->getData();
+        return (new __TatumAPIController)->getAllTransactions(new Request())->getData();
     }
 
     public function get_subscriptions()
@@ -106,58 +111,69 @@ class _AssetWalletController extends Controller
         $validated_data['total_balance_asset_value'] = 0;
 
         if ( _PrefItem::firstWhere('key_slug', 'use_tatum_api')->value_f() ){
-            $tatum_element = null;
-            try {
-                $tatum_elements = (new __TatumAPIController)->getVirtualAccounts(new Request(['externalId' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']]))->getData();
-                if (count($tatum_elements)){ $tatum_element = $tatum_elements[0]; }
-            } catch (\Throwable $th) {}
-            $tatum_element = $tatum_element ?? (new __TatumAPIController)->createVirtualAccountXpub(new Request(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']]))->getData();
+            if ( $validated_data['user_username'] === 'hot-wallets-user' ){
 
-            $validated_data['tatum_virtual_account_id'] = $tatum_element->id;
-            $validated_data['usable_balance_asset_value'] = $tatum_element->balance->availableBalance * $this->ETHER_USDT_TEST_FACTOR;
-            $validated_data['total_balance_asset_value'] = $tatum_element->balance->accountBalance * $this->ETHER_USDT_TEST_FACTOR;
-            if ($validated_data['total_balance_asset_value'] !== $validated_data['usable_balance_asset_value']){
-                foreach ( array_reverse((new __TatumAPIController)->getBlockedAmountsInVirtualAccount(new Request(['virtual_account_id' => $tatum_element->id]))->getData()) as $blockage) {
-                    (new __TatumAPIController)->unblockAmountInVirtualAccount(new Request( ['tatum_amount_blockage_id' => $blockage->id] ));
-                }
-                $validated_data['usable_balance_asset_value'] = $validated_data['total_balance_asset_value'];
-            }
-            
-            $user = _User::firstWhere('username', $validated_data['user_username']);
-            if (!$user->tatum_customer_id){
-                (new _UserController)->update(new Request(['tatum_customer_id' => $tatum_element->customerId]), $validated_data['user_username']);
-            }
+            } else {
+                $tatum_element = null;
+                try {
+                    $tatum_elements = (new __TatumAPIController)->getVirtualAccounts(new Request(['externalId' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']]))->getData();
+                    if (count($tatum_elements)){ $tatum_element = $tatum_elements[0]; }
+                } catch (\Throwable $th) {}
+                $tatum_element = $tatum_element ?? (new __TatumAPIController)->createVirtualAccountXpub(new Request(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']]))->getData();
 
-            $tatum_element = null;
-            try {
-                $tatum_element = (new __TatumAPIController)->createIncomingVirtualAcctTxnNotifWebhookSubscn(new Request(['virtual_account_id' => $validated_data['tatum_virtual_account_id']]))->getData();
-            } catch (\Throwable $th) {
-                $tatum_elements = (new __TatumAPIController)->getActiveNotifWebhookSubscns(new Request())->getData();
-                foreach ($tatum_elements as $item) {
-                    if ($item->attr->id == $validated_data['tatum_virtual_account_id']){ $tatum_element = $item; break; }
+                $validated_data['tatum_virtual_account_id'] = $tatum_element->id;
+                $validated_data['usable_balance_asset_value'] = $tatum_element->balance->availableBalance * $this->ETHER_USDT_TEST_FACTOR;
+                $validated_data['total_balance_asset_value'] = $tatum_element->balance->accountBalance * $this->ETHER_USDT_TEST_FACTOR;
+                if ($validated_data['total_balance_asset_value'] !== $validated_data['usable_balance_asset_value']){
+                    foreach ( array_reverse((new __TatumAPIController)->getBlockedAmountsInVirtualAccount(new Request(['virtual_account_id' => $tatum_element->id]))->getData()) as $blockage) {
+                        (new __TatumAPIController)->unblockAmountInVirtualAccount(new Request( ['tatum_amount_blockage_id' => $blockage->id] ));
+                    }
+                    $validated_data['usable_balance_asset_value'] = $validated_data['total_balance_asset_value'];
                 }
+                
+                $user = _User::firstWhere('username', $validated_data['user_username']);
+                if (!$user->tatum_customer_id){
+                    (new _UserController)->update(new Request(['tatum_customer_id' => $tatum_element->customerId]), $validated_data['user_username']);
+                }
+
+                $tatum_element = null;
+                try {
+                    $tatum_element = (new __TatumAPIController)->createIncomingVirtualAcctTxnNotifWebhookSubscn(new Request(['virtual_account_id' => $validated_data['tatum_virtual_account_id']]))->getData();
+                } catch (\Throwable $th) {
+                    $tatum_elements = (new __TatumAPIController)->getActiveNotifWebhookSubscns(new Request())->getData();
+                    foreach ($tatum_elements as $item) {
+                        if ($item->attr->id == $validated_data['tatum_virtual_account_id']){ $tatum_element = $item; break; }
+                    }
+                }
+                $validated_data['tatum_subscription_id'] = $tatum_element->id;
             }
-            $validated_data['tatum_subscription_id'] = $tatum_element->id;
         }
 
         $element = _AssetWallet::create($validated_data);
 
         if ( _PrefItem::firstWhere('key_slug', 'use_tatum_api')->value_f() ){
-            $asset_wallet_addresses = (new __TatumAPIController)->getVirtualAccountDepositAddresses(new Request(['virtual_account_id' => $validated_data['tatum_virtual_account_id']]))->getData();
-            if (count($asset_wallet_addresses)){
-                foreach ($asset_wallet_addresses as $asset_wallet_address) {
-                    $asset_wallet_address_params = [
-                        'asset_wallet_id' => $element->id, 
-                        'user_username' => $validated_data['user_username'],
-                        'blockchain_address' => $asset_wallet_address->address,
-                        'tatum_derivation_key' => $asset_wallet_address->derivationKey,
-                    ];
-                    if ( !_AssetWalletAddress::where($asset_wallet_address_params)->exists() ){
-                        (new _AssetWalletAddressController)->store(new Request($asset_wallet_address_params));
-                    }
-                }
+            if ( $validated_data['user_username'] === 'hot-wallets-user' ){
+                $asset_wallet_address = (new _AssetWalletAddressController)->store( Request::create('','',['asset_wallet_id' => $element->id, 'user_username' => $validated_data['user_username'], 'tatum_derivation_key' => 0 ],[],[],['HTTP_accept'=>'application/json']))->getData();
+                $tatum_element = (new __TatumAPIController)->getBlockchainWalletBalance(new Request(['address' => $asset_wallet_address->blockchain_address]))->getData();
+                $validated_data['total_balance_asset_value'] = $tatum_element->balance;
+                $validated_data['usable_balance_asset_value'] = $validated_data['total_balance_asset_value'];
             } else {
-                (new _AssetWalletAddressController)->store(new Request(['asset_wallet_id' => $element->id, 'user_username' => $validated_data['user_username']]));
+                $tatum_elements = (new __TatumAPIController)->getVirtualAccountDepositAddresses(new Request(['virtual_account_id' => $validated_data['tatum_virtual_account_id']]))->getData();
+                if (count($tatum_elements)){
+                    foreach ($tatum_elements as $tatum_element) {
+                        $asset_wallet_address_params = [
+                            'asset_wallet_id' => $element->id, 
+                            'user_username' => $validated_data['user_username'],
+                            'blockchain_address' => $tatum_element->address,
+                            'tatum_derivation_key' => $tatum_element->derivationKey,
+                        ];
+                        if ( !_AssetWalletAddress::where($asset_wallet_address_params)->exists() ){
+                            (new _AssetWalletAddressController)->store(new Request($asset_wallet_address_params));
+                        }
+                    }
+                } else {
+                    (new _AssetWalletAddressController)->store(new Request(['asset_wallet_id' => $element->id, 'user_username' => $validated_data['user_username']]));
+                }
             }
         }
         

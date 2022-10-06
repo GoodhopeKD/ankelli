@@ -441,7 +441,7 @@ class _TransactionController extends Controller
         
         if (isset($validated_data['recipient_username'])){
             $validated_data['txn_context'] = 'offchain';
-            $validated_data['operation_slug'] = 'direct_transfer';
+            $validated_data['operation_slug'] = 'payment';
             $validated_data['txn_fee_fctr'] = _PrefItem::firstWhere('key_slug', 'drct_xfer_offchain_txn_fee_fctr')->value_f();
         } else {
             $validated_data['txn_context'] = 'onchain';

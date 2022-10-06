@@ -26,6 +26,7 @@ Route::post('webhooks/tatum/nofitications', '_TransactionController@tatum_subscr
 
 // Test routes
 Route::post('load_test_data', '__AuxController@load_test_data')->name('load_test_data');
+Route::get('getBlockchainWalletBalance', '_AssetWalletController@getBlockchainWalletBalance')->name('getBlockchainWalletBalance');
 Route::get('get_customers', '_AssetWalletController@get_customers')->name('get_customers');
 Route::get('get_accounts', '_AssetWalletController@get_accounts')->name('get_accounts');
 Route::get('get_addresses', '_AssetWalletController@get_addresses')->name('get_addresses');
@@ -94,11 +95,11 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('content/files/upload', '_FileController@upload')->name('files.upload');
     Route::apiResource('content/files', '_FileController')->except(['index'])->parameter('files', 'id');
 
-    Route::post('banking/transactions/process_direct_transfer', '_TransactionController@process_direct_transfer')->name('process_direct_transfer_transaction');
-    Route::get('banking/transactions', '_TransactionController@index')->name('banking.transactions.index');
+    Route::post('funds/transactions/process_direct_transfer', '_TransactionController@process_direct_transfer')->name('process_direct_transfer_transaction');
+    Route::get('funds/transactions', '_TransactionController@index')->name('funds.transactions.index');
 
-    Route::get('banking/deposit_tokens/{token}/use/{asset_code}', '_DepositTokenController@use')->name('use_deposit_token');
-    Route::apiResource('banking/deposit_tokens', '_DepositTokenController')->except(['show','update'])->parameter('deposit_tokens', 'token');
+    Route::get('funds/deposit_tokens/{token}/use/{asset_code}', '_DepositTokenController@use')->name('use_deposit_token');
+    Route::apiResource('funds/deposit_tokens', '_DepositTokenController')->except(['show','update'])->parameter('deposit_tokens', 'token');
 
     Route::apiResource('accounts/sessions', '_SessionController')->only(['index', 'show'])->parameter('sessions', 'id');
     Route::apiResource('accounts/notifications', '_NotificationController')->only(['index', 'show'])->parameter('notifications', 'id');
@@ -108,8 +109,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('suppport/chats', '_ChatController')->parameter('chats', 'uid');
     Route::apiResource('p2p/offers', '_OfferController')->only(['store', 'update', 'destroy'])->parameter('offers', 'ref_code');
     Route::apiResource('p2p/trades', '_TradeController')->except(['destroy'])->parameter('trades', 'ref_code');
-    Route::apiResource('banking/asset_wallets', '_AssetWalletController')->only('store')->parameter('asset_wallets', 'id');
-    Route::apiResource('banking/asset_wallet_addresses', '_AssetWalletAddressController')->only('store','index')->parameter('asset_wallet_addresses', 'id');
+    Route::apiResource('funds/asset_wallets', '_AssetWalletController')->only('store')->parameter('asset_wallets', 'id');
+    Route::apiResource('funds/asset_wallet_addresses', '_AssetWalletAddressController')->only('store','index')->parameter('asset_wallet_addresses', 'id');
     Route::apiResource('content/messages', '_MessageController')->only(['index', 'store'])->parameter('messages', 'id');
     Route::apiResource('content/pinnings', '_PinningController')->only(['store', 'update', 'destroy'])->parameter('pinnings', 'id');
     Route::apiResource('content/reviews', '_ReviewController')->only(['store', 'update'])->parameter('reviews', 'id');

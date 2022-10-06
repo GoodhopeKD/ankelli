@@ -16,7 +16,7 @@ Open File **`C:\Windows\System32\drivers\etc\hosts`**
 
 ```properties
 # ankelli.test
-127.0.0.1   ankelli.test www.ankelli.test api.ankelli.test p2p.ankelli.test pay.ankelli.test admin.ankelli.test content.ankelli.test banking.ankelli.test support.ankelli.test accounts.ankelli.test webhooks.ankelli.test
+127.0.0.1   ankelli.test www.ankelli.test api.ankelli.test p2p.ankelli.test pay.ankelli.test admin.ankelli.test content.ankelli.test funds.ankelli.test support.ankelli.test accounts.ankelli.test webhooks.ankelli.test
 ```
 
 ### b) Using wildcard subdomains

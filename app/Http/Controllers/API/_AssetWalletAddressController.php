@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
+use App\Models\_PrefItem;
 use App\Models\_AssetWallet;
 
 use App\Models\_AssetWalletAddress;
@@ -50,11 +51,18 @@ class _AssetWalletAddressController extends Controller
             'tatum_derivation_key' => ['sometimes', 'integer'],
         ]);
 
-        if ( !( isset($validated_data['blockchain_address']) && isset($validated_data['tatum_derivation_key'])) ){
-            $asset_wallet = _AssetWallet::find($validated_data['asset_wallet_id'])->makeVisible(['tatum_virtual_account_id']);
-            $tatum_element = (new __TatumAPIController)->createVirtualAccountDepositAddress(new Request(['virtual_account_id' => $asset_wallet->tatum_virtual_account_id]))->getData();
-            $validated_data['blockchain_address'] = $tatum_element->address;
-            $validated_data['tatum_derivation_key'] = $tatum_element->derivationKey;
+        if ( !isset($validated_data['blockchain_address']) ){
+            if ( _PrefItem::firstWhere('key_slug', 'use_tatum_api')->value_f() ){
+                $asset_wallet = _AssetWallet::find($validated_data['asset_wallet_id'])->makeVisible(['tatum_virtual_account_id']);
+                if ( $validated_data['user_username'] === 'hot-wallets-user' ){
+                    $tatum_element = (new __TatumAPIController)->getBlockchainWalletAddress(new Request(['asset_code' => $asset_wallet->asset_code, 'index'=> $validated_data['tatum_derivation_key']]))->getData();
+                    $validated_data['blockchain_address'] = $tatum_element->address;
+                } else {
+                    $tatum_element = (new __TatumAPIController)->createVirtualAccountDepositAddress(new Request(['virtual_account_id' => $asset_wallet->tatum_virtual_account_id]))->getData();
+                    $validated_data['blockchain_address'] = $tatum_element->address;
+                    $validated_data['tatum_derivation_key'] = $tatum_element->derivationKey;
+                }
+            }
         }
 
         $element = _AssetWalletAddress::create($validated_data);

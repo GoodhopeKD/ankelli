@@ -55,12 +55,12 @@ export default class _AssetWallet extends _Wrapper_ implements Omit<typeof _Asse
     /* Creator(s) */
 
     public static async create(args: typeof _AssetWalletRespObj) {
-        return this._mainLaravelDBAPICreate('banking/asset_wallets', args)
+        return this._mainLaravelDBAPICreate('funds/asset_wallets', args)
     }
 
     /* Readers */
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('banking/asset_wallets', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('funds/asset_wallets', params, page_select, per_page)
     }
 }

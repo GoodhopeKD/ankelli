@@ -181,7 +181,7 @@ class TradesViewSingleScreen extends React.Component {
                                                         <div className={"progress-bar text-bg-" + btn_class} style={{ width: this.focused_trade.progress + '%' }} role="progressbar">{this.focused_trade.progress}%</div>
                                                     </div>
                                                     <p>Status: {window.ucfirst(this.focused_trade._status)}</p>
-                                                    <p>Initialized: {this.focused_trade.created_datetime.prettyDatetime()}</p>
+                                                    <p>Created: {this.focused_trade.created_datetime.prettyDatetime()}</p>
                                                     <p>Last activity: {this.focused_trade.last_activity_datetime.prettyDatetime()}</p>
                                                     {this.focused_trade.closed_datetime === null && <p>🕑 {(this.focused_trade.mins_remaining > 0) ? this.focused_trade.mins_remaining + ' mins remaining' : -1 * this.focused_trade.mins_remaining + ' mins late'}</p>}
                                                     {this.focused_trade.closed_datetime !== null && <p>Closed: {this.focused_trade.closed_datetime.prettyDatetime()}</p>}
@@ -364,7 +364,7 @@ class TradesViewSingleScreen extends React.Component {
                                                                         <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
                                                                     </div>
                                                                     <div className="modal-body">
-                                                                        <p>Funds are about to be released from your account. Confirm.</p>
+                                                                        <p>{window.assetValueString(this.focused_trade.asset_value_escrowed, asset)} is about to be released from your account for this. Enter password to continue.</p>
                                                                         <div className="form-floating mb-3">
                                                                             <input
                                                                                 type="password"
@@ -424,7 +424,7 @@ class TradesViewSingleScreen extends React.Component {
                                                         </>}
 
                                                         {auth_user_is_seller && this.focused_trade.buyer_opened_datetime == null && <>
-                                                            <p>As the seller, you can cancel the trade if the buyer doesn't open it {this.props.sysconfig_params.buyer_open_trade_min_mins_tmt} minutes after it has been initialized.</p>
+                                                            <p>As the seller, you can cancel the trade if the buyer doesn't open it {this.props.sysconfig_params.buyer_open_trade_min_mins_tmt} minutes after it has been created.</p>
                                                             <button className="w-100 btn rounded-3 btn-danger" disabled={this.state.btn_cancel_trade_working || ((_DateTime.nowUnixTimeStamp() - this.focused_trade.created_datetime.unix_timestamp) < (this.props.sysconfig_params.buyer_open_trade_min_mins_tmt * 60))}
                                                                 onClick={() => {
                                                                     this.setState({ btn_cancel_trade_working: true },

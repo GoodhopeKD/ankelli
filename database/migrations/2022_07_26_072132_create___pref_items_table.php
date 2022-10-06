@@ -209,7 +209,7 @@ return new class extends Migration
             [
                 'key_name' => 'Use tatum crypto asset engine API',
                 'key_slug' => 'use_tatum_api',
-                'value' => false,
+                'value' => true,
                 'value_type' => 'boolean',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
@@ -261,8 +261,8 @@ return new class extends Migration
                 'creator_username' => 'system',
             ],
             [
-                'key_name' => 'Platform fee factor on crypto-fiat conversions',
-                'key_slug' => 'crypto_fiat_conv_txn_fee_fctr',
+                'key_name' => 'Platform fee factor on crypto conversions',
+                'key_slug' => 'crypto_conv_txn_fee_fctr',
                 'value' => 0.01,
                 'value_type' => 'float',
                 'parent_table' => '__users',

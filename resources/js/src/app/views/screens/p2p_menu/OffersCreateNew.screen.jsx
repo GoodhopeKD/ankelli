@@ -165,7 +165,6 @@ class OffersCreateNewScreen extends React.Component {
                                     </div>
                                 </div>
                             </div>
-
                         }
 
 
@@ -252,7 +251,7 @@ class OffersCreateNewScreen extends React.Component {
                                                     onChange={asset_code => this.handleInputChange('asset_code', asset_code, true)}
                                                 />
                                             </div>
-                                            {this.props.auth_user != null && <div className="col">
+                                            {this.state.input.offer_to == 'sell' && this.props.auth_user != null && <div className="col">
                                                 <label htmlFor="output_current_balance" className="form-label">Usable balance</label>
                                                 <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
                                             </div>}
@@ -417,7 +416,7 @@ class OffersCreateNewScreen extends React.Component {
                             </>}
 
                             <div className="mb-3">
-                                <label htmlFor="input_buyer_cmplt_trade_mins_tmt" className="form-label">{this.state.input.offer_to == 'buy' ? 'You engage' : 'You expect buyer'} to complete initialized trade in</label>
+                                <label htmlFor="input_buyer_cmplt_trade_mins_tmt" className="form-label">{this.state.input.offer_to == 'buy' ? 'You engage' : 'You expect buyer'} to complete trade in</label>
                                 <div className="input-group">
                                     <input
                                         type="number" className="form-control" id="input_buyer_cmplt_trade_mins_tmt"

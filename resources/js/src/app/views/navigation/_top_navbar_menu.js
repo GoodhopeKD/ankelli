@@ -48,12 +48,6 @@ export const _top_navbar_menu = {
             restricted_for_default_users: true,
         },
         {
-            title: 'Pay',
-            path: '/home',
-            subdomain: 'pay',
-            restricted_for_default_users: true,
-        },
-        {
             title: 'Trades',
             path: '/trades',
             element: (props) => <TradesViewListScreen {...props} />,

@@ -75,7 +75,7 @@ class CryptoAssetWalletsScreen extends React.Component {
             <div className="container-xl py-3">
                 <div className="row">
                     <div className="col-lg-2">
-                        <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'banking_menu')]} />
+                        <SideBar nav_menus={this.props.nav_menus.filter(menu => menu.slug === 'funds_menu')} />
                     </div>
                     <div className="col-lg-10">
                         <h4>My crypto wallets</h4>

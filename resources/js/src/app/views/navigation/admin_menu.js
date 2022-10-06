@@ -1,7 +1,7 @@
 import React from "react"
-import MotherWalletManagementScreen from 'app/views/screens/admin_menu/banking-admin/MotherWalletManagement.screen'
-import DepositTokensViewListScreen from 'app/views/screens/admin_menu/banking-admin/DepositTokensViewList.screen'
-import DepositTokensCreateNewScreen from 'app/views/screens/admin_menu/banking-admin/DepositTokensCreateNew.screen'
+import MotherWalletManagementScreen from 'app/views/screens/admin_menu/funds-admin/MotherWalletManagement.screen'
+import DepositTokensViewListScreen from 'app/views/screens/admin_menu/funds-admin/DepositTokensViewList.screen'
+import DepositTokensCreateNewScreen from 'app/views/screens/admin_menu/funds-admin/DepositTokensCreateNew.screen'
 import RegTokensViewListScreen from 'app/views/screens/admin_menu/accounts-admin/RegTokensViewList.screen'
 import DatalistViewListScreen from "app/views/screens/admin_menu/datalists/DatalistViewList.screen"
 import SysToolsViewListScreen from "app/views/screens/admin_menu/systools/SysToolsViewList.screen"
@@ -16,7 +16,7 @@ class ExampleElement extends React.Component {
             <div className="container-xl py-3">
                 <div className="row">
                     <div className="col-lg-2">
-                        <SideBar nav_menus={[this.props.nav_menus.find(menu => menu.slug === 'admin_menu')]} />
+                        <SideBar nav_menus={this.props.nav_menus.filter(menu => menu.slug === 'admin_menu')} />
                     </div>
                     <div className="col-lg-10">
                         {this.props.title} screen
@@ -53,8 +53,8 @@ export const admin_menu = {
                     show_in_menu: true,
                 },
                 {
-                    title: 'Banking Analytics',
-                    path: '/analytics/banking',
+                    title: 'Funds Analytics',
+                    path: '/analytics/funds',
                     required_active_user_group_membership_slugs: ['business_administrators', 'system_administrators'],
                     element: (props) => <ExampleElement {...props} />,
                     show_in_menu: true,
@@ -76,13 +76,13 @@ export const admin_menu = {
             ]
         },
         {
-            title: 'Banking admin',
-            path: '/banking-admin',
+            title: 'Funds admin',
+            path: '/funds-admin',
             required_active_user_group_membership_slugs: ['business_administrators'],
             children: [
                 {
                     title: 'Manage mother wallets',
-                    path: '/banking-admin/mother-wallets-management',
+                    path: '/funds-admin/mother-wallets-management',
                     element: (props) => <MotherWalletManagementScreen {...props} />,
                     required_active_user_group_membership_slugs: ['business_administrators'],
                     show_in_menu: true,
@@ -90,14 +90,14 @@ export const admin_menu = {
                 // Deposits management
                 {
                     title: 'Deposit Tokens',
-                    path: '/banking-admin/deposit_tokens',
+                    path: '/funds-admin/deposit_tokens',
                     element: (props) => <DepositTokensViewListScreen {...props} />,
                     required_active_user_group_membership_slugs: ['business_administrators'],
                     show_in_menu: true,
                 },
                 {
                     title: 'New Deposit Token',
-                    path: '/banking-admin/deposit_tokens/new',
+                    path: '/funds-admin/deposit_tokens/new',
                     element: (props) => <DepositTokensCreateNewScreen {...props} />,
                     required_active_user_group_membership_slugs: ['business_administrators'],
                     restricted_for_default_users: true,
@@ -105,7 +105,7 @@ export const admin_menu = {
                 },
                 {
                     title: 'Edit Deposit Token',
-                    path: '/banking-admin/deposit_tokens/:deposit_token_id/edit',
+                    path: '/funds-admin/deposit_tokens/:deposit_token_id/edit',
                     element: (props) => <ExampleElement {...props} />,
                     restricted_for_default_users: true,
                     show_in_menu: false,
@@ -113,14 +113,14 @@ export const admin_menu = {
                 // Withdrawals management
                 {
                     title: 'Withdrawal requests',
-                    path: '/banking-admin/withdrawal-requests',
+                    path: '/funds-admin/withdrawal-requests',
                     element: (props) => <ExampleElement {...props} />,
                     required_active_user_group_membership_slugs: ['business_administrators'],
                     show_in_menu: true,
                 },
                 {
                     title: 'Handle Withdrawal Request',
-                    path: '/banking-admin/withdrawal-requests/:withdrawal_request_id/edit',
+                    path: '/funds-admin/withdrawal-requests/:withdrawal_request_id/edit',
                     element: (props) => <ExampleElement {...props} />,
                     required_active_user_group_membership_slugs: ['business_administrators'],
                     restricted_for_default_users: true,
