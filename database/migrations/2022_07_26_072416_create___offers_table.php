@@ -38,8 +38,8 @@ return new class extends Migration
                     ->onUpdate('cascade')
                     ->onDelete('set null');
 
-            $table->string('offer_price', 32); // unsignedDecimal
-            $table->string('trade_txn_fee_fctr', 32); // unsignedDecimal
+            $table->string('offer_price', 38); // unsignedDecimal
+            $table->string('trade_txn_fee_fctr', 38); // unsignedDecimal
 
             // for offer_to = buy
             $table->unsignedBigInteger('min_trade_purchase_amount')->nullable();

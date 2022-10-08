@@ -19,21 +19,6 @@ use App\Models\_PrefItem;
 
 class __AuxController extends Controller
 {
-    public function fire_away(Request $request)
-    {
-        $model = new _RegToken();
-        dd($model->getFillable());
-
-        //$request = new Request(['test-var'=>'test-var-val']);
-        //$request = Request::create('','',['test-var'=>'test-var-val'],[],[],['HTTP_accept'=>'application/json']);
-        (new __AuxController)->fire_away_2($request);
-    }
-
-    public function fire_away_2(Request $request)
-    {
-        dd($request->expectsJson());
-    }
-
     /**
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -42,10 +27,10 @@ class __AuxController extends Controller
     {
         if ( _PrefItem::firstWhere('key_slug', 'scaffolding_app_enabled')->value_f() ){
             $request->validate([
-                'active_session_data.token' => ['sometimes', 'string', 'min:16', 'max:16' ],
+                'active_session_data.token' => ['sometimes', 'string', 'size:16' ],
                 'active_session_data.device_info' => ['required', 'array'],
                 'active_session_data.agent_app_info' => ['required', 'array'],
-                'active_session_data.utc_offset' => ['required', 'string', 'min:6', 'max:6'],
+                'active_session_data.utc_offset' => ['required', 'string', 'size:6'],
             ]);
         
             session()->put('utc_offset', $request->active_session_data['utc_offset']);
@@ -247,17 +232,24 @@ class __AuxController extends Controller
 
     public function load_factory_data()
     {
-        $clear_virtual_accounts = false;
-        if ( $clear_virtual_accounts && _PrefItem::firstWhere('key_slug', 'use_tatum_api')->value_f() ){
-            foreach ((new __TatumAPIController)->getVirtualAccounts(new Request())->getData() as $account) {
-                (new __TatumAPIController)->deactivateVirtualAccount(new Request(['virtual_account_id' => $account->id]));
+        $clear_unsigned_transactions = true;
+        if ( $clear_unsigned_transactions && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+            foreach ((new Tatum\Security\KMSController)->ReceivePendingTransactionsToSign(new Request(['chain' => 'ETH']))->getData() as $transaction) {
+                (new Tatum\Security\KMSController)->DeletePendingTransactionToSign(new Request(['id' => $transaction->id]));
+            }
+        }
+
+        $clear_virtual_accounts = true;
+        if ( $clear_virtual_accounts && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+            foreach ((new Tatum\VirtualAccounts\AccountController)->getAccounts(new Request())->getData() as $account) {
+                try { (new Tatum\VirtualAccounts\AccountController)->deactivateAccount(new Request(['id' => $account->id])); } catch (\Throwable $th) {}
             }
         }
 
         $clear_notification_webhook_subscriptions = true;
-        if ( $clear_notification_webhook_subscriptions && _PrefItem::firstWhere('key_slug', 'use_tatum_api')->value_f() ){
-            foreach ((new __TatumAPIController)->getActiveNotifWebhookSubscns(new Request())->getData() as $subscription) {
-                (new __TatumAPIController)->cancelActiveNotifWebhookSubscn(new Request(['subscription_id' => $subscription->id]));
+        if ( $clear_notification_webhook_subscriptions && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+            foreach ((new Tatum\Subscriptions\NotificationSubscriptionController)->getSubscriptions(new Request())->getData() as $subscription) {
+                (new Tatum\Subscriptions\NotificationSubscriptionController)->deleteSubscription(new Request(['id' => $subscription->id]));
             }
         }
 
@@ -265,15 +257,34 @@ class __AuxController extends Controller
         session()->put('api_auth_user_username', 'system');
 
         (new _AssetController)->store( new Request([
+            'name' => 'Ethereum',
+            'code' => 'ETH',
+            'chain' => 'ETH',
+            'ttm_currency' => 'ETH',
+            'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent',
+            'smallest_display_unit' => '0.0000000001',
+            'withdrawal_txn_fee_usd_fctr' => 1,
+            'payment_txn_fee_usd_fctr' => 1,
+            'usd_asset_exchange_rate' => '0.00076',
+            'onchain_disclaimer' => "This platform is still in test mode on the sepolia testnet chain.
+Onchain transactions should be handled accordingly."
+        ]));
+
+        /*(new _AssetController)->store( new Request([
             'name' => 'Tether USD',
             'code' => 'USDT',
-            'tatum_currency' => 'ETH',
-            'smallest_display_unit' => 0.0001,
+            'chain' => 'ETH',
+            'ttm_currency' => 'ETH',
+            'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent',
+            'smallest_display_unit' => 0.00001,
+            'withdrawal_txn_fee_usd_fctr' => 1,
+            'payment_txn_fee_usd_fctr' => 1,
+            'usd_asset_exchange_rate' => 1,
             'onchain_disclaimer' => "This platform is still in test mode using the testnet chain.
 USDT doesn't exist on testnet so we're using ETH but referring to it here as USDT.
-The system does an internal conversion such that 1 ETH = 2000 USDT.
+The system does an internal conversion such that 1 ETH = 1000 USDT.
 Handle all internal transactions normally but know that these values will be reflected differently outside this platform."
-        ]));
+        ]));*/
 
         $token_reg_changed = false;
         $token_reg_enabled_pref_item = _PrefItem::firstWhere('key_slug', 'token_reg_enabled');
@@ -285,12 +296,6 @@ Handle all internal transactions normally but know that these values will be ref
             ]), $token_reg_enabled_pref_item->id);
             $token_reg_changed = true;
         }
-
-        // user:hot-wallets-user
-        (new _AssetWalletController)->store( new Request([
-            'asset_code' => 'USDT',
-            'user_username' => 'hot-wallets-user',
-        ]));
         
         // user:developer
         (new _UserController)->store( new Request([
@@ -338,34 +343,34 @@ Handle all internal transactions normally but know that these values will be ref
             'user_group_slug' => 'system_administrators',
         ]));
 
-        // user:reserves // used for collecting platform fees and deposit token topups
+        // user:busops // used for collecting platform fees and deposit token topups
         (new _UserController)->store( new Request([
-            'username' => 'reserves',
-            'email_address' => 'reserves@ankelli.com',
+            'username' => 'busops',
+            'email_address' => 'busops@ankelli.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
         (new _AssetWalletController)->store( new Request([
-            'asset_code' => 'USDT',
-            'user_username' => 'reserves',
+            'asset_code' => 'ETH',
+            'user_username' => 'busops',
         ]));
         (new _UserGroupMembershipController)->store( new Request([
-            'user_username' => 'reserves',
+            'user_username' => 'busops',
             'user_group_slug' => 'default_users',
         ]));
         (new _AdminExtensionController)->store( new Request([
-            'user_username' => 'reserves',
+            'user_username' => 'busops',
             'post_title' => 'Ankelli Asset Reserves',
         ]));
         (new _BuyerExtensionController)->store( new Request([
-            'user_username' => 'reserves',
+            'user_username' => 'busops',
             '_status' => 'deactivated',
         ]));
         (new _SellerExtensionController)->store( new Request([
-            'user_username' => 'reserves',
+            'user_username' => 'busops',
             '_status' => 'deactivated',
         ]));
         (new _UserGroupMembershipController)->store( new Request([
-            'user_username' => 'reserves',
+            'user_username' => 'busops',
             'user_group_slug' => 'business_administrators',
         ]));
 
@@ -402,7 +407,7 @@ Handle all internal transactions normally but know that these values will be ref
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
         (new _AssetWalletController)->store( new Request([
-            'asset_code' => 'USDT',
+            'asset_code' => 'ETH',
             'user_username' => 'guddaz',
         ]));
         (new _AdminExtensionController)->store( new Request([
@@ -419,7 +424,7 @@ Handle all internal transactions normally but know that these values will be ref
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
         (new _AssetWalletController)->store( new Request([
-            'asset_code' => 'USDT',
+            'asset_code' => 'ETH',
             'user_username' => 'paywyze',
         ]));
         (new _AdminExtensionController)->store( new Request([
@@ -435,14 +440,14 @@ Handle all internal transactions normally but know that these values will be ref
             'user_username' => 'paywyze', 'user_group_slug' => 'business_administrators',
         ]));
 
-        // user:sekuru
+        // user:john_doe
         (new _UserController)->store( new Request([
-            'username' => 'sekuru', 'email_address' => 'sekuru@ankelli.com',
+            'username' => 'john_doe', 'email_address' => 'john_doe@ankelli.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
         (new _AssetWalletController)->store( new Request([
-            'asset_code' => 'USDT',
-            'user_username' => 'sekuru',
+            'asset_code' => 'ETH',
+            'user_username' => 'john_doe',
         ]));
 
         if ($token_reg_changed){
@@ -486,7 +491,7 @@ Handle all internal transactions normally but know that these values will be ref
         // Internalisation transactions
 
         $internalisations = [
-            ['reserves', 3000, 'Transfer from Coinbase wallet to Ankelli Reserves Wallet.', 'c83f8818db43d9ba4accfe454aa44fc33123d47a4f89d47b314d6748eb0e9bc9'],
+            ['busops', 3000, 'Transfer from Coinbase wallet to Ankelli Reserves Wallet.', 'c83f8818db43d9ba4accfe454aa44fc33123d47a4f89d47b314d6748eb0e9bc9'],
             ['guddaz', 248.87587867, 'Transfer from Coinbase wallet to Ankelli wallet.', '62BD544D1B9031EFC300A3E850CC3A0D51CA5131450C1AB3BCAC6D243F65460D'],
             ['paywyze', 967.86579, 'Transfer from Ledger wallet to Ankelli wallet.', '62BD544D1B9031EFC300A3E850CC3A0D51CA5131450C1AB3BCAC6D243F65s60D'],
             ['flint', 498.6678, 'Transfer from Coinbase wallet to Ankelli wallet.', 'c83f8818db43d9ba4accfe454aa44fc33123d47a4f89d47b314d6748eb0e9bcd'],
@@ -500,7 +505,7 @@ Handle all internal transactions normally but know that these values will be ref
                 'txn_context' => 'onchain',
                 'blockchain_txn_id' => $internalisation[3],
                 'recipient_note' => $internalisation[2],
-                'operation_slug' => 'inbound_direct_transfer',
+                'operation_slug' => 'DEPOSIT',
                 'recipient_username' => $internalisation[0], 
                 'asset_code' => 'USDT',
                 'xfer_asset_value' => $internalisation[1],

@@ -189,10 +189,10 @@ class TransactionsViewListScreen extends React.Component {
                                         <tr>
                                             <th scope="col">Ref Code</th>
                                             <th scope="col">Type</th>
-                                            <th scope="col" style={{ minWidth: 110 }}>Asset Value</th>
+                                            <th scope="col" style={{ minWidth: 150 }}>Asset Value</th>
                                             <th scope="col" style={{ minWidth: 300 }}>Note</th>
                                             <th scope="col" style={{ minWidth: 205 }}>Datetime</th>
-                                            <th scope="col" style={{ minWidth: 120 }}>New balance</th>
+                                            <th scope="col" style={{ minWidth: 150 }}>New balance</th>
                                         </tr>
                                     </thead>
                                     <tbody>

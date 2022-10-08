@@ -17,11 +17,14 @@ class _Asset extends Model
     protected $fillable = [
         'name',
         'code',
+        'chain',
+        'ttm_currency',
+        'ttm_xpub',
         'smallest_display_unit',
+        'withdrawal_txn_fee_usd_fctr',
+        'payment_txn_fee_usd_fctr',
+        'usd_asset_exchange_rate',
         'onchain_disclaimer',
-        'tatum_mnemonic',
-        'tatum_xpub',
-        'tatum_currency',
         '_status',
         'creator_username',
     ];
@@ -32,8 +35,7 @@ class _Asset extends Model
      * @var array
      */
     protected $hidden = [
-        'tatum_mnemonic',
-        'tatum_xpub',
+        'ttm_xpub',
     ];
 
     /**
@@ -42,7 +44,10 @@ class _Asset extends Model
      * @var array
      */
     protected $casts = [
-        'smallest_display_unit' => 'float',
+        //'smallest_display_unit' => 'float',
+        //'withdrawal_txn_fee_usd_fctr' => 'float',
+        //'payment_txn_fee_usd_fctr' => 'float',
+        //'usd_asset_exchange_rate' => 'float',
     ];
 
     /**

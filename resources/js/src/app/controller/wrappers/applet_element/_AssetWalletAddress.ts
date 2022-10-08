@@ -20,7 +20,7 @@ export const _AssetWalletAddressRespObj = {
     id: undefined as undefined | null | number,
     asset_wallet_id: undefined as undefined | null | number,
     blockchain_address: undefined as undefined | null | string,
-    tatum_derivation_key: undefined as undefined | null | number,
+    ttm_derivation_key: undefined as undefined | null | number,
     onchain_txn_count: undefined as undefined | null | number,
 
     created_datetime: undefined as undefined | null | string,
@@ -35,7 +35,7 @@ export default class _AssetWalletAddress extends _Wrapper_ implements Omit<typeo
     id: number | null = null
     asset_wallet_id: number | null = null
     blockchain_address: string | null = null
-    tatum_derivation_key: number | null = null
+    ttm_derivation_key: number | null = null
     onchain_txn_count: number | null = null
 
     created_datetime: _DateTime | null = null
@@ -54,9 +54,9 @@ export default class _AssetWalletAddress extends _Wrapper_ implements Omit<typeo
 
     /* Creator(s) */
 
-    public static async create(args: typeof _AssetWalletAddressRespObj) {
+    /*public static async create(args: typeof _AssetWalletAddressRespObj) {
         return this._mainLaravelDBAPICreate('funds/asset_wallet_addresses', args)
-    }
+    }*/
 
     /* Readers */
 

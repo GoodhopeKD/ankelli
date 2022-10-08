@@ -32,7 +32,7 @@ class _Trade extends Model
         'currency_code',
         'asset_value',
         'currency_amount',
-        'tatum_amount_blockage_id',
+        'ttm_amount_blockage_id',
         'asset_value_escrowed',
         'offer_price',
         'trade_txn_fee_fctr',
@@ -66,10 +66,10 @@ class _Trade extends Model
         'closed_datetime' => 'datetime',
         'visible_to_creator' => 'boolean',
         'visible_to_offer_creator' => 'boolean',
-        'asset_value' => 'float',
-        'asset_value_escrowed' => 'float',
-        'offer_price' => 'float',
-        'trade_txn_fee_fctr' => 'float',
+        //'asset_value' => 'float',
+        //'asset_value_escrowed' => 'float',
+        //'offer_price' => 'float',
+        //'trade_txn_fee_fctr' => 'float',
         'pymt_details' => 'array',
     ];
 

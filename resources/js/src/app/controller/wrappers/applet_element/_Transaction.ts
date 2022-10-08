@@ -63,12 +63,24 @@ export default class _Transaction extends _Wrapper_ implements Omit<typeof _Tran
         return this._mainLaravelDBAPIGetCollection('funds/transactions', params, page_select, per_page)
     }
 
-    public static async process_direct_transfer(data: { asset_code: string, asset_value: number, destination_blockchain_address: string, receiving_note: string, sender_password: string }) {
+    public static async process_withdrawal(data: { asset_code: string, asset_value: number, sender_note: string, sender_password: string, destination_blockchain_address: string }) {
         return await mainLaravelDBRestAPICallWrapper
             .dispatch({
                 type: 'APP_BACKEND_API_CALL',
                 method: 'POST',
-                endpoint: 'funds/transactions/process_direct_transfer',
+                endpoint: 'funds/transactions/process_withdrawal',
+                data
+            })
+            .then((resp: any) => { return Promise.resolve(resp) })
+            .catch((e: any) => { return Promise.reject(e) })
+    }
+
+    public static async process_payment(data: { asset_code: string, asset_value: number, sender_note: string, sender_password: string, recipient_user_tag: 'username' | 'email_address' | 'ankelli_pay_id', recipient_username?: string, recipient_email_address?: string, recipient_ankelli_pay_id?: string, recipient_note: string }) {
+        return await mainLaravelDBRestAPICallWrapper
+            .dispatch({
+                type: 'APP_BACKEND_API_CALL',
+                method: 'POST',
+                endpoint: 'funds/transactions/process_payment',
                 data
             })
             .then((resp: any) => { return Promise.resolve(resp) })

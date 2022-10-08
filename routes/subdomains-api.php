@@ -16,7 +16,7 @@ Route::group(['domain' => 'https://content.'.env('MIX_DOMAIN_NAME')], function()
 });
 
 Route::group(['domain' => 'https://webhooks.'.env('MIX_DOMAIN_NAME')], function(){
-    Route::post('tatum/nofitications', '_TransactionController@tatum_subscription_webhook_txrecon')->name('tatum.subscription_txrecon');
+    Route::post('tatum/nofitications', '_TransactionController@ttm_subscription_webhook_txrecon')->name('tatum.subscription_txrecon');
 });
 
 Route::group(['domain' => 'https://p2p.'.env('MIX_DOMAIN_NAME')], function(){
@@ -74,9 +74,9 @@ Route::group(['domain' => 'https://funds.'.env('MIX_DOMAIN_NAME')], function(){
         '/my-crypto-wallets',
         '/transactions',
         '/statements',
-        '/deposits/receive-crypto',
-        '/deposits/token-topup',
-        '/withdrawals',
+        '/deposit/receive-crypto',
+        '/deposit/token-topup',
+        '/withdraw',
     ];
     foreach ($funds_scaffolding_app_paths as $path) {
         //Route::view($path, 'funds/scaffolding_app');

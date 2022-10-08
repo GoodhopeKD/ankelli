@@ -32,6 +32,7 @@ php artisan make:model _PermissionInstance -m
 
 php artisan make:model _Session -m
 php artisan make:model _Notification -m
+php artisan make:model _SysConfigParam -m
 php artisan make:model _PrefItem -m
 php artisan make:model _RegToken -m
 php artisan make:model _VerifToken -m
@@ -46,6 +47,7 @@ php artisan make:model _Post -m
 php artisan make:model _Asset -m
 php artisan make:model _AssetWallet -m
 php artisan make:model _AssetWalletAddress -m
+php artisan make:model _AssetCustodialWalletAddress -m
 php artisan make:model _Currency -m
 php artisan make:model _PymtMethod -m
 php artisan make:model _Country -m
@@ -122,11 +124,11 @@ Create and modify the controllers
 
 ```properties
 php artisan make:controller API/__AuxController
-php artisan make:controller API/__TatumAPIController
 
 php artisan make:controller API/_UserController --api
 php artisan make:controller API/_SessionController --api
 php artisan make:controller API/_EmailAddressController --api
+php artisan make:controller API/_SysConfigParamController --api
 php artisan make:controller API/_PrefItemController --api
 php artisan make:controller API/_NotificationController --api
 php artisan make:controller API/_VerifTokenController --api
@@ -151,6 +153,7 @@ php artisan make:controller API/_ExportableController --api
 
 php artisan make:controller API/_AssetWalletController --api
 php artisan make:controller API/_AssetWalletAddressController --api
+php artisan make:controller API/_AssetCustodialWalletAddressController --api
 php artisan make:controller API/_ChatController --api
 php artisan make:controller API/_DepositTokenController --api
 php artisan make:controller API/_FeedbackReportController --api

@@ -10,7 +10,7 @@ import withRouter from "app/views/navigation/withRouter"
 class DepositTokensCreateNewScreen extends React.Component {
 
     default_input = {
-        asset_code: 'USDT',
+        asset_code: 'ETH',
         asset_value: new _Input(),
         currency_code: 'USD',
         currency_amount: new _Input(),
@@ -20,7 +20,7 @@ class DepositTokensCreateNewScreen extends React.Component {
     state = {
         btn_create_deposit_token_working: false,
         input: _.cloneDeep(this.default_input),
-        ankelli_reserves_user_asset_wallets: [],
+        ankelli_busops_user_asset_wallets: [],
         errors: [],
     }
 
@@ -43,7 +43,7 @@ class DepositTokensCreateNewScreen extends React.Component {
         const asset = this.props.datalists.active_assets[this.state.input.asset_code]
 
         if (!(input.asset_value > 0)) { errors.push('Asset value invalid') }
-        if (!input.asset_value.isValid('number', 0, (this.state.ankelli_reserves_user_asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value)) { errors.push("Asset value not within bounds") }
+        if (!input.asset_value.isValid('number', 0, (this.state.ankelli_busops_user_asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value)) { errors.push("Asset value not within bounds") }
 
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
@@ -77,8 +77,8 @@ class DepositTokensCreateNewScreen extends React.Component {
     }
 
     componentDidMount = async () => {
-        await _User.getOne({ username: 'reserves' })
-            .then(ankelli_reserves_user => this.setState({ ankelli_reserves_user_asset_wallets: ankelli_reserves_user.asset_wallets }))
+        await _User.getOne({ username: 'busops' })
+            .then(ankelli_busops_user => this.setState({ ankelli_busops_user_asset_wallets: ankelli_busops_user.asset_wallets }))
             .catch(e => console.log(e))
     }
 
@@ -156,7 +156,7 @@ class DepositTokensCreateNewScreen extends React.Component {
                                             </div>
                                             <div className="col">
                                                 <label htmlFor="output_current_balance" className="form-label">Reserves balance</label>
-                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.state.ankelli_reserves_user_asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
+                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.state.ankelli_busops_user_asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -166,7 +166,7 @@ class DepositTokensCreateNewScreen extends React.Component {
                                             required
                                             value={this.state.input.asset_value}
                                             min={asset.smallest_display_unit}
-                                            max={window.assetValueInput((this.state.ankelli_reserves_user_asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}
+                                            max={window.assetValueInput((this.state.ankelli_busops_user_asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}
                                             onChange={elem => this.handleInputChange('asset_value', elem.target.value)}
                                         />
                                     </div>
@@ -193,7 +193,7 @@ class DepositTokensCreateNewScreen extends React.Component {
                                             </div>
                                             <form onSubmit={e => { e.preventDefault(); this.handleSubmit2() }}>
                                                 <div className="modal-body">
-                                                    <p>{window.assetValueString(this.state.input.asset_value, asset)} is about to be released from the reserves account. Enter password to continue.</p>
+                                                    <p>{window.assetValueString(this.state.input.asset_value, asset)} is about to be released from the busops account. Enter password to continue.</p>
                                                     <div className="form-floating mb-3">
                                                         <input
                                                             type="password"

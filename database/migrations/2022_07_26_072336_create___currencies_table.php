@@ -19,9 +19,9 @@ return new class extends Migration
             $table->string('code', 3)->unique();
             $table->string('symbol', 3);
             $table->boolean('symbol_before_number');
-            $table->string('usd_rate', 32); // unsignedDecimal
-            $table->string('min_transactable_cash_amount', 32); // unsignedDecimal
-            $table->string('smallest_transactable_cash_denomination_amount', 32); // unsignedDecimal
+            $table->string('usd_rate', 38); // unsignedDecimal
+            $table->string('min_transactable_cash_amount', 38); // unsignedDecimal
+            $table->string('smallest_transactable_cash_denomination_amount', 38); // unsignedDecimal
             $table->enum('_status', ['active', 'deactivated'])->default('active');
 
             $table->string('creator_username', 64)->nullable();

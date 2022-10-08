@@ -34,7 +34,7 @@ return new class extends Migration
             $table->timestamp('action_datetime')->useCurrent()->nullable();
             $table->string('utc_offset', 8)->nullable();
             $table->string('batch_code', 64)->nullable();
-            $table->string('entry_table', 32)->nullable();
+            $table->string('entry_table', 64)->nullable();
             $table->string('entry_uid', 64)->nullable(); 
             $table->text('entry_update_result')->nullable();
             $table->text('request_location')->nullable();

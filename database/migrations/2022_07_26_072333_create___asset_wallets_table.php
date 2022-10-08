@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('__asset_wallets', function (Blueprint $table) {
             $table->id();
-            $table->string('tatum_virtual_account_id', 24)->nullable();
-            $table->string('tatum_subscription_id', 24)->nullable();
+            $table->string('ttm_virtual_account_id', 24)->nullable();
+            $table->string('ttm_subscription_id', 24)->nullable();
             $table->string('user_username', 64)->nullable();
             $table->foreign('user_username')
                     ->references('username')

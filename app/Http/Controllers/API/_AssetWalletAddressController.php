@@ -48,21 +48,14 @@ class _AssetWalletAddressController extends Controller
             'asset_wallet_id' => ['required', 'integer', 'exists:__asset_wallets,id'],
             'user_username' => ['required', 'string', 'exists:__users,username'],
             'blockchain_address' => ['sometimes', 'string'],
-            'tatum_derivation_key' => ['sometimes', 'integer'],
+            'ttm_derivation_key' => ['sometimes', 'integer'],
         ]);
 
-        if ( !isset($validated_data['blockchain_address']) ){
-            if ( _PrefItem::firstWhere('key_slug', 'use_tatum_api')->value_f() ){
-                $asset_wallet = _AssetWallet::find($validated_data['asset_wallet_id'])->makeVisible(['tatum_virtual_account_id']);
-                if ( $validated_data['user_username'] === 'hot-wallets-user' ){
-                    $tatum_element = (new __TatumAPIController)->getBlockchainWalletAddress(new Request(['asset_code' => $asset_wallet->asset_code, 'index'=> $validated_data['tatum_derivation_key']]))->getData();
-                    $validated_data['blockchain_address'] = $tatum_element->address;
-                } else {
-                    $tatum_element = (new __TatumAPIController)->createVirtualAccountDepositAddress(new Request(['virtual_account_id' => $asset_wallet->tatum_virtual_account_id]))->getData();
-                    $validated_data['blockchain_address'] = $tatum_element->address;
-                    $validated_data['tatum_derivation_key'] = $tatum_element->derivationKey;
-                }
-            }
+        if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() && !isset($validated_data['blockchain_address']) ){
+            $asset_wallet = _AssetWallet::find($validated_data['asset_wallet_id'])->makeVisible(['ttm_virtual_account_id']);
+            $ttm_element = (new Tatum\VirtualAccounts\BCAddressController)->generateDepositAddress(new Request(['id' => $asset_wallet->ttm_virtual_account_id]))->getData();
+            $validated_data['blockchain_address'] = $ttm_element->address;
+            $validated_data['ttm_derivation_key'] = $ttm_element->derivationKey;
         }
 
         $element = _AssetWalletAddress::create($validated_data);

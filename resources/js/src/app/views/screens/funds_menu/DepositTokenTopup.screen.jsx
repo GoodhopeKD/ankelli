@@ -10,7 +10,7 @@ import CustomSelect from 'app/views/components/CustomSelect'
 class DepositTokenTopupScreen extends React.Component {
 
     default_input = {
-        asset_code: 'USDT',
+        asset_code: 'ETH',
         currency_code: 'USD',
         token: new _Input(),
     }

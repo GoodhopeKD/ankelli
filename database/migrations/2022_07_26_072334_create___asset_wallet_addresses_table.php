@@ -22,15 +22,15 @@ return new class extends Migration
                     ->on('__users')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->string('blockchain_address', 96)->unique()->nullable();
-            $table->unsignedInteger('tatum_derivation_key')->nullable();
+            $table->string('blockchain_address', 128)->unique()->nullable();
+            $table->unsignedInteger('ttm_derivation_key')->nullable();
             $table->unsignedTinyInteger('onchain_txn_count')->default(0);
+            $table->timestamp('last_active_datetime')->nullable();
 
             $table->timestamp('created_datetime')->useCurrent();
-            $table->timestamp('last_active_datetime')->nullable();
             $table->softDeletes('deleted_datetime');
             
-            $table->unique(['asset_wallet_id', 'blockchain_address', 'tatum_derivation_key'], 'asset_wallet_id_blockchain_address_tatum_derivation_key_unique');
+            $table->unique(['asset_wallet_id', 'blockchain_address', 'ttm_derivation_key'], 'asset_wallet_id_blockchain_address_ttm_derivation_key_unique');
         });
     }
 

@@ -70,9 +70,9 @@ class _UserController extends Controller
         // Request Validation
         $validated_data = $request->validate([
             'reg_token' => [ $token_reg_enabled ? 'required' : 'sometimes', 'string', 'max:16'],
-            'username' => ['required', 'string', 'min:4', 'max:64'],
+            'username' => ['required', 'string', 'between:4,64'],
             'email_address' => ['required', 'string', 'email', 'max:64'],
-            'password' => ['required', 'string', 'min:8', 'max:32', 'confirmed'],
+            'password' => ['required', 'string', 'between:8,32', 'confirmed'],
         ]);
 
         if ( $token_reg_enabled ){
@@ -172,8 +172,8 @@ class _UserController extends Controller
     {
         // Request Validation
         $validated_data = $request->validate([
-            'username' => ['required', 'string', 'min:4', 'max:64'],
-            'password' => ['required', 'string', 'min:8', 'max:64'],
+            'username' => ['required', 'string', 'between:4,64'],
+            'password' => ['required', 'string', 'between:8,64'],
         ]);
 
         // Login attempt
@@ -235,7 +235,7 @@ class _UserController extends Controller
     public function update(Request $request, string $username)
     {
         $validated_data = $request->validate([
-            'tatum_customer_id' => ['sometimes', 'string', 'max:24'],
+            'ttm_customer_id' => ['sometimes', 'string', 'max:24'],
             'avatar_image_id' => ['sometimes', 'integer'],
         ]);
 

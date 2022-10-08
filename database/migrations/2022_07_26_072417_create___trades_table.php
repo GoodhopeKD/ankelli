@@ -45,10 +45,10 @@ return new class extends Migration
                     ->onDelete('set null');
             $table->string('asset_value', 38); // unsignedDecimal
             $table->unsignedBigInteger('currency_amount');
-            $table->string('tatum_amount_blockage_id', 96)->nullable();
-            $table->string('asset_value_escrowed', 32); // unsignedDecimal
+            $table->string('ttm_amount_blockage_id', 96)->nullable();
+            $table->string('asset_value_escrowed', 38); // unsignedDecimal
             $table->string('offer_price', 32)->nullable(); // unsignedDecimal
-            $table->string('trade_txn_fee_fctr', 32); // unsignedDecimal
+            $table->string('trade_txn_fee_fctr', 38); // unsignedDecimal
 
             $table->unsignedTinyInteger('buyer_cmplt_trade_mins_tmt');
 

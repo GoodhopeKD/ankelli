@@ -34,7 +34,7 @@ class _DepositToken extends Model
      * @var array
      */
     protected $casts = [
-        'asset_value' => 'float',
+        //'asset_value' => 'float',
         'used_datetime' => 'datetime',
     ];
 

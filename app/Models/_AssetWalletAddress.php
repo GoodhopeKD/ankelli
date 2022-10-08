@@ -20,7 +20,7 @@ class _AssetWalletAddress extends Model
         'asset_wallet_id',
         'user_username',
         'blockchain_address',
-        'tatum_derivation_key',
+        'ttm_derivation_key',
         'onchain_txn_count',
         'last_active_datetime',
     ];

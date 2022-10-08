@@ -55,8 +55,8 @@ class _DepositTokenController extends Controller
     public function store(Request $request)
     {
         $validated_data = $request->validate([
-            'asset_code' => ['required', 'exists:__assets,code', 'string'],
-            'asset_value' => ['required', 'numeric'],
+            'asset_code' => ['required', 'string', 'exists:__assets,code'],
+            'asset_value' => ['required', 'numeric', 'min:0'],
             'currency_code' => ['required', 'exists:__currencies,code', 'string'],
             'currency_amount' => ['required', 'integer'],
         ]);
@@ -121,10 +121,10 @@ class _DepositTokenController extends Controller
 
         (new _TransactionController)->store( new Request([
             'txn_context' => 'offchain',
-            'operation_slug' => 'deposit_token_topup',
+            'operation_slug' => 'DEPOSIT_TOKEN_TOPUP',
             'recipient_username' => $validated_data['user_username'], 
             'recipient_note' => 'Wallet topup using deposit token "'.$token.'"',
-            'sender_username' => 'reserves', 
+            'sender_username' => 'busops',
             'sender_note' => 'Wallet topup using deposit token "'.$token.'"',
             'asset_code' => $element->asset_code,
             'xfer_asset_value' => $element->asset_value,

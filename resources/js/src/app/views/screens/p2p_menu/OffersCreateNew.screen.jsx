@@ -19,7 +19,7 @@ class OffersCreateNewScreen extends React.Component {
         pymt_details: returnObj(this.props.datalists.active_pymt_methods['cash_in_person'].details_required),
         location: new _Input(),
 
-        asset_code: 'USDT',
+        asset_code: 'ETH',
         currency_code: 'USD',
         offer_price: new _Input(),
 

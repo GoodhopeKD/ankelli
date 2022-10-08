@@ -7,14 +7,14 @@ import CustomSelect from 'app/views/components/CustomSelect'
 
 import { _User, _DateTime, _Session, _Notification, _Input, _Transaction } from 'app/controller'
 
-class BCSendCryptoScreen extends React.Component {
+class BCWithdrawScreen extends React.Component {
 
     default_input = {
-        asset_code: 'USDT',
-        asset_value: new _Input(),
-        destination_blockchain_address: new _Input(),
+        asset_code: 'ETH',
+        asset_value: new _Input(0.01),
+        destination_blockchain_address: new _Input('0xB2A8E24a90E5B5F7f4CBD26D350B83674652D65e'),
         sender_password: new _Input('Def-Pass#123'),
-        sender_note: new _Input(),
+        sender_note: new _Input('Test send via blockchain'),
     }
 
     state = {
@@ -55,7 +55,7 @@ class BCSendCryptoScreen extends React.Component {
 
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
-            _Transaction.process_direct_transfer(_Input.flatten(input))
+            _Transaction.process_withdrawal(_Input.flatten(input))
                 .then(() => {
                     bootstrap.Modal.getOrCreateInstance(document.getElementById('password_confirmation_modal')).hide();
                     _Notification.flash({ message: 'Transaction successful.', duration: 2000 });
@@ -91,7 +91,7 @@ class BCSendCryptoScreen extends React.Component {
         })
 
         const asset = this.props.datalists.active_assets[this.state.input.asset_code]
-        const txn_fee_fctr = this.state.input.send_to == 'platform_username' ? this.props.sysconfig_params.drct_xfer_offchain_txn_fee_fctr : this.props.sysconfig_params.drct_xfer_onchain_txn_fee_fctr
+        const txn_fee_asset_value = parseFloat(asset.withdrawal_txn_fee_usd_fctr) * parseFloat(asset.usd_asset_exchange_rate)
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container-xl py-3">
@@ -154,7 +154,7 @@ class BCSendCryptoScreen extends React.Component {
                                                 type="number" className="form-control" id="input_asset_value"
                                                 min={asset.smallest_display_unit}
                                                 required
-                                                max={window.assetValueInput(((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value) / (1 + txn_fee_fctr), asset)}
+                                                max={window.assetValueInput(parseFloat((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value) - txn_fee_asset_value, asset)}
                                                 step={asset.smallest_display_unit}
                                                 value={window.assetValueInput(this.state.input.asset_value.toRaw(), asset)}
                                                 onChange={elem => this.handleInputChange('asset_value', elem.target.value)}
@@ -162,8 +162,8 @@ class BCSendCryptoScreen extends React.Component {
                                         </div>
                                     </div>
                                     <div className="col">
-                                        <label htmlFor="output_current_balance" className="form-label">Total to be debited from account. (Incl. {txn_fee_fctr} platform charge) </label>
-                                        <span className="form-control" id='output_current_balance'>{window.assetValueString((this.state.input.asset_value ?? 0) * (1 + txn_fee_fctr), asset)}</span>
+                                        <label htmlFor="output_current_balance" className="form-label">Total to be debited from account. (Incl. {window.currencyAmountString(asset.withdrawal_txn_fee_usd_fctr, this.props.datalists.active_currencies['USD'])} withdrawal fee) </label>
+                                        <span className="form-control" id='output_current_balance'>{window.assetValueString(parseFloat(this.state.input.asset_value ?? 0) + txn_fee_asset_value, asset)}</span>
                                     </div>
                                 </div>
 
@@ -181,7 +181,7 @@ class BCSendCryptoScreen extends React.Component {
                                         </div>
                                         <form onSubmit={e => { e.preventDefault(); this.handleSubmit2() }}>
                                             <div className="modal-body">
-                                                <p>{window.assetValueString(this.state.input.asset_value * (1 + txn_fee_fctr), asset)} is about to be debited from your account. Enter password to continue.</p>
+                                                <p>{window.assetValueString(this.state.input.asset_value + txn_fee_asset_value, asset)} is about to be debited from your account. Enter password to continue.</p>
                                                 <div className="form-floating mb-3">
                                                     <input
                                                         type="password"
@@ -232,4 +232,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(BCSendCryptoScreen)
+export default connect(mapStateToProps)(BCWithdrawScreen)

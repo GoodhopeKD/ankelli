@@ -1,8 +1,8 @@
 import React from "react"
 
 import CryptoAssetWalletsScreen from 'app/views/screens/funds_menu/CryptoAssetWallets.screen'
-import BCReceiveCryptoScreen from "app/views/screens/funds_menu/BCReceiveCrypto.screen"
-import BCSendCryptoScreen from "app/views/screens/funds_menu/BCSendCrypto.screen"
+import BCDepositScreen from "app/views/screens/funds_menu/BCDeposit.screen"
+import BCWithdrawScreen from "app/views/screens/funds_menu/BCWithdraw.screen"
 //import PlatformReceivePaymentScreen from "app/views/screens/pay_menu/PlatformReceivePayment.screen"
 import PlatformSendPaymentScreen from "app/views/screens/pay_menu/PlatformSendPayment.screen"
 import DepositTokenTopupScreen from 'app/views/screens/funds_menu/DepositTokenTopup.screen'
@@ -40,26 +40,26 @@ export const funds_menu = {
             element: (props) => <CryptoAssetWalletsScreen {...props} />,
         },
         {
-            title: 'Deposits',
-            path: '/deposits',
+            title: 'Deposit',
+            path: '/deposit',
             children: [
                 {
                     title: 'Receive crypto',
-                    path: '/deposits/receive-crypto',
-                    element: (props) => <BCReceiveCryptoScreen {...props} />,
+                    path: '/deposit/receive-crypto',
+                    element: (props) => <BCDepositScreen {...props} />,
                 },
                 {
                     title: 'Token topup',
-                    path: '/deposits/token-topup',
+                    path: '/deposit/token-topup',
                     element: (props) => <DepositTokenTopupScreen {...props} />,
                     restricted_for_default_users: true,
                 },
             ]
         },
         {
-            title: 'Withdrawals',
-            path: '/withdrawals',
-            element: (props) => <BCSendCryptoScreen {...props} />,
+            title: 'Withdraw',
+            path: '/withdraw',
+            element: (props) => <BCWithdrawScreen {...props} />,
         },
         {
             title: 'Convert crypto',

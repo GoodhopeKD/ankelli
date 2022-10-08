@@ -62,7 +62,8 @@ window.currencyAmountString = (amount, currency = { symbol: '' }, show_symbol = 
 window.assetValueInput = (value, asset = { smallest_display_unit: 0.01 }, round_down = false) => {
 	if (!window.isNumeric(value)) return ''
 	const rounder = round_down ? Math.floor : Math.round
-	return rounder((parseFloat(value)) * (1 / asset.smallest_display_unit)) / (1 / asset.smallest_display_unit)
+	const some_const = Math.round(1 / parseFloat(asset.smallest_display_unit))
+	return rounder((parseFloat(value) + Number.EPSILON) * some_const) / some_const
 }
 
 window.assetValueString = (value, asset = { code: '', smallest_display_unit: 0.01 }, show_code = true, round_down = false) => {

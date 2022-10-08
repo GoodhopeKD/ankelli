@@ -15,8 +15,8 @@ class SignUpModal extends React.Component {
         btn_signup_working: false,
         input: {
             reg_token: (this.props.sysconfig_params_data.token_reg_enabled) ? new _Input(_Input.debug_form_autofill(DEBUG, '1234567890')) : null,
-            username: new _Input(_Input.debug_form_autofill(DEBUG, 'sekuru')),
-            email_address: new _Input(_Input.debug_form_autofill(DEBUG, 'sekuru@ankelli.com')),
+            username: new _Input(_Input.debug_form_autofill(DEBUG, 'john_doe')),
+            email_address: new _Input(_Input.debug_form_autofill(DEBUG, 'john_doe@ankelli.com')),
             password: new _Input(_Input.debug_form_autofill(DEBUG, 'Def-Pass#123')),
             password_confirmation: new _Input(_Input.debug_form_autofill(DEBUG, 'Def-Pass#123')),
         },

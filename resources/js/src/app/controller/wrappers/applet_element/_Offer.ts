@@ -21,7 +21,7 @@ type get_collection_params = {
 }
 type pymt_details_t = { key: string, value: string | number }[]
 
-/* 
+/*
     RespObj Export
 */
 export const _OfferRespObj = {

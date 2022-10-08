@@ -6,10 +6,10 @@ import { _Input, _DateTime, _Session, _Notification, _AssetWalletAddress } from 
 import SideBar from 'app/views/components/SideBar'
 import CustomSelect from 'app/views/components/CustomSelect'
 
-class MotherWalletManagementScreen extends React.Component {
+class CustodialWalletManagementScreen extends React.Component {
 
     default_input = {
-        asset_code: 'USDT',
+        asset_code: 'ETH',
         asset_wallet_id: '',
     }
 
@@ -89,7 +89,7 @@ class MotherWalletManagementScreen extends React.Component {
 
     generateNewAddress = async () => {
         this.setState({ btn_generating_address_working: true })
-        await _AssetWalletAddress.create({ asset_wallet_id: '', user_username: 'hot-wallets-user' })
+        //await _AssetCustodialWalletAddress.create()
         await this.populateScreenWithItems()
         this.setState({ btn_generating_address_working: false })
     }
@@ -243,4 +243,4 @@ const mapStateToProps = (state) => {
     }
 }
 
-export default connect(mapStateToProps)(MotherWalletManagementScreen)
+export default connect(mapStateToProps)(CustodialWalletManagementScreen)

@@ -51,7 +51,7 @@ class _ReviewController extends Controller
             'parent_uid' => ['required', 'string', 'max:64'],
             'pivot_parent_table' => ['sometimes', 'string', Rule::in(['__trades', '__orders'])],
             'pivot_parent_uid' => ['sometimes', 'string', 'max:64'],
-            'rating' => ['required', 'integer', 'min:1', 'max:5'],
+            'rating' => ['required', 'integer', 'between:1,5'],
             'comment' => ['sometimes', 'nullable', 'string', 'max:255'],
         ]);
         $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
@@ -93,7 +93,7 @@ class _ReviewController extends Controller
     {
         $validated_data = $request->validate([
             'update_note' => ['required', 'string', 'max:255'],
-            'rating' => ['sometimes', 'integer', 'min:1', 'max:5'],
+            'rating' => ['sometimes', 'integer', 'between:1,5'],
             'comment' => ['sometimes', 'string', 'max:255'],
         ]);
 

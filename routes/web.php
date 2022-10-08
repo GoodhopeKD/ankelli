@@ -67,9 +67,9 @@ $valid_paths = [
 
     // funds
     "/funds/dashboard",
-    "/funds/deposits/receive-crypto",
-    "/funds/deposits/token-topup",
-    "/funds/withdrawals",
+    "/funds/deposit/receive-crypto",
+    "/funds/deposit/token-topup",
+    "/funds/withdraw",
     "/funds/transactions",
     "/funds/crypto-conversion",
     "/funds/platform-payments/receive",

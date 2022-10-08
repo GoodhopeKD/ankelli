@@ -17,11 +17,14 @@ return new class extends Migration
             $table->id();
             $table->string('name', 64)->unique();
             $table->string('code', 64)->unique();
-            $table->string('smallest_display_unit', 32); // unsignedDecimal
+            $table->string('chain', 64);
+            $table->string('smallest_display_unit', 38); // unsignedDecimal
+            $table->unsignedDecimal('withdrawal_txn_fee_usd_fctr', $precision = 8, $scale = 4);
+            $table->unsignedDecimal('payment_txn_fee_usd_fctr', $precision = 8, $scale = 4);
+            $table->string('usd_asset_exchange_rate', 38); // unsignedDecimal
             $table->text('onchain_disclaimer');
-            $table->string('tatum_mnemonic', 255)->nullable();
-            $table->string('tatum_xpub', 255)->nullable();
-            $table->string('tatum_currency', 64)->nullable();
+            $table->string('ttm_xpub', 255)->nullable();
+            $table->string('ttm_currency', 64)->nullable();
             $table->enum('_status', ['active', 'deactivated'])->default('active');
 
             $table->string('creator_username', 64)->nullable();

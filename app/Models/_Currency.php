@@ -32,9 +32,9 @@ class _Currency extends Model
      */
     protected $casts = [
         'symbol_before_number' => 'boolean',
-        'usd_rate' => 'float',
-        'min_transactable_cash_amount' => 'float',
-        'smallest_transactable_cash_denomination_amount' => 'float',
+        //'usd_rate' => 'float',
+        //'min_transactable_cash_amount' => 'float',
+        //'smallest_transactable_cash_denomination_amount' => 'float',
     ];
 
     /**

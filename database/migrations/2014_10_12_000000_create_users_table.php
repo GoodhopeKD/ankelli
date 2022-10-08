@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('reg_token', 16)->nullable();
             $table->unsignedTinyInteger('avatar_image_id')->nullable();
-            $table->string('tatum_customer_id', 24)->nullable();
+            $table->string('ttm_customer_id', 24)->nullable();
             
             $table->enum('_status', ['active', 'inactive', 'suspended', 'deactivated'])->default('active');
             $table->timestamp('created_datetime')->useCurrent();
@@ -33,12 +33,6 @@ return new class extends Migration
             [
                 'username' => 'system',
                 'email_address' => 'system',
-                'password' => '',
-            ],
-            // Hot Wallet User
-            [
-                'username' => 'hot-wallets-user',
-                'email_address' => 'hot-wallets-user',
                 'password' => '',
             ],
         ]);

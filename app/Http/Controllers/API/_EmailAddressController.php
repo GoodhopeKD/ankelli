@@ -30,7 +30,7 @@ class _EmailAddressController extends Controller
     public function store(Request $request)
     {
         $validated_data = $request->validate([
-            'email_address' => ['required', 'string', 'min:5', 'max:64', 'email', 'unique:__email_addresses'],
+            'email_address' => ['required', 'string', 'between:5,64', 'email', 'unique:__email_addresses'],
             'user_username' => ['required', 'string', 'exists:__users,username'],
         ]);
         $element = _EmailAddress::create($validated_data);

@@ -22,7 +22,10 @@ class _Transaction extends Model
         'ref_code',
         'txn_context',
         'blockchain_txn_id',
-        'tatum_reference',
+        'blockchain_completed',
+        'tatum_unsigned_txn_id',
+        'tatum_unsigned_txn_signature_id',
+        'ttm_reference',
         'session_token',
         'operation_slug',
         'sender_username',
@@ -47,7 +50,10 @@ class _Transaction extends Model
      */
     protected $hidden = [
         'blockchain_txn_id',
-        'tatum_reference',
+        'blockchain_completed',
+        'tatum_unsigned_txn_id',
+        'tatum_unsigned_txn_signature_id',
+        'ttm_reference',
     ];
     
     /**
@@ -56,7 +62,7 @@ class _Transaction extends Model
      * @var array
      */
     protected $casts = [
-        'xfer_asset_value' => 'float',
+        //'xfer_asset_value' => 'float',
         'transfer_result' => 'array',
     ];
 }

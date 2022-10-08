@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 use App\Models\_PrefItem;
+use App\Models\_AssetWallet;
 
 use App\Models\_Asset;
 use App\Http\Resources\_AssetResource;
@@ -48,18 +49,21 @@ class _AssetController extends Controller
         $validated_data = $request->validate([
             'name' => ['required', 'string', 'max:64'],
             'code' => ['required', 'string', 'max:64'],
-            'smallest_display_unit' => ['required', 'numeric'],
+            'chain' => ['required', 'string', 'max:64'],
+            'ttm_currency' => ['required', 'string', 'max:64'],
+            'smallest_display_unit' => ['required', 'numeric', 'min:0'],
+            'withdrawal_txn_fee_usd_fctr' => ['required', 'numeric', 'min:0'],
+            'payment_txn_fee_usd_fctr' => ['required', 'numeric', 'min:0'],
+            'usd_asset_exchange_rate' => ['required', 'numeric', 'min:0'],
             'onchain_disclaimer' => ['required', 'string'],
-            'tatum_currency' => ['required', 'string', 'max:64'],
-            '_status' => ['sometimes', 'string', Rule::in(['active', 'frozen'])],
+            'mnemonic' => ['required', 'string', 'max:500'],
         ]);
 
         $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
 
-        if ( _PrefItem::firstWhere('key_slug', 'use_tatum_api')->value_f() ){
-            $tatum_element = (new __TatumAPIController)->getOrCreateBlockchainWallet(new Request(['asset_code' => $validated_data['code']]))->getData();
-            $validated_data['tatum_mnemonic'] = $tatum_element->mnemonic;
-            $validated_data['tatum_xpub'] = $tatum_element->xpub;
+        if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+            $ttm_element = (new Tatum\Blockchain\EthereumController)->EthGenerateWallet(new Request(['mnemonic' => $validated_data['mnemonic']]))->getData();
+            $validated_data['ttm_xpub'] = $ttm_element->xpub;
         }
         $element = _Asset::create($validated_data);
         
@@ -72,6 +76,26 @@ class _AssetController extends Controller
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
+        
+        if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+            $existing_addresses = (new Tatum\Security\CustodialManagedWalletController)->CustodialGetWallets(new Request())->getData();
+            if ( count($existing_addresses) ){
+                foreach ( $existing_addresses as $existing_address) {
+                    (new _AssetCustodialWalletAddressController)->store(new Request([
+                        'asset_code' => $validated_data['code'],
+                        'chain' => $existing_address->chain,
+                        'blockchain_address' => $existing_address->address,
+                        'ttm_wallet_id' => $existing_address->walletId,
+                    ]));
+                }
+            } else {
+                (new _AssetCustodialWalletAddressController)->store(new Request([
+                    'asset_code' => $validated_data['code'],
+                    'chain' => $validated_data['chain'],
+                ]));
+            }
+        }
+
         if ($request->expectsJson()) return response()->json( new _AssetResource( $element ) );
     }
 

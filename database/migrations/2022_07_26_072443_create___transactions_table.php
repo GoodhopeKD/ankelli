@@ -16,8 +16,13 @@ return new class extends Migration
         Schema::create('__transactions', function (Blueprint $table) {
             $table->string('ref_code', 16)->primary();
             $table->enum('txn_context', ['onchain', 'offchain']);
+
             $table->string('blockchain_txn_id', 255)->unique()->nullable();
-            $table->string('tatum_reference', 255)->nullable();
+            $table->boolean('blockchain_completed')->nullable();
+            $table->string('tatum_unsigned_txn_signature_id', 255)->unique()->nullable();
+            $table->string('tatum_unsigned_txn_id', 255)->unique()->nullable();
+
+            $table->string('ttm_reference', 255)->nullable();
             $table->string('session_token', 16)->nullable();
             $table->foreign('session_token')
                     ->references('token')
@@ -32,7 +37,7 @@ return new class extends Migration
                     ->onUpdate('cascade')
                     ->onDelete('set null');
             $table->string('sender_note', 255)->nullable();
-            $table->string('source_blockchain_address', 96)->nullable(); 
+            $table->string('source_blockchain_address', 128)->nullable(); 
             $table->string('recipient_username', 64)->nullable(); 
             $table->foreign('recipient_username')
                     ->references('username')
@@ -40,12 +45,7 @@ return new class extends Migration
                     ->onUpdate('cascade')
                     ->onDelete('set null');
             $table->string('recipient_note', 255)->nullable();
-            $table->string('destination_blockchain_address', 96)->nullable();
-            $table->foreign('destination_blockchain_address')
-                    ->references('blockchain_address')
-                    ->on('__asset_wallet_addresses')
-                    ->onUpdate('cascade')
-                    ->onDelete('set null');
+            $table->string('destination_blockchain_address', 128)->nullable();
             $table->string('asset_code', 64)->nullable();
             $table->foreign('asset_code')
                     ->references('code')

@@ -15,8 +15,8 @@ class _AssetWallet extends Model
      * @var array
      */
     protected $fillable = [
-        'tatum_virtual_account_id',
-        'tatum_subscription_id',
+        'ttm_virtual_account_id',
+        'ttm_subscription_id',
         'user_username',
         'asset_code',
         'usable_balance_asset_value',
@@ -30,8 +30,8 @@ class _AssetWallet extends Model
      * @var array
      */
     protected $hidden = [
-        'tatum_virtual_account_id',
-        'tatum_subscription_id',
+        'ttm_virtual_account_id',
+        'ttm_subscription_id',
     ];
 
     /**
@@ -40,8 +40,8 @@ class _AssetWallet extends Model
      * @var array
      */
     protected $casts = [
-        'usable_balance_asset_value' => 'float',
-        'total_balance_asset_value' => 'float',
+        //'usable_balance_asset_value' => 'float',
+        //'total_balance_asset_value' => 'float',
     ];
 
     /**

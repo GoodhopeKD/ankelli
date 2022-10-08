@@ -71,7 +71,7 @@ Only "sysadmin" account can add members to this group.',
                 'slug' => 'business_administrators',
                 'description' => 'Admin group for Business Administrators.
 Members have access to business related features.
-Members have OTP access to accounts named "reserves" and "busadmin".
+Members have OTP access to accounts named "busops" and "busadmin".
 Only "busadmin" account can add members to this group.',
                 'creator_username' => 'system',
             ],

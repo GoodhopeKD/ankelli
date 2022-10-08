@@ -41,7 +41,7 @@ class _User extends Authenticatable
         'password',
         'reg_token',
         'avatar_image_id',
-        'tatum_customer_id',
+        'ttm_customer_id',
         '_status',
     ];
 
@@ -53,7 +53,7 @@ class _User extends Authenticatable
     protected $hidden = [
         'password',
         'reg_token',
-        'tatum_customer_id',
+        'ttm_customer_id',
     ];
 
     /**

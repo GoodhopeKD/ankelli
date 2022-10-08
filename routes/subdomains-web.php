@@ -77,9 +77,9 @@ Route::group(['domain' => 'https://funds.'.env('MIX_DOMAIN_NAME')], function(){
         '/my-crypto-wallets',
         '/transactions',
         '/statements',
-        '/deposits/receive-crypto',
-        '/deposits/token-topup',
-        '/withdrawals',
+        '/deposit/receive-crypto',
+        '/deposit/token-topup',
+        '/withdraw',
         '/crypto-conversions',
     ];
     foreach ($funds_scaffolding_app_paths as $path) {

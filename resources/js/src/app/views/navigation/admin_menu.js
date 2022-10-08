@@ -1,5 +1,5 @@
 import React from "react"
-import MotherWalletManagementScreen from 'app/views/screens/admin_menu/funds-admin/MotherWalletManagement.screen'
+import CustodialWalletManagementScreen from 'app/views/screens/admin_menu/funds-admin/CustodialWalletManagement.screen'
 import DepositTokensViewListScreen from 'app/views/screens/admin_menu/funds-admin/DepositTokensViewList.screen'
 import DepositTokensCreateNewScreen from 'app/views/screens/admin_menu/funds-admin/DepositTokensCreateNew.screen'
 import RegTokensViewListScreen from 'app/views/screens/admin_menu/accounts-admin/RegTokensViewList.screen'
@@ -83,7 +83,7 @@ export const admin_menu = {
                 {
                     title: 'Manage mother wallets',
                     path: '/funds-admin/mother-wallets-management',
-                    element: (props) => <MotherWalletManagementScreen {...props} />,
+                    element: (props) => <CustodialWalletManagementScreen {...props} />,
                     required_active_user_group_membership_slugs: ['business_administrators'],
                     show_in_menu: true,
                 },

@@ -70,8 +70,8 @@ class _TradeController extends Controller
     {
         $validated_data = $request->validate([
             'offer_ref_code' => ['required', 'exists:__offers,ref_code', 'string'],
-            'currency_amount' => ['required', 'numeric'],
-            'sender_password' => ['sometimes', 'string', 'min:8', 'max:32'],
+            'currency_amount' => ['required', 'numeric', 'min:0'],
+            'sender_password' => ['sometimes', 'string', 'between:8,32'],
             'pymt_details' => ['sometimes', 'array'],
             'pymt_details.physical_address' => ['sometimes', 'string', 'max:255'],
             'pymt_details.email_address' => ['sometimes', 'string', 'email', 'max:64'],
@@ -166,12 +166,12 @@ class _TradeController extends Controller
         $seller_new_usable_balance_asset_value = $seller_asset_wallet->usable_balance_asset_value - $validated_data['asset_value_escrowed'];
 
         if ( $seller_new_usable_balance_asset_value < 0 ){ return abort(422, 'Current '.$offer->asset_code.' balance insufficient for transaction.'); }
-        $tatum_response = (new _AssetWalletController)->blockAssetValue( new Request([
+        $ttm_response = (new _AssetWalletController)->blockAssetValue( new Request([
             'asset_value' => $validated_data['asset_value_escrowed'],
             'blockage_type_slug' => 'trade_escrow',
         ]), $seller_asset_wallet->id );
-        if ( _PrefItem::firstWhere('key_slug', 'use_tatum_api')->value_f() ){
-            $validated_data['tatum_amount_blockage_id'] = $tatum_response->getData()->id;
+        if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+            $validated_data['ttm_amount_blockage_id'] = $ttm_response->getData()->id;
         }
         // End lock in escrow
 
@@ -282,7 +282,7 @@ class _TradeController extends Controller
         $validated_data = $request->validate([
             'pymt_declared' => ['sometimes', 'boolean'],
             'pymt_confirmed' => ['sometimes', 'boolean'],
-            'sender_password' => ['sometimes', 'string', 'min:8', 'max:32'],
+            'sender_password' => ['sometimes', 'string', 'between:8,32'],
             'visible_to_creator' => ['sometimes', 'boolean'],
             'visible_to_offer_creator' => ['sometimes', 'boolean'],
             '_status' => ['sometimes', 'string', Rule::in(['active', 'cancelled', 'flagged'])],
@@ -365,7 +365,7 @@ class _TradeController extends Controller
                 ]);
                 (new _AssetWalletController)->unblockAssetValue( new Request([
                     'asset_value' => $element->asset_value_escrowed,
-                    'tatum_amount_blockage_id' => $element->tatum_amount_blockage_id,
+                    'ttm_amount_blockage_id' => $element->ttm_amount_blockage_id,
                 ]), $seller_asset_wallet->id );
                 // End unlock asset from escrow
 
@@ -416,14 +416,14 @@ class _TradeController extends Controller
             ]);
             (new _AssetWalletController)->unblockAssetValue( new Request([
                 'asset_value' => $element->asset_value_escrowed,
-                'tatum_amount_blockage_id' => $element->tatum_amount_blockage_id,
+                'ttm_amount_blockage_id' => $element->ttm_amount_blockage_id,
             ]), $seller_asset_wallet->id );
             usleep(500);
             // End unlock asset from escrow
             
             (new _TransactionController)->store( new Request([
                 'txn_context' => 'offchain',
-                'operation_slug' => 'trade_asset_release',
+                'operation_slug' => 'TRADE_ASSET_RELEASE',
                 'sender_username' => $seller_username, 
                 'sender_password' => $validated_data['sender_password'],
                 'sender_note' => 'Outbound asset release for trade '.$ref_code,

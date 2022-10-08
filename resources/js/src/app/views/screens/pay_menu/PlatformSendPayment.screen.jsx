@@ -10,9 +10,12 @@ import { _User, _DateTime, _Session, _Notification, _Input, _Transaction } from 
 class PlatformSendPaymentScreen extends React.Component {
 
     default_input = {
-        asset_code: 'USDT',
+        asset_code: 'ETH',
         asset_value: new _Input(),
+        recipient_user_tag: 'username',
         recipient_username: new _Input(),
+        recipient_email_address: new _Input(),
+        recipient_ankelli_pay_id: new _Input(),
         recipient_note: new _Input(),
         sender_password: new _Input('Def-Pass#123'),
         sender_note: new _Input(),
@@ -56,7 +59,7 @@ class PlatformSendPaymentScreen extends React.Component {
 
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
-            _Transaction.process_direct_transfer(_Input.flatten(input))
+            _Transaction.process_payment(_Input.flatten(input))
                 .then(() => {
                     bootstrap.Modal.getOrCreateInstance(document.getElementById('password_confirmation_modal')).hide();
                     _Notification.flash({ message: 'Transaction successful.', duration: 2000 });
@@ -92,7 +95,7 @@ class PlatformSendPaymentScreen extends React.Component {
         })
 
         const asset = this.props.datalists.active_assets[this.state.input.asset_code]
-        const txn_fee_fctr = this.state.input.send_to == 'platform_username' ? this.props.sysconfig_params.drct_xfer_offchain_txn_fee_fctr : this.props.sysconfig_params.drct_xfer_onchain_txn_fee_fctr
+        const txn_fee_asset_value = parseFloat(asset.withdrawal_txn_fee_usd_fctr) * parseFloat(asset.usd_asset_exchange_rate)
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container-xl py-3">
@@ -105,7 +108,7 @@ class PlatformSendPaymentScreen extends React.Component {
                             <form onSubmit={e => { e.preventDefault(); this.handleSubmit() }}>
                                 <div className="row mb-3">
                                     <div className="col">
-                                        <label htmlFor="input_asset_code" className="form-label">Source asset account</label>
+                                        <label htmlFor="input_asset_code" className="form-label">Sender asset account</label>
                                         <CustomSelect
                                             id="input_asset_code"
                                             options={asset_options}
@@ -117,19 +120,61 @@ class PlatformSendPaymentScreen extends React.Component {
                                     </div>
                                     <div className="col">
                                         <label htmlFor="output_current_balance" className="form-label">Usable balance</label>
-                                        <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
+                                        <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code === asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
                                     </div>
                                 </div>
 
                                 <div className="mb-3">
-                                    <label htmlFor="input_recipient_username" className="form-label">Destination user username</label>
-                                    <div className="input-group">
-                                        <input
-                                            type="text" className="form-control" id="input_recipient_username"
-                                            value={this.state.input.recipient_username + ''}
-                                            required
-                                            onChange={elem => this.handleInputChange('recipient_username', elem.target.value)}
-                                        />
+                                    <div>
+                                        <nav>
+                                            <div className="nav nav-tabs mb-3" id="nav-tab" role="tablist">
+                                                <button onClick={() => this.handleInputChange('recipient_user_tag', 'username', true)} className={"nav-link" + (this.state.input.recipient_user_tag === 'username' ? " active" : '')} id="nav-user-tag-username-tab" data-bs-toggle="tab" data-bs-target="#nav-user-tag-username" type="button" role="tab" tabIndex={this.state.input.recipient_user_tag !== 'username' ? "-1" : undefined}>Username</button>
+                                                <button onClick={() => this.handleInputChange('recipient_user_tag', 'email_address', true)} className={"nav-link" + (this.state.input.recipient_user_tag === 'email_address' ? " active" : '')} id="nav-user-tag-email_address-tab" data-bs-toggle="tab" data-bs-target="#nav-user-tag-email_address" type="button" role="tab" tabIndex={this.state.input.recipient_user_tag !== 'email_address' ? "-1" : undefined}>Email address</button>
+                                                <button onClick={() => this.handleInputChange('recipient_user_tag', 'ankelli_pay_id', true)} className={"nav-link" + (this.state.input.recipient_user_tag === 'ankelli_pay_id' ? " active" : '')} id="nav-user-tag-ankelli_pay_id-tab" data-bs-toggle="tab" data-bs-target="#nav-user-tag-ankelli_pay_id" type="button" role="tab" tabIndex={this.state.input.recipient_user_tag !== 'ankelli_pay_id' ? "-1" : undefined}>Ankelli Pay ID</button>
+                                            </div>
+                                        </nav>
+                                        <div className="tab-content" id="nav-tabContent">
+                                            <div className={"tab-pane fade" + (this.state.input.recipient_user_tag === 'username' ? " active show" : '')} id="nav-user-tag-username" role="tabpanel" >
+                                                <div className="mb-3">
+                                                    <label htmlFor="input_recipient_username" className="form-label">Recipient username</label>
+                                                    <div className="input-group">
+                                                        <input
+                                                            type="text" className="form-control" id="input_recipient_username"
+                                                            value={this.state.input.recipient_username + ''}
+                                                            required={this.state.input.recipient_user_tag === 'username'}
+                                                            onChange={elem => this.handleInputChange('recipient_username', elem.target.value)}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className={"tab-pane fade" + (this.state.input.recipient_user_tag === 'email_address' ? " active show" : '')} id="nav-user-tag-email_address" role="tabpanel" >
+                                                <div className="mb-3">
+                                                    <label htmlFor="input_recipient_email_address" className="form-label">Recipient's email address</label>
+                                                    <div className="input-group">
+                                                        <input
+                                                            type="email" className="form-control" id="input_recipient_email_address"
+                                                            value={this.state.input.recipient_email_address + ''}
+                                                            required={this.state.input.recipient_user_tag === 'email_address'}
+                                                            onChange={elem => this.handleInputChange('recipient_email_address', elem.target.value)}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className={"tab-pane fade" + (this.state.input.recipient_user_tag === 'ankelli_pay_id' ? " active show" : '')} id="nav-user-tag-ankelli_pay_id" role="tabpanel" >
+                                                <div className="mb-3">
+                                                    <label htmlFor="input_recipient_ankelli_pay_id" className="form-label">Recipient 's Ankelli Pay ID</label>
+                                                    <div className="input-group">
+                                                        <input
+                                                            disabled
+                                                            type="text" className="form-control" id="input_recipient_ankelli_pay_id"
+                                                            value={this.state.input.recipient_ankelli_pay_id + ''}
+                                                            required={this.state.input.recipient_user_tag === 'ankelli_pay_id'}
+                                                            onChange={elem => this.handleInputChange('recipient_ankelli_pay_id', elem.target.value)}
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -165,7 +210,7 @@ class PlatformSendPaymentScreen extends React.Component {
                                                 type="number" className="form-control" id="input_asset_value"
                                                 min={asset.smallest_display_unit}
                                                 required
-                                                max={window.assetValueInput(((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value) / (1 + txn_fee_fctr), asset)}
+                                                max={window.assetValueInput(parseFloat((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code === asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value) - txn_fee_asset_value, asset)}
                                                 step={asset.smallest_display_unit}
                                                 value={window.assetValueInput(this.state.input.asset_value.toRaw(), asset)}
                                                 onChange={elem => this.handleInputChange('asset_value', elem.target.value)}
@@ -173,13 +218,13 @@ class PlatformSendPaymentScreen extends React.Component {
                                         </div>
                                     </div>
                                     <div className="col">
-                                        <label htmlFor="output_current_balance" className="form-label">Total to be debited from account. (Incl. {txn_fee_fctr} platform charge) </label>
-                                        <span className="form-control" id='output_current_balance'>{window.assetValueString((this.state.input.asset_value ?? 0) * (1 + txn_fee_fctr), asset)}</span>
+                                        <label htmlFor="output_current_balance" className="form-label">Total to be debited from account. (Incl. {window.currencyAmountString(asset.withdrawal_txn_fee_usd_fctr, this.props.datalists.active_currencies['USD'])} payment fee) </label>
+                                        <span className="form-control" id='output_current_balance'>{window.assetValueString(parseFloat(this.state.input.asset_value ?? 0) + txn_fee_asset_value, asset)}</span>
                                     </div>
                                 </div>
 
-                                <button type="submit" className="btn btn-primary" disabled={this.state.btn_send_crypto_working} >
-                                    {this.state.btn_send_crypto_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Send crypto</>}
+                                <button type="submit" className="btn btn-primary" disabled={this.state.btn_send_crypto_working || this.state.input.recipient_user_tag === 'ankelli_pay_id'} >
+                                    {this.state.btn_send_crypto_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Send payment</>}
                                 </button>
                             </form>
 
@@ -192,7 +237,7 @@ class PlatformSendPaymentScreen extends React.Component {
                                         </div>
                                         <form onSubmit={e => { e.preventDefault(); this.handleSubmit2() }}>
                                             <div className="modal-body">
-                                                <p>{window.assetValueString(this.state.input.asset_value * (1 + txn_fee_fctr), asset)} is about to be debited from your account. Enter password to continue.</p>
+                                                <p>{window.assetValueString(parseFloat(this.state.input.asset_value) + txn_fee_asset_value, asset)} is about to be debited from your account. Enter password to continue.</p>
                                                 <div className="form-floating mb-3">
                                                     <input
                                                         type="password"
@@ -203,7 +248,7 @@ class PlatformSendPaymentScreen extends React.Component {
                                                         required={this.state.sender_password_prompt_open}
                                                         placeholder="Pasword"
                                                     />
-                                                    <span className="btn btn-sm" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_sender_password').setAttribute('type', document.getElementById('input_sender_password').getAttribute('type') == 'text' ? 'password' : 'text')}>𓁹</span>
+                                                    <span className="btn btn-sm" style={{ position: 'absolute', top: 13, right: 2 }} onClick={() => document.getElementById('input_sender_password').setAttribute('type', document.getElementById('input_sender_password').getAttribute('type') === 'text' ? 'password' : 'text')}>𓁹</span>
                                                     <label htmlFor="input_sender_password">Password</label>
                                                 </div>
 
@@ -215,8 +260,8 @@ class PlatformSendPaymentScreen extends React.Component {
                                             </div>
                                             <div className="modal-footer justify-content-between">
                                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" >Cancel</button>
-                                                <button type="submit" className="btn btn-primary" disabled={this.state.btn_send_crypto_working} >
-                                                    {this.state.btn_send_crypto_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Send crypto</>}
+                                                <button type="submit" className="btn btn-primary" disabled={this.state.btn_send_crypto_working || this.state.input.recipient_user_tag === 'ankelli_pay_id'} >
+                                                    {this.state.btn_send_crypto_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Send payment</>}
                                                 </button>
                                             </div>
                                         </form>
