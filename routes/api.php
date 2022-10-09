@@ -22,7 +22,9 @@ if (!File::exists( public_path('storage') )){
 Route::post('accounts', '__AuxController@default_route')->name('default_route');
 
 // Tx recon
-Route::post('webhooks/tatum/nofitications', '_TransactionController@ttm_subscription_webhook_txrecon')->name('tatum.subscription_txrecon');
+Route::post('webhooks/tatum/nofitications/incoming-blockchain-transaction', '_TransactionController@ttm_recon_for_incoming_bc_txn_notification')->name('tatum.ttm_recon_for_incoming_bc_txn_notification');
+Route::post('webhooks/tatum/nofitications/completed-kms-transaction', '_TransactionController@ttm_recon_for_completed_kms_txn_notification')->name('tatum.ttm_recon_for_completed_kms_txn_notification');
+Route::post('webhooks/tatum/nofitications/failed-kms-transaction', '_TransactionController@ttm_recon_for_failed_kms_txn_notification')->name('tatum.ttm_recon_for_failed_kms_txn_notification');
 
 // Test routes
 Route::post('load_test_data', '__AuxController@load_test_data')->name('load_test_data');
@@ -37,8 +39,8 @@ Route::get('get_transactions', '_AssetWalletController@get_transactions')->name(
 Route::get('get_subscriptions', '_AssetWalletController@get_subscriptions')->name('get_subscriptions');
 Route::get('get_subscription_notifications', '_AssetWalletController@get_subscription_notifications')->name('get_subscription_notifications');
 
-Route::get('redo_tatum_txrecon_transactions', '_AssetWalletController@redo_tatum_txrecon_transactions')->name('redo_tatum_txrecon_transactions');
-Route::get('redo_tatum_subscription_webhook_txrecon_requests', '_AssetWalletController@redo_tatum_subscription_webhook_txrecon_requests')->name('redo_tatum_subscription_webhook_txrecon_requests');
+Route::get('redo_tatum_txn_recon_transactions', '_AssetWalletController@redo_tatum_txn_recon_transactions')->name('redo_tatum_txn_recon_transactions');
+Route::get('redo_tatum_subscription_webhook_txn_recon_requests', '_AssetWalletController@redo_tatum_subscription_webhook_txn_recon_requests')->name('redo_tatum_subscription_webhook_txn_recon_requests');
 
 // User authentication routes
 Route::post('accounts/auth/signup', '_UserController@store')->name('accounts.auth.signup');

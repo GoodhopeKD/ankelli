@@ -18,9 +18,7 @@ return new class extends Migration
             $table->enum('txn_context', ['onchain', 'offchain']);
 
             $table->string('blockchain_txn_id', 255)->unique()->nullable();
-            $table->boolean('blockchain_completed')->nullable();
             $table->string('tatum_unsigned_txn_signature_id', 255)->unique()->nullable();
-            $table->string('tatum_unsigned_txn_id', 255)->unique()->nullable();
 
             $table->string('ttm_reference', 255)->nullable();
             $table->string('session_token', 16)->nullable();

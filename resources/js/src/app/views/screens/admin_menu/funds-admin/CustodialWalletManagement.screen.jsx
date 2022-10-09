@@ -161,12 +161,12 @@ class CustodialWalletManagementScreen extends React.Component {
                             </nav>
                             <div className="tab-content" id="nav-tabContent">
                                 <div className="tab-pane fade active show" id="nav-mother-load-crypto" role="tabpanel" >
-                                    <div className="table-responsive">
-                                        <table className="table">
+                                    <div className="table-responsive mb-3">
+                                        <table className="table table-sm mb-0">
                                             <thead>
                                                 <tr>
                                                     <th scope="col" style={{ minWidth: 250 }}>Address</th>
-                                                    <th scope="col" style={{ minWidth: 205 }}>Registered time</th>
+                                                    <th scope="col" style={{ minWidth: 215 }}>Registered time</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -212,11 +212,11 @@ class CustodialWalletManagementScreen extends React.Component {
                                             <nav>
                                                 <ul className="pagination">
                                                     <li className={"page-item" + ((this.state._collecion.meta.current_page == 1 || !this.state.list_loaded) ? ' disabled' : '')}>
-                                                        <a className="page-link" href="#" onClick={() => this.setState({ page_select: { page: 1, } }, () => { this.populateScreenWithItems() })} > <span>«</span> </a>
+                                                        <a className="page-link" href="#" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.current_page - 1, } }, () => { this.populateScreenWithItems() })} > <span>«</span> </a>
                                                     </li>
                                                     {pagination_pages.map(page => <li key={page} className={"page-item" + (this.state._collecion.meta.current_page == page ? ' active' : '') + (!this.state.list_loaded ? ' disabled' : '')} onClick={() => this.setState({ page_select: { page } }, () => { this.populateScreenWithItems() })} ><a className="page-link" href="#">{page}</a> </li>)}
                                                     <li className={"page-item" + ((this.state._collecion.meta.current_page == this.state._collecion.meta.last_page || !this.state.list_loaded) ? ' disabled' : '')}>
-                                                        <a className="page-link" href="#" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.last_page, } }, () => { this.populateScreenWithItems() })} > <span>»</span> </a>
+                                                        <a className="page-link" href="#" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.current_page + 1, } }, () => { this.populateScreenWithItems() })} > <span>»</span> </a>
                                                     </li>
                                                 </ul>
                                             </nav>

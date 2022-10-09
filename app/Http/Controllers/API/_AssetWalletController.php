@@ -31,7 +31,7 @@ class _AssetWalletController extends Controller
     // tempFunction
     public function getBlockchainWalletBalance()
     {
-        return (new __TatumAPIController)->getBlockchainWalletBalance(new Request(['address' => '0x4e9470217400b27ccdb64237e6776abcda535956']))->getData();
+        return (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => '0x4e9470217400b27ccdb64237e6776abcda535956']))->getData();
     }
 
     public function ReceivePendingTransactionsToSign()
@@ -107,15 +107,15 @@ class _AssetWalletController extends Controller
 
     public function get_addresses()
     {
-        return (new __TatumAPIController)->getVirtualAccountDepositAddresses(new Request(['virtual_account_id' => '63296ef838931796fa9e5aed']))->getData();
+        return (new Tatum\VirtualAccounts\BCAddressController)->getAllDepositAddresses(new Request(['id' => '63296ef838931796fa9e5aed']))->getData();
     }
 
     public function get_vacc_transactions()
     {
-        return (new __TatumAPIController)->getVirtualAccountTransactions(new Request(['virtual_account_id' => '63296ef838931796fa9e5aed', 'currency' => 'ETH']))->getData();
+        return (new Tatum\VirtualAccounts\TransactionController)->getTransactionsByAccountId(new Request(['id' => '63296ef838931796fa9e5aed', 'currency' => 'ETH']))->getData();
     }
 
-    public function tempFunction()
+    public function getTransactions()
     {
         $transactions = [];
         $offset = 0;
@@ -126,44 +126,17 @@ class _AssetWalletController extends Controller
         return $transactions;
     }
 
-    public function get_subscriptions()
+    public function getSubscriptions()
     {
-        return (new __TatumAPIController)->getActiveNotifWebhookSubscns(new Request())->getData();
+        return (new Tatum\Subscriptions\NotificationSubscriptionController)->getSubscriptions(new Request())->getData();
     }
 
-    public function get_subscription_notifications()
+    public function tempFunction()
     {
-        return (new __TatumAPIController)->getWebhookSubscnNotifs(new Request())->getData();
+        return (new Tatum\Subscriptions\NotificationSubscriptionController)->getAllWebhooks(new Request())->getData();
     }
 
-    public function redo_tatum_txrecon_transacstions()
-    {
-        $fetched_transactions_array = [
-            ['transactionType' => 'CANCEL_WITHDRAWAL', 'reference' => 'a'],
-            ['transactionType' => 'DEBIT_WITHDRAWAL', 'reference' => 'a'],
-            ['transactionType' => 'CANCEL_WITHDRAWAL', 'reference' => 'b'],
-            ['transactionType' => 'DEBIT_WITHDRAWAL', 'reference' => 'b'],
-            ['transactionType' => 'in', 'reference' => 'c'],
-            ['transactionType' => 'in', 'reference' => 'd'],
-            ['transactionType' => 'DEBIT_WITHDRAWAL', 'reference' => 'e'],
-        ];
-
-        $test = array_intersect_key($fetched_transactions_array, array(array("reference" => "a", "Carrier" => "Verizon")));
-
-        $fetched_transactions = (object)$fetched_transactions_array;
-        $transactions = [];
-        foreach ($fetched_transactions as $transaction) {
-            if (!( ($transaction['transactionType'] == 'DEBIT_WITHDRAWAL' && count(array_filter($fetched_transactions_array, function($item) use ($transaction) {
-                return ($item['reference'] == $transaction['reference'] && $item['transactionType'] == 'CANCEL_WITHDRAWAL');
-            }))) || ($transaction['transactionType'] == 'CANCEL_WITHDRAWAL' && count(array_filter($fetched_transactions_array, function($item) use ($transaction) {
-                return ($item['reference'] == $transaction['reference'] && $item['transactionType'] == 'DEBIT_WITHDRAWAL');
-            })))) ) {
-                array_push($transactions, $transaction);
-            }
-        }
-        return $transactions;
-    }
-    public function redo_tatum_txrecon_transactions()
+    public function redo_tatum_txn_recon_transactions()
     {
         foreach (_AssetWallet::get() as $asset_wallet) {
             $asset_wallet->update(['usable_balance_asset_value' => 0, 'total_balance_asset_value' => 0]);
@@ -175,7 +148,7 @@ class _AssetWalletController extends Controller
             $fetched_transactions = array_merge( $fetched_transactions, ((new Tatum\VirtualAccounts\TransactionController)->getTransactions(new Request(['offset' => $offset]))->getData() ) );
             $offset += 50;
         }
-        $transactions = [];
+        /*$transactions = [];
         foreach ($fetched_transactions as $transaction) {
             if (!( ($transaction->transactionType == 'DEBIT_WITHDRAWAL' && count(array_filter($fetched_transactions, function($item) use ($transaction) {
                 return ($item->reference == $transaction->reference && $item->transactionType == 'CANCEL_WITHDRAWAL');
@@ -184,18 +157,18 @@ class _AssetWalletController extends Controller
             })))) ) {
                 array_push($transactions, $transaction);
             }
-        }
-        foreach ( array_reverse( $transactions ) as $transaction) {
-            (new _TransactionController)->ttm_txrecon(new Request( json_decode(json_encode($transaction), true) ));
+        }*/
+        foreach ( array_reverse( $fetched_transactions ) as $transaction) {
+            (new _TransactionController)->ttm_txn_recon(new Request( json_decode(json_encode($transaction), true) ));
             usleep(500);
         }
     }
 
-    public function redo_tatum_subscription_webhook_txrecon_requests()
+    public function redo_tatum_subscription_webhook_txn_recon_requests()
     {
-        foreach ( array_reverse((new __TatumAPIController)->getWebhookSubscnNotifs(new Request())->getData()) as $request) {
+        foreach ( array_reverse((new Tatum\Subscriptions\NotificationSubscriptionController)->getAllWebhooks(new Request())->getData()) as $request) {
             if (!isset($request->retryCount)){
-                (new _TransactionController)->ttm_subscription_webhook_txrecon(new Request( json_decode(json_encode($request->data), true) ));
+                (new _TransactionController)->ttm_recon_for_incoming_bc_txn(new Request( json_decode(json_encode($request->data), true) ));
                 usleep(500);
             }
         }
@@ -255,21 +228,13 @@ class _AssetWalletController extends Controller
                 (new _UserController)->update(new Request(['ttm_customer_id' => $ttm_element->customerId]), $validated_data['user_username']);
             }
 
-            $ttm_element = null;
-            try {
-                $ttm_element = (new Tatum\Subscriptions\NotificationSubscriptionController)->createSubscription(new Request([
-                    'type' => 'ACCOUNT_INCOMING_BLOCKCHAIN_TRANSACTION',
-                    'attr' => [
-                        'id' => $validated_data['ttm_virtual_account_id'],
-                        'url' => "https://api.ankelli.com/webhooks/tatum/nofitications",
-                    ],
-                ]))->getData();
-            } catch (\Throwable $th) {
-                $ttm_elements = (new Tatum\Subscriptions\NotificationSubscriptionController)->getSubscriptions(new Request())->getData();
-                foreach ($ttm_elements as $item) {
-                    if ($item->attr->id == $validated_data['ttm_virtual_account_id']){ $ttm_element = $item; break; }
-                }
-            }
+            $ttm_element = (new Tatum\Subscriptions\NotificationSubscriptionController)->createSubscription(new Request([
+                'type' => 'ACCOUNT_INCOMING_BLOCKCHAIN_TRANSACTION',
+                'attr' => [
+                    'id' => $validated_data['ttm_virtual_account_id'],
+                    'url' => "https://api.ankelli.com/webhooks/tatum/nofitications/incoming-blockchain-transaction",
+                ],
+            ]))->getData();
             $validated_data['ttm_subscription_id'] = $ttm_element->id;
         }
 
@@ -338,8 +303,8 @@ class _AssetWalletController extends Controller
             'usable_balance_asset_value' => $element->usable_balance_asset_value - $validated_data['asset_value'],
         ]), $id );
         if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
-            return (new __TatumAPIController)->blockAmountInVirtualAccount(new Request([
-                'virtual_account_id' => $element->ttm_virtual_account_id,
+            return (new Tatum\VirtualAccounts\AccountController)->blockAmount(new Request([
+                'id' => $element->ttm_virtual_account_id,
                 'amount' => $validated_data['asset_value'].'',
                 'type' => $validated_data['blockage_type_slug'],
             ]));
@@ -368,7 +333,7 @@ class _AssetWalletController extends Controller
             'usable_balance_asset_value' => $element->usable_balance_asset_value + $validated_data['asset_value'],
         ]), $id );
         if ( $use_ttm_api ){
-            return (new __TatumAPIController)->unblockAmountInVirtualAccount(new Request([ 'ttm_amount_blockage_id' => $validated_data['ttm_amount_blockage_id'] ]));
+            return (new Tatum\VirtualAccounts\AccountController)->deleteBlockAmount(new Request([ 'id' => $validated_data['ttm_amount_blockage_id'] ]));
         } else {
             return $update;
         }

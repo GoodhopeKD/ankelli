@@ -58,7 +58,7 @@ class BCWithdrawScreen extends React.Component {
             _Transaction.process_withdrawal(_Input.flatten(input))
                 .then(() => {
                     bootstrap.Modal.getOrCreateInstance(document.getElementById('password_confirmation_modal')).hide();
-                    _Notification.flash({ message: 'Transaction successful.', duration: 2000 });
+                    _Notification.flash({ message: 'Request submitted.', duration: 2000 });
                     _Session.refresh(); this.setState({ input: _.cloneDeep(this.default_input), btn_send_crypto_working: false, })
                 })
                 .catch((error) => {

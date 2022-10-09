@@ -20,7 +20,7 @@ class _AssetCustodialWalletAddress extends Model
         'asset_code',
         'blockchain_address',
         'ttm_wallet_id',
-        'ttm_subscription_id',
+        //'ttm_subscription_id',
         'onchain_txn_count',
         'last_active_datetime',
 

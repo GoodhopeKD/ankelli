@@ -22,8 +22,6 @@ class _Transaction extends Model
         'ref_code',
         'txn_context',
         'blockchain_txn_id',
-        'blockchain_completed',
-        'tatum_unsigned_txn_id',
         'tatum_unsigned_txn_signature_id',
         'ttm_reference',
         'session_token',
@@ -50,8 +48,6 @@ class _Transaction extends Model
      */
     protected $hidden = [
         'blockchain_txn_id',
-        'blockchain_completed',
-        'tatum_unsigned_txn_id',
         'tatum_unsigned_txn_signature_id',
         'ttm_reference',
     ];

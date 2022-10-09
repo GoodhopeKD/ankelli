@@ -80,8 +80,8 @@ class CryptoAssetWalletsScreen extends React.Component {
                     <div className="col-lg-10">
                         <h4>My crypto wallets</h4>
                         
-                        <div className="table-responsive">
-                            <table className="table">
+                        <div className="table-responsive mb-3">
+                            <table className="table table-sm mb-0">
                                 <thead>
                                     <tr>
                                         <th scope="col">Asset Code</th>

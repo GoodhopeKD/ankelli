@@ -16,7 +16,7 @@ Route::group(['domain' => 'https://content.'.env('MIX_DOMAIN_NAME')], function()
 });
 
 Route::group(['domain' => 'https://webhooks.'.env('MIX_DOMAIN_NAME')], function(){
-    Route::post('tatum/nofitications', '_TransactionController@ttm_subscription_webhook_txrecon')->name('tatum.subscription_txrecon');
+    Route::post('tatum/nofitications', '_TransactionController@ttm_recon_for_incoming_bc_txn_notification')->name('tatum.subscription_txn_recon');
 });
 
 Route::group(['domain' => 'https://p2p.'.env('MIX_DOMAIN_NAME')], function(){

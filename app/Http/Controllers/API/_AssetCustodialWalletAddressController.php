@@ -56,23 +56,15 @@ class _AssetCustodialWalletAddressController extends Controller
             }
 
             // Notification subscription
-            $ttm_element = null;
-            try {
-                $ttm_element = (new Tatum\Subscriptions\NotificationSubscriptionController)->createSubscription(new Request([
-                    'type' => 'ADDRESS_TRANSACTION',
-                    'attr' => [
-                        'address' => $validated_data['blockchain_address'],
-                        'chain' => $validated_data['chain'],
-                        'url' => "https://api.ankelli.com/webhooks/tatum/nofitications",
-                    ],
-                ]))->getData();
-            } catch (\Throwable $th) {
-                $ttm_elements = (new Tatum\Subscriptions\NotificationSubscriptionController)->getSubscriptions(new Request())->getData();
-                foreach ($ttm_elements as $item) {
-                    if ($item->attr->address == $validated_data['blockchain_address']){ $ttm_element = $item; break; }
-                }
-            }
-            $validated_data['ttm_subscription_id'] = $ttm_element->id;
+            /*$ttm_element = (new Tatum\Subscriptions\NotificationSubscriptionController)->createSubscription(new Request([
+                'type' => 'ADDRESS_TRANSACTION',
+                'attr' => [
+                    'address' => $validated_data['blockchain_address'],
+                    'chain' => $validated_data['chain'],
+                    'url' => "https://api.ankelli.com/webhooks/tatum/nofitications/incoming-blockchain-transaction",
+                ],
+            ]))->getData();
+            $validated_data['ttm_subscription_id'] = $ttm_element->id;*/
 
             // Gas pump
             if (!isset($validated_data['ttm_gp_address'])){

@@ -29,7 +29,7 @@ class ExampleElement extends React.Component {
 
 export const funds_menu = {
     slug: 'funds_menu',
-    menu_title: 'Funds',
+    menu_title: 'Funds Menu',
     subdomain: 'funds',
     show_when_auth_state_is: true,
     show_in_menu: true,

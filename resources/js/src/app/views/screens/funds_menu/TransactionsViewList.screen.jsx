@@ -48,11 +48,6 @@ class TransactionsViewListScreen extends React.Component {
     }
 
     async universalGetCollection(_Type, indicator_var_name, input = null, page_select = null, per_page = null) {
-        //if (page_select && this.state.list_full) return Promise.resolve();
-        if (!this.should_load_items) {
-            _Notification.flash({ message: 'No filters changed', duration: 2000 })
-            return Promise.resolve();
-        }
         if (!this.working) {
             this.working = true
             this.setState({
@@ -183,16 +178,16 @@ class TransactionsViewListScreen extends React.Component {
 
 
                         <div>
-                            <div className="table-responsive">
-                                <table className="table">
+                            <div className="table-responsive mb-3">
+                                <table className="table table-sm mb-0">
                                     <thead>
                                         <tr>
                                             <th scope="col">Ref Code</th>
                                             <th scope="col">Type</th>
-                                            <th scope="col" style={{ minWidth: 150 }}>Asset Value</th>
+                                            <th scope="col" style={{ minWidth: 155 }}>Asset Value</th>
                                             <th scope="col" style={{ minWidth: 300 }}>Note</th>
-                                            <th scope="col" style={{ minWidth: 205 }}>Datetime</th>
-                                            <th scope="col" style={{ minWidth: 150 }}>New balance</th>
+                                            <th scope="col" style={{ minWidth: 215 }}>Datetime</th>
+                                            <th scope="col" style={{ minWidth: 155 }}>New balance</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -238,11 +233,11 @@ class TransactionsViewListScreen extends React.Component {
                                     <nav>
                                         <ul className="pagination">
                                             <li className={"page-item" + ((this.state._collecion.meta.current_page == 1 || !this.state.list_loaded) ? ' disabled' : '')}>
-                                                <a className="page-link" href="#" onClick={() => this.setState({ page_select: { page: 1, } }, () => { this.populateScreenWithItems() })} > <span>«</span> </a>
+                                                <a className="page-link" href="#" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.current_page - 1, } }, () => { this.populateScreenWithItems() })} > <span>«</span> </a>
                                             </li>
                                             {pagination_pages.map(page => <li key={page} className={"page-item" + (this.state._collecion.meta.current_page == page ? ' active' : '') + (!this.state.list_loaded ? ' disabled' : '')} onClick={() => this.setState({ page_select: { page } }, () => { this.populateScreenWithItems() })} ><a className="page-link" href="#">{page}</a> </li>)}
                                             <li className={"page-item" + ((this.state._collecion.meta.current_page == this.state._collecion.meta.last_page || !this.state.list_loaded) ? ' disabled' : '')}>
-                                                <a className="page-link" href="#" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.last_page, } }, () => { this.populateScreenWithItems() })} > <span>»</span> </a>
+                                                <a className="page-link" href="#" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.current_page + 1, } }, () => { this.populateScreenWithItems() })} > <span>»</span> </a>
                                             </li>
                                         </ul>
                                     </nav>

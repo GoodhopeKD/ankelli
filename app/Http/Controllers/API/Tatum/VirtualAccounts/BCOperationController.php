@@ -29,7 +29,7 @@ class BCOperationController extends Controller
             //'signatureId' => ['required_if:one_of,=,TransferEthKMS', 'string'],
         ]);
 
-        $validated_data['index'] = 1;
+        //$validated_data['index'] = 1;
         $validated_data['signatureId'] = env('TATUM_KMS_SIGNATURE_ID');
 
         $payload = $validated_data;

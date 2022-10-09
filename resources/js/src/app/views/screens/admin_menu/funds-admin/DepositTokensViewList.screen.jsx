@@ -201,17 +201,17 @@ class DepositTokensViewListScreen extends React.Component {
 
 
                         <div>
-                            <div className="table-responsive">
-                                <table className="table">
+                            <div className="table-responsive mb-3">
+                                <table className="table table-sm mb-0">
                                     <thead>
                                         <tr>
                                             <th scope="col">Token</th>
                                             <th scope="col">Asset</th>
                                             <th scope="col">Purchase Amount</th>
                                             <th scope="col">Creator</th>
-                                            <th scope="col"style={{ minWidth: 205 }}>Created time</th>
+                                            <th scope="col"style={{ minWidth: 215 }}>Created time</th>
                                             {this.state.input._status != 'unused' && <th scope="col text-center">User</th>}
-                                            {this.state.input._status != 'unused' && <th scope="col text-center"style={{ minWidth: 205 }}>Used time</th>}
+                                            {this.state.input._status != 'unused' && <th scope="col text-center"style={{ minWidth: 215 }}>Used time</th>}
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -269,11 +269,11 @@ class DepositTokensViewListScreen extends React.Component {
                                     <nav>
                                         <ul className="pagination">
                                             <li className={"page-item" + ((this.state._collecion.meta.current_page == 1 || !this.state.list_loaded) ? ' disabled' : '')}>
-                                                <a className="page-link" href="#" onClick={() => this.setState({ page_select: { page: 1, } }, () => { this.populateScreenWithItems() })} > <span>«</span> </a>
+                                                <a className="page-link" href="#" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.current_page - 1, } }, () => { this.populateScreenWithItems() })} > <span>«</span> </a>
                                             </li>
                                             {pagination_pages.map(page => <li key={page} className={"page-item" + (this.state._collecion.meta.current_page == page ? ' active' : '') + (!this.state.list_loaded ? ' disabled' : '')} onClick={() => this.setState({ page_select: { page } }, () => { this.populateScreenWithItems() })} ><a className="page-link" href="#">{page}</a> </li>)}
                                             <li className={"page-item" + ((this.state._collecion.meta.current_page == this.state._collecion.meta.last_page || !this.state.list_loaded) ? ' disabled' : '')}>
-                                                <a className="page-link" href="#" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.last_page, } }, () => { this.populateScreenWithItems() })} > <span>»</span> </a>
+                                                <a className="page-link" href="#" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.current_page + 1, } }, () => { this.populateScreenWithItems() })} > <span>»</span> </a>
                                             </li>
                                         </ul>
                                     </nav>

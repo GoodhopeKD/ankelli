@@ -248,16 +248,16 @@ class OffersViewListScreen extends React.Component {
 
 
                 <div>
-                    <div className="table-responsive">
-                        <table className="table">
+                    <div className="table-responsive mb-3">
+                        <table className="table table-sm mb-0">
                             <thead>
                                 <tr>
                                     {(this.props.path == '/p2p/offers' || this.props.path == '/') && <th scope="col" style={{ minWidth: 220 }}>{this.state.showing_offer_to === 'buy' ? 'Buyer' : 'Seller'}</th>}
                                     {this.props.path == '/p2p/my-offers' && <th scope="col" style={{ minWidth: 205 }}>Type</th>}
                                     <th scope="col" style={{ minWidth: 145 }}>{this.props.path == '/p2p/my-offers' ? 'Trading' : "You'll be trading"}</th>
                                     <th scope="col">Price</th>
-                                    <th scope="col" style={{ minWidth: 150 }}>Limits</th>
-                                    {this.props.path == '/p2p/my-offers' && <th scope="col">Fill</th>}
+                                    <th scope="col" style={{ minWidth: 155 }}>Limits</th>
+                                    {this.props.path == '/p2p/my-offers' && <th scope="col" style={{ minWidth: 100 }}>Fill</th>}
                                     <th scope="col" style={{ minWidth: 250 }}>Pay via</th>
                                     <th scope="col">Trade</th>
                                     {this.props.path == '/p2p/my-offers' && <th scope="col">Status</th>}
@@ -379,11 +379,11 @@ class OffersViewListScreen extends React.Component {
                             <nav>
                                 <ul className="pagination">
                                     <li className={"page-item" + ((this.state._collecion.meta.current_page == 1 || !this.state.list_loaded) ? ' disabled' : '')}>
-                                        <a className="page-link" href="#" onClick={() => this.setState({ page_select: { page: 1, } }, () => { this.populateScreenWithItems() })} > <span>«</span> </a>
+                                        <a className="page-link" href="#" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.current_page - 1, } }, () => { this.populateScreenWithItems() })} > <span>«</span> </a>
                                     </li>
                                     {pagination_pages.map(page => <li key={page} className={"page-item" + (this.state._collecion.meta.current_page == page ? ' active' : '') + (!this.state.list_loaded ? ' disabled' : '')} onClick={() => this.setState({ page_select: { page } }, () => { this.populateScreenWithItems() })} ><a className="page-link" href="#">{page}</a> </li>)}
                                     <li className={"page-item" + ((this.state._collecion.meta.current_page == this.state._collecion.meta.last_page || !this.state.list_loaded) ? ' disabled' : '')}>
-                                        <a className="page-link" href="#" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.last_page, } }, () => { this.populateScreenWithItems() })} > <span>»</span> </a>
+                                        <a className="page-link" href="#" onClick={() => this.setState({ page_select: { page: this.state._collecion.meta.current_page + 1, } }, () => { this.populateScreenWithItems() })} > <span>»</span> </a>
                                     </li>
                                 </ul>
                             </nav>

@@ -51,8 +51,8 @@ class EditSysConfigParamsScreen extends React.Component {
                         <h5>Edit System Configuration parameters</h5>
                         <hr />
 
-                        <div className="table-responsive">
-                            <table className="table">
+                        <div className="table-responsive mb-3">
+                            <table className="table table-sm mb-0">
                                 <thead>
                                     <tr>
                                         <th scope="col">Param name</th>

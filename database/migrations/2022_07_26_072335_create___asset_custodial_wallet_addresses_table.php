@@ -23,7 +23,7 @@ return new class extends Migration
                     ->onDelete('set null');
             $table->string('blockchain_address', 128)->unique(); // or owner
             $table->string('ttm_wallet_id', 96)->unique();
-            $table->string('ttm_subscription_id', 24)->nullable();
+            //$table->string('ttm_subscription_id', 24)->nullable();
             $table->unsignedTinyInteger('onchain_txn_count')->default(0);
             $table->timestamp('last_active_datetime')->nullable();
 

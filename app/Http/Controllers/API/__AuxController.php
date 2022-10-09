@@ -232,59 +232,78 @@ class __AuxController extends Controller
 
     public function load_factory_data()
     {
+        $use_ttm_api = _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f();
         $clear_unsigned_transactions = true;
-        if ( $clear_unsigned_transactions && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+        if ( $clear_unsigned_transactions && $use_ttm_api ){
             foreach ((new Tatum\Security\KMSController)->ReceivePendingTransactionsToSign(new Request(['chain' => 'ETH']))->getData() as $transaction) {
                 (new Tatum\Security\KMSController)->DeletePendingTransactionToSign(new Request(['id' => $transaction->id]));
             }
         }
 
         $clear_virtual_accounts = true;
-        if ( $clear_virtual_accounts && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+        if ( $clear_virtual_accounts && $use_ttm_api ){
             foreach ((new Tatum\VirtualAccounts\AccountController)->getAccounts(new Request())->getData() as $account) {
                 try { (new Tatum\VirtualAccounts\AccountController)->deactivateAccount(new Request(['id' => $account->id])); } catch (\Throwable $th) {}
             }
         }
 
         $clear_notification_webhook_subscriptions = true;
-        if ( $clear_notification_webhook_subscriptions && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+        if ( $clear_notification_webhook_subscriptions && $use_ttm_api ){
             foreach ((new Tatum\Subscriptions\NotificationSubscriptionController)->getSubscriptions(new Request())->getData() as $subscription) {
                 (new Tatum\Subscriptions\NotificationSubscriptionController)->deleteSubscription(new Request(['id' => $subscription->id]));
             }
+            (new Tatum\Subscriptions\NotificationSubscriptionController)->createSubscription(new Request([
+                'type' => 'KMS_COMPLETED_TX',
+                'attr' => [
+                    'url' => "https://api.ankelli.com/webhooks/tatum/nofitications/completed-kms-transaction",
+                ],
+            ]));
+            (new Tatum\Subscriptions\NotificationSubscriptionController)->createSubscription(new Request([
+                'type' => 'KMS_FAILED_TX',
+                'attr' => [
+                    'url' => "https://api.ankelli.com/webhooks/tatum/nofitications/failed-kms-transaction",
+                ],
+            ]));
         }
 
         session()->put('active_session_token', 'FACTORY_SSN' );
         session()->put('api_auth_user_username', 'system');
 
-        (new _AssetController)->store( new Request([
-            'name' => 'Ethereum',
-            'code' => 'ETH',
-            'chain' => 'ETH',
-            'ttm_currency' => 'ETH',
-            'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent',
-            'smallest_display_unit' => '0.0000000001',
-            'withdrawal_txn_fee_usd_fctr' => 1,
-            'payment_txn_fee_usd_fctr' => 1,
-            'usd_asset_exchange_rate' => '0.00076',
-            'onchain_disclaimer' => "This platform is still in test mode on the sepolia testnet chain.
-Onchain transactions should be handled accordingly."
-        ]));
+        $factory_asset_code = 'ETH';
 
-        /*(new _AssetController)->store( new Request([
-            'name' => 'Tether USD',
-            'code' => 'USDT',
-            'chain' => 'ETH',
-            'ttm_currency' => 'ETH',
-            'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent',
-            'smallest_display_unit' => 0.00001,
-            'withdrawal_txn_fee_usd_fctr' => 1,
-            'payment_txn_fee_usd_fctr' => 1,
-            'usd_asset_exchange_rate' => 1,
-            'onchain_disclaimer' => "This platform is still in test mode using the testnet chain.
+        if ($factory_asset_code === 'ETH'){
+            (new _AssetController)->store( new Request([
+                'name' => 'Ethereum',
+                'code' => 'ETH',
+                'chain' => 'ETH',
+                'ttm_currency' => 'ETH',
+                'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent',
+                'smallest_display_unit' => '0.0000000001',
+                'withdrawal_txn_fee_usd_fctr' => 1,
+                'payment_txn_fee_usd_fctr' => 1,
+                'usd_asset_exchange_rate' => '0.00076',
+                'onchain_disclaimer' => "This platform is still in test mode on the sepolia testnet chain.
+Onchain transactions should be handled accordingly."
+            ]));
+        }
+
+        if ($factory_asset_code === 'USDT'){
+            (new _AssetController)->store( new Request([
+                'name' => 'Tether USD',
+                'code' => 'USDT',
+                'chain' => 'ETH',
+                'ttm_currency' => 'ETH',
+                'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent',
+                'smallest_display_unit' => 0.00001,
+                'withdrawal_txn_fee_usd_fctr' => 1,
+                'payment_txn_fee_usd_fctr' => 1,
+                'usd_asset_exchange_rate' => 1,
+                'onchain_disclaimer' => "This platform is still in test mode using the testnet chain.
 USDT doesn't exist on testnet so we're using ETH but referring to it here as USDT.
 The system does an internal conversion such that 1 ETH = 1000 USDT.
 Handle all internal transactions normally but know that these values will be reflected differently outside this platform."
-        ]));*/
+            ]));
+        }
 
         $token_reg_changed = false;
         $token_reg_enabled_pref_item = _PrefItem::firstWhere('key_slug', 'token_reg_enabled');
@@ -350,7 +369,7 @@ Handle all internal transactions normally but know that these values will be ref
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
         (new _AssetWalletController)->store( new Request([
-            'asset_code' => 'ETH',
+            'asset_code' => $factory_asset_code,
             'user_username' => 'busops',
         ]));
         (new _UserGroupMembershipController)->store( new Request([
@@ -407,7 +426,7 @@ Handle all internal transactions normally but know that these values will be ref
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
         (new _AssetWalletController)->store( new Request([
-            'asset_code' => 'ETH',
+            'asset_code' => $factory_asset_code,
             'user_username' => 'guddaz',
         ]));
         (new _AdminExtensionController)->store( new Request([
@@ -424,7 +443,7 @@ Handle all internal transactions normally but know that these values will be ref
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
         (new _AssetWalletController)->store( new Request([
-            'asset_code' => 'ETH',
+            'asset_code' => $factory_asset_code,
             'user_username' => 'paywyze',
         ]));
         (new _AdminExtensionController)->store( new Request([
@@ -446,7 +465,7 @@ Handle all internal transactions normally but know that these values will be ref
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
         (new _AssetWalletController)->store( new Request([
-            'asset_code' => 'ETH',
+            'asset_code' => $factory_asset_code,
             'user_username' => 'john_doe',
         ]));
 
@@ -466,6 +485,10 @@ Handle all internal transactions normally but know that these values will be ref
 
     public function load_test_data()
     {
+        if (_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()){
+            return;
+        }
+
         session()->put('api_auth_user_username', 'system');
 
         $token_reg_changed = false;
