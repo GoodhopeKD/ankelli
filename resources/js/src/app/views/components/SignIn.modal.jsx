@@ -13,8 +13,8 @@ const debug_users = {
         password: 'Def-Pass#123'
     },
     // Personal Account with access to all features
-    'john_doe': {
-        username: 'john_doe',
+    'mark': {
+        username: 'mark',
         password: 'Def-Pass#123'
     },
 }
@@ -26,8 +26,8 @@ export default withRouter(class SignInModal extends React.Component {
     state = {
         btn_signin_working: false,
         input: {
-            username: new _Input(_Input.debug_form_autofill(DEBUG, debug_users['john_doe'].username)),
-            password: new _Input(_Input.debug_form_autofill(DEBUG, debug_users['john_doe'].password)),
+            username: new _Input(_Input.debug_form_autofill(DEBUG, debug_users['mark'].username)),
+            password: new _Input(_Input.debug_form_autofill(DEBUG, debug_users['mark'].password)),
         },
         errors: [],
     };

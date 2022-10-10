@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class _AssetCustodialWalletAddress extends Model
 {
     const CREATED_AT = 'created_datetime';
-    const UPDATED_AT = null;
+    const UPDATED_AT = 'updated_datetime';
     const DELETED_AT = 'deleted_datetime';
 
     /**
@@ -17,20 +17,24 @@ class _AssetCustodialWalletAddress extends Model
      * @var array
      */
     protected $fillable = [
-        'asset_code',
+        'asset_chain',
         'blockchain_address',
         'ttm_wallet_id',
-        //'ttm_subscription_id',
-        'onchain_txn_count',
-        'last_active_datetime',
-
-        'ttm_gp_address',
-        'ttm_gp_index_from',
-        'ttm_gp_index_to',
-        'ttm_gp_trx_fee_limit',
-        'ttm_gp_actvxn_txn_id',
-
+        'ttm_subscription_id',
+        'ttm_activated_unused_gp_addresses',
+        'ttm_activated_unused_gp_addresses_offset_index',
+        'ttm_last_gp_addresses_activation_txn_signature_id',
         'creator_username',
+    ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'ttm_activated_unused_gp_addresses',
+        'ttm_subscription_id',
     ];
 
     /**
@@ -39,6 +43,6 @@ class _AssetCustodialWalletAddress extends Model
      * @var array
      */
     protected $casts = [
-        'last_active_datetime' => 'datetime',
+        'ttm_activated_unused_gp_addresses' => 'array',
     ];
 }

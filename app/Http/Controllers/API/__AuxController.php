@@ -240,7 +240,7 @@ class __AuxController extends Controller
             }
         }
 
-        $clear_virtual_accounts = true;
+        $clear_virtual_accounts = false;
         if ( $clear_virtual_accounts && $use_ttm_api ){
             foreach ((new Tatum\VirtualAccounts\AccountController)->getAccounts(new Request())->getData() as $account) {
                 try { (new Tatum\VirtualAccounts\AccountController)->deactivateAccount(new Request(['id' => $account->id])); } catch (\Throwable $th) {}
@@ -270,13 +270,14 @@ class __AuxController extends Controller
         session()->put('api_auth_user_username', 'system');
 
         $factory_asset_code = 'ETH';
+        $factory_asset_chain = 'ETH';
+        $created_asset = null;
 
         if ($factory_asset_code === 'ETH'){
-            (new _AssetController)->store( new Request([
+            $created_asset = (new _AssetController)->store( Request::create('','',[
                 'name' => 'Ethereum',
                 'code' => 'ETH',
                 'chain' => 'ETH',
-                'ttm_currency' => 'ETH',
                 'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent',
                 'smallest_display_unit' => '0.0000000001',
                 'withdrawal_txn_fee_usd_fctr' => 1,
@@ -284,17 +285,16 @@ class __AuxController extends Controller
                 'usd_asset_exchange_rate' => '0.00076',
                 'onchain_disclaimer' => "This platform is still in test mode on the sepolia testnet chain.
 Onchain transactions should be handled accordingly."
-            ]));
+            ],[],[],['HTTP_accept'=>'application/json']))->getData();
         }
 
         if ($factory_asset_code === 'USDT'){
-            (new _AssetController)->store( new Request([
+            $created_asset = (new _AssetController)->store( Request::create('','',[
                 'name' => 'Tether USD',
                 'code' => 'USDT',
                 'chain' => 'ETH',
-                'ttm_currency' => 'ETH',
                 'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent',
-                'smallest_display_unit' => 0.00001,
+                'smallest_display_unit' => '0.00001',
                 'withdrawal_txn_fee_usd_fctr' => 1,
                 'payment_txn_fee_usd_fctr' => 1,
                 'usd_asset_exchange_rate' => 1,
@@ -302,7 +302,11 @@ Onchain transactions should be handled accordingly."
 USDT doesn't exist on testnet so we're using ETH but referring to it here as USDT.
 The system does an internal conversion such that 1 ETH = 1000 USDT.
 Handle all internal transactions normally but know that these values will be reflected differently outside this platform."
-            ]));
+            ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        }
+
+        if ( $use_ttm_api ){
+            (new _AssetController)->updateRate($created_asset->id);
         }
 
         $token_reg_changed = false;
@@ -370,6 +374,7 @@ Handle all internal transactions normally but know that these values will be ref
         ]));
         (new _AssetWalletController)->store( new Request([
             'asset_code' => $factory_asset_code,
+            'asset_chain' => $factory_asset_chain,
             'user_username' => 'busops',
         ]));
         (new _UserGroupMembershipController)->store( new Request([
@@ -427,6 +432,7 @@ Handle all internal transactions normally but know that these values will be ref
         ]));
         (new _AssetWalletController)->store( new Request([
             'asset_code' => $factory_asset_code,
+            'asset_chain' => $factory_asset_chain,
             'user_username' => 'guddaz',
         ]));
         (new _AdminExtensionController)->store( new Request([
@@ -444,6 +450,7 @@ Handle all internal transactions normally but know that these values will be ref
         ]));
         (new _AssetWalletController)->store( new Request([
             'asset_code' => $factory_asset_code,
+            'asset_chain' => $factory_asset_chain,
             'user_username' => 'paywyze',
         ]));
         (new _AdminExtensionController)->store( new Request([
@@ -466,7 +473,19 @@ Handle all internal transactions normally but know that these values will be ref
         ]));
         (new _AssetWalletController)->store( new Request([
             'asset_code' => $factory_asset_code,
+            'asset_chain' => $factory_asset_chain,
             'user_username' => 'john_doe',
+        ]));
+
+        // user:mark
+        (new _UserController)->store( new Request([
+            'username' => 'mark', 'email_address' => 'mark@ankelli.com',
+            'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
+        ]));
+        (new _AssetWalletController)->store( new Request([
+            'asset_code' => $factory_asset_code,
+            'asset_chain' => $factory_asset_chain,
+            'user_username' => 'mark',
         ]));
 
         if ($token_reg_changed){

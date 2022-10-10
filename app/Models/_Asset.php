@@ -18,8 +18,7 @@ class _Asset extends Model
         'name',
         'code',
         'chain',
-        'ttm_currency',
-        'ttm_xpub',
+        'xpub',
         'smallest_display_unit',
         'withdrawal_txn_fee_usd_fctr',
         'payment_txn_fee_usd_fctr',
@@ -35,7 +34,7 @@ class _Asset extends Model
      * @var array
      */
     protected $hidden = [
-        'ttm_xpub',
+        'xpub',
     ];
 
     /**

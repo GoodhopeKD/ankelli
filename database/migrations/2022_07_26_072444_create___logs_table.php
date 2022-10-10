@@ -4,8 +4,6 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-use App\Http\Controllers\API\__AuxController;
-
 return new class extends Migration
 {
     /**
@@ -39,8 +37,6 @@ return new class extends Migration
             $table->text('entry_update_result')->nullable();
             $table->text('request_location')->nullable();
         });
-
-        (new __AuxController)->load_factory_data();
     }
 
     /**

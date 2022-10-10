@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Tatum\Security;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CustodialManagedWalletController extends Controller
 {
@@ -106,14 +107,19 @@ class CustodialManagedWalletController extends Controller
     {
         $validated_data = $request->validate([
             'id' => ['required', 'string'],
+            'export' => ['nullable', 'string', Rule::in(['true', 'false'])],
         ]);
+
+        $query_params = [
+            'export' => $validated_data['export'] ?? 'false',
+        ];
 
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "x-api-key: ".env('TATUM_X_API_KEY'),
             ],
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/custodial/wallet/".$validated_data['id'],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/custodial/wallet/".$validated_data['id']."?".http_build_query($query_params),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "GET",
         ]);

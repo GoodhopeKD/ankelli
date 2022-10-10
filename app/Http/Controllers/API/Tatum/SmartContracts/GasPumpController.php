@@ -61,7 +61,7 @@ class GasPumpController extends Controller
         ]);
 
         if ( $validated_data['chain'] === 'TRON' ) $validated_data['feeLimit'] = 200;
-        $validated_data['signatureId'] = env('TATUM_KMS_SIGNATURE_ID');
+        $validated_data['signatureId'] = env('TATUM_KMS_ETH_SIGNATURE_ID');
 
         $payload = $validated_data;
 

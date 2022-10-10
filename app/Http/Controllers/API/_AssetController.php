@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 use App\Models\_PrefItem;
-use App\Models\_AssetWallet;
+use App\Models\_AssetCustodialWalletAddress;
 
 use App\Models\_Asset;
 use App\Http\Resources\_AssetResource;
@@ -50,20 +50,20 @@ class _AssetController extends Controller
             'name' => ['required', 'string', 'max:64'],
             'code' => ['required', 'string', 'max:64'],
             'chain' => ['required', 'string', 'max:64'],
-            'ttm_currency' => ['required', 'string', 'max:64'],
             'smallest_display_unit' => ['required', 'numeric', 'min:0'],
             'withdrawal_txn_fee_usd_fctr' => ['required', 'numeric', 'min:0'],
             'payment_txn_fee_usd_fctr' => ['required', 'numeric', 'min:0'],
             'usd_asset_exchange_rate' => ['required', 'numeric', 'min:0'],
             'onchain_disclaimer' => ['required', 'string'],
-            'mnemonic' => ['required', 'string', 'max:500'],
+            //'mnemonic' => ['required', 'string', 'max:500'],
         ]);
 
         $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
 
-        if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+        
+        if ( false && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
             $ttm_element = (new Tatum\Blockchain\EthereumController)->EthGenerateWallet(new Request(['mnemonic' => $validated_data['mnemonic']]))->getData();
-            $validated_data['ttm_xpub'] = $ttm_element->xpub;
+            $validated_data['xpub'] = $ttm_element->xpub;
         }
         $element = _Asset::create($validated_data);
         
@@ -81,17 +81,18 @@ class _AssetController extends Controller
             $existing_addresses = (new Tatum\Security\CustodialManagedWalletController)->CustodialGetWallets(new Request())->getData();
             if ( count($existing_addresses) ){
                 foreach ( $existing_addresses as $existing_address) {
-                    (new _AssetCustodialWalletAddressController)->store(new Request([
-                        'asset_code' => $validated_data['code'],
-                        'chain' => $existing_address->chain,
-                        'blockchain_address' => $existing_address->address,
-                        'ttm_wallet_id' => $existing_address->walletId,
-                    ]));
+                    if ( $existing_address->chain == $validated_data['chain'] && !_AssetCustodialWalletAddress::where(['asset_chain' => $validated_data['chain']])->exists() ){
+                        (new _AssetCustodialWalletAddressController)->store(new Request([
+                            'asset_chain' => $existing_address->chain,
+                            'blockchain_address' => strtolower( $existing_address->address ),
+                            'ttm_wallet_id' => $existing_address->walletId,
+                        ]));
+                    }
                 }
-            } else {
+            } 
+            if ( !_AssetCustodialWalletAddress::where(['asset_chain' => $validated_data['chain']])->exists() ){
                 (new _AssetCustodialWalletAddressController)->store(new Request([
-                    'asset_code' => $validated_data['code'],
-                    'chain' => $validated_data['chain'],
+                    'asset_chain' => $validated_data['chain'],
                 ]));
             }
         }
@@ -113,13 +114,61 @@ class _AssetController extends Controller
     /**
      * Update the specified resource in storage.
      *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateRate(int $id)
+    {
+        $element = _Asset::findOrFail($id);
+        $ttm_element = (new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => $element->code, 'basePair' => 'USD']))->getData();
+        try {
+            (new _AssetController)->update( new Request(['usd_asset_exchange_rate' => (1/$ttm_element->value)]), $element->id );
+        } catch (\Throwable $th) {}
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, int $id)
     {
-        //
+        $validated_data = $request->validate([
+            'smallest_display_unit' => ['sometimes', 'numeric', 'min:0'],
+            'withdrawal_txn_fee_usd_fctr' => ['sometimes', 'numeric', 'min:0'],
+            'payment_txn_fee_usd_fctr' => ['sometimes', 'numeric', 'min:0'],
+            'usd_asset_exchange_rate' => ['sometimes', 'numeric', 'min:0'],
+            'onchain_disclaimer' => ['sometimes', 'string'],
+            '_status' => ['sometimes', 'string', Rule::in(['active', 'deactivated'])],
+        ]);
+
+        $element = _Asset::findOrFail($id);
+
+        // Handle _Log
+        $log_entry_update_result = [];
+        foreach ( $validated_data as $key => $value ) {
+            if ( in_array( $key, $element->getFillable() ) && $element->{$key} != $value ){
+                array_push( $log_entry_update_result, [
+                    'field_name' => $key,
+                    'old_value' => $element->{$key},
+                    'new_value' => $value,
+                ]);
+            }
+        }
+        if (!count($log_entry_update_result)) return abort(422, 'No values were updated');
+        (new _LogController)->store( new Request([
+            'action_note' => 'Updating of _Asset entry in database.',
+            'action_type' => 'entry_update',
+            'entry_table' => $element->getTable(),
+            'entry_uid' => $element->id,
+            'batch_code' => $request->batch_code,
+            'entry_update_result'=> $log_entry_update_result,
+        ]));
+        // End _Log Handling
+        $element->update($validated_data);
+        if ($request->expectsJson()) return response()->json( new _AssetResource( $element ) );
     }
 
     /**

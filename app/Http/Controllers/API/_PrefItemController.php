@@ -87,6 +87,7 @@ class _PrefItemController extends Controller
                 ]);
             }
         }
+        if (!count($log_entry_update_result)) return abort(422, 'No values were updated');
         (new _LogController)->store( new Request([
             'action_note' => $request->update_note,
             'action_type' => 'entry_update',

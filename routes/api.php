@@ -25,6 +25,7 @@ Route::post('accounts', '__AuxController@default_route')->name('default_route');
 Route::post('webhooks/tatum/nofitications/incoming-blockchain-transaction', '_TransactionController@ttm_recon_for_incoming_bc_txn_notification')->name('tatum.ttm_recon_for_incoming_bc_txn_notification');
 Route::post('webhooks/tatum/nofitications/completed-kms-transaction', '_TransactionController@ttm_recon_for_completed_kms_txn_notification')->name('tatum.ttm_recon_for_completed_kms_txn_notification');
 Route::post('webhooks/tatum/nofitications/failed-kms-transaction', '_TransactionController@ttm_recon_for_failed_kms_txn_notification')->name('tatum.ttm_recon_for_failed_kms_txn_notification');
+Route::post('webhooks/tatum/nofitications/address-transaction', '_TransactionController@ttm_address_txn_notification')->name('tatum.ttm_address_txn_notification');
 
 // Test routes
 Route::post('load_test_data', '__AuxController@load_test_data')->name('load_test_data');

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\_PrefItem;
+use App\Models\_AssetCustodialWalletAddress;
 use App\Models\_AssetWallet;
 
 use App\Models\_AssetWalletAddress;
@@ -53,9 +54,36 @@ class _AssetWalletAddressController extends Controller
 
         if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() && !isset($validated_data['blockchain_address']) ){
             $asset_wallet = _AssetWallet::find($validated_data['asset_wallet_id'])->makeVisible(['ttm_virtual_account_id']);
-            $ttm_element = (new Tatum\VirtualAccounts\BCAddressController)->generateDepositAddress(new Request(['id' => $asset_wallet->ttm_virtual_account_id]))->getData();
-            $validated_data['blockchain_address'] = $ttm_element->address;
-            $validated_data['ttm_derivation_key'] = $ttm_element->derivationKey;
+            if ( false ){
+                $ttm_element = (new Tatum\VirtualAccounts\BCAddressController)->generateDepositAddress(new Request(['id' => $asset_wallet->ttm_virtual_account_id]))->getData();
+                $validated_data['ttm_derivation_key'] = $ttm_element->derivationKey;
+                $validated_data['blockchain_address'] = strtolower( $ttm_element->address );
+            } else {
+                $address_saved = false;
+                while ($address_saved == false) {
+                    $asset_custodial_wallet_address = _AssetCustodialWalletAddress::firstWhere(['asset_chain' => $asset_wallet->asset_chain])->makeVisible(['ttm_activated_unused_gp_addresses']);
+                    if (!count($asset_custodial_wallet_address->ttm_activated_unused_gp_addresses)){
+                        (new _AssetCustodialWalletAddressController)->activate_next_batch(new Request(), $asset_custodial_wallet_address->id);
+                        $asset_custodial_wallet_address = _AssetCustodialWalletAddress::firstWhere(['asset_chain' => $asset_wallet->asset_chain])->makeVisible(['ttm_activated_unused_gp_addresses']);
+                    }
+                    $ttm_activated_unused_gp_addresses = $asset_custodial_wallet_address->ttm_activated_unused_gp_addresses;
+                    $chosen_gp_address = array_shift($ttm_activated_unused_gp_addresses);
+                    (new _AssetCustodialWalletAddressController)->update(new Request(['ttm_activated_unused_gp_addresses' => $ttm_activated_unused_gp_addresses]), $asset_custodial_wallet_address->id);
+                    $address_usable = true;
+                    try {
+                        if ((new Tatum\VirtualAccounts\BCAddressController)->addressExists(new Request(['address' => strtolower( $chosen_gp_address ), 'currency' => $asset_wallet->asset_code]))->getData()){ $address_usable = false; }
+                    } catch (\Throwable $th) {
+                        $message = $th->getMessage();
+                        if (str_contains($message, 'The combination of address')){ $address_usable = true; }
+                        if (str_contains($message, 'Unable to find sender account')){ $address_usable = false; }
+                    }
+                    if ( $address_usable ){
+                        $ttm_element = (new Tatum\VirtualAccounts\BCAddressController)->assignAddress(new Request(['id' => $asset_wallet->ttm_virtual_account_id, 'address' => strtolower( $chosen_gp_address )]))->getData();
+                        $validated_data['blockchain_address'] = strtolower( $ttm_element->address );
+                        $address_saved = true;
+                    }
+                }
+            }
         }
 
         $element = _AssetWalletAddress::create($validated_data);

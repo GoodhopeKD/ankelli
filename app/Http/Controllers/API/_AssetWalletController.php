@@ -29,7 +29,7 @@ class _AssetWalletController extends Controller
     }
 
     // tempFunction
-    public function getBlockchainWalletBalance()
+    public function EthGetBalance()
     {
         return (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => '0x4e9470217400b27ccdb64237e6776abcda535956']))->getData();
     }
@@ -71,8 +71,23 @@ class _AssetWalletController extends Controller
         return (new Tatum\SmartContracts\GasPumpController)->ActivatedNotActivatedGasPumpAddresses(new Request([
             'chain' => 'ETH',
             'owner' => '0x4e9470217400b27ccdb64237e6776abcda535956',
-            'index' => 15,
+            'index' => 0,
         ]));
+    }
+
+    public function assignAddress()
+    {
+        return (new Tatum\VirtualAccounts\BCAddressController)->assignAddress(new Request(['id' => '6342fdad79aa24dc88b58632', 'address' => '0x02A2e5E52755Cc77Da42658bC55686494F051155']));
+    }
+
+    public function tempFunction()
+    {
+        return (new Tatum\Security\CustodialManagedWalletController)->CustodialGetWallet(new Request(['id' => "7dc19c98-a3f5-44f6-8ca1-10ae57af6832", 'export' => 'true']));
+    }
+
+    public function tempFunctionf()
+    {
+        return (new Tatum\VirtualAccounts\BCAddressController)->addressExists(new Request(['currency' => 'ETH', 'address' => '0x010b6ab0abeeb921964161cd2e23c50250e546bf']));
     }
 
     public function CustodialGetWallets()
@@ -105,9 +120,9 @@ class _AssetWalletController extends Controller
         return (new Tatum\VirtualAccounts\AccountController)->getAccountsByCustomerId(new Request(['id' => '6321ec61d5f2885b44f1bda0']))->getData();
     }
 
-    public function get_addresses()
+    public function tempFunctions()
     {
-        return (new Tatum\VirtualAccounts\BCAddressController)->getAllDepositAddresses(new Request(['id' => '63296ef838931796fa9e5aed']))->getData();
+        return (new Tatum\VirtualAccounts\BCAddressController)->getAllDepositAddresses(new Request(['id' => '6342fdad79aa24dc88b58632']))->getData();
     }
 
     public function get_vacc_transactions()
@@ -131,7 +146,7 @@ class _AssetWalletController extends Controller
         return (new Tatum\Subscriptions\NotificationSubscriptionController)->getSubscriptions(new Request())->getData();
     }
 
-    public function tempFunction()
+    public function getAllWebhooks()
     {
         return (new Tatum\Subscriptions\NotificationSubscriptionController)->getAllWebhooks(new Request())->getData();
     }
@@ -185,6 +200,7 @@ class _AssetWalletController extends Controller
         $validated_data = $request->validate([
             'user_username' => ['required', 'string', 'exists:__users,username'],
             'asset_code' => ['required', 'string', 'exists:__assets,code'],
+            'asset_chain' => ['required', 'string', 'exists:__assets,chain'],
             '_status' => ['sometimes', 'string', Rule::in(['active', 'frozen'])],
         ]);
 
@@ -203,15 +219,15 @@ class _AssetWalletController extends Controller
                 $ttm_customer_virt_accts = (new Tatum\VirtualAccounts\AccountController)->getAccountsByCustomerId(new Request(['id' => $ttm_customer->id]))->getData();
                 if (count($ttm_customer_virt_accts)){
                     foreach ($ttm_customer_virt_accts as $ttm_customer_virt_acct) {
-                        if ($ttm_customer_virt_acct->currency == $asset->ttm_currency){ $ttm_element = $ttm_customer_virt_acct; break; }
+                        if ($ttm_customer_virt_acct->currency == $validated_data['asset_code']){ $ttm_element = $ttm_customer_virt_acct; break; }
                     }
                 }
             } catch (\Throwable $th) {}
             $ttm_element = $ttm_element ?? (new Tatum\VirtualAccounts\AccountController)->createAccount(new Request([
-                'one_of' => 'createAccountXpub',
-                'currency' => $asset->ttm_currency,
+                //'one_of' => 'createAccount',
+                'currency' => $validated_data['asset_code'],
                 'externalId' => $validated_data['user_username'],
-                'xpub' => $asset->ttm_xpub,
+                //'xpub' => _Asset::firstWhere(['code' => $validated_data['asset_code']])->xpub,
                 'accountingCurrency' => 'USD',
             ]))->getData();
 
@@ -247,8 +263,8 @@ class _AssetWalletController extends Controller
                     $asset_wallet_address_params = [
                         'asset_wallet_id' => $element->id, 
                         'user_username' => $validated_data['user_username'],
-                        'blockchain_address' => $ttm_element->address,
-                        'ttm_derivation_key' => $ttm_element->derivationKey,
+                        'blockchain_address' => strtolower( $ttm_element->address ),
+                        'ttm_derivation_key' => isset($ttm_element->derivationKey) ? $ttm_element->derivationKey : 0,
                     ];
                     if ( !_AssetWalletAddress::where($asset_wallet_address_params)->exists() ){
                         (new _AssetWalletAddressController)->store(new Request($asset_wallet_address_params));
@@ -367,6 +383,7 @@ class _AssetWalletController extends Controller
                 ]);
             }
         }
+        if (!count($log_entry_update_result)) return abort(422, 'No values were updated');
         (new _LogController)->store( new Request([
             'action_note' => 'Updating of _AssetWallet entry in database.',
             'action_type' => 'entry_update',

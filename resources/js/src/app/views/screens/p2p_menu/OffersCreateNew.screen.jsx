@@ -282,6 +282,7 @@ class OffersCreateNewScreen extends React.Component {
                                     </h4>
                                     <div id="collapse_input_info" className="accordion-collapse collapse show" data-bs-parent="#accordion_input_info" >
                                         <div className="accordion-body pb-0">
+                                            <p>Offer price is amount of {currency.code} per unit {asset.code}</p>
                                             {this.state.input.offer_to == 'buy' && <>
                                                 <p>The asset value you get is calculated as follows:</p>
                                                 <p className="text-muted">{'$asset_value = $purchase_amount / $offer_price'}</p>

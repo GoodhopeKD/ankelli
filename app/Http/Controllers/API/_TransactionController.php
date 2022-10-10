@@ -156,7 +156,8 @@ class _TransactionController extends Controller
             if (!$recipient_asset_wallet){
                 $recipient_asset_wallet = (new _AssetWalletController)->store( Request::create('','',[
                     'user_username' => $validated_data['recipient_username'], 
-                    'asset_code' => $validated_data['asset_code']
+                    'asset_code' => $validated_data['asset_code'],
+                    'asset_chain' => _Asset::firstWhere(['code' => $validated_data['asset_code']])->chain,
                 ],[],[],['HTTP_accept'=>'application/json']))->getData();
             }
 
@@ -192,8 +193,26 @@ class _TransactionController extends Controller
             ];
             if ($validated_data['txn_context'] == 'onchain') {
                 if ($ttm_request_object['senderAccountId']){
-                    $ttm_request_object['address'] = $validated_data['destination_blockchain_address'];
+                    $ttm_request_object['address'] = strtolower( $validated_data['destination_blockchain_address'] );
+                    //$ttm_request_object['index'] = _AssetWalletAddress::firstWhere(['user_username' => $validated_data['sender_username']])->ttm_derivation_key;
                     if (!$is_recon){
+                        $transferer = null;
+                        switch ($validated_data['asset_code']) {
+                            case 'BTC':
+                                $transferer = 'EthTransfer';
+                                break;
+                            case 'ETH':
+                                $transferer = 'EthTransfer';
+                                break;
+                            case 'USDT':
+                                $transferer = 'EthTransferErc20';
+                                $ttm_request_object['currency'] = 'USDT';
+                                break;
+                            case 'TRON':
+                                $transferer = 'TronTransferOffchain';
+                                $ttm_request_object['from'] = _AssetWalletAddress::firstWhere(['user_username' => $validated_data['sender_username']])->blockchain_address;
+                                break;
+                        }
                         $ttm_element = (new Tatum\VirtualAccounts\BCOperationController)->EthTransfer(new Request($ttm_request_object))->getData();
                         if (isset($ttm_element->txId)) $validated_data['blockchain_txn_id'] = $ttm_element->txId;
                         if (isset($ttm_element->signatureId)) $validated_data['tatum_unsigned_txn_signature_id'] = $ttm_element->signatureId;
@@ -281,18 +300,18 @@ class _TransactionController extends Controller
             'subscriptionType' => ['required', 'string', Rule::in(['ACCOUNT_INCOMING_BLOCKCHAIN_TRANSACTION'])],
             'accountId' => ['required', 'string', 'exists:__asset_wallets,ttm_virtual_account_id', 'size:24'],
             'amount' => ['required', 'numeric'], // positive and negative values
-            'currency' => ['sometimes', 'string', 'exists:__assets,ttm_currency'],
+            'currency' => ['sometimes', 'string', 'exists:__assets,code'],
             'txId' => ['required', 'string', 'unique:__transactions,blockchain_txn_id'],
             'reference' => ['sometimes', 'string'],
             'blockHeight' => ['sometimes', 'numeric', 'min:0'],
             'blockHash' => ['sometimes', 'string'],
             'from' => ['sometimes', 'string', 'between:13,128'],
-            'to' => ['required', 'string', 'exists:__asset_wallet_addresses,blockchain_address', 'between:13,128'],
+            'to' => ['required', 'string', 'between:13,128'],
             'date' => ['required'],
         ]);
 
         $recipient_asset_wallet = _AssetWallet::firstWhere(['ttm_virtual_account_id' => $validated_data['accountId']]);
-        $recipient_asset_wallet_address = _AssetWalletAddress::firstWhere(['blockchain_address' => $validated_data['to']]);
+        $recipient_asset_wallet_address = _AssetWalletAddress::firstWhere(['blockchain_address' => strtolower( $validated_data['to'] )]);
         
         if ( $recipient_asset_wallet->user_username !== $recipient_asset_wallet_address->user_username ){
             return abort( 422, 'accountId and destination address not belonging to the same user');
@@ -319,10 +338,10 @@ class _TransactionController extends Controller
         $txn_recon_data = [
             'txn_context' => 'onchain',
             'operation_slug' => 'deposit',
-            'source_blockchain_address' => $validated_data['from'],
+            'source_blockchain_address' => strtolower( $validated_data['from'] ),
             'recipient_username' => $recipient_asset_wallet->user_username,
             'recipient_note' => isset($validated_data['recipient_note']) ? $validated_data['recipient_note'] : 'Transfer from external wallet to Ankelli wallet',
-            'destination_blockchain_address' => $validated_data['to'],
+            'destination_blockchain_address' => strtolower( $validated_data['to'] ),
             'asset_code' => $recipient_asset_wallet->asset_code,
             'xfer_asset_value' => $validated_data['amount'],
             'is_recon' => true,
@@ -331,7 +350,8 @@ class _TransactionController extends Controller
             'transfer_datetime' => date('Y-m-d H:i:s', $validated_data['date'] / 1000)
         ];
 
-        $used_destination_asset_wallet_address = _AssetWalletAddress::firstWhere(['blockchain_address' => $txn_recon_data['destination_blockchain_address']]);
+        $used_destination_asset_wallet_address = _AssetWalletAddress::firstWhere(['blockchain_address' => strtolower( $txn_recon_data['destination_blockchain_address'] )]);
+        if ($used_destination_asset_wallet_address)
         $used_destination_asset_wallet_address->update(['onchain_txn_count' => $used_destination_asset_wallet_address->onchain_txn_count + 1, 'last_active_datetime' => $txn_recon_data['transfer_datetime']]);
 
         return (new _TransactionController)->store(new Request($txn_recon_data));
@@ -388,19 +408,12 @@ class _TransactionController extends Controller
 
         // Delete to prevent retry
         $asset = _Asset::firstWhere(['code' => $transaction->asset_code]);
-        $unsigned_transactions = [];
-        $offset = 0;
-        while (count((new Tatum\Security\KMSController)->ReceivePendingTransactionsToSign(new Request(['chain' => $asset->chain, 'offset' => $offset]))->getData())) {
-            $unsigned_transactions = array_merge( $unsigned_transactions, ((new Tatum\Security\KMSController)->ReceivePendingTransactionsToSign(new Request(['chain' => $asset->chain, 'offset' => $offset]))->getData() ) );
-            $offset += 50;
-        }
-        foreach ($unsigned_transactions as $unsigned_transaction) {
+        foreach ((new Tatum\Security\KMSController)->ReceivePendingTransactionsToSign(new Request(['chain' => $asset->chain]))->getData() as $unsigned_transaction) {
             if ($unsigned_transaction->id == $validated_data['signatureId']){
                 (new Tatum\Security\KMSController)->DeletePendingTransactionToSign(new Request(['id' => $unsigned_transaction->id]));
                 break;
             }
         }
-
         // Rollback the withdrawal transaction
         $txn_recon_data = [
             'txn_context' => 'onchain',
@@ -409,7 +422,7 @@ class _TransactionController extends Controller
             'xfer_asset_value' => $transaction->xfer_asset_value,
             'recipient_username' => $transaction->sender_username,
             'recipient_note' => 'Rollback for: '.$transaction->sender_note,
-            'source_blockchain_address' => $transaction->destination_blockchain_address,
+            'source_blockchain_address' => strtolower( $transaction->destination_blockchain_address ),
             'operation_slug' => 'WITHDRAWAL_ROLLBACK',
             'transfer_datetime' => now()->toDateTimeString(),
         ];
@@ -417,19 +430,21 @@ class _TransactionController extends Controller
 
         // Rollback transaction charge transaction
         $transaction = _Transaction::firstWhere(['sender_note' => 'Outbound platform charge fee for transaction '.$transaction->ref_code]);
-        $txn_recon_data = [
-            'txn_context' => 'offchain',
-            'is_recon' => true,
-            'asset_code' => $transaction->asset_code,
-            'xfer_asset_value' => $transaction->xfer_asset_value,
-            'recipient_username' => $transaction->sender_username,
-            'recipient_note' => 'Rollback for: '.$transaction->sender_note,
-            'sender_username' => $transaction->recipient_username,
-            'sender_note' => 'Rollback for: '.$transaction->recipient_note,
-            'operation_slug' => 'TRANSACTION_CHARGE_ROLLBACK',
-            'transfer_datetime' => now()->toDateTimeString(),
-        ];
-        (new _TransactionController)->store(new Request($txn_recon_data));
+        if ($transaction){
+            $txn_recon_data = [
+                'txn_context' => 'offchain',
+                'is_recon' => true,
+                'asset_code' => $transaction->asset_code,
+                'xfer_asset_value' => $transaction->xfer_asset_value,
+                'recipient_username' => $transaction->sender_username,
+                'recipient_note' => 'Rollback for: '.$transaction->sender_note,
+                'sender_username' => $transaction->recipient_username,
+                'sender_note' => 'Rollback for: '.$transaction->recipient_note,
+                'operation_slug' => 'TRANSACTION_CHARGE_ROLLBACK',
+                'transfer_datetime' => now()->toDateTimeString(),
+            ];
+            (new _TransactionController)->store(new Request($txn_recon_data));
+        }
     }
     
     /**
@@ -443,12 +458,12 @@ class _TransactionController extends Controller
         $validated_data = $request->validate([
             'amount' => ['required', 'numeric'], // positive and negative values
             'operationType' => ['required', 'string'],
-            'currency' => ['required', 'string', 'exists:__assets,ttm_currency'],
+            'currency' => ['required', 'string', 'exists:__assets,code'],
             'transactionType' => ['required', 'string'],
             'accountId' => ['required', 'string', 'size:24', 'exists:__asset_wallets,ttm_virtual_account_id'],
-            'reference' => ['required', 'string'/*, 'unique:__transactions,ttm_reference'*/],
+            'reference' => ['required', 'string'],
             'txId' => ['nullable', 'string', 'unique:__transactions,blockchain_txn_id'],
-            'address' => ['sometimes', 'string', 'between:13,128', 'exists:__asset_wallet_addresses,blockchain_address'],
+            'address' => ['sometimes', 'string', 'between:13,128'],
             'marketValue' => ['required', 'array'],
             'created' => ['required'],
             'counterAccountId' => ['sometimes', 'string'],
@@ -504,7 +519,7 @@ class _TransactionController extends Controller
             $txn_recon_data['txn_context'] = 'onchain';
             $txn_recon_data['recipient_note'] = $validated_data['marketValue'] && $validated_data['marketValue']['source'] ? 'Transfer from '.$validated_data['marketValue']['source'].' wallet to Ankelli wallet' : '';
             $txn_recon_data['operation_slug'] = 'DEPOSIT';
-            $txn_recon_data['destination_blockchain_address'] = $validated_data['address'];
+            $txn_recon_data['destination_blockchain_address'] = strtolower( $validated_data['address'] );
             $txn_recon_data['blockchain_txn_id'] = $validated_data['txId'];
         }
 
@@ -513,23 +528,34 @@ class _TransactionController extends Controller
             if ($validated_data['transactionType'] === 'DEBIT_WITHDRAWAL'){
                 $txn_recon_data['sender_note'] = $validated_data['senderNote'] ?? $validated_data['marketValue'] && $validated_data['marketValue']['source'] ? 'Transfer from Ankelli wallet to '.$validated_data['marketValue']['source'] : '';
                 $txn_recon_data['operation_slug'] = 'WITHDRAWAL';
-                $txn_recon_data['destination_blockchain_address'] = $validated_data['counterAccountId'];
+                $txn_recon_data['destination_blockchain_address'] = strtolower( $validated_data['counterAccountId'] );
                 $txn_recon_data['blockchain_txn_id'] = isset($validated_data['txId']) ? $validated_data['txId'] : null;
             }
             if ($validated_data['transactionType'] === 'CANCEL_WITHDRAWAL'){
                 $txn_recon_data['recipient_note'] = 'Rollback for: '.($validated_data['senderNote'] ?? $validated_data['marketValue'] && $validated_data['marketValue']['source'] ? 'Transfer from Ankelli wallet to '.$validated_data['marketValue']['source'] : '');
                 $txn_recon_data['operation_slug'] = 'WITHDRAWAL_ROLLBACK';
-                $txn_recon_data['source_blockchain_address'] = $validated_data['counterAccountId'];
+                $txn_recon_data['source_blockchain_address'] = strtolower( $validated_data['counterAccountId'] );
             }
         }
 
         if (isset($txn_recon_data['destination_blockchain_address'])){
-            $used_destination_asset_wallet_address = _AssetWalletAddress::firstWhere(['blockchain_address' => $txn_recon_data['destination_blockchain_address']]);
+            $used_destination_asset_wallet_address = _AssetWalletAddress::firstWhere(['blockchain_address' => strtolower( $txn_recon_data['destination_blockchain_address'] )]);
             if ($used_destination_asset_wallet_address)
             $used_destination_asset_wallet_address->update(['onchain_txn_count' => $used_destination_asset_wallet_address->onchain_txn_count + 1, 'last_active_datetime' => $txn_recon_data['transfer_datetime']]);
         }
 
         return (new _TransactionController)->store(new Request($txn_recon_data));
+    }
+
+    /**
+     * Address transaction notification
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function ttm_address_txn_notification(Request $request)
+    {
+        // use only for custodial wallets
     }
 
     /**
@@ -586,7 +612,7 @@ class _TransactionController extends Controller
 
         $validated_data['sender_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
 
-        if ( isset($validated_data['destination_blockchain_address']) && _AssetWalletAddress::where(['blockchain_address' => $validated_data['destination_blockchain_address']])->exists()){
+        if ( isset($validated_data['destination_blockchain_address']) && _AssetWalletAddress::where(['blockchain_address' => strtolower( $validated_data['destination_blockchain_address'] )])->exists()){
             return abort(422, 'Provided address belongs to a user on this platform. Send payment instead');
         }
         

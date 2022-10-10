@@ -19,6 +19,7 @@ class _AssetWallet extends Model
         'ttm_subscription_id',
         'user_username',
         'asset_code',
+        'asset_chain',
         'usable_balance_asset_value',
         'total_balance_asset_value',
         '_status',

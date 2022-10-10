@@ -15,23 +15,13 @@ return new class extends Migration
     {
         Schema::create('__asset_custodial_wallet_addresses', function (Blueprint $table) {
             $table->id();
-            $table->string('asset_code', 64)->nullable();
-            $table->foreign('asset_code')
-                    ->references('code')
-                    ->on('__assets')
-                    ->onUpdate('cascade')
-                    ->onDelete('set null');
+            $table->string('asset_chain', 64);
             $table->string('blockchain_address', 128)->unique(); // or owner
-            $table->string('ttm_wallet_id', 96)->unique();
-            //$table->string('ttm_subscription_id', 24)->nullable();
-            $table->unsignedTinyInteger('onchain_txn_count')->default(0);
-            $table->timestamp('last_active_datetime')->nullable();
-
-            $table->string('ttm_gp_address', 128)->unique()->nullable();
-            $table->unsignedInteger('ttm_gp_index_from')->nullable();
-            $table->unsignedInteger('ttm_gp_index_to')->nullable();
-            $table->unsignedSmallInteger('ttm_gp_trx_fee_limit')->nullable();
-            $table->string('ttm_gp_actvxn_txn_id', 255)->unique()->nullable();
+            $table->string('ttm_wallet_id', 96)->nullable();
+            $table->string('ttm_subscription_id', 24)->nullable();
+            $table->mediumText('ttm_activated_unused_gp_addresses')->nullable();
+            $table->unsignedInteger('ttm_activated_unused_gp_addresses_offset_index')->nullable();
+            $table->string('ttm_last_gp_addresses_activation_txn_signature_id', 255)->unique('signature_id_unique')->nullable();
 
             $table->string('creator_username', 64)->nullable();
             $table->foreign('creator_username')
@@ -40,9 +30,8 @@ return new class extends Migration
                     ->onUpdate('cascade')
                     ->onDelete('set null');
             $table->timestamp('created_datetime')->useCurrent();
+            $table->timestamp('updated_datetime')->nullable()->useCurrentOnUpdate();
             $table->softDeletes('deleted_datetime');
-
-            $table->unique(['asset_code', 'blockchain_address', 'ttm_wallet_id'], 'asset_code_blockchain_address_ttm_wallet_id_unique');
         });
     }
 

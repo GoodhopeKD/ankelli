@@ -461,6 +461,7 @@ class _TradeController extends Controller
                 ]);
             }
         }
+        if (!count($log_entry_update_result)) return abort(422, 'No values were updated');
         (new _LogController)->store( new Request([
             'action_note' => 'Updating of _Trade entry in database.',
             'action_type' => 'entry_update',

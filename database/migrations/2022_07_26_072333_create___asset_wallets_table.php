@@ -29,6 +29,7 @@ return new class extends Migration
                     ->on('__assets')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
+            $table->string('asset_chain', 64)->nullable();
             $table->string('usable_balance_asset_value', 38)->default(0); // unsignedDecimal
             $table->string('total_balance_asset_value', 38)->default(0); // unsignedDecimal
             $table->enum('_status', ['active', 'frozen'])->default('active');
