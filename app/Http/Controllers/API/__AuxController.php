@@ -366,6 +366,33 @@ Handle all internal transactions normally but know that these values will be ref
             'user_group_slug' => 'system_administrators',
         ]));
 
+        // user:busadmin
+        (new _UserController)->store( new Request([
+            'username' => 'busadmin',
+            'email_address' => 'busadmin@ankelli.com',
+            'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
+        ]));
+        (new _UserGroupMembershipController)->store( new Request([
+            'user_username' => 'busadmin',
+            'user_group_slug' => 'default_users',
+        ]));
+        (new _AdminExtensionController)->store( new Request([
+            'user_username' => 'busadmin',
+            'post_title' => 'Default Business Administrator',
+        ]));
+        (new _BuyerExtensionController)->store( new Request([
+            'user_username' => 'busadmin',
+            '_status' => 'deactivated',
+        ]));
+        (new _SellerExtensionController)->store( new Request([
+            'user_username' => 'busadmin',
+            '_status' => 'deactivated',
+        ]));
+        (new _UserGroupMembershipController)->store( new Request([
+            'user_username' => 'busadmin',
+            'user_group_slug' => 'business_administrators',
+        ]));
+
         // user:busops // used for collecting platform fees and deposit token topups
         (new _UserController)->store( new Request([
             'username' => 'busops',
@@ -395,33 +422,6 @@ Handle all internal transactions normally but know that these values will be ref
         ]));
         (new _UserGroupMembershipController)->store( new Request([
             'user_username' => 'busops',
-            'user_group_slug' => 'business_administrators',
-        ]));
-
-        // user:busadmin
-        (new _UserController)->store( new Request([
-            'username' => 'busadmin',
-            'email_address' => 'busadmin@ankelli.com',
-            'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
-        ]));
-        (new _UserGroupMembershipController)->store( new Request([
-            'user_username' => 'busadmin',
-            'user_group_slug' => 'default_users',
-        ]));
-        (new _AdminExtensionController)->store( new Request([
-            'user_username' => 'busadmin',
-            'post_title' => 'Default Business Administrator',
-        ]));
-        (new _BuyerExtensionController)->store( new Request([
-            'user_username' => 'busadmin',
-            '_status' => 'deactivated',
-        ]));
-        (new _SellerExtensionController)->store( new Request([
-            'user_username' => 'busadmin',
-            '_status' => 'deactivated',
-        ]));
-        (new _UserGroupMembershipController)->store( new Request([
-            'user_username' => 'busadmin',
             'user_group_slug' => 'business_administrators',
         ]));
 

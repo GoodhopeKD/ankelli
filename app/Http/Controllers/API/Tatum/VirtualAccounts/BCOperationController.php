@@ -18,18 +18,16 @@ class BCOperationController extends Controller
     public function BtcTransfer(Request $request)
     {
         $validated_data = $request->validate([
-            //'one_of' => ['required', 'string', Rule::in(['TransferBtc','TransferBtcMnemonic','TransferBtcKMS'])],
+            'one_of' => ['required', 'string', Rule::in(['TransferBtc','TransferBtcMnemonic','TransferBtcKMS'])],
             'address' => ['required', 'string', 'size:42'],
             'amount' => ['required', 'string', 'max:38'],
-            //'index' => ['required', 'integer', 'max:2147483647'],
+            'index' => ['required_if:one_of,=,TransferBtcMnemonic', 'integer', 'max:2147483647'],
             'senderAccountId' => ['required', 'string', 'size:24'],
             'senderNote' => ['required', 'string', 'max:500'],
-            //'privateKey' => ['required_if:one_of,=,TransferBtc', 'string', 'size:66'],
-            //'mnemonic' => ['required_if:one_of,=,TransferBtcMnemonic', 'string', 'max:500'],
-            //'signatureId' => ['required_if:one_of,=,TransferBtcKMS', 'string'],
+            'privateKey' => ['required_if:one_of,=,TransferBtc', 'string', 'size:66'],
+            'mnemonic' => ['required_if:one_of,=,TransferBtcMnemonic', 'string', 'max:500'],
+            'signatureId' => ['required_if:one_of,=,TransferBtcKMS', 'string'],
         ]);
-
-        $validated_data['signatureId'] = env('TATUM_KMS_BTC_SIGNATURE_ID');
 
         $payload = $validated_data;
         
@@ -58,18 +56,16 @@ class BCOperationController extends Controller
     public function EthTransfer(Request $request)
     {
         $validated_data = $request->validate([
-            //'one_of' => ['required', 'string', Rule::in(['TransferEth','TransferEthMnemonic','TransferEthKMS'])],
+            'one_of' => ['required', 'string', Rule::in(['TransferEth','TransferEthMnemonic','TransferEthKMS'])],
             'address' => ['required', 'string', 'size:42'],
             'amount' => ['required', 'string', 'max:38'],
-            //'index' => ['required', 'integer', 'max:2147483647'],
+            'index' => ['required_if:one_of,=,TransferEthMnemonic', 'integer', 'max:2147483647'],
             'senderAccountId' => ['required', 'string', 'size:24'],
             'senderNote' => ['required', 'string', 'max:500'],
-            //'privateKey' => ['required_if:one_of,=,TransferEth', 'string', 'size:66'],
-            //'mnemonic' => ['required_if:one_of,=,TransferEthMnemonic', 'string', 'max:500'],
-            //'signatureId' => ['required_if:one_of,=,TransferEthKMS', 'string'],
+            'privateKey' => ['required_if:one_of,=,TransferEth', 'string', 'size:66'],
+            'mnemonic' => ['required_if:one_of,=,TransferEthMnemonic', 'string', 'max:500'],
+            'signatureId' => ['required_if:one_of,=,TransferEthKMS', 'string'],
         ]);
-
-        $validated_data['signatureId'] = env('TATUM_KMS_ETH_SIGNATURE_ID');
 
         $payload = $validated_data;
         
@@ -98,19 +94,17 @@ class BCOperationController extends Controller
     public function EthTransferErc20(Request $request)
     {
         $validated_data = $request->validate([
-            //'one_of' => ['required', 'string', Rule::in(['TransferErc20','TransferErc20Mnemonic','TransferErc20KMS'])],
+            'one_of' => ['required', 'string', Rule::in(['TransferErc20','TransferErc20Mnemonic','TransferErc20KMS'])],
             'address' => ['required', 'string', 'size:42'],
             'amount' => ['required', 'string', 'max:38'],
             'currency' => ['required', 'string', 'max:30'],
-            //'index' => ['required', 'integer', 'max:2147483647'],
+            'index' => ['required_if:one_of,=,TransferErc20Mnemonic', 'integer', 'max:2147483647'],
             'senderAccountId' => ['required', 'string', 'size:24'],
             'senderNote' => ['required', 'string', 'max:500'],
-            //'privateKey' => ['required_if:one_of,=,TransferErc20', 'string', 'size:66'],
-            //'mnemonic' => ['required_if:one_of,=,TransferErc20Mnemonic', 'string', 'max:500'],
-            //'signatureId' => ['required_if:one_of,=,TransferErc20KMS', 'string'],
+            'privateKey' => ['required_if:one_of,=,TransferErc20', 'string', 'size:66'],
+            'mnemonic' => ['required_if:one_of,=,TransferErc20Mnemonic', 'string', 'max:500'],
+            'signatureId' => ['required_if:one_of,=,TransferErc20KMS', 'string'],
         ]);
-
-        $validated_data['signatureId'] = env('TATUM_KMS_ETH_SIGNATURE_ID');
 
         $payload = $validated_data;
         
@@ -139,19 +133,17 @@ class BCOperationController extends Controller
     public function TronTransferOffchain(Request $request)
     {
         $validated_data = $request->validate([
-            //'one_of' => ['required', 'string', Rule::in(['TransferTron','TransferTronMnemonic','TransferTronKMS'])],
+            'one_of' => ['required', 'string', Rule::in(['TransferTron','TransferTronMnemonic','TransferTronKMS'])],
             'address' => ['required', 'string', 'size:34'],
             'amount' => ['required', 'string', 'max:38'],
-            //'index' => ['required', 'integer', 'max:2147483647'],
+            'index' => ['required_if:one_of,=,TransferTronMnemonic', 'integer', 'max:2147483647'],
             'from' => ['required', 'string', 'size:34'],
             'senderAccountId' => ['required', 'string', 'size:24'],
             'senderNote' => ['required', 'string', 'max:500'],
-            //'privateKey' => ['required_if:one_of,=,TransferTron', 'string', 'size:66'],
-            //'mnemonic' => ['required_if:one_of,=,TransferTronMnemonic', 'string', 'max:500'],
-            //'signatureId' => ['required_if:one_of,=,TransferTronKMS', 'string'],
+            'privateKey' => ['required_if:one_of,=,TransferTron', 'string', 'size:66'],
+            'mnemonic' => ['required_if:one_of,=,TransferTronMnemonic', 'string', 'max:500'],
+            'signatureId' => ['required_if:one_of,=,TransferTronKMS', 'string'],
         ]);
-
-        $validated_data['signatureId'] = env('TATUM_KMS_TRON_SIGNATURE_ID');
 
         $payload = $validated_data;
         

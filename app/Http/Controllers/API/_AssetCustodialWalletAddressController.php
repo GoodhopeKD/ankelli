@@ -60,7 +60,7 @@ class _AssetCustodialWalletAddressController extends Controller
             $validated_data['ttm_subscription_id'] = $ttm_element->id;
 
             // Generate gas pump addresses
-            $ttm_activated_unused_gp_addresses_offset_index = -1; // existing
+            $ttm_activated_unused_gp_addresses_offset_index = 15; //-1; // existing
             $from = $ttm_activated_unused_gp_addresses_offset_index + 1;
             $to = $from + $this->ACTIVATION_BATCH_SIZE - 1; // - 1 because it's inclusive
             $validated_data['ttm_activated_unused_gp_addresses_offset_index'] = $to;

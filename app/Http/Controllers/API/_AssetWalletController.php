@@ -34,11 +34,13 @@ class _AssetWalletController extends Controller
         return (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => '0x4e9470217400b27ccdb64237e6776abcda535956']))->getData();
     }
 
-    public function ReceivePendingTransactionsToSign()
+    // tempFunction
+    public function tempFunction()
     {
         return (new Tatum\Security\KMSController)->ReceivePendingTransactionsToSign(new Request(['chain' => 'ETH']))->getData();
     }
 
+    // tempFunction
     public function DeletePendingTransactionToSign()
     {
         foreach ((new Tatum\Security\KMSController)->ReceivePendingTransactionsToSign(new Request(['chain' => 'ETH']))->getData() as $txn) {
@@ -46,6 +48,7 @@ class _AssetWalletController extends Controller
         }
     }
 
+    // tempFunction
     public function PrecalculateGasPumpAddresses()
     {
         return (new Tatum\SmartContracts\GasPumpController)->PrecalculateGasPumpAddresses(new Request([
@@ -56,80 +59,100 @@ class _AssetWalletController extends Controller
         ]));
     }
 
+    // tempFunction
     public function ActivateGasPumpAddresses()
     {
         return (new Tatum\SmartContracts\GasPumpController)->ActivateGasPumpAddresses(new Request([
             'chain' => 'ETH',
             'owner' => '0x4e9470217400b27ccdb64237e6776abcda535956',
-            'from' => 0,
-            'to' => 15,
+            'from' => 16,
+            'to' => 16,
         ]));
     }
 
-    public function ActivatedNotActivatedGasPumpAddresses()
+    // tempFunction
+    public function GasPumpAddressesActivatedOrNot()
     {
-        return (new Tatum\SmartContracts\GasPumpController)->ActivatedNotActivatedGasPumpAddresses(new Request([
+        return (new Tatum\SmartContracts\GasPumpController)->GasPumpAddressesActivatedOrNot(new Request([
             'chain' => 'ETH',
             'owner' => '0x4e9470217400b27ccdb64237e6776abcda535956',
-            'index' => 0,
+            'index' => 16,
         ]));
     }
 
+    // tempFunction
     public function assignAddress()
     {
-        return (new Tatum\VirtualAccounts\BCAddressController)->assignAddress(new Request(['id' => '6342fdad79aa24dc88b58632', 'address' => '0x02A2e5E52755Cc77Da42658bC55686494F051155']));
+        return (new Tatum\VirtualAccounts\BCAddressController)->assignAddress(new Request(['id' => '6343de9567b043ee14be9970', 'address' => '0x02A2e5E52755Cc77Da42658bC55686494F051155']));
     }
 
-    public function tempFunction()
+    // tempFunction
+    public function removeAddress()
+    {
+        return (new Tatum\VirtualAccounts\BCAddressController)->removeAddress(new Request(['id' => '6343de9567b043ee14be9970', 'address' => '0x010b6ab0abeeb921964161cd2e23c50250e546bf']));
+    }
+
+    // tempFunction
+    public function CustodialGetWallet()
     {
         return (new Tatum\Security\CustodialManagedWalletController)->CustodialGetWallet(new Request(['id' => "7dc19c98-a3f5-44f6-8ca1-10ae57af6832", 'export' => 'true']));
     }
 
-    public function tempFunctionf()
+    // tempFunction
+    public function addressExists()
     {
         return (new Tatum\VirtualAccounts\BCAddressController)->addressExists(new Request(['currency' => 'ETH', 'address' => '0x010b6ab0abeeb921964161cd2e23c50250e546bf']));
     }
 
+    // tempFunction
     public function CustodialGetWallets()
     {
         return (new Tatum\Security\CustodialManagedWalletController)->CustodialGetWallets(new Request());
     }
 
+    // tempFunction
     public function findAllCustomers()
     {
         return (new Tatum\VirtualAccounts\CustomerController)->findAllCustomers(new Request())->getData();
     }
 
+    // tempFunction
     public function getCustomerByExternalOrInternalId()
     {
         return (new Tatum\VirtualAccounts\CustomerController)->getCustomerByExternalOrInternalId(new Request(['id' => 'busops']))->getData();
     }
 
+    // tempFunction
     public function updateCustomer()
     {
         return (new Tatum\VirtualAccounts\CustomerController)->updateCustomer(new Request(['id' => '63207c7291626c6cd5860a21', 'externalId' => 'john_doe']))->getData();
     }
 
+    // tempFunction
     public function getAccounts()
     {
         return (new Tatum\VirtualAccounts\AccountController)->getAccounts(new Request())->getData();
     }
 
+    // tempFunction
     public function getAccountsByCustomerId()
     {
         return (new Tatum\VirtualAccounts\AccountController)->getAccountsByCustomerId(new Request(['id' => '6321ec61d5f2885b44f1bda0']))->getData();
     }
 
-    public function tempFunctions()
+    // tempFunction
+    public function getAllDepositAddresses()
     {
-        return (new Tatum\VirtualAccounts\BCAddressController)->getAllDepositAddresses(new Request(['id' => '6342fdad79aa24dc88b58632']))->getData();
+        return (new Tatum\VirtualAccounts\BCAddressController)->getAllDepositAddresses(new Request(['id' => '6343de9567b043ee14be9970']))->getData();
     }
 
+    // tempFunction
     public function get_vacc_transactions()
     {
         return (new Tatum\VirtualAccounts\TransactionController)->getTransactionsByAccountId(new Request(['id' => '63296ef838931796fa9e5aed', 'currency' => 'ETH']))->getData();
     }
 
+    // tempFunction
     public function getTransactions()
     {
         $transactions = [];
@@ -141,11 +164,13 @@ class _AssetWalletController extends Controller
         return $transactions;
     }
 
+    // tempFunction
     public function getSubscriptions()
     {
         return (new Tatum\Subscriptions\NotificationSubscriptionController)->getSubscriptions(new Request())->getData();
     }
 
+    // tempFunction
     public function getAllWebhooks()
     {
         return (new Tatum\Subscriptions\NotificationSubscriptionController)->getAllWebhooks(new Request())->getData();

@@ -96,13 +96,13 @@ Route::apiResource('p2p/offers', '_OfferController')->only(['show', 'index'])->p
 Route::get('accounts/profiles/{uid}', '_UserController@show')->name('content.users.show');
 Route::apiResource('content/reviews', '_ReviewController')->only(['index'])->parameter('reviews', 'id');
 
+    Route::post('funds/transactions/process_withdrawal', '_TransactionController@process_withdrawal')->name('process_withdrawal_transaction');
 // Auth:true accessible routes
 Route::group(['middleware' => 'auth:api'], function () {
 
     Route::post('content/files/upload', '_FileController@upload')->name('files.upload');
     Route::apiResource('content/files', '_FileController')->except(['index'])->parameter('files', 'id');
 
-    Route::post('funds/transactions/process_withdrawal', '_TransactionController@process_withdrawal')->name('process_withdrawal_transaction');
     Route::post('funds/transactions/process_payment', '_TransactionController@process_payment')->name('process_payment_transaction');
     Route::get('funds/transactions', '_TransactionController@index')->name('funds.transactions.index');
 

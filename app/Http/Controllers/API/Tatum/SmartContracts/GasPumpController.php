@@ -51,17 +51,18 @@ class GasPumpController extends Controller
     public function ActivateGasPumpAddresses(Request $request)
     {
         $validated_data = $request->validate([
-            'chain' => ['required', 'string', Rule::in(["BSC","ETH","KLAY","MATIC","ONE","TRON"])],
+            'chain' => ['required', 'string', Rule::in(["BSC","ETH","KLAY","MATIC","ONE","CELO","TRON"])],
             'owner' => ['required', 'string', 'between:13,128'],
             'from' => ['required', 'integer', 'min:0'],
             'to' => ['required', 'integer', 'min:0'],
+            'feeCurrency' => ['required_if:chain,=,CELO', 'string', Rule::in(['CELO','CUSD','CEUR'])],
             //'feeLimit' => ['required_if:chain,=,TRON', 'numeric', 'min:0'],
             //'index' => ['required', 'integer', 'min:0'],
             //'signatureId' => ['required', 'string'],
         ]);
 
         if ( $validated_data['chain'] === 'TRON' ) $validated_data['feeLimit'] = 200;
-        $validated_data['signatureId'] = env('TATUM_KMS_ETH_SIGNATURE_ID');
+        $validated_data['signatureId'] = env('TATUM_KMS_'.$validated_data['chain'].'_GP_SIGNATURE_ID');
 
         $payload = $validated_data;
 
@@ -81,13 +82,13 @@ class GasPumpController extends Controller
     }
 
     /**
-     * Get the results of the address activation transaction
-     * https://apidoc.tatum.io/tag/Gas-pump#operation/ActivatedNotActivatedGasPumpAddresses
+     * Check whether the gas pump address with a specified index is activated
+     * https://apidoc.tatum.io/tag/Gas-pump#operation/GasPumpAddressesActivatedOrNot
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function ActivatedNotActivatedGasPumpAddresses(Request $request)
+    public function GasPumpAddressesActivatedOrNot(Request $request)
     {
         $validated_data = $request->validate([
             'chain' => ['required', 'string', Rule::in(["BSC","CELO","ETH","KLAY","MATIC","ONE","TRON"])],
@@ -109,13 +110,13 @@ class GasPumpController extends Controller
     }
 
     /**
-     * Check whether the gas pump address with a specified index is activated
-     * https://apidoc.tatum.io/tag/Gas-pump#operation/GasPumpAddressesActivatedOrNot
+     * Get the results of the address activation transaction
+     * https://apidoc.tatum.io/tag/Gas-pump#operation/ActivatedNotActivatedGasPumpAddresses
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function GasPumpAddressesActivatedOrNot(Request $request)
+    public function ActivatedNotActivatedGasPumpAddresses(Request $request)
     {
         $validated_data = $request->validate([
             'chain' => ['required', 'string', Rule::in(["BSC","CELO","ETH","KLAY","MATIC","ONE","TRON"])],
@@ -130,6 +131,50 @@ class GasPumpController extends Controller
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/gas-pump/address/".$validated_data['chain']."/".$validated_data['txId'],
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+
+        return $this->ttm_cURL_call_tail($curl);
+    }
+
+    /**
+     * Transfer an asset from a gas pump address
+     * https://apidoc.tatum.io/tag/Gas-pump#operation/TransferCustodialWallet
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function TransferCustodialWallet(Request $request)
+    {
+        $validated_data = $request->validate([
+            'chain' => ['required', 'string', Rule::in(["BSC","ETH","KLAY","MATIC","ONE","XDC","CELO","TRON"])],
+            'custodialAddress' => ['required', 'string', 'between:34,42'],
+            'from' => ['required_if:chain,=,TRON', 'string', 'size:34'],
+            'recipient' => ['required', 'string', 'between:34,42'],
+            'contractType' => ['required', 'integer', Rule::in([0, 3])], // Zero for ERC20, 3 for native
+            'amount' => ['required', 'string', 'max:38'],
+            'index' => ['nullable', 'integer', 'max:2147483647'],
+            'feeCurrency' => ['required_if:chain,=,CELO', 'string', Rule::in(['CELO','CUSD','CEUR'])],
+            //'feeLimit' => ['required_if:chain,=,TRON', 'numeric', 'min:0'],
+            //'fee' => ['required_if:chain,=,CELO', 'array'],
+            //'signatureId' => ['required', 'string'],
+        ]);
+
+        if ( $validated_data['chain'] === 'TRON' ) $validated_data['feeLimit'] = 200;
+        if ( $validated_data['chain'] === 'CELO' ) $validated_data['fee'] = [ 'gasLimit' => 400, 'gasPrice' => 400 ];
+        $validated_data['signatureId'] = env('TATUM_KMS_'.$validated_data['chain'].'_GP_SIGNATURE_ID');
+
+        $payload = $validated_data;
+
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json",
+                "x-api-key: ".env('TATUM_X_API_KEY'),
+            ],
+            CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/blockchain/sc/custodial/transfer",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "POST",
         ]);
 
         return $this->ttm_cURL_call_tail($curl);

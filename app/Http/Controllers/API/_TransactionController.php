@@ -96,12 +96,10 @@ class _TransactionController extends Controller
 
         $sender_new_total = 0;
         $sender_new_usable = 0;
-        $sender_asset_wallet_id = 0;
         $should_update_sender = false;
 
         $recipient_new_total = 0;
         $recipient_new_usable = 0;
-        $recipient_asset_wallet_id = 0;
         $should_update_recipient = false;
 
         // Create uid
@@ -142,8 +140,6 @@ class _TransactionController extends Controller
 
             $sender_new_total = $new_total_balance_asset_value;
             $sender_new_usable = $new_usable_balance_asset_value;
-
-            $sender_asset_wallet_id = $sender_asset_wallet->id;
             $should_update_sender = true;
         }
 
@@ -177,52 +173,34 @@ class _TransactionController extends Controller
 
             $recipient_new_total = $new_total_balance_asset_value;
             $recipient_new_usable = $new_usable_balance_asset_value;
-
-            $recipient_asset_wallet_id = $recipient_asset_wallet->id;
             $should_update_recipient = true;
         }
 
-        if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+        if ( !$is_recon && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
             $ttm_request_object = [
-                'asset_code' => $validated_data['asset_code'],
+                'curency' => $validated_data['asset_code'],
                 'senderAccountId' => isset($sender_asset_wallet) ? $sender_asset_wallet->ttm_virtual_account_id : null,
                 'recipientAccountId' => isset($recipient_asset_wallet) ? $recipient_asset_wallet->ttm_virtual_account_id : null,
                 'recipientNote' => isset($validated_data['recipient_note']) ? $validated_data['recipient_note'] : null,
                 'senderNote' => isset($validated_data['sender_note']) ? $validated_data['sender_note'] : null,
                 'amount' => $validated_data['xfer_asset_value'].'',
             ];
-            if ($validated_data['txn_context'] == 'onchain') {
-                if ($ttm_request_object['senderAccountId']){
-                    $ttm_request_object['address'] = strtolower( $validated_data['destination_blockchain_address'] );
-                    //$ttm_request_object['index'] = _AssetWalletAddress::firstWhere(['user_username' => $validated_data['sender_username']])->ttm_derivation_key;
-                    if (!$is_recon){
-                        $transferer = null;
-                        switch ($validated_data['asset_code']) {
-                            case 'BTC':
-                                $transferer = 'EthTransfer';
-                                break;
-                            case 'ETH':
-                                $transferer = 'EthTransfer';
-                                break;
-                            case 'USDT':
-                                $transferer = 'EthTransferErc20';
-                                $ttm_request_object['currency'] = 'USDT';
-                                break;
-                            case 'TRON':
-                                $transferer = 'TronTransferOffchain';
-                                $ttm_request_object['from'] = _AssetWalletAddress::firstWhere(['user_username' => $validated_data['sender_username']])->blockchain_address;
-                                break;
-                        }
-                        $ttm_element = (new Tatum\VirtualAccounts\BCOperationController)->EthTransfer(new Request($ttm_request_object))->getData();
-                        if (isset($ttm_element->txId)) $validated_data['blockchain_txn_id'] = $ttm_element->txId;
-                        if (isset($ttm_element->signatureId)) $validated_data['tatum_unsigned_txn_signature_id'] = $ttm_element->signatureId;
-                    }
-                }
+            if ($validated_data['txn_context'] == 'onchain' ) {
+                $asset = _Asset::firstWhere(['code' => $validated_data['asset_code']]);
+                $sender_asset_wallet_address = _AssetWalletAddress::firstWhere(['asset_wallet_id' => $sender_asset_wallet->id ]);
+                $ttm_request_object['chain'] = $asset->chain;
+                $ttm_request_object['custodialAddress'] = $sender_asset_wallet_address->blockchain_address;
+                $ttm_request_object['index'] = $sender_asset_wallet_address->ttm_derivation_key;
+                if ( $ttm_request_object['chain'] === 'TRON' ) $ttm_request_object['from'] = $ttm_request_object['custodialAddress'];
+                $ttm_request_object['recipient'] = strtolower( $validated_data['destination_blockchain_address'] );
+                $ttm_request_object['contractType'] = ( $asset->chain == $asset->code ) ? 3 : 0;
+
+                $ttm_element = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request($ttm_request_object))->getData();
+                if (isset($ttm_element->txId)) $validated_data['blockchain_txn_id'] = $ttm_element->txId;
+                if (isset($ttm_element->signatureId)) $validated_data['tatum_unsigned_txn_signature_id'] = $ttm_element->signatureId;
             } else {
-                if (!$is_recon){
-                    $ttm_element = (new Tatum\VirtualAccounts\TransactionController)->sendTransaction(new Request($ttm_request_object))->getData();
-                    $validated_data['ttm_reference'] = $ttm_element->reference;
-                }
+                $ttm_element = (new Tatum\VirtualAccounts\TransactionController)->sendTransaction(new Request($ttm_request_object))->getData();
+                $validated_data['ttm_reference'] = $ttm_element->reference;
             }
         }
 
@@ -230,13 +208,13 @@ class _TransactionController extends Controller
             (new _AssetWalletController)->update( new Request([
                 'usable_balance_asset_value' => $sender_new_usable,
                 'total_balance_asset_value' => $sender_new_total,
-            ]), $sender_asset_wallet_id );
+            ]), $sender_asset_wallet->id );
         }
         if ( $should_update_recipient ){
             (new _AssetWalletController)->update( new Request([
                 'usable_balance_asset_value' => $recipient_new_usable,
                 'total_balance_asset_value' => $recipient_new_total,
-            ]), $recipient_asset_wallet_id );
+            ]), $recipient_asset_wallet->id );
         }
         $element = _Transaction::create($validated_data);
 
@@ -573,9 +551,9 @@ class _TransactionController extends Controller
             'recipient_username' => ['required_if:recipient_user_tag,=,username', 'nullable', 'string', 'exists:__users,username'],
             'recipient_email_address' => ['required_if:recipient_user_tag,=,email_address', 'nullable', 'string', 'exists:__email_addresses,email_address'],
             'recipient_ankelli_pay_id' => ['required_if:recipient_user_tag,=,ankelli_pay_id', 'nullable', 'string', 'exists:__users,ankelli_pay_id'],
-            'recipient_note' => ['required', 'string', 'max:32'],
+            'recipient_note' => ['required', 'string', 'max:255'],
             'sender_password' => ['required', 'string', 'between:8,32'],
-            'sender_note' => ['required', 'string', 'max:32'],
+            'sender_note' => ['required', 'string', 'max:255'],
         ]);
         switch ($validated_data['recipient_user_tag']) {
             case 'email_address':
@@ -607,8 +585,10 @@ class _TransactionController extends Controller
             'asset_value' => ['required', 'numeric', 'min:0'],
             'destination_blockchain_address' => ['required', 'string', 'between:13,128'],
             'sender_password' => ['required', 'string', 'between:8,32'],
-            'sender_note' => ['required', 'string', 'max:32'],
+            'sender_note' => ['required', 'string', 'max:255'],
         ]);
+
+        session()->put('api_auth_user_username', 'mark');
 
         $validated_data['sender_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
 

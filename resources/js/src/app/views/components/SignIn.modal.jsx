@@ -6,19 +6,6 @@ import withRouter from 'app/views/navigation/withRouter'
 
 const DEBUG = true
 
-const debug_users = {
-    // Default System administrator, Cannot buy, sell, manage products or orders; can only manage system features
-    'sysadmin': {
-        username: 'sysadmin',
-        password: 'Def-Pass#123'
-    },
-    // Personal Account with access to all features
-    'mark': {
-        username: 'mark',
-        password: 'Def-Pass#123'
-    },
-}
-
 export default withRouter(class SignInModal extends React.Component {
 
     id_prefix = 'signin_modal_'
@@ -26,8 +13,8 @@ export default withRouter(class SignInModal extends React.Component {
     state = {
         btn_signin_working: false,
         input: {
-            username: new _Input(_Input.debug_form_autofill(DEBUG, debug_users['mark'].username)),
-            password: new _Input(_Input.debug_form_autofill(DEBUG, debug_users['mark'].password)),
+            username: new _Input(_Input.debug_form_autofill(DEBUG, 'mark')),
+            password: new _Input(_Input.debug_form_autofill(DEBUG, 'Def-Pass#123')),
         },
         errors: [],
     };
