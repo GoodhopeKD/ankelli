@@ -119,15 +119,11 @@ class _DepositTokenController extends Controller
         $validated_data['user_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
         $validated_data['used_datetime'] = now()->toDateTimeString();
 
-        (new _TransactionController)->store( new Request([
-            'txn_context' => 'offchain',
-            'operation_slug' => 'DEPOSIT_TOKEN_TOPUP',
-            'recipient_username' => $validated_data['user_username'], 
-            'recipient_note' => 'Wallet topup using deposit token "'.$token.'"',
-            'sender_username' => 'busops',
-            'sender_note' => 'Wallet topup using deposit token "'.$token.'"',
+        (new _TransactionController)->process_token_deposit( new Request([
+            'recipient_username' => $validated_data['user_username'],
+            'deposit_token' => $token,
             'asset_code' => $element->asset_code,
-            'xfer_asset_value' => $element->asset_value,
+            'asset_value' => $element->asset_value,
         ]));
 
         // Handle _Log

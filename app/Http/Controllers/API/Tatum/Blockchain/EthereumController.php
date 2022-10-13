@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Tatum\Blockchain;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class EthereumController extends Controller
 {
@@ -30,6 +31,32 @@ class EthereumController extends Controller
                 "x-api-key: ".env('TATUM_X_API_KEY'),
             ],
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/ethereum/wallet?".http_build_query($query_params),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "GET",
+        ]);
+        return $this->ttm_cURL_call_tail($curl);
+    }
+
+    /**
+     * Generate Ethereum account address from Extended public key
+     * https://apidoc.tatum.io/tag/Ethereum#operation/EthGenerateAddress
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function EthGenerateAddress(Request $request)
+    {
+        $validated_data = $request->validate([
+            'xpub' => ['required', 'string', 'max:192'],
+            'index' => ['required', 'integer', 'max:2147483647'],
+        ]);
+
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "x-api-key: ".env('TATUM_X_API_KEY'),
+            ],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ethereum/address/".$validated_data['xpub']."/".$validated_data['index'],
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "GET",
         ]);
@@ -75,8 +102,11 @@ class EthereumController extends Controller
             'to' => ['required', 'string', 'size:42'],
             'currency' => ['required', 'string', Rule::in(["USDT","LEO","LINK","UNI","FREE","GMC","GMC_BSC","RMD","MKR","USDC","BAT","TUSD","BUSD","PAX","PAXG","MMY","WBTC","XCON","ETH"])],
             'amount' => ['required', 'string', 'max:38'],
-            'signatureId' => ['required', 'string'],
+            'index' => ['sometimes', 'integer', 'max:2147483647'],
+            'fee' => ['sometimes', 'array'],
         ]);
+
+        $validated_data['signatureId'] = env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID');
 
         $payload = $validated_data;
 

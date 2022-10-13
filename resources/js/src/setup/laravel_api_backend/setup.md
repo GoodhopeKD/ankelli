@@ -47,7 +47,6 @@ php artisan make:model _Post -m
 php artisan make:model _Asset -m
 php artisan make:model _AssetWallet -m
 php artisan make:model _AssetWalletAddress -m
-php artisan make:model _AssetCustodialWalletAddress -m
 php artisan make:model _Currency -m
 php artisan make:model _PymtMethod -m
 php artisan make:model _Country -m
@@ -153,7 +152,6 @@ php artisan make:controller API/_ExportableController --api
 
 php artisan make:controller API/_AssetWalletController --api
 php artisan make:controller API/_AssetWalletAddressController --api
-php artisan make:controller API/_AssetCustodialWalletAddressController --api
 php artisan make:controller API/_ChatController --api
 php artisan make:controller API/_DepositTokenController --api
 php artisan make:controller API/_FeedbackReportController --api

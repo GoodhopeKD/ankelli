@@ -32,7 +32,7 @@ export const _TransactionRespObj = {
     sender_username: undefined as undefined | null | string,
     recipient_username: undefined as undefined | null | string,
     asset_code: undefined as undefined | null | string,
-    xfer_asset_value: undefined as undefined | null | number,
+    asset_value: undefined as undefined | null | number,
     transfer_result: undefined as undefined | null | transfer_result_t,
     transfer_datetime: undefined as undefined | null | string,
 }
@@ -47,7 +47,7 @@ export default class _Transaction extends _Wrapper_ implements Omit<typeof _Tran
     sender_username: string | null = null
     recipient_username: string | null = null
     asset_code: string | null = null
-    xfer_asset_value: number | null = null
+    asset_value: number | null = null
     transfer_result: transfer_result_t | null = null
     transfer_datetime: _DateTime | null = null
 
@@ -63,7 +63,7 @@ export default class _Transaction extends _Wrapper_ implements Omit<typeof _Tran
         return this._mainLaravelDBAPIGetCollection('funds/transactions', params, page_select, per_page)
     }
 
-    public static async process_withdrawal(data: { asset_code: string, asset_value: number, sender_note: string, sender_password: string, destination_blockchain_address: string }) {
+    public static async process_withdrawal(data: { asset_code: string, asset_value: number, sender_note: string, sender_password: string, recipient_bc_address: string }) {
         return await mainLaravelDBRestAPICallWrapper
             .dispatch({
                 type: 'APP_BACKEND_API_CALL',

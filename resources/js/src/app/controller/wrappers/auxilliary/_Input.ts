@@ -58,7 +58,7 @@ export const validation_param_lengths = {
 		min_length: 0,
 		max_length: 1024,
 	},
-	blockchain_addresses: {
+	bc_addresses: {
 		ETH: 42,
 		TRON: 34
 	}

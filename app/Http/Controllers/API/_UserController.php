@@ -70,7 +70,7 @@ class _UserController extends Controller
         // Request Validation
         $validated_data = $request->validate([
             'reg_token' => [ $token_reg_enabled ? 'required' : 'sometimes', 'string', 'max:16'],
-            'username' => ['required', 'string', 'between:4,64'],
+            'username' => ['required', 'alpha_dash', 'between:4,64'],
             'email_address' => ['required', 'string', 'email', 'max:64'],
             'password' => ['required', 'string', 'between:8,32', 'confirmed'],
         ]);
@@ -145,7 +145,7 @@ class _UserController extends Controller
             // Handle _Session
             $active_session_data = $request->active_session_data;
             $active_session_data['user_username'] = $api_auth_user->username;
-            $response['active_session_data'] = (new _SessionController)->_signUserIn( new Request( $active_session_data ), $active_session_data['token'] );
+            $response['active_session_data'] = (new _SessionController)->_signUserIn( new Request( $active_session_data ), session()->get('active_session_token') );
             // End _Session Handling
 
             $response['auth_token'] = $api_auth_user->createToken('auth_token')->accessToken;
@@ -235,11 +235,37 @@ class _UserController extends Controller
     public function update(Request $request, string $username)
     {
         $validated_data = $request->validate([
-            'ttm_customer_id' => ['sometimes', 'string', 'max:24'],
+            'username' => ['bail', 'sometimes', 'alpha_dash', 'between:4,64', 'unique:__users,username'],
+            'ttm_customer_id' => ['sometimes', 'string', 'size:24'],
             'avatar_image_id' => ['sometimes', 'integer'],
+            '_status' => ['sometimes', Rule::in('active', 'inactive', 'suspended', 'deactivated')],
         ]);
 
         $element = _User::where(['username' => $username])->firstOrFail();
+
+        $should_update_customer = false;
+
+        if ( isset($validated_data['username']) && $validated_data['username'] !== $element->username ){
+            // update all appearances of username;
+            $should_update_customer = true;
+        }
+
+        if ( $should_update_customer && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+            $ttm_customer_id = $element->ttm_customer_id;
+            if (!$ttm_customer_id){
+                try {
+                    $ttm_customer = (new Tatum\VirtualAccounts\CustomerController)->getCustomerByExternalOrInternalId(new Request(['id' => $element->username]))->getData();
+                    $ttm_customer_id = $ttm_customer->id;
+                } catch (\Throwable $th) {}
+            }
+            if ( $ttm_customer_id ){
+                $ttm_customer_update_data = [ 'id' => $ttm_customer_id ];
+                if (isset($validated_data['username'])){
+                    $ttm_customer_update_data['externalId'] = $validated_data['username'];
+                }
+                (new Tatum\VirtualAccounts\CustomerController)->updateCustomer(new Request($ttm_customer_update_data));
+            }
+        }
 
         // Handle _Log
         $log_entry_update_result = [];

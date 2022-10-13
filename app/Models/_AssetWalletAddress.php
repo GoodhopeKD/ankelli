@@ -7,9 +7,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class _AssetWalletAddress extends Model
 {
-    const CREATED_AT = 'created_datetime';
+    const CREATED_AT = null;
     const UPDATED_AT = null;
-    const DELETED_AT = 'deleted_datetime';
 
     /**
      * The attributes that are mass assignable.
@@ -17,20 +16,18 @@ class _AssetWalletAddress extends Model
      * @var array
      */
     protected $fillable = [
-        'asset_wallet_id',
-        'user_username',
-        'blockchain_address',
         'ttm_derivation_key',
-        'onchain_txn_count',
-        'last_active_datetime',
+        'user_username',
+        'bc_address',
+        'asset_code',
     ];
 
     /**
-     * The attributes that should be cast to native types.
+     * The attributes that should be hidden for arrays.
      *
      * @var array
      */
-    protected $casts = [
-        'last_active_datetime' => 'datetime',
+    protected $hidden = [
+        'ttm_derivation_key',
     ];
 }

@@ -21,6 +21,9 @@ if (!File::exists( public_path('storage') )){
 // Default Route
 Route::post('accounts', '__AuxController@default_route')->name('default_route');
 
+// #test
+Route::put('accounts/users/{uid}', '_UserController@update')->name('accounts.users.update');
+
 // Tx recon
 Route::post('webhooks/tatum/nofitications/incoming-blockchain-transaction', '_TransactionController@ttm_recon_for_incoming_bc_txn_notification')->name('tatum.ttm_recon_for_incoming_bc_txn_notification');
 Route::post('webhooks/tatum/nofitications/completed-kms-transaction', '_TransactionController@ttm_recon_for_completed_kms_txn_notification')->name('tatum.ttm_recon_for_completed_kms_txn_notification');
@@ -33,6 +36,8 @@ Route::post('load_test_data', '__AuxController@load_test_data')->name('load_test
 Route::get('tempFunction', '_AssetWalletController@tempFunction')->name('tempFunction');
 
 Route::get('getBlockchainWalletBalance', '_AssetWalletController@getBlockchainWalletBalance')->name('getBlockchainWalletBalance');
+Route::get('ReceivePendingTransactionsToSign', '_AssetWalletController@ReceivePendingTransactionsToSign')->name('ReceivePendingTransactionsToSign');
+Route::get('DeletePendingTransactionsToSign', '_AssetWalletController@DeletePendingTransactionsToSign')->name('DeletePendingTransactionsToSign');
 Route::get('findAllCustomers', '_AssetWalletController@findAllCustomers')->name('findAllCustomers');
 Route::get('getAccounts', '_AssetWalletController@getAccounts')->name('getAccounts');
 Route::get('get_addresses', '_AssetWalletController@get_addresses')->name('get_addresses');
@@ -75,7 +80,8 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::delete('accounts/users/{uid}/buyer_extension', '_SellerExtensionController@destroy')->name('accounts.users.delete_buyer_extension');
 
     // User modification and index routes
-    Route::put('accounts/users/{uid}', '_UserController@update')->name('accounts.users.update');
+    // #test
+    // Route::put('accounts/users/{uid}', '_UserController@update')->name('accounts.users.update');
     Route::get('admin/users', '_UserController@index')->name('admin.users.index');
 });
 

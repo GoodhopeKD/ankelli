@@ -206,7 +206,7 @@ export default class RegTokensViewListScreen extends React.Component {
                                         {this.state.list_loaded ? (
                                             this.state.list.map((reg_token, index) => {
                                                 return <tr key={index} >
-                                                    <td className="align-middle" style={{ maxWidth: 150 }}>
+                                                    <td className="align-middle">
                                                         <div className="input-group input-group-sm">
                                                             <input type="text" className="form-control" value={reg_token.token} onChange={() => { }} />
                                                             <span className="input-group-text p-0">

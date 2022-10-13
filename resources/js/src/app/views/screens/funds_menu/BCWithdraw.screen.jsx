@@ -11,10 +11,10 @@ class BCWithdrawScreen extends React.Component {
 
     default_input = {
         asset_code: 'ETH',
-        asset_value: new _Input(0.01),
-        destination_blockchain_address: new _Input('0xB2A8E24a90E5B5F7f4CBD26D350B83674652D65e'),
+        asset_value: new _Input(),
+        recipient_bc_address: new _Input(),
         sender_password: new _Input('Def-Pass#123'),
-        sender_note: new _Input('Test send via blockchain'),
+        sender_note: new _Input(),
     }
 
     state = {
@@ -123,13 +123,13 @@ class BCWithdrawScreen extends React.Component {
                                 <p style={{ whiteSpace: 'pre-wrap' }}><b><i>{asset.onchain_disclaimer}</i></b></p>
 
                                 <div className="mb-3">
-                                    <label htmlFor="input_destination_blockchain_address" className="form-label">Destination blockchain address</label>
+                                    <label htmlFor="input_recipient_bc_address" className="form-label">Destination blockchain address</label>
                                     <div className="input-group">
                                         <input
-                                            type="text" className="form-control" id="input_destination_blockchain_address"
-                                            value={this.state.input.destination_blockchain_address + ''}
+                                            type="text" className="form-control" id="input_recipient_bc_address"
+                                            value={this.state.input.recipient_bc_address + ''}
                                             required
-                                            onChange={elem => this.handleInputChange('destination_blockchain_address', elem.target.value)}
+                                            onChange={elem => this.handleInputChange('recipient_bc_address', elem.target.value)}
                                         />
                                     </div>
                                 </div>

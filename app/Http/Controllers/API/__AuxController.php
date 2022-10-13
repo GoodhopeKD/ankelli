@@ -466,26 +466,15 @@ Handle all internal transactions normally but know that these values will be ref
             'user_username' => 'paywyze', 'user_group_slug' => 'business_administrators',
         ]));
 
-        // user:john_doe
+        // user:john
         (new _UserController)->store( new Request([
-            'username' => 'john_doe', 'email_address' => 'john_doe@ankelli.com',
+            'username' => 'john', 'email_address' => 'john@ankelli.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
         (new _AssetWalletController)->store( new Request([
             'asset_code' => $factory_asset_code,
             'asset_chain' => $factory_asset_chain,
-            'user_username' => 'john_doe',
-        ]));
-
-        // user:mark
-        (new _UserController)->store( new Request([
-            'username' => 'mark', 'email_address' => 'mark@ankelli.com',
-            'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
-        ]));
-        (new _AssetWalletController)->store( new Request([
-            'asset_code' => $factory_asset_code,
-            'asset_chain' => $factory_asset_chain,
-            'user_username' => 'mark',
+            'user_username' => 'john',
         ]));
 
         if ($token_reg_changed){
@@ -508,6 +497,7 @@ Handle all internal transactions normally but know that these values will be ref
             return;
         }
 
+        session()->put('active_session_token', 'TEST_SSN' );
         session()->put('api_auth_user_username', 'system');
 
         $token_reg_changed = false;
@@ -533,24 +523,20 @@ Handle all internal transactions normally but know that these values will be ref
         // Internalisation transactions
 
         $internalisations = [
-            ['busops', 3000, 'Transfer from Coinbase wallet to Ankelli Reserves Wallet.', 'c83f8818db43d9ba4accfe454aa44fc33123d47a4f89d47b314d6748eb0e9bc9'],
-            ['guddaz', 248.87587867, 'Transfer from Coinbase wallet to Ankelli wallet.', '62BD544D1B9031EFC300A3E850CC3A0D51CA5131450C1AB3BCAC6D243F65460D'],
-            ['paywyze', 967.86579, 'Transfer from Ledger wallet to Ankelli wallet.', '62BD544D1B9031EFC300A3E850CC3A0D51CA5131450C1AB3BCAC6D243F65s60D'],
-            ['flint', 498.6678, 'Transfer from Coinbase wallet to Ankelli wallet.', 'c83f8818db43d9ba4accfe454aa44fc33123d47a4f89d47b314d6748eb0e9bcd'],
-            ['guddaz', 198.9012, 'Transfer from Exodus wallet to Ankelli wallet.', 'c83f8818db43d9ba4accfe454aa44fc33123d47a4f89d47b314f6748eb0e9bc9'],
-            ['paywyze', 146.76, 'Transfer from Coinbase wallet to Ankelli wallet.', 'c83f8818db43d9be4accfe454aa44fc33123d47a4f89d47b314d6748eb0e9bc9'],
+            ['busops', 3000, 'Transfer from Coinbase wallet to Ankelli Reserves Wallet.'],
+            ['guddaz', 248.87587867, 'Transfer from Coinbase wallet to Ankelli wallet.'],
+            ['paywyze', 967.86579, 'Transfer from Ledger wallet to Ankelli wallet.'],
+            ['flint', 498.6678, 'Transfer from Coinbase wallet to Ankelli wallet.'],
+            ['guddaz', 198.9012, 'Transfer from Exodus wallet to Ankelli wallet.'],
+            ['paywyze', 146.76, 'Transfer from Coinbase wallet to Ankelli wallet.'],
         ];
 
         foreach ($internalisations as $key => $internalisation) {
-            session()->put('api_auth_user_username', $internalisation[0]);
-            (new _TransactionController)->store( new Request([
-                'txn_context' => 'onchain',
-                'blockchain_txn_id' => $internalisation[3],
-                'recipient_note' => $internalisation[2],
-                'operation_slug' => 'DEPOSIT',
+            (new _TransactionController)->test_transfer( new Request([
                 'recipient_username' => $internalisation[0], 
+                'recipient_note' => $internalisation[2],
                 'asset_code' => 'USDT',
-                'xfer_asset_value' => $internalisation[1],
+                'asset_value' => $internalisation[1],
             ]));
             sleep(3);
         }

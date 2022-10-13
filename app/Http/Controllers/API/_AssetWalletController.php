@@ -31,17 +31,66 @@ class _AssetWalletController extends Controller
     // tempFunction
     public function EthGetBalance()
     {
-        return (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => '0x4e9470217400b27ccdb64237e6776abcda535956']))->getData();
+        return (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => '0x0688af85d9fc2805151f5ffa66b7b505a59cc732']))->getData();
     }
 
     // tempFunction
-    public function tempFunction()
+    public function ssdsf()
+    {
+        (new _AssetWalletController)->DeletePendingTransactionToSign();
+        $transfer = false;
+        $addresses = [];
+        for ($i=36; $i <= 46; $i++) {
+            $address = [];
+            $address['xpub_index'] = $i;
+            $address['address'] = (new Tatum\Blockchain\EthereumController)->EthGenerateAddress(new Request([
+                'xpub' => 'xpub6ERKWaEy6mLBzYWoo5P19QTexUufpijY5qod5xaH2ksiYtekeFYAoT3JoK87XKULgG7g3yvvxKwsGEVdkTqcC3BFjthMtJendsN1WH9nHoX',
+                'index' => $address['xpub_index'],
+            ]))->getData()->address;
+            $address['balance'] = (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => $address['address']]))->getData()->balance;
+            if ( $address['balance'] > 0 ) {
+                $estimated_fee =  (new Tatum\FeeEstimation\EstimateEthereumTransactionFeeController)->EthEstimateGas(new Request([
+                    'from' => $address['address'],
+                    'to' => '0x0688af85d9fc2805151f5ffa66b7b505a59cc732',
+                    'amount' => $address['balance'],
+                ]))->getData();
+                $address['estimated_fee'] = ['gasLimit' => $estimated_fee->gasLimit, 'gasPrice' => ((float)$estimated_fee->gasPrice / pow(10,9)).'' ];
+                $address['transferrable'] = ($address['balance'] - (float)$address['estimated_fee']['gasLimit'] * ((float)$address['estimated_fee']['gasPrice']) / pow(10,9)).'';
+                if ( $transfer )
+                $address['transfer_signatureId'] = (new Tatum\Blockchain\EthereumController)->EthBlockchainTransfer(new Request([
+                    'to' => '0x0688af85d9fc2805151f5ffa66b7b505a59cc732',
+                    'currency' => 'ETH',
+                    'amount' => $address['transferrable'].'',
+                    'index' => $address['xpub_index'],
+                    'fee' => $address['estimated_fee'],
+                ]))->getData()->signatureId;
+                array_push($addresses, $address);
+            }
+        }
+
+        return $addresses;
+    }
+
+    // tempFunction
+    public function EthBlockchainTransfer()
+    {
+        return (new Tatum\Blockchain\EthereumController)->EthBlockchainTransfer(new Request([
+            'to' => '0xaaada23b6b5705e23e12f78d064a1f1e62fb6126',
+            'currency' => 'ETH',
+            'amount' => '0.05',
+            'index' => 29,
+            'signatureId' => '508e642c-f959-4e73-a07b-087e9215f26d',
+        ]))->getData();
+    }
+
+    // tempFunction
+    public function ReceivePendingTransactionsToSign()
     {
         return (new Tatum\Security\KMSController)->ReceivePendingTransactionsToSign(new Request(['chain' => 'ETH']))->getData();
     }
 
     // tempFunction
-    public function DeletePendingTransactionToSign()
+    public function DeletePendingTransactionsToSign()
     {
         foreach ((new Tatum\Security\KMSController)->ReceivePendingTransactionsToSign(new Request(['chain' => 'ETH']))->getData() as $txn) {
             (new Tatum\Security\KMSController)->DeletePendingTransactionToSign(new Request(['id' => $txn->id]));
@@ -110,7 +159,6 @@ class _AssetWalletController extends Controller
         return (new Tatum\Security\CustodialManagedWalletController)->CustodialGetWallets(new Request());
     }
 
-    // tempFunction
     public function findAllCustomers()
     {
         return (new Tatum\VirtualAccounts\CustomerController)->findAllCustomers(new Request())->getData();
@@ -122,13 +170,6 @@ class _AssetWalletController extends Controller
         return (new Tatum\VirtualAccounts\CustomerController)->getCustomerByExternalOrInternalId(new Request(['id' => 'busops']))->getData();
     }
 
-    // tempFunction
-    public function updateCustomer()
-    {
-        return (new Tatum\VirtualAccounts\CustomerController)->updateCustomer(new Request(['id' => '63207c7291626c6cd5860a21', 'externalId' => 'john_doe']))->getData();
-    }
-
-    // tempFunction
     public function getAccounts()
     {
         return (new Tatum\VirtualAccounts\AccountController)->getAccounts(new Request())->getData();
@@ -137,7 +178,7 @@ class _AssetWalletController extends Controller
     // tempFunction
     public function getAccountsByCustomerId()
     {
-        return (new Tatum\VirtualAccounts\AccountController)->getAccountsByCustomerId(new Request(['id' => '6321ec61d5f2885b44f1bda0']))->getData();
+        return (new Tatum\VirtualAccounts\AccountController)->getAccountsByCustomerId(new Request(['id' => '63207c7291626c6cd5860a21']))->getData();
     }
 
     // tempFunction
@@ -171,7 +212,7 @@ class _AssetWalletController extends Controller
     }
 
     // tempFunction
-    public function getAllWebhooks()
+    public function tempFunction()
     {
         return (new Tatum\Subscriptions\NotificationSubscriptionController)->getAllWebhooks(new Request())->getData();
     }
@@ -225,13 +266,14 @@ class _AssetWalletController extends Controller
         $validated_data = $request->validate([
             'user_username' => ['required', 'string', 'exists:__users,username'],
             'asset_code' => ['required', 'string', 'exists:__assets,code'],
-            'asset_chain' => ['required', 'string', 'exists:__assets,chain'],
             '_status' => ['sometimes', 'string', Rule::in(['active', 'frozen'])],
         ]);
 
         if (_AssetWallet::where(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']])->exists()){
             return abort(422, 'Account with given params already exists');
         }
+
+        $validated_data['asset_chain'] = _Asset::firstWhere(['code' => $validated_data['asset_code']])->chain;
 
         $validated_data['usable_balance_asset_value'] = 0;
         $validated_data['total_balance_asset_value'] = 0;
@@ -249,10 +291,9 @@ class _AssetWalletController extends Controller
                 }
             } catch (\Throwable $th) {}
             $ttm_element = $ttm_element ?? (new Tatum\VirtualAccounts\AccountController)->createAccount(new Request([
-                //'one_of' => 'createAccount',
                 'currency' => $validated_data['asset_code'],
                 'externalId' => $validated_data['user_username'],
-                //'xpub' => _Asset::firstWhere(['code' => $validated_data['asset_code']])->xpub,
+                'xpub' => _Asset::firstWhere(['code' => $validated_data['asset_code']])->xpub,
                 'accountingCurrency' => 'USD',
             ]))->getData();
 
@@ -269,14 +310,16 @@ class _AssetWalletController extends Controller
                 (new _UserController)->update(new Request(['ttm_customer_id' => $ttm_element->customerId]), $validated_data['user_username']);
             }
 
-            $ttm_element = (new Tatum\Subscriptions\NotificationSubscriptionController)->createSubscription(new Request([
-                'type' => 'ACCOUNT_INCOMING_BLOCKCHAIN_TRANSACTION',
-                'attr' => [
-                    'id' => $validated_data['ttm_virtual_account_id'],
-                    'url' => "https://api.ankelli.com/webhooks/tatum/nofitications/incoming-blockchain-transaction",
-                ],
-            ]))->getData();
-            $validated_data['ttm_subscription_id'] = $ttm_element->id;
+            try {
+                $ttm_element = (new Tatum\Subscriptions\NotificationSubscriptionController)->createSubscription(new Request([
+                    'type' => 'ACCOUNT_INCOMING_BLOCKCHAIN_TRANSACTION',
+                    'attr' => [
+                        'id' => $validated_data['ttm_virtual_account_id'],
+                        'url' => "https://api.ankelli.com/webhooks/tatum/nofitications/incoming-blockchain-transaction",
+                    ],
+                ]))->getData();
+                $validated_data['ttm_subscription_id'] = $ttm_element->id;
+            } catch (\Throwable $th) {}
         }
 
         $element = _AssetWallet::create($validated_data);
@@ -286,17 +329,17 @@ class _AssetWalletController extends Controller
             if (count($ttm_elements)){
                 foreach ($ttm_elements as $ttm_element) {
                     $asset_wallet_address_params = [
-                        'asset_wallet_id' => $element->id, 
                         'user_username' => $validated_data['user_username'],
-                        'blockchain_address' => strtolower( $ttm_element->address ),
-                        'ttm_derivation_key' => isset($ttm_element->derivationKey) ? $ttm_element->derivationKey : 0,
+                        'asset_code' => $validated_data['asset_code'],
+                        'bc_address' => strtolower( $ttm_element->address ),
+                        'ttm_derivation_key' => $ttm_element->derivationKey,
                     ];
                     if ( !_AssetWalletAddress::where($asset_wallet_address_params)->exists() ){
                         (new _AssetWalletAddressController)->store(new Request($asset_wallet_address_params));
                     }
                 }
             } else {
-                (new _AssetWalletAddressController)->store(new Request(['asset_wallet_id' => $element->id, 'user_username' => $validated_data['user_username']]));
+                (new _AssetWalletAddressController)->store(new Request(['asset_code' => $validated_data['asset_code'], 'user_username' => $validated_data['user_username']]));
             }
         }
         

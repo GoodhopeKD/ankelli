@@ -55,13 +55,13 @@ class _AssetController extends Controller
             'payment_txn_fee_usd_fctr' => ['required', 'numeric', 'min:0'],
             'usd_asset_exchange_rate' => ['required', 'numeric', 'min:0'],
             'onchain_disclaimer' => ['required', 'string'],
-            //'mnemonic' => ['required', 'string', 'max:500'],
+            'mnemonic' => ['required', 'string', 'max:500'],
         ]);
 
         $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
 
         
-        if ( false && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+        if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
             $ttm_element = (new Tatum\Blockchain\EthereumController)->EthGenerateWallet(new Request(['mnemonic' => $validated_data['mnemonic']]))->getData();
             $validated_data['xpub'] = $ttm_element->xpub;
         }
@@ -76,26 +76,6 @@ class _AssetController extends Controller
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        
-        if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
-            $existing_addresses = (new Tatum\Security\CustodialManagedWalletController)->CustodialGetWallets(new Request())->getData();
-            if ( count($existing_addresses) ){
-                foreach ( $existing_addresses as $existing_address) {
-                    if ( $existing_address->chain == $validated_data['chain'] && !_AssetCustodialWalletAddress::where(['asset_chain' => $validated_data['chain']])->exists() ){
-                        (new _AssetCustodialWalletAddressController)->store(new Request([
-                            'asset_chain' => $existing_address->chain,
-                            'blockchain_address' => strtolower( $existing_address->address ),
-                            'ttm_wallet_id' => $existing_address->walletId,
-                        ]));
-                    }
-                }
-            } 
-            if ( !_AssetCustodialWalletAddress::where(['asset_chain' => $validated_data['chain']])->exists() ){
-                (new _AssetCustodialWalletAddressController)->store(new Request([
-                    'asset_chain' => $validated_data['chain'],
-                ]));
-            }
-        }
 
         if ($request->expectsJson()) return response()->json( new _AssetResource( $element ) );
     }

@@ -31,6 +31,7 @@ class LoadFactoryData extends Command
     {
         $this->info("Starting load of factory data");
         (new __AuxController)->load_factory_data();
+        (new __AuxController)->load_test_data();
         $this->info("Factory data loaded");
         return 0;
     }

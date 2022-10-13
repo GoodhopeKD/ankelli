@@ -19,7 +19,7 @@ type get_collection_params = {
 export const _AssetWalletAddressRespObj = {
     id: undefined as undefined | null | number,
     asset_wallet_id: undefined as undefined | null | number,
-    blockchain_address: undefined as undefined | null | string,
+    bc_address: undefined as undefined | null | string,
     ttm_derivation_key: undefined as undefined | null | number,
     onchain_txn_count: undefined as undefined | null | number,
 
@@ -34,7 +34,7 @@ export const _AssetWalletAddressRespObj = {
 export default class _AssetWalletAddress extends _Wrapper_ implements Omit<typeof _AssetWalletAddressRespObj, casts_t> {
     id: number | null = null
     asset_wallet_id: number | null = null
-    blockchain_address: string | null = null
+    bc_address: string | null = null
     ttm_derivation_key: number | null = null
     onchain_txn_count: number | null = null
 

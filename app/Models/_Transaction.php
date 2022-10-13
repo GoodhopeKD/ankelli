@@ -3,15 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class _Transaction extends Model
 {
-    use SoftDeletes;
-
     const CREATED_AT = 'transfer_datetime';
-    const UPDATED_AT = null;
-    const DELETED_AT = 'deleted_datetime';
+    const UPDATED_AT = 'updated_datetime';
 
     /**
      * The attributes that are mass assignable.
@@ -20,20 +16,30 @@ class _Transaction extends Model
      */
     protected $fillable = [
         'ref_code',
-        'txn_context',
-        'blockchain_txn_id',
-        'tatum_unsigned_txn_signature_id',
+
         'ttm_reference',
+        'ttm_bc_txn_signature_id',
+        'ttm_centralization_factor',
+        'ttm_amount_blockage_id',
+        'asset_value_escrowed',
+        'bc_txn_id',
+
         'session_token',
         'operation_slug',
+        'failure_note',
+        '_status',
+
+        'sender_bc_address',
         'sender_username',
         'sender_note',
-        'source_blockchain_address',
+
+        'recipient_bc_address',
         'recipient_username',
         'recipient_note',
-        'destination_blockchain_address',
+
         'asset_code',
-        'xfer_asset_value',
+        'asset_value',
+
         'transfer_result',
         'transfer_datetime',
     ];
@@ -47,9 +53,10 @@ class _Transaction extends Model
      * @var array
      */
     protected $hidden = [
-        'blockchain_txn_id',
-        'tatum_unsigned_txn_signature_id',
         'ttm_reference',
+        'ttm_bc_txn_signature_id',
+        'ttm_amount_blockage_id',
+        'session_token',
     ];
     
     /**
@@ -58,7 +65,7 @@ class _Transaction extends Model
      * @var array
      */
     protected $casts = [
-        //'xfer_asset_value' => 'float',
+        //'asset_value' => 'float',
         'transfer_result' => 'array',
     ];
 }

@@ -156,9 +156,9 @@ class BCDepositScreen extends React.Component {
                                         <div className="col-12 col-md-10 col-lg-8 col-xl-6">
                                             <p><b>{asset.name} ({asset.code}) address</b></p>
                                             <div className="input-group mb-3">
-                                                <input type="text" className="form-control" value={asset_wallet_address.blockchain_address} onChange={() => { }} />
+                                                <input type="text" className="form-control" value={asset_wallet_address.bc_address} onChange={() => { }} />
                                                 <span className="input-group-text p-0">
-                                                    <button className="btn btn-light" style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, border: 'none' }} onClick={() => { navigator.clipboard.writeText(asset_wallet_address.blockchain_address); _Notification.flash({ message: 'Address copied to clipboard', duration: 2000 }); }} >📋</button>
+                                                    <button className="btn btn-light" style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, border: 'none' }} onClick={() => { navigator.clipboard.writeText(asset_wallet_address.bc_address); _Notification.flash({ message: 'Address copied to clipboard', duration: 2000 }); }} >📋</button>
                                                 </span>
                                             </div>
                                         </div>

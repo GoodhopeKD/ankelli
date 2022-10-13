@@ -9,7 +9,7 @@ class EditSysConfigParamsScreen extends React.Component {
 
     default_input = {
         password: new _Input('Def-Pass#123'),
-        update_note: new _Input('Maintenance'),
+        update_note: new _Input(),
     }
     state = {
         sysconfig_params: [],

@@ -421,17 +421,14 @@ class _TradeController extends Controller
             usleep(500);
             // End unlock asset from escrow
             
-            (new _TransactionController)->store( new Request([
-                'txn_context' => 'offchain',
-                'operation_slug' => 'TRADE_ASSET_RELEASE',
+            (new _TransactionController)->process_trade_asset_release( new Request([
+                'trade_ref_code' => $ref_code,
                 'sender_username' => $seller_username, 
                 'sender_password' => $validated_data['sender_password'],
-                'sender_note' => 'Outbound asset release for trade '.$ref_code,
                 'recipient_username' => $buyer_username,
-                'recipient_note' => 'Inbound asset release for trade '.$ref_code,
                 'asset_code' => $element->asset_code,
-                'xfer_asset_value' => $element->asset_value,
-                'txn_fee_fctr' => $element->trade_txn_fee_fctr,
+                'asset_value' => $element->asset_value,
+                'txn_fee_asset_value' => $element->trade_txn_fee_fctr * $element->asset_value,
             ]));
         }
 

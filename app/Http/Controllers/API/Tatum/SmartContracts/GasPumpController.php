@@ -62,7 +62,7 @@ class GasPumpController extends Controller
         ]);
 
         if ( $validated_data['chain'] === 'TRON' ) $validated_data['feeLimit'] = 200;
-        $validated_data['signatureId'] = env('TATUM_KMS_'.$validated_data['chain'].'_GP_SIGNATURE_ID');
+        $validated_data['signatureId'] = env('TATUM_KMS_'.$validated_data['chain'].'_GP_ADDRESS_SIGNATURE_ID');
 
         $payload = $validated_data;
 
@@ -161,7 +161,7 @@ class GasPumpController extends Controller
 
         if ( $validated_data['chain'] === 'TRON' ) $validated_data['feeLimit'] = 200;
         if ( $validated_data['chain'] === 'CELO' ) $validated_data['fee'] = [ 'gasLimit' => 400, 'gasPrice' => 400 ];
-        $validated_data['signatureId'] = env('TATUM_KMS_'.$validated_data['chain'].'_GP_SIGNATURE_ID');
+        $validated_data['signatureId'] = env('TATUM_KMS_'.$validated_data['chain'].'_GP_ADDRESS_SIGNATURE_ID');
 
         $payload = $validated_data;
 

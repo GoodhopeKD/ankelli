@@ -1,19 +1,17 @@
 import React from "react"
-import { connect } from 'react-redux'
 import _ from 'lodash'
 
 import { _User, _Notification, _DateTime, _Session, _Input } from 'app/controller'
 
 import withRouter from 'app/views/navigation/withRouter'
 
-class NotificationsViewSingleScreen extends React.Component {
+export default withRouter(class NotificationsViewSingleScreen extends React.Component {
 
     state = {
         focused_notification_loaded: false,
     }
 
     focused_notification = null
-
 
     componentDidMount = () => {
         _Notification.getOne({ id: this.props.params.notification_id })
@@ -65,14 +63,4 @@ class NotificationsViewSingleScreen extends React.Component {
             </div>
         </this.props.PageWrapper>
     }
-}
-
-const mapStateToProps = (state) => {
-    return {
-        datalists: state.datalists_data,
-        sysconfig_params: state.sysconfig_params_data,
-        auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_wallets']) : null,
-    }
-}
-
-export default connect(mapStateToProps)(withRouter(NotificationsViewSingleScreen))
+})

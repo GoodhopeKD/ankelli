@@ -15,22 +15,20 @@ return new class extends Migration
     {
         Schema::create('__asset_wallet_addresses', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('asset_wallet_id')->unique()->references('id')->on('__asset_wallets');
+            $table->unsignedInteger('ttm_derivation_key')->unique()->nullable();
             $table->string('user_username', 64)->nullable();
             $table->foreign('user_username')
                     ->references('username')
                     ->on('__users')
                     ->onUpdate('cascade')
                     ->onDelete('set null');
-            $table->string('blockchain_address', 128)->nullable();
-            $table->unsignedInteger('ttm_derivation_key')->nullable();
-            $table->unsignedTinyInteger('onchain_txn_count')->default(0);
-            $table->timestamp('last_active_datetime')->nullable();
-
-            $table->timestamp('created_datetime')->useCurrent();
-            $table->softDeletes('deleted_datetime');
-            
-            $table->unique(['asset_wallet_id', 'blockchain_address'], 'asset_wallet_id_blockchain_address_unique');
+            $table->string('bc_address', 128)->unique()->nullable();
+            $table->string('asset_code', 64)->nullable();
+            $table->foreign('asset_code')
+                    ->references('code')
+                    ->on('__assets')
+                    ->onUpdate('cascade')
+                    ->onDelete('set null');
         });
     }
 

@@ -176,7 +176,6 @@ class TransactionsViewListScreen extends React.Component {
 
                         <hr />
 
-
                         <div>
                             <div className="table-responsive mb-3">
                                 <table className="table table-sm mb-0">
@@ -184,10 +183,11 @@ class TransactionsViewListScreen extends React.Component {
                                         <tr>
                                             <th scope="col">Ref Code</th>
                                             <th scope="col">Type</th>
-                                            <th scope="col" style={{ minWidth: 155 }}>Asset Value</th>
+                                            <th scope="col" style={{ minWidth: 140 }}>Asset Value</th>
                                             <th scope="col" style={{ minWidth: 300 }}>Note</th>
-                                            <th scope="col" style={{ minWidth: 215 }}>Datetime</th>
-                                            <th scope="col" style={{ minWidth: 155 }}>New balance</th>
+                                            <th scope="col" style={{ minWidth: 200 }}>Datetime</th>
+                                            <th scope="col" style={{ minWidth: 140 }}>New balance</th>
+                                            <th scope="col" style={{ minWidth: 100 }}>Hash</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -197,12 +197,22 @@ class TransactionsViewListScreen extends React.Component {
                                                 const debit = transaction.sender_username == this.props.auth_user.username
                                                 const tr_group = debit ? 'Debit' : 'Credit'
                                                 return <tr key={index} >
-                                                    <td className="align-middle">{transaction.ref_code}</td>
-                                                    <td className="align-middle">{tr_group}</td>
-                                                    <td className="align-middle">{window.assetValueString(transaction.xfer_asset_value, asset)}</td>
-                                                    <td className="align-middle">{debit ? transaction.sender_note : transaction.recipient_note}</td>
-                                                    <td className="align-middle">{window.ucfirst(new _DateTime(transaction.transfer_datetime).prettyDatetime())}</td>
-                                                    <td className="align-middle">{window.assetValueString(transaction.transfer_result.find(tr => tr.user_username == this.props.auth_user.username).new_total_balance_asset_value, asset)}</td>
+                                                    <td className="align-middle small">{transaction.ref_code}</td>
+                                                    <td className="align-middle small">{tr_group}</td>
+                                                    <td className="align-middle small">{window.assetValueString(transaction.asset_value, asset)}</td>
+                                                    <td className="align-middle small">{debit ? transaction.sender_note : transaction.recipient_note}</td>
+                                                    <td className="align-middle small">{window.ucfirst(new _DateTime(transaction.transfer_datetime).prettyDatetime())}</td>
+                                                    <td className="align-middle small">{transaction._status === 'completed' ? window.assetValueString(transaction.transfer_result.find(tr => tr.user_username == this.props.auth_user.username).new_total_balance_asset_value, asset) : <span className={"text-" + (transaction._status === 'pending' ? "warning" : "danger")}>Transfer {transaction._status}</span>}</td>
+                                                    <td className="align-middle small">
+                                                        {window.isset(transaction.bc_txn_id) ? <>
+                                                            <div className="input-group input-group-sm">
+                                                                <input type="text" className="form-control form-control-sm" value={transaction.bc_txn_id} onChange={() => { }} />
+                                                                <span className="input-group-text p-0">
+                                                                    <button className="btn btn-light btn-sm" style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, border: 'none' }} onClick={() => { navigator.clipboard.writeText(transaction.bc_txn_id); _Notification.flash({ message: 'Token copied to clipboard', duration: 2000 }); }} >📋</button>
+                                                                </span>
+                                                            </div>
+                                                        </> : <>-</>}
+                                                    </td>
                                                 </tr>
                                             })
                                         ) : (
