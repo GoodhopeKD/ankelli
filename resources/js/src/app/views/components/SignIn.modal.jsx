@@ -39,7 +39,7 @@ export default withRouter(class SignInModal extends React.Component {
         const input = this.state.input
 
         if (!input.username.isValid('username')) { errors.push("Invalid username") }
-        if (!input.password.isValid('password')) { errors.push("Invalid password") }
+        //if (!input.password.isValid('password')) { errors.push("Invalid password") }
 
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs

@@ -261,6 +261,8 @@ class _AssetWalletController extends Controller
         }
     }
 
+    private $ETH_USDT_FCTR = 1000;
+
     /**
      * Store a newly created resource in storage.
      *
@@ -306,6 +308,10 @@ class _AssetWalletController extends Controller
             $validated_data['ttm_virtual_account_id'] = $ttm_element->id;
             $validated_data['usable_balance_asset_value'] = $ttm_element->balance->availableBalance;
             $validated_data['total_balance_asset_value'] = $ttm_element->balance->accountBalance;
+            if ($asset->fe_asset_code === 'USDT'){
+                $validated_data['usable_balance_asset_value'] *= $this->ETH_USDT_FCTR;
+                $validated_data['total_balance_asset_value'] *= $this->ETH_USDT_FCTR;
+            }
             if ($validated_data['total_balance_asset_value'] !== $validated_data['usable_balance_asset_value']){
                 (new Tatum\VirtualAccounts\AccountController)->deleteAllBlockAmount(new Request(['id' => $ttm_element->id]));
                 $validated_data['usable_balance_asset_value'] = $validated_data['total_balance_asset_value'];
@@ -373,8 +379,6 @@ class _AssetWalletController extends Controller
         if (!$element) return abort(404, 'Asset account with specified id not found');
         return response()->json( new _AssetWalletResource( $element ) );
     }
-
-    private $ETH_USDT_FCTR = 1000;
     
     /**
      * Update the specified resource in storage.
@@ -396,7 +400,7 @@ class _AssetWalletController extends Controller
         ]), $id );
         if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
             $asset = _Asset::firstWhere('code', $element->asset_code);
-            if ( $asset->fe_asset_code === 'USDT' ) $validated_data['asset_value'] = $validated_data['asset_value'] / $this->ETH_USDT_FCTR;
+            if ( $asset->fe_asset_code === 'USDT' ) $validated_data['asset_value'] /= $this->ETH_USDT_FCTR;
             return (new Tatum\VirtualAccounts\AccountController)->blockAmount(new Request([
                 'id' => $element->ttm_virtual_account_id,
                 'amount' => $validated_data['asset_value'].'',

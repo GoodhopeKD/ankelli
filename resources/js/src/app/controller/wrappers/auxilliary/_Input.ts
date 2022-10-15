@@ -265,7 +265,7 @@ export default class _Input {
 			.dispatch({
 				type: 'APP_BACKEND_API_CALL',
 				method: 'GET',
-				endpoint: 'param_checks/usability/{param_name}/{param_value}',
+				endpoint: 'content/param_checks/usability/{param_name}/{param_value}',
 				data: { param_name: resource_name, param_value: this._input }
 			})
 			.then((resp: any) => {

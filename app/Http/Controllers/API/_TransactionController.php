@@ -120,6 +120,7 @@ class _TransactionController extends Controller
                     'asset_code' => $validated_data['asset_code'],
                     'asset_chain' => _Asset::firstWhere(['code' => $validated_data['asset_code']])->chain,
                 ]));
+                usleep(500);
             }
         }
 
@@ -398,10 +399,11 @@ class _TransactionController extends Controller
         $validated_data['sender_username'] = 'busops';
         $validated_data['recipient_note'] = 'Wallet topup using deposit token '.$validated_data['deposit_token'];
         $validated_data['sender_note'] = $validated_data['recipient_note'];
+        $validated_data['_status'] = 'pending';
+        $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
         $validated_data['ttm_reference'] = (new _TransactionController)->transfer_account_to_account(new Request($validated_data))->getData()->reference;
         $validated_data['_status'] = 'completed';
-
-        $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
+        (new _TransactionController)->update( new Request($validated_data), $element->ref_code );;
         (new _TransactionController)->update_local_wallets( $element->ref_code );
         return response()->json( [ 'ref_code' => $element->ref_code ] );
     }
@@ -425,9 +427,11 @@ class _TransactionController extends Controller
         $validated_data['operation_slug'] = 'TRADE_ASSET_RELEASE';
         $validated_data['recipient_note'] = 'Inbound asset release for trade '.$validated_data['trade_ref_code'];
         $validated_data['sender_note'] = 'Outbound asset release for trade '.$validated_data['trade_ref_code'];
+        $validated_data['_status'] = 'pending';
+        $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
         $validated_data['ttm_reference'] = (new _TransactionController)->transfer_account_to_account(new Request($validated_data))->getData()->reference;
         $validated_data['_status'] = 'completed';
-        $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
+        (new _TransactionController)->update( new Request($validated_data), $element->ref_code );
         (new _TransactionController)->update_local_wallets( $element->ref_code );
         usleep(500);
         (new _TransactionController)->process_platform_charge(new Request([ 'asset_value' => $validated_data['txn_fee_asset_value']]), $element->ref_code);
@@ -462,9 +466,11 @@ class _TransactionController extends Controller
                 break;
         }
         $validated_data['operation_slug'] = 'PAYMENT';
+        $validated_data['_status'] = 'pending';
+        $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
         $validated_data['ttm_reference'] = (new _TransactionController)->transfer_account_to_account(new Request($validated_data))->getData()->reference;
         $validated_data['_status'] = 'completed';
-        $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
+        (new _TransactionController)->update( new Request($validated_data), $element->ref_code );;
         (new _TransactionController)->update_local_wallets( $element->ref_code );
         usleep(500);
         $asset = _Asset::firstWhere('code', $validated_data['asset_code']);

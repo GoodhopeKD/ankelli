@@ -139,7 +139,7 @@ class OffersCreateNewScreen extends React.Component {
         const currency = this.props.datalists.active_currencies[this.state.input.currency_code]
         const pymt_method = this.props.datalists.active_pymt_methods[this.state.input.pymt_method_slug]
 
-        const max_offerable_asset_value = !window.isset(this.props.auth_user) ? null : (1 - this.props.sysconfig_params.trade_txn_fee_fctr) * window.assetValueInput((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)
+        const max_offerable_asset_value = !window.isset(this.props.auth_user) ? null : (1 - this.props.sysconfig_params.trade_txn_fee_fctr) * window.assetValueInput((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code === asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container-xl py-4 ">
@@ -224,7 +224,7 @@ class OffersCreateNewScreen extends React.Component {
                                         <input
                                             type="text" className="form-control" id="input_location"
                                             value={this.state.input.location.toRaw()}
-                                            placeholder='Harare CBD'
+                                            placeholder='e.g. Harare CBD'
                                             required
                                             onChange={elem => this.handleInputChange('location', elem.target.value)}
                                         />
@@ -253,7 +253,7 @@ class OffersCreateNewScreen extends React.Component {
                                             </div>
                                             {this.state.input.offer_to == 'sell' && this.props.auth_user != null && <div className="col">
                                                 <label htmlFor="output_current_balance" className="form-label">Usable balance</label>
-                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
+                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code === asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
                                             </div>}
                                         </div>
 
@@ -282,7 +282,7 @@ class OffersCreateNewScreen extends React.Component {
                                     </h4>
                                     <div id="collapse_input_info" className="accordion-collapse collapse show" data-bs-parent="#accordion_input_info" >
                                         <div className="accordion-body pb-0">
-                                            <p>Offer price is amount of {currency.code} per unit {asset.code}</p>
+                                            <p>Offer price is amount of {currency.code} per unit {asset.fe_asset_code}</p>
                                             {this.state.input.offer_to == 'buy' && <>
                                                 <p>The asset value you get is calculated as follows:</p>
                                                 <p className="text-muted">{'$asset_value = $purchase_amount / $offer_price'}</p>
@@ -378,7 +378,7 @@ class OffersCreateNewScreen extends React.Component {
                                             required
                                             onChange={elem => this.handleInputChange('min_trade_sell_value', elem.target.value)}
                                         />
-                                        <span className="input-group-text">{asset.code}</span>
+                                        <span className="input-group-text">{asset.fe_asset_code}</span>
                                         <span className="input-group-text">You get {window.currencyAmountString(this.assetToCurrency(this.state.input.min_trade_sell_value.toRaw()), currency, true, true)}</span>
                                     </div>
                                 </div>
@@ -394,7 +394,7 @@ class OffersCreateNewScreen extends React.Component {
                                             required
                                             onChange={elem => this.handleInputChange('max_trade_sell_value', elem.target.value)}
                                         />
-                                        <span className="input-group-text">{asset.code}</span>
+                                        <span className="input-group-text">{asset.fe_asset_code}</span>
                                         <span className="input-group-text">You get {window.currencyAmountString(this.assetToCurrency(this.state.input.max_trade_sell_value.toRaw()), currency, true, true)}</span>
                                     </div>
                                 </div>
@@ -410,7 +410,7 @@ class OffersCreateNewScreen extends React.Component {
                                             required
                                             onChange={elem => this.handleInputChange('offer_total_sell_value', elem.target.value)}
                                         />
-                                        <span className="input-group-text">{asset.code}</span>
+                                        <span className="input-group-text">{asset.fe_asset_code}</span>
                                         <span className="input-group-text">You get {window.currencyAmountString(this.assetToCurrency(this.state.input.offer_total_sell_value.toRaw()), currency, true, true)}</span>
                                     </div>
                                 </div>

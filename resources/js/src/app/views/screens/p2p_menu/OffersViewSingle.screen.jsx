@@ -106,7 +106,7 @@ class OffersViewSingleScreen extends React.Component {
         input.pymt_details = this.focused_offer.offer_to == 'buy' ? this.state.input.pymt_details : undefined
         input.sender_password = this.focused_offer.offer_to == 'buy' ? this.state.input.sender_password : undefined
         if (input.sender_password) {
-            if (!input.sender_password.isValid('password')) { errors.push("Invalid password") }
+            //if (!input.sender_password.isValid('password')) { errors.push("Invalid password") }
         }
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs 
@@ -166,8 +166,8 @@ class OffersViewSingleScreen extends React.Component {
                             </div>}
 
                             <div>
-                                <p>Asset you'll sell: {asset.name} ({asset.code})</p>
-                                {window.isset(this.props.auth_user) && <p>Your usable {asset.code} balance: {window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</p>}
+                                <p>Asset you'll sell: {asset.name} ({asset.fe_asset_code})</p>
+                                {window.isset(this.props.auth_user) && <p>Your usable {asset.fe_asset_code} balance: {window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code === asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</p>}
                                 <p>Currency : {currency.name} ({currency.code}) </p>
                                 <p>Offer price : {window.currencyAmountString(this.focused_offer.offer_price, currency)}</p>
                                 {this.focused_offer.offer_to == 'buy' && <p>Purchase limits per trade : {window.currencyAmountString(this.focused_offer.min_trade_purchase_amount, currency)} - {window.currencyAmountString(this.focused_offer.max_trade_purchase_amount, currency)}</p>}
@@ -208,12 +208,12 @@ class OffersViewSingleScreen extends React.Component {
                                                     <input
                                                         type="number" className="form-control" id="input_asset_value"
                                                         min={window.assetValueInput(this.state.min_asset_value, asset)}
-                                                        max={window.assetValueInput(this.focused_offer.offer_to == 'sell' ? this.state.max_asset_value : Math.min(this.state.max_asset_value, (this.props.auth_user ? (this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value : this.state.max_asset_value)), asset)}
+                                                        max={window.assetValueInput(this.focused_offer.offer_to == 'sell' ? this.state.max_asset_value : Math.min(this.state.max_asset_value, (this.props.auth_user ? (this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code === asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value : this.state.max_asset_value)), asset)}
                                                         step={asset.smallest_display_unit}
                                                         value={window.assetValueInput(this.state.asset_value, asset)}
                                                         onChange={elem => this.assetToCurrency(elem.target.value)}
                                                     />
-                                                    <span className="input-group-text">{asset.code}</span>
+                                                    <span className="input-group-text">{asset.fe_asset_code}</span>
                                                 </div>
                                                 {this.focused_offer.offer_to == 'buy' && <div className="form-text">= $amount * (1 + $trade_txn_fee_factor) / $offer_price</div>}
                                                 {this.focused_offer.offer_to == 'sell' && <div className="form-text">= $amount / $offer_price</div>}

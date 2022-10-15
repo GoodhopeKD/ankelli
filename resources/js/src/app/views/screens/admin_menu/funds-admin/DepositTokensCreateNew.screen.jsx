@@ -43,7 +43,7 @@ class DepositTokensCreateNewScreen extends React.Component {
         const asset = this.props.datalists.active_assets[this.state.input.asset_code]
 
         if (!(input.asset_value > 0)) { errors.push('Asset value invalid') }
-        if (!input.asset_value.isValid('number', 0, (this.state.ankelli_busops_user_asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value)) { errors.push("Asset value not within bounds") }
+        if (!input.asset_value.isValid('number', 0, (this.state.ankelli_busops_user_asset_wallets.find(aacc => aacc.asset_code === asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value)) { errors.push("Asset value not within bounds") }
 
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
@@ -60,7 +60,7 @@ class DepositTokensCreateNewScreen extends React.Component {
         const errors = []
         const input = this.state.input
 
-        if (!input.sender_password.isValid('password')) { errors.push("Invalid password") }
+        //if (!input.sender_password.isValid('password')) { errors.push("Invalid password") }
 
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs

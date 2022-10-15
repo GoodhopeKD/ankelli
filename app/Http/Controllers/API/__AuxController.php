@@ -153,15 +153,15 @@ class __AuxController extends Controller
 
     public function sysconfig_params_enum_options()
     {
-        $crypto_assets = json_decode((new _AssetController)->index( new Request(['_status' =>'active']) )->toJson(),true)['data'];
+        $crypto_assets = (new _AssetController)->index( new Request(['_status' =>'active']) );
         $crypto_asset_code_options = [];
-        foreach ($crypto_crypto_assets as $crypto_asset) {
-            array_push($crypto_asset_code_options, ['slug' => $crypto_asset->fe_asset_code, 'name' => $crypto_asset->name ]);
+        foreach ($crypto_assets as $crypto_asset) {
+            array_push($crypto_asset_code_options, ['slug' => $crypto_asset->code, 'name' => $crypto_asset->name ]);
         }
 
-        $fiat_currencies = json_decode((new _CurrencyController)->index( new Request(['_status' =>'active']) )->toJson(),true)['data'];
+        $fiat_currencies = (new _CurrencyController)->index( new Request(['_status' =>'active']) );
         $fiat_currency_code_options = [];
-        foreach ($crypto_fiat_currencies as $fiat_currency) {
+        foreach ($fiat_currencies as $fiat_currency) {
             array_push($fiat_currency_code_options, ['slug' => $fiat_currency->code, 'name' => $fiat_currency->name.' ('.$fiat_currency->symbol.')' ]);
         }
         return response()->json([

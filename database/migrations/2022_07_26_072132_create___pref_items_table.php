@@ -155,7 +155,7 @@ return new class extends Migration
             [
                 'key_name' => 'Token registration enabled',
                 'key_slug' => 'token_reg_enabled',
-                'value' => false,
+                'value' => true,
                 'value_type' => 'boolean',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',

@@ -73,7 +73,7 @@ class TradesViewSingleScreen extends React.Component {
         this.setState({ btn_confirm_pymt_working: true })
         const errors = []
         const input = this.state.input
-        if (!input.sender_password.isValid('password')) { errors.push("Invalid password") }
+        //if (!input.sender_password.isValid('password')) { errors.push("Invalid password") }
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
             const _input = _Input.flatten(input)
@@ -125,6 +125,9 @@ class TradesViewSingleScreen extends React.Component {
         const trade_peer_username = load_condition ? (this.focused_trade.creator_username == this.props.auth_user.username ? this.focused_trade.offer_creator_username : this.focused_trade.creator_username) : null
         const auth_user_is_buyer = load_condition && ((this.focused_trade.was_offer_to == 'sell' && this.focused_trade.creator_username == this.props.auth_user.username) || (this.focused_trade.was_offer_to == 'buy' && this.focused_trade.offer_creator_username == this.props.auth_user.username))
         const auth_user_is_seller = load_condition && ((this.focused_trade.was_offer_to == 'buy' && this.focused_trade.creator_username == this.props.auth_user.username) || (this.focused_trade.was_offer_to == 'sell' && this.focused_trade.offer_creator_username == this.props.auth_user.username))
+
+        const auth_seller_can_cancel = auth_user_is_seller && this.focused_trade.buyer_opened_datetime == null && !((_DateTime.nowUnixTimeStamp() - this.focused_trade.created_datetime.unix_timestamp) < (this.props.sysconfig_params.buyer_open_trade_min_mins_tmt * 60))
+        const auth_buyer_can_cancel = auth_user_is_buyer && !['cancelled', 'completed'].includes(this.focused_trade._status) && this.focused_trade.pymt_declared_datetime == null && this.focused_trade.pymt_confirmed_datetime == null
 
         const trade_peer_reviewed = load_condition && ((trade_peer_username == this.focused_trade.creator_username && this.focused_trade.completion_review_on_trade_creator !== null) || (trade_peer_username == this.focused_trade.offer_creator_username && this.focused_trade.completion_review_on_offer_creator !== null));
 
@@ -202,7 +205,7 @@ class TradesViewSingleScreen extends React.Component {
                                                         <span>{auth_user_is_seller ? <>Seller</> : <>Buyer</>}: <Link to={'/accounts/profile'} style={{ textDecoration: 'none' }} target='_blank'>@{this.props.auth_user.username}</Link> (you)</span>
                                                     </p>
                                                     <p>{auth_user_is_buyer && <>Amount you should pay</>} {auth_user_is_seller && <>Amount you'll receive</>}: {window.currencyAmountString(this.focused_trade.currency_amount, currency)} ({currency.code})</p>
-                                                    <span>Asset value {auth_user_is_buyer && "you'll receive"} {auth_user_is_seller && "you'll release"}: {window.assetValueString(this.focused_trade.currency_amount / this.focused_trade.offer_price, asset)} (@ {window.currencyAmountString(this.focused_trade.offer_price, currency)})</span>
+                                                    <span>Asset value you'll {auth_user_is_buyer && "receive"} {auth_user_is_seller && "release"}: {window.assetValueString(auth_user_is_buyer ? this.focused_trade.asset_value : this.focused_trade.asset_value_escrowed, asset)}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -332,7 +335,7 @@ class TradesViewSingleScreen extends React.Component {
                                                 </h4>
                                                 <div id="collapse_declare_payment" className="accordion-collapse collapse" data-bs-parent="#accordion_trade_actions" >
                                                     <div className="accordion-body">
-                                                        <p>As the buyer, when you have processed the payment, you should declare it with the button below</p>
+                                                        <p>As the buyer, when you have made the payment, declare it for seller to release assets to you</p>
                                                         <button className="w-100 btn rounded-3 btn-primary" disabled={this.state.btn_declare_pymt_working}
                                                             onClick={() => { this.setState({ btn_declare_pymt_working: true }, () => this.focused_trade.declarePymt().catch(e => _Notification.flash({ message: e.message, duration: 5000 })).finally(() => this.setState({ btn_declare_pymt_working: false }, () => _Notification.flash({ message: 'Payment declared', duration: 2000 })))) }} >
                                                             {this.state.btn_declare_pymt_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Declare payment</>}
@@ -351,8 +354,7 @@ class TradesViewSingleScreen extends React.Component {
                                                 </h4>
                                                 <div id="collapse_confirm_payment" className="accordion-collapse collapse" data-bs-parent="#accordion_trade_actions" >
                                                     <div className="accordion-body">
-
-                                                        <p>As the seller, when the payment has been processed, you should confirm it with the button below</p>
+                                                        <p>As the seller, when the payment has been made, confirm it to release assets from escrow</p>
                                                         <button className="w-100 btn rounded-3 btn-success" disabled={this.state.btn_confirm_pymt_working}
                                                             onClick={() => bootstrap.Modal.getOrCreateInstance(document.getElementById('password_confirmation_modal')).show()}  >
                                                             {this.state.btn_confirm_pymt_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Confirm payment</>}
@@ -366,7 +368,7 @@ class TradesViewSingleScreen extends React.Component {
                                                                         <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
                                                                     </div>
                                                                     <div className="modal-body">
-                                                                        <p>{window.assetValueString(this.focused_trade.asset_value_escrowed, asset)} is about to be released from your account for this. Enter password to continue.</p>
+                                                                        <p>{window.assetValueString(this.focused_trade.asset_value_escrowed, asset)} is about to be released from your account for this trade. Enter password to continue.</p>
                                                                         <div className="form-floating mb-3">
                                                                             <input
                                                                                 type="password"
@@ -401,7 +403,7 @@ class TradesViewSingleScreen extends React.Component {
                                             </div>
                                         </>}
 
-                                        {(auth_user_is_buyer && !['cancelled', 'completed'].includes(this.focused_trade._status) && this.focused_trade.pymt_declared_datetime == null && this.focused_trade.pymt_confirmed_datetime == null || (auth_user_is_seller && this.focused_trade.buyer_opened_datetime == null)) && <>
+                                        {auth_buyer_can_cancel || auth_seller_can_cancel && <>
                                             <div className="accordion-item">
                                                 <h4 className="accordion-header" >
                                                     <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_cancel_trade" >
@@ -410,41 +412,25 @@ class TradesViewSingleScreen extends React.Component {
                                                 </h4>
                                                 <div id="collapse_cancel_trade" className="accordion-collapse collapse" data-bs-parent="#accordion_trade_actions" >
                                                     <div className="accordion-body">
-                                                        {(auth_user_is_buyer && !['cancelled', 'completed'].includes(this.focused_trade._status)) && <>
-                                                            <p>As the buyer, you can cancel the trade at any time if you cannot complete the trade. It will however affect your completion rate.</p>
-                                                            <button className="w-100 btn rounded-3 btn-danger" disabled={this.state.btn_cancel_trade_working}
-                                                                onClick={() => {
-                                                                    this.setState({ btn_cancel_trade_working: true },
-                                                                        () => this.focused_trade.cancel()
-                                                                            .then(() => _Notification.flash({ message: 'Trade cancelled', duration: 2000 }))
-                                                                            .catch(e => _Notification.flash({ message: e.message, duration: 5000 }))
-                                                                            .finally(() => this.setState({ btn_cancel_trade_working: false }))
-                                                                    )
-                                                                }} >
-                                                                {this.state.btn_cancel_trade_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Cancel</>}
-                                                            </button>
-                                                        </>}
-
-                                                        {auth_user_is_seller && this.focused_trade.buyer_opened_datetime == null && <>
-                                                            <p>As the seller, you can cancel the trade if the buyer doesn't open it {this.props.sysconfig_params.buyer_open_trade_min_mins_tmt} minutes after it has been created.</p>
-                                                            <button className="w-100 btn rounded-3 btn-danger" disabled={this.state.btn_cancel_trade_working || ((_DateTime.nowUnixTimeStamp() - this.focused_trade.created_datetime.unix_timestamp) < (this.props.sysconfig_params.buyer_open_trade_min_mins_tmt * 60))}
-                                                                onClick={() => {
-                                                                    this.setState({ btn_cancel_trade_working: true },
-                                                                        () => this.focused_trade.cancel()
-                                                                            .then(() => _Notification.flash({ message: 'Trade cancelled', duration: 2000 }))
-                                                                            .catch(e => _Notification.flash({ message: e.message, duration: 5000 }))
-                                                                            .finally(() => this.setState({ btn_cancel_trade_working: false }))
-                                                                    )
-                                                                }} >
-                                                                {this.state.btn_cancel_trade_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Cancel</>}
-                                                            </button>
-                                                        </>}
+                                                        {auth_buyer_can_cancel && <p>As the buyer, you can cancel the trade at any time if you cannot complete the trade. It will however affect your completion rate.</p>}
+                                                        {auth_seller_can_cancel && <p>As the seller, you can cancel the trade if the buyer doesn't open it {this.props.sysconfig_params.buyer_open_trade_min_mins_tmt} minutes after it has been created.</p>}
+                                                        <button className="w-100 btn rounded-3 btn-danger" disabled={this.state.btn_cancel_trade_working}
+                                                            onClick={() => {
+                                                                this.setState({ btn_cancel_trade_working: true },
+                                                                    () => this.focused_trade.cancel()
+                                                                        .then(() => _Notification.flash({ message: 'Trade cancelled', duration: 2000 }))
+                                                                        .catch(e => _Notification.flash({ message: e.message, duration: 5000 }))
+                                                                        .finally(() => this.setState({ btn_cancel_trade_working: false }))
+                                                                )
+                                                            }} >
+                                                            {this.state.btn_cancel_trade_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Cancel</>}
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
                                         </>}
 
-                                        {['active', 'completed_'].includes(this.focused_trade._status) && (this.focused_trade.pymt_declared_datetime == null || (this.focused_trade.pymt_declared_datetime && ((_DateTime.nowUnixTimeStamp() - this.focused_trade.pymt_declared_datetime.unix_timestamp) < (10 * 60)))) && <>
+                                        {this.focused_trade._status === 'active' && this.focused_trade.pymt_declared_datetime && ((auth_user_is_buyer && ((_DateTime.nowUnixTimeStamp() - this.focused_trade.pymt_declared_datetime.unix_timestamp) > (10 * 60))) || (auth_user_is_seller && ((_DateTime.nowUnixTimeStamp() - this.focused_trade.pymt_declared_datetime.unix_timestamp) < (10 * 60)))) && <>
                                             <div className="accordion-item">
                                                 <h4 className="accordion-header" >
                                                     <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse_flag_trade" >

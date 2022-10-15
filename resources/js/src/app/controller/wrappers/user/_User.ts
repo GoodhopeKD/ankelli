@@ -249,7 +249,7 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 	}
 
 	hasAssetWallet(asset_code: string): boolean {
-		return this.asset_wallets.some(asset_wallet => asset_wallet.asset_code == asset_code)
+		return this.asset_wallets.some(asset_wallet => asset_wallet.asset_code === asset_code)
 	}
 
 	hasPermission(permission_slug: string): boolean {

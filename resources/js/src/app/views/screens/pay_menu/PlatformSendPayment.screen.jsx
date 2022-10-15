@@ -55,7 +55,7 @@ class PlatformSendPaymentScreen extends React.Component {
         const errors = []
         const input = this.state.input
 
-        if (!input.sender_password.isValid('password')) { errors.push("Invalid password") }
+        //if (!input.sender_password.isValid('password')) { errors.push("Invalid password") }
 
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs

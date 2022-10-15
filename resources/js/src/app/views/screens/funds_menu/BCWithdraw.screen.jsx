@@ -51,7 +51,7 @@ class BCWithdrawScreen extends React.Component {
         const errors = []
         const input = this.state.input
 
-        if (!input.sender_password.isValid('password')) { errors.push("Invalid password") }
+        //if (!input.sender_password.isValid('password')) { errors.push("Invalid password") }
 
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
@@ -116,7 +116,7 @@ class BCWithdrawScreen extends React.Component {
                                     </div>
                                     <div className="col">
                                         <label htmlFor="output_current_balance" className="form-label">Usable balance</label>
-                                        <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
+                                        <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code === asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
                                     </div>
                                 </div>
 
@@ -154,7 +154,7 @@ class BCWithdrawScreen extends React.Component {
                                                 type="number" className="form-control" id="input_asset_value"
                                                 min={asset.smallest_display_unit}
                                                 required
-                                                max={window.assetValueInput(parseFloat((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value) - txn_fee_asset_value, asset)}
+                                                max={window.assetValueInput(parseFloat((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code === asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value) - txn_fee_asset_value, asset)}
                                                 step={asset.smallest_display_unit}
                                                 value={window.assetValueInput(this.state.input.asset_value.toRaw(), asset)}
                                                 onChange={elem => this.handleInputChange('asset_value', elem.target.value)}

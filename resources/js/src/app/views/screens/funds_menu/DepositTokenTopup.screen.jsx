@@ -107,7 +107,7 @@ class DepositTokenTopupScreen extends React.Component {
                                             </div>
                                             <div className="col">
                                                 <label htmlFor="output_current_balance" className="form-label">Total balance</label>
-                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { total_balance_asset_value: 0 }).total_balance_asset_value, asset)}</span>
+                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code === asset.code) ?? { total_balance_asset_value: 0 }).total_balance_asset_value, asset)}</span>
                                             </div>
                                         </div>
                                     </div>

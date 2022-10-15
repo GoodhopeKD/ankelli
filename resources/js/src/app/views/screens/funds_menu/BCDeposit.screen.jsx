@@ -71,17 +71,17 @@ class BCDepositScreen extends React.Component {
                                 </div>
                                 <div className="col">
                                     <label htmlFor="output_current_balance" className="form-label">Total balance</label>
-                                    <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { total_balance_asset_value: 0 }).total_balance_asset_value, asset)}</span>
+                                    <span className="form-control" id='output_current_balance'>{window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code === asset.code) ?? { total_balance_asset_value: 0 }).total_balance_asset_value, asset)}</span>
                                 </div>
                             </div>
 
                             <p className="text-center" style={{ whiteSpace: 'pre-wrap' }}><b><i>{asset.onchain_disclaimer}</i></b></p>
 
-                            {((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code).asset_wallet_addresses) ?? []).map((asset_wallet_address, index) => {
+                            {((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code === asset.code).asset_wallet_addresses) ?? []).map((asset_wallet_address, index) => {
                                 return <div key={index} className="text-center" >
                                     <div className="row justify-content-center">
                                         <div className="col-12 col-md-10 col-lg-8 col-xl-6">
-                                            <p><b>{asset.name} ({asset.code}) deposit address</b></p>
+                                            <p><b>{asset.name} ({asset.fe_asset_code}) deposit address</b></p>
                                             <div className="input-group mb-3">
                                                 <input type="text" className="form-control" value={asset_wallet_address.bc_address} onChange={() => { }} />
                                                 <span className="input-group-text p-0">
