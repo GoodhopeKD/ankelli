@@ -19,8 +19,8 @@ class OffersCreateNewScreen extends React.Component {
         pymt_details: returnObj(this.props.datalists.active_pymt_methods['cash_in_person'].details_required),
         location: new _Input(),
 
-        asset_code: 'ETH',
-        currency_code: 'USD',
+        asset_code: this.props.sysconfig_params.default_crypto_asset_code,
+        currency_code: this.props.sysconfig_params.default_fiat_currency_code,
         offer_price: new _Input(),
 
         min_trade_purchase_amount: new _Input(),
@@ -121,7 +121,7 @@ class OffersCreateNewScreen extends React.Component {
             asset_options.push({
                 value: asset_code,
                 searchable_text: asset_code + asset.name + asset.description,
-                output_element: () => <>{asset.name} <i className="text-primary">{asset_code}</i></>
+                output_element: () => <>{asset.name} <i className="text-primary">{asset.fe_asset_code}</i></>
             })
         })
 
@@ -463,8 +463,8 @@ class OffersCreateNewScreen extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
-        datalists: state.datalists_data,
         sysconfig_params: state.sysconfig_params_data,
+        datalists: state.datalists_data,
         auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_wallets']) : null,
     }
 }

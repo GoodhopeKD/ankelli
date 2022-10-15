@@ -68,7 +68,7 @@ export default class _Transaction extends _Wrapper_ implements Omit<typeof _Tran
             .dispatch({
                 type: 'APP_BACKEND_API_CALL',
                 method: 'POST',
-                endpoint: 'funds/transactions/process_withdrawal',
+                endpoint: 'funds/transactions/process-withdrawal',
                 data
             })
             .then((resp: any) => { return Promise.resolve(resp) })
@@ -80,7 +80,7 @@ export default class _Transaction extends _Wrapper_ implements Omit<typeof _Tran
             .dispatch({
                 type: 'APP_BACKEND_API_CALL',
                 method: 'POST',
-                endpoint: 'funds/transactions/process_payment',
+                endpoint: 'funds/transactions/process-payment',
                 data
             })
             .then((resp: any) => { return Promise.resolve(resp) })

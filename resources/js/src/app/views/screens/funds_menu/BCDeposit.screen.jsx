@@ -10,22 +10,11 @@ import { _User, _Input, _DateTime, _Session, _Notification, _AssetWalletAddress 
 class BCDepositScreen extends React.Component {
 
     default_input = {
-        asset_code: 'ETH',
-        asset_wallet_id: this.props.auth_user.asset_wallets.length !== 0 ? ((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == 'ETH') ?? { id: null }).id) : null,
+        asset_code: this.props.sysconfig_params.default_crypto_asset_code,
     }
 
     state = {
-        asset_wallet_addresses_list_loaded: false,
-        list: [],
-        list_loaded: false,
-        list_full: false,
-        list_refreshing: false,
-        _collecion: { meta: {}, links: {} },
-        page_select: { page: 1, },
-        per_page: 10,
-
         input: _.cloneDeep(this.default_input),
-        errors: [],
     }
 
     handleInputChange(field = 'field.deep_field', value, use_raw = false) {
@@ -40,60 +29,7 @@ class BCDepositScreen extends React.Component {
         this.setState({ input })
     }
 
-    async universalGetCollection(_Type, indicator_var_name, input = null, page_select = null, per_page = null) {
-        //if (page_select && this.state.list_full) return Promise.resolve();
-        if (!this.should_load_items) {
-            //_Notification.flash({ message: 'No filters changed', duration: 2000 })
-            //return Promise.resolve();
-        }
-        if (!this.working) {
-            this.working = true
-            this.setState({
-                asset_wallet_addresses_list_loaded: false,
-                list: [],
-                list_loaded: false,
-                list_full: false,
-                list_refreshing: false
-            })
-            return new Promise((resolve) => setTimeout(() => {
-                resolve(_Type.getCollection(input, page_select, per_page)
-                    .then(({ collection }) => {
-                        if (!collection.data) return Promise.resolve();
-                        let update_object = {
-                            //list: page_select ? this.state.list.concat(collection.data) : collection.data,
-                            list: collection.data,
-                            list_loaded: true,
-                            list_full: collection.meta.current_page === collection.meta.last_page,
-                            _collecion: {
-                                links: collection.links,
-                                meta: collection.meta,
-                            }
-                        };
-                        update_object[indicator_var_name] = true;
-                        this.setState(update_object);
-                        this.working = false
-                        this.should_load_items = false
-                        return Promise.resolve();
-                    })
-                    .catch((error) => {
-                        this.working = false
-                        this.should_load_items = false
-                        return Promise.reject(error);
-                    }))
-            }, 0))
-        } else {
-            return Promise.resolve();
-        }
-    }
-
-    populateScreenWithItems = async (show_list_refreshing_loader = true) => {
-        this.setState({ list_refreshing: show_list_refreshing_loader });
-        await this.universalGetCollection(_AssetWalletAddress, 'asset_wallet_addresses_list_loaded', JSON.parse(JSON.stringify(this.state.input)), this.state.page_select, this.state.per_page)
-        if (show_list_refreshing_loader) this.setState({ list_refreshing: false })
-    };
-
     componentDidMount = () => {
-        this.populateScreenWithItems()
         _Session.refresh()
     }
 
@@ -106,19 +42,12 @@ class BCDepositScreen extends React.Component {
                 asset_options.push({
                     value: asset_code,
                     searchable_text: asset_code + asset.name + asset.description,
-                    output_element: () => <>{asset.name} <i className="text-primary">{asset_code}</i></>
+                    output_element: () => <>{asset.name} <i className="text-primary">{asset.fe_asset_code}</i></>
                 })
             }
         })
 
         const asset = this.props.datalists.active_assets[this.state.input.asset_code]
-
-        const pagination_pages = [1]
-        if (this.state._collecion.meta.last_page && this.state._collecion.meta.last_page !== 1) {
-            for (let index = 2; index < this.state._collecion.meta.last_page + 1; index++) {
-                pagination_pages.push(index)
-            }
-        }
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container-xl py-3">
@@ -137,7 +66,7 @@ class BCDepositScreen extends React.Component {
                                         has_none_option={false}
                                         max_shown_options_count={5}
                                         selected_option_value={this.state.input.asset_code}
-                                        onChange={asset_code => { this.handleInputChange('asset_code', asset_code, true); this.handleInputChange('asset_wallet_id', this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset_code).id, true); this.setState({ list_loaded: false, asset_wallet_addresses_list_loaded: false }, this.populateScreenWithItems()); }}
+                                        onChange={asset_code => this.handleInputChange('asset_code', asset_code, true) }
                                     />
                                 </div>
                                 <div className="col">
@@ -148,13 +77,11 @@ class BCDepositScreen extends React.Component {
 
                             <p className="text-center" style={{ whiteSpace: 'pre-wrap' }}><b><i>{asset.onchain_disclaimer}</i></b></p>
 
-                            <p className="text-muted text-center">After sending crypto to selected address, give a little time (max 2 minutes) for our system to scan the blockchain and update your balances.</p>
-
-                            {this.state.list.map((asset_wallet_address, index) => {
+                            {((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code == asset.code).asset_wallet_addresses) ?? []).map((asset_wallet_address, index) => {
                                 return <div key={index} className="text-center" >
                                     <div className="row justify-content-center">
                                         <div className="col-12 col-md-10 col-lg-8 col-xl-6">
-                                            <p><b>{asset.name} ({asset.code}) address</b></p>
+                                            <p><b>{asset.name} ({asset.code}) deposit address</b></p>
                                             <div className="input-group mb-3">
                                                 <input type="text" className="form-control" value={asset_wallet_address.bc_address} onChange={() => { }} />
                                                 <span className="input-group-text p-0">
@@ -163,8 +90,6 @@ class BCDepositScreen extends React.Component {
                                             </div>
                                         </div>
                                     </div>
-                                    <p>Registered time: <b>{window.ucfirst(new _DateTime(asset_wallet_address.created_datetime).prettyDatetime())}</b></p>
-                                    <p>Last active time: <b>{window.isset(asset_wallet_address.last_active_datetime) ? window.ucfirst(new _DateTime(asset_wallet_address.last_active_datetime).prettyDatetime()) : '-'}</b></p>
                                 </div>
                             })}
 
@@ -180,6 +105,7 @@ class BCDepositScreen extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
+        sysconfig_params: state.sysconfig_params_data,
         datalists: state.datalists_data,
         auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_wallets']) : null,
     }

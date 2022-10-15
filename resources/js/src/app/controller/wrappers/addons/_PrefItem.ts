@@ -64,13 +64,13 @@ export default class _PrefItem extends _Wrapper_ implements Omit<typeof _PrefIte
     /* Creator(s) */
 
     public static async create(args: typeof _PrefItemRespObj) {
-        return this._mainLaravelDBAPICreate('content/pref_items', args)
+        return this._mainLaravelDBAPICreate('content/pref-items', args)
     }
 
     /* Readers */
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('content/pref_items', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('content/pref-items', params, page_select, per_page)
     }
 
     public static async getSysConfigParams() {
@@ -91,7 +91,7 @@ export default class _PrefItem extends _Wrapper_ implements Omit<typeof _PrefIte
             .dispatch({
                 type: 'APP_BACKEND_API_CALL',
                 method: 'GET',
-                endpoint: 'admin/sysconfig_params_enum_options',
+                endpoint: 'admin/sysconfig-params-enum-options',
             })
             .then((collection: any) => {
                 return Promise.resolve(collection);
@@ -119,6 +119,6 @@ export default class _PrefItem extends _Wrapper_ implements Omit<typeof _PrefIte
         const data = {} as typeof args
         if (typeof args.value !== undefined && args.value !== this.value) data.value = args.value
         if (typeof args.value_type === 'string' && args.value_type === this.value_type) data.value_type = args.value_type
-        return this._mainLaravelDBAPIUpdate('content/pref_items/' + this.id, update_note, data)
+        return this._mainLaravelDBAPIUpdate('content/pref-items/' + this.id, update_note, data)
     }
 }

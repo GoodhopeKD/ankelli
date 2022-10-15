@@ -18,7 +18,8 @@ type get_collection_params = {
 */
 export const _AssetWalletAddressRespObj = {
     id: undefined as undefined | null | number,
-    asset_wallet_id: undefined as undefined | null | number,
+    user_username: undefined as undefined | null | string,
+    asset_code: undefined as undefined | null | string,
     bc_address: undefined as undefined | null | string,
     ttm_derivation_key: undefined as undefined | null | number,
     onchain_txn_count: undefined as undefined | null | number,
@@ -33,7 +34,8 @@ export const _AssetWalletAddressRespObj = {
 */
 export default class _AssetWalletAddress extends _Wrapper_ implements Omit<typeof _AssetWalletAddressRespObj, casts_t> {
     id: number | null = null
-    asset_wallet_id: number | null = null
+    user_username: string | null = null
+    asset_code: string | null = null
     bc_address: string | null = null
     ttm_derivation_key: number | null = null
     onchain_txn_count: number | null = null
@@ -55,12 +57,12 @@ export default class _AssetWalletAddress extends _Wrapper_ implements Omit<typeo
     /* Creator(s) */
 
     /*public static async create(args: typeof _AssetWalletAddressRespObj) {
-        return this._mainLaravelDBAPICreate('funds/asset_wallet_addresses', args)
+        return this._mainLaravelDBAPICreate('funds/asset-wallet-addresses', args)
     }*/
 
     /* Readers */
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('funds/asset_wallet_addresses', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('funds/asset-wallet-addresses', params, page_select, per_page)
     }
 }

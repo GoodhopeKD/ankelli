@@ -252,7 +252,7 @@ class OffersViewSingleScreen extends React.Component {
                                 </div>
 
                                 <button className="btn btn-primary" disabled={this.state.btn_proceed_working || offer_created_by_auth_user} type={!window.isset(this.props.auth_user) ? "button" : "submit"} data-bs-toggle={!window.isset(this.props.auth_user) ? "modal" : undefined} data-bs-target={!window.isset(this.props.auth_user) ? "#signin_modal" : undefined} >
-                                    {this.state.btn_proceed_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Proceed to {this.focused_offer.offer_to == 'buy' ? 'Sell' : 'Buy'} {this.focused_offer.asset_code}</>}
+                                    {this.state.btn_proceed_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Proceed to {this.focused_offer.offer_to == 'buy' ? 'Sell' : 'Buy'} {asset.fe_asset_code}</>}
                                 </button>
                             </form>
 
@@ -290,7 +290,7 @@ class OffersViewSingleScreen extends React.Component {
                                                 <div className="modal-footer justify-content-between">
                                                     <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" >Cancel</button>
                                                     <button type="submit" className="btn btn-primary" disabled={this.state.btn_proceed_working || offer_created_by_auth_user} >
-                                                        {this.state.btn_proceed_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Proceed to {this.focused_offer.offer_to == 'buy' ? 'Sell' : 'Buy'} {this.focused_offer.asset_code}</>}
+                                                        {this.state.btn_proceed_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Proceed to {this.focused_offer.offer_to == 'buy' ? 'Sell' : 'Buy'} {asset.fe_asset_code}</>}
                                                     </button>
                                                 </div>
                                             </form>

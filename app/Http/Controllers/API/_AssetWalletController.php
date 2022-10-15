@@ -35,6 +35,12 @@ class _AssetWalletController extends Controller
     }
 
     // tempFunction
+    public function tempFunction()
+    {
+        return (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => '0x0688af85d9fc2805151f5ffa66b7b505a59cc732']))->getData();
+    }
+
+    // tempFunction
     public function ssdsf()
     {
         (new _AssetWalletController)->DeletePendingTransactionToSign();
@@ -212,7 +218,7 @@ class _AssetWalletController extends Controller
     }
 
     // tempFunction
-    public function tempFunction()
+    public function getAllWebhooks()
     {
         return (new Tatum\Subscriptions\NotificationSubscriptionController)->getAllWebhooks(new Request())->getData();
     }
@@ -293,7 +299,7 @@ class _AssetWalletController extends Controller
             $ttm_element = $ttm_element ?? (new Tatum\VirtualAccounts\AccountController)->createAccount(new Request([
                 'currency' => $validated_data['asset_code'],
                 'externalId' => $validated_data['user_username'],
-                'xpub' => _Asset::firstWhere(['code' => $validated_data['asset_code']])->xpub,
+                'xpub' => _Asset::firstWhere(['code' => $validated_data['asset_code']])->makeVisible(['xpub'])->xpub,
                 'accountingCurrency' => 'USD',
             ]))->getData();
 
@@ -368,6 +374,8 @@ class _AssetWalletController extends Controller
         return response()->json( new _AssetWalletResource( $element ) );
     }
 
+    private $ETH_USDT_FCTR = 1000;
+    
     /**
      * Update the specified resource in storage.
      *
@@ -387,6 +395,8 @@ class _AssetWalletController extends Controller
             'usable_balance_asset_value' => $element->usable_balance_asset_value - $validated_data['asset_value'],
         ]), $id );
         if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+            $asset = _Asset::firstWhere('code', $element->asset_code);
+            if ( $asset->fe_asset_code === 'USDT' ) $validated_data['asset_value'] = $validated_data['asset_value'] / $this->ETH_USDT_FCTR;
             return (new Tatum\VirtualAccounts\AccountController)->blockAmount(new Request([
                 'id' => $element->ttm_virtual_account_id,
                 'amount' => $validated_data['asset_value'].'',
@@ -474,5 +484,17 @@ class _AssetWalletController extends Controller
     public function destroy(int $id)
     {
         //
+    }
+
+    public function asset_wallets_totals(Request $request)
+    {
+        $validated_data = $request->validate([
+            'asset_code' => ['required', 'string', 'exists:__assets,code'],
+        ]);
+        return response()->json([
+            'users' => _AssetWallet::where('asset_code', $validated_data['asset_code'])->whereNotIn('user_username',['busops', 'reserves'])->sum('total_balance_asset_value'),
+            'busops' => _AssetWallet::firstWhere(['asset_code' => $validated_data['asset_code'], 'user_username' => 'busops'])->total_balance_asset_value,
+            'reserves' => _AssetWallet::firstWhere(['asset_code' => $validated_data['asset_code'], 'user_username' => 'reserves'])->total_balance_asset_value,
+        ]);
     }
 }

@@ -1,9 +1,9 @@
 APP_NAME=Ankelli
-APP_ENV=production
+APP_ENV=local
 APP_KEY=base64:jb+ZpmRS4jEkpShruJyydGLLkc1W6cSbd9J++5HLMbY=
-APP_DEBUG=false
+APP_DEBUG=true
 
-MIX_DOMAIN_NAME=ankelli.com
+MIX_DOMAIN_NAME=ankelli.test
 APP_URL=https://www.${MIX_DOMAIN_NAME}
 MIX_API_URL=https://api.${MIX_DOMAIN_NAME}
 
@@ -18,9 +18,9 @@ LOG_LEVEL=debug
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
-DB_DATABASE=ankellic_platform
-DB_USERNAME=ankellic_developer
-DB_PASSWORD=5Bs8$~JorLZX
+DB_DATABASE=ankelli
+DB_USERNAME=root
+DB_PASSWORD=
 
 BROADCAST_DRIVER=log
 CACHE_DRIVER=file
@@ -41,7 +41,7 @@ MAIL_PORT=1025
 MAIL_USERNAME=null
 MAIL_PASSWORD=null
 MAIL_ENCRYPTION=null
-MAIL_FROM_ADDRESS="no-reply@ankelli.com"
+MAIL_FROM_ADDRESS="no-reply@ankelli.test"
 MAIL_FROM_NAME="${APP_NAME}"
 
 AWS_ACCESS_KEY_ID=

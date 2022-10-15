@@ -21,9 +21,6 @@ if (!File::exists( public_path('storage') )){
 // Default Route
 Route::post('accounts', '__AuxController@default_route')->name('default_route');
 
-// #test
-Route::put('accounts/users/{uid}', '_UserController@update')->name('accounts.users.update');
-
 // Tx recon
 Route::post('webhooks/tatum/nofitications/incoming-blockchain-transaction', '_TransactionController@ttm_recon_for_incoming_bc_txn_notification')->name('tatum.ttm_recon_for_incoming_bc_txn_notification');
 Route::post('webhooks/tatum/nofitications/completed-kms-transaction', '_TransactionController@ttm_recon_for_completed_kms_txn_notification')->name('tatum.ttm_recon_for_completed_kms_txn_notification');
@@ -80,8 +77,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::delete('accounts/users/{uid}/buyer_extension', '_SellerExtensionController@destroy')->name('accounts.users.delete_buyer_extension');
 
     // User modification and index routes
-    // #test
-    // Route::put('accounts/users/{uid}', '_UserController@update')->name('accounts.users.update');
+    Route::put('accounts/users/{uid}', '_UserController@update')->name('accounts.users.update');
     Route::get('admin/users', '_UserController@index')->name('admin.users.index');
 });
 
@@ -90,7 +86,6 @@ Route::group(['middleware' => 'auth:api'], function () {
 Route::get('content/param_checks/availability/{param_name}/{param_value}', '__AuxController@availability_check')->name('availability_check');
 Route::get('content/param_checks/usability/{param_name}/{param_value}', '__AuxController@usability_check')->name('usability_check');
 Route::get('content/sysconfig_params', '__AuxController@sysconfig_params')->name('sysconfig_params');
-Route::get('admin/sysconfig_params_enum_options', '__AuxController@sysconfig_params_enum_options')->name('sysconfig_params_enum_options');
 Route::get('content/datalists', '__AuxController@datalists')->name('datalists');
 
 Route::get('content/datalists/assets', '_AssetController@index')->name('content.assets');
@@ -102,18 +97,18 @@ Route::apiResource('p2p/offers', '_OfferController')->only(['show', 'index'])->p
 Route::get('accounts/profiles/{uid}', '_UserController@show')->name('content.users.show');
 Route::apiResource('content/reviews', '_ReviewController')->only(['index'])->parameter('reviews', 'id');
 
-    Route::post('funds/transactions/process_withdrawal', '_TransactionController@process_withdrawal')->name('process_withdrawal_transaction');
 // Auth:true accessible routes
 Route::group(['middleware' => 'auth:api'], function () {
 
     Route::post('content/files/upload', '_FileController@upload')->name('files.upload');
     Route::apiResource('content/files', '_FileController')->except(['index'])->parameter('files', 'id');
 
-    Route::post('funds/transactions/process_payment', '_TransactionController@process_payment')->name('process_payment_transaction');
     Route::get('funds/transactions', '_TransactionController@index')->name('funds.transactions.index');
+    Route::post('funds/transactions/process-payment', '_TransactionController@process_payment')->name('process_payment_transaction');
+    Route::post('funds/transactions/process-withdrawal', '_TransactionController@process_withdrawal')->name('process_withdrawal_transaction');
 
-    Route::get('funds/deposit_tokens/{token}/use/{asset_code}', '_DepositTokenController@use')->name('use_deposit_token');
-    Route::apiResource('funds/deposit_tokens', '_DepositTokenController')->except(['show','update'])->parameter('deposit_tokens', 'token');
+    Route::get('funds/deposit-tokens/{token}/use/{asset_code}', '_DepositTokenController@use')->name('use_deposit_token');
+    Route::apiResource('funds/deposit-tokens', '_DepositTokenController')->except(['show','update'])->parameter('deposit_tokens', 'token');
 
     Route::apiResource('accounts/sessions', '_SessionController')->only(['index', 'show'])->parameter('sessions', 'id');
     Route::apiResource('accounts/notifications', '_NotificationController')->only(['index', 'show'])->parameter('notifications', 'id');
@@ -123,12 +118,12 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('suppport/chats', '_ChatController')->parameter('chats', 'uid');
     Route::apiResource('p2p/offers', '_OfferController')->only(['store', 'update', 'destroy'])->parameter('offers', 'ref_code');
     Route::apiResource('p2p/trades', '_TradeController')->except(['destroy'])->parameter('trades', 'ref_code');
-    Route::apiResource('funds/asset_wallets', '_AssetWalletController')->only('store')->parameter('asset_wallets', 'id');
-    Route::apiResource('funds/asset_wallet_addresses', '_AssetWalletAddressController')->only('index')->parameter('asset_wallet_addresses', 'id');
+    Route::apiResource('funds/asset-wallets', '_AssetWalletController')->only('store')->parameter('asset_wallets', 'id');
+    Route::apiResource('funds/asset-wallet-addresses', '_AssetWalletAddressController')->only('index', 'show')->parameter('asset_wallet_addresses', 'id');
     Route::apiResource('content/messages', '_MessageController')->only(['index', 'store'])->parameter('messages', 'id');
     Route::apiResource('content/pinnings', '_PinningController')->only(['store', 'update', 'destroy'])->parameter('pinnings', 'id');
     Route::apiResource('content/reviews', '_ReviewController')->only(['store', 'update'])->parameter('reviews', 'id');
-    Route::apiResource('content/pref_items', '_PrefItemController')->except(['destroy'])->parameter('pref_items', 'id');
+    Route::apiResource('content/pref-items', '_PrefItemController')->except(['destroy'])->parameter('pref_items', 'id');
     Route::apiResource('content/logs', '_LogController')->only(['index'])->parameter('logs', 'id');
 
     Route::apiResource('accounts/systools/reg_tokens', '_RegTokenController')->parameter('reg_tokens', 'token');
@@ -140,10 +135,11 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('content/posts', '_PostController')->only(['index', 'show'])->parameter('posts', 'id');
 
     Route::apiResource('admin/sysconfig_params', '_PrefItemController')->only(['index', 'update'])->parameter('sysconfig_params', 'id');
-    Route::get('admin/sysconfig_params_enum_options', '__AuxController@sysconfig_params_enum_options')->name('sysconfig_params_enum_options');
+    Route::get('admin/sysconfig-params-enum-options', '__AuxController@sysconfig_params_enum_options')->name('sysconfig_params_enum_options');
     Route::apiResource('admin/systools/permissions', '_PermissionController')->parameter('permissions', 'uid');
     Route::apiResource('admin/systools/permission-instances', '_PermissionInstanceController')->parameter('permission-instances', 'id');
-    Route::apiResource('admin/systools/user_groups', '_UserGroupController')->parameter('user_groups', 'uid');
+    Route::apiResource('admin/systools/user-groups', '_UserGroupController')->parameter('user_groups', 'uid');
     Route::apiResource('admin/systools/user-group-memberships', '_UserGroupMembershipController')->parameter('user-group-memberships', 'id');
     Route::apiResource('admin/posts', '_PostController')->parameter('posts', 'id');
+    Route::get('admin/funds/asset-wallets-totals', '_AssetWalletController@asset_wallets_totals');
 });

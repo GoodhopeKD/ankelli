@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Oct 13, 2022 at 08:32 PM
+-- Generation Time: Oct 15, 2022 at 11:08 AM
 -- Server version: 10.4.18-MariaDB
 -- PHP Version: 8.0.3
 
@@ -54,48 +54,48 @@ CREATE TABLE `migrations` (
 --
 
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
-(1261, '2014_10_12_000000_create_users_table', 1),
-(1262, '2014_10_12_100000_create_password_resets_table', 1),
-(1263, '2016_06_01_000001_create_oauth_auth_codes_table', 1),
-(1264, '2016_06_01_000002_create_oauth_access_tokens_table', 1),
-(1265, '2016_06_01_000003_create_oauth_refresh_tokens_table', 1),
-(1266, '2016_06_01_000004_create_oauth_clients_table', 1),
-(1267, '2016_06_01_000005_create_oauth_personal_access_clients_table', 1),
-(1268, '2019_08_19_000000_create_failed_jobs_table', 1),
-(1269, '2019_12_14_000001_create_personal_access_tokens_table', 1),
-(1270, '2022_07_26_072110_create___admin_extensions_table', 1),
-(1271, '2022_07_26_072112_create___buyer_extensions_table', 1),
-(1272, '2022_07_26_072114_create___seller_extensions_table', 1),
-(1273, '2022_07_26_072120_create___user_groups_table', 1),
-(1274, '2022_07_26_072122_create___user_group_memberships_table', 1),
-(1275, '2022_07_26_072124_create___permissions_table', 1),
-(1276, '2022_07_26_072126_create___permission_instances_table', 1),
-(1277, '2022_07_26_072130_create___sessions_table', 1),
-(1278, '2022_07_26_072131_create___notifications_table', 1),
-(1279, '2022_07_26_072132_create___pref_items_table', 1),
-(1280, '2022_07_26_072135_create___reg_tokens_table', 1),
-(1281, '2022_07_26_072136_create___verif_tokens_table', 1),
-(1282, '2022_07_26_072137_create___email_addresses_table', 1),
-(1283, '2022_07_26_072140_create___phone_nos_table', 1),
-(1284, '2022_07_26_072324_create___files_table', 1),
-(1285, '2022_07_26_072326_create___feedback_reports_table', 1),
-(1286, '2022_07_26_072327_create___posts_table', 1),
-(1287, '2022_07_26_072332_create___assets_table', 1),
-(1288, '2022_07_26_072333_create___asset_wallets_table', 1),
-(1289, '2022_07_26_072334_create___asset_wallet_addresses_table', 1),
-(1290, '2022_07_26_072336_create___currencies_table', 1),
-(1291, '2022_07_26_072337_create___pymt_methods_table', 1),
-(1292, '2022_07_26_072345_create___countries_table', 1),
-(1293, '2022_07_26_072347_create___exportables_table', 1),
-(1294, '2022_07_26_072410_create___deposit_tokens_table', 1),
-(1295, '2022_07_26_072416_create___offers_table', 1),
-(1296, '2022_07_26_072417_create___trades_table', 1),
-(1297, '2022_07_26_072419_create___chats_table', 1),
-(1298, '2022_07_26_072420_create___messages_table', 1),
-(1299, '2022_07_26_072421_create___pinnings_table', 1),
-(1300, '2022_07_26_072424_create___reviews_table', 1),
-(1301, '2022_07_26_072443_create___transactions_table', 1),
-(1302, '2022_07_26_072444_create___logs_table', 1);
+(463, '2014_10_12_000000_create_users_table', 1),
+(464, '2014_10_12_100000_create_password_resets_table', 1),
+(465, '2016_06_01_000001_create_oauth_auth_codes_table', 1),
+(466, '2016_06_01_000002_create_oauth_access_tokens_table', 1),
+(467, '2016_06_01_000003_create_oauth_refresh_tokens_table', 1),
+(468, '2016_06_01_000004_create_oauth_clients_table', 1),
+(469, '2016_06_01_000005_create_oauth_personal_access_clients_table', 1),
+(470, '2019_08_19_000000_create_failed_jobs_table', 1),
+(471, '2019_12_14_000001_create_personal_access_tokens_table', 1),
+(472, '2022_07_26_072110_create___admin_extensions_table', 1),
+(473, '2022_07_26_072112_create___buyer_extensions_table', 1),
+(474, '2022_07_26_072114_create___seller_extensions_table', 1),
+(475, '2022_07_26_072120_create___user_groups_table', 1),
+(476, '2022_07_26_072122_create___user_group_memberships_table', 1),
+(477, '2022_07_26_072124_create___permissions_table', 1),
+(478, '2022_07_26_072126_create___permission_instances_table', 1),
+(479, '2022_07_26_072130_create___sessions_table', 1),
+(480, '2022_07_26_072131_create___notifications_table', 1),
+(481, '2022_07_26_072132_create___pref_items_table', 1),
+(482, '2022_07_26_072135_create___reg_tokens_table', 1),
+(483, '2022_07_26_072136_create___verif_tokens_table', 1),
+(484, '2022_07_26_072137_create___email_addresses_table', 1),
+(485, '2022_07_26_072140_create___phone_nos_table', 1),
+(486, '2022_07_26_072324_create___files_table', 1),
+(487, '2022_07_26_072326_create___feedback_reports_table', 1),
+(488, '2022_07_26_072327_create___posts_table', 1),
+(489, '2022_07_26_072332_create___assets_table', 1),
+(490, '2022_07_26_072333_create___asset_wallets_table', 1),
+(491, '2022_07_26_072334_create___asset_wallet_addresses_table', 1),
+(492, '2022_07_26_072336_create___currencies_table', 1),
+(493, '2022_07_26_072337_create___pymt_methods_table', 1),
+(494, '2022_07_26_072345_create___countries_table', 1),
+(495, '2022_07_26_072347_create___exportables_table', 1),
+(496, '2022_07_26_072410_create___deposit_tokens_table', 1),
+(497, '2022_07_26_072416_create___offers_table', 1),
+(498, '2022_07_26_072417_create___trades_table', 1),
+(499, '2022_07_26_072419_create___chats_table', 1),
+(500, '2022_07_26_072420_create___messages_table', 1),
+(501, '2022_07_26_072421_create___pinnings_table', 1),
+(502, '2022_07_26_072424_create___reviews_table', 1),
+(503, '2022_07_26_072443_create___transactions_table', 1),
+(504, '2022_07_26_072444_create___logs_table', 1);
 
 -- --------------------------------------------------------
 
@@ -155,8 +155,8 @@ CREATE TABLE `oauth_clients` (
 --
 
 INSERT INTO `oauth_clients` (`id`, `user_id`, `name`, `secret`, `provider`, `redirect`, `personal_access_client`, `password_client`, `revoked`, `created_at`, `updated_at`) VALUES
-(1, NULL, 'Ankelli Personal Access Client', 'NTycjcuEJd0TYNbhH5iqNRpT8pu19FmqTfF9F8Wn', NULL, 'http://localhost', 1, 0, 0, '2022-10-13 16:29:47', '2022-10-13 16:29:47'),
-(2, NULL, 'Ankelli Password Grant Client', 'V9Ug8a3cePSYcbgx5DR6Aef03VJ47V0KJmHo9hKQ', 'users', 'http://localhost', 0, 1, 0, '2022-10-13 16:29:47', '2022-10-13 16:29:47');
+(1, NULL, 'Ankelli Personal Access Client', 'eYF8OVktVkSXiU6FssxOJhGb4lYxlivsjEJ31C4K', NULL, 'http://localhost', 1, 0, 0, '2022-10-15 07:01:48', '2022-10-15 07:01:48'),
+(2, NULL, 'Ankelli Password Grant Client', 'ZQ2nIHBAcbCjpOo2DCwNuhLvyJwL13zL01WOyNR4', 'users', 'http://localhost', 0, 1, 0, '2022-10-15 07:01:48', '2022-10-15 07:01:48');
 
 -- --------------------------------------------------------
 
@@ -176,7 +176,7 @@ CREATE TABLE `oauth_personal_access_clients` (
 --
 
 INSERT INTO `oauth_personal_access_clients` (`id`, `client_id`, `created_at`, `updated_at`) VALUES
-(1, 1, '2022-10-13 16:29:47', '2022-10-13 16:29:47');
+(1, 1, '2022-10-15 07:01:48', '2022-10-15 07:01:48');
 
 -- --------------------------------------------------------
 
@@ -243,13 +243,14 @@ CREATE TABLE `__admin_extensions` (
 --
 
 INSERT INTO `__admin_extensions` (`id`, `user_username`, `post_title`, `_status`, `creator_username`, `created_datetime`, `updated_datetime`, `deleted_datetime`) VALUES
-(1, 'system', 'System', 'active', 'system', '2022-10-13 18:29:43', NULL, NULL),
-(2, 'developer', 'Default Developer', 'active', 'system', '2022-10-13 16:30:00', '2022-10-13 16:30:00', NULL),
-(3, 'sysadmin', 'Default System Administrator', 'active', 'system', '2022-10-13 16:30:03', '2022-10-13 16:30:03', NULL),
-(4, 'busadmin', 'Default Business Administrator', 'active', 'system', '2022-10-13 16:30:09', '2022-10-13 16:30:09', NULL),
-(5, 'busops', 'Ankelli Asset Reserves', 'active', 'system', '2022-10-13 16:30:50', '2022-10-13 16:30:50', NULL),
-(6, 'guddaz', 'Head System Developer', 'active', 'system', '2022-10-13 16:31:05', '2022-10-13 16:31:05', NULL),
-(7, 'paywyze', 'Head Business Administrator', 'active', 'system', '2022-10-13 16:31:29', '2022-10-13 16:31:29', NULL);
+(1, 'system', 'System', 'active', 'system', '2022-10-15 09:01:24', NULL, NULL),
+(2, 'developer', 'Default Developer', 'active', 'system', '2022-10-15 07:02:04', '2022-10-15 07:02:04', NULL),
+(3, 'sysadmin', 'Default System Administrator', 'active', 'system', '2022-10-15 07:02:08', '2022-10-15 07:02:08', NULL),
+(4, 'busadmin', 'Default Business Administrator', 'active', 'system', '2022-10-15 07:02:13', '2022-10-15 07:02:13', NULL),
+(5, 'reserves', 'Ankelli Asset Reserves', 'active', 'system', '2022-10-15 07:02:43', '2022-10-15 07:02:43', NULL),
+(6, 'busops', 'Ankelli Business Operations', 'active', 'system', '2022-10-15 07:03:10', '2022-10-15 07:03:10', NULL),
+(7, 'guddaz', 'Head System Developer', 'active', 'system', '2022-10-15 07:03:35', '2022-10-15 07:03:35', NULL),
+(8, 'paywyze', 'Head Business Administrator', 'active', 'system', '2022-10-15 07:04:08', '2022-10-15 07:04:08', NULL);
 
 -- --------------------------------------------------------
 
@@ -261,11 +262,13 @@ CREATE TABLE `__assets` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `name` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
   `code` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `fe_asset_code` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
   `chain` varchar(64) COLLATE utf8mb4_unicode_ci NOT NULL,
   `xpub` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `smallest_display_unit` varchar(38) COLLATE utf8mb4_unicode_ci NOT NULL,
   `withdrawal_txn_fee_usd_fctr` decimal(8,4) UNSIGNED NOT NULL,
-  `payment_txn_fee_usd_fctr` decimal(8,4) UNSIGNED NOT NULL,
+  `withdrawal_min_limit_usd_fctr` tinyint(3) UNSIGNED NOT NULL,
+  `withdrawal_max_limit_usd_fctr` int(10) UNSIGNED NOT NULL,
   `usd_asset_exchange_rate` varchar(38) COLLATE utf8mb4_unicode_ci NOT NULL,
   `onchain_disclaimer` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `_status` enum('active','deactivated') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
@@ -278,8 +281,8 @@ CREATE TABLE `__assets` (
 -- Dumping data for table `__assets`
 --
 
-INSERT INTO `__assets` (`id`, `name`, `code`, `chain`, `xpub`, `smallest_display_unit`, `withdrawal_txn_fee_usd_fctr`, `payment_txn_fee_usd_fctr`, `usd_asset_exchange_rate`, `onchain_disclaimer`, `_status`, `creator_username`, `created_datetime`, `updated_datetime`) VALUES
-(1, 'Ethereum', 'ETH', 'ETH', 'xpub6ERKWaEy6mLBzYWoo5P19QTexUufpijY5qod5xaH2ksiYtekeFYAoT3JoK87XKULgG7g3yvvxKwsGEVdkTqcC3BFjthMtJendsN1WH9nHoX', '0.0000000001', '1.0000', '1.0000', '0.0007956056798396094', 'This platform is still in test mode on the sepolia testnet chain.\nOnchain transactions should be handled accordingly.', 'active', 'system', '2022-10-13 16:29:55', '2022-10-13 16:29:57');
+INSERT INTO `__assets` (`id`, `name`, `code`, `fe_asset_code`, `chain`, `xpub`, `smallest_display_unit`, `withdrawal_txn_fee_usd_fctr`, `withdrawal_min_limit_usd_fctr`, `withdrawal_max_limit_usd_fctr`, `usd_asset_exchange_rate`, `onchain_disclaimer`, `_status`, `creator_username`, `created_datetime`, `updated_datetime`) VALUES
+(1, 'Tether USD', 'ETH', 'USDT', 'ETH', 'xpub6ERKWaEy6mLBzYWoo5P19QTexUufpijY5qod5xaH2ksiYtekeFYAoT3JoK87XKULgG7g3yvvxKwsGEVdkTqcC3BFjthMtJendsN1WH9nHoX', '0.00001', '1.0000', 1, 1000, '0.0007784152501883559', 'This platform is still in test mode using the testnet chain.\nUSDT doesn\'t exist on testnet so we\'re using ETH but referring to it here as USDT.\nThe system does an internal conversion such that 1 ETH = 1000 USDT.\nHandle all internal transactions normally but know that these values will be reflected differently outside this platform.', 'active', 'system', '2022-10-15 07:01:59', '2022-10-15 07:02:02');
 
 -- --------------------------------------------------------
 
@@ -306,10 +309,10 @@ CREATE TABLE `__asset_wallets` (
 --
 
 INSERT INTO `__asset_wallets` (`id`, `ttm_virtual_account_id`, `ttm_subscription_id`, `user_username`, `asset_code`, `asset_chain`, `usable_balance_asset_value`, `total_balance_asset_value`, `_status`, `created_datetime`, `updated_datetime`) VALUES
-(1, '63296ef838931796fa9e5aed', '6348594c8986cd2a82b82d91', 'busops', 'ETH', 'ETH', '1.682414838945668159', '1.682414838945668159', 'active', '2022-10-13 16:30:36', '2022-10-13 16:30:36'),
-(2, '632970417b09c5d6322bc225', '6348596650d952f750870a1a', 'guddaz', 'ETH', 'ETH', '1.15700505050505', '1.15700505050505', 'active', '2022-10-13 16:31:02', '2022-10-13 16:31:02'),
-(3, '63298faa64858e37282c6266', '63485977fc62759de5abdf10', 'paywyze', 'ETH', 'ETH', '0.45', '0.45', 'active', '2022-10-13 16:31:19', '2022-10-13 16:31:19'),
-(4, '632c29781bfeea9fefca383d', '6348599e71afd557de8b6b30', 'john', 'ETH', 'ETH', '0.0704032325444221283', '0.0704032325444221283', 'active', '2022-10-13 16:31:58', '2022-10-13 16:31:58');
+(1, '632c29781bfeea9fefca383d', '634a77243d4fb23d4ace2795', 'reserves', 'ETH', 'ETH', '0.631138622206596744', '0.631138622206596744', 'active', '2022-10-15 07:02:28', '2022-10-15 07:02:28'),
+(2, '63296ef838931796fa9e5aed', '634a774b73928730293df1df', 'busops', 'ETH', 'ETH', '1.682414838945668159', '1.682414838945668159', 'active', '2022-10-15 07:03:07', '2022-10-15 07:03:07'),
+(3, '632970417b09c5d6322bc225', '634a775de8834116dfc0791f', 'guddaz', 'ETH', 'ETH', '1.15700505050505', '1.15700505050505', 'active', '2022-10-15 07:03:25', '2022-10-15 07:03:25'),
+(4, '63298faa64858e37282c6266', '634a778435fda235c41ad398', 'paywyze', 'ETH', 'ETH', '0.45', '0.45', 'active', '2022-10-15 07:04:05', '2022-10-15 07:04:05');
 
 -- --------------------------------------------------------
 
@@ -330,10 +333,10 @@ CREATE TABLE `__asset_wallet_addresses` (
 --
 
 INSERT INTO `__asset_wallet_addresses` (`id`, `ttm_derivation_key`, `user_username`, `bc_address`, `asset_code`) VALUES
-(1, 26, 'busops', '0xaaada23b6b5705e23e12f78d064a1f1e62fb6126', 'ETH'),
-(2, 27, 'guddaz', '0xf9c4a2455e7c3eaccf97a20415100c35270e983f', 'ETH'),
-(3, 28, 'paywyze', '0xaf8ccb7b6a5c5020e422225779340ac0f971ef36', 'ETH'),
-(4, 29, 'john', '0x49c537e0e9cfb74091c022ecf0090addc27ad6d8', 'ETH');
+(1, 29, 'reserves', '0x49c537e0e9cfb74091c022ecf0090addc27ad6d8', 'ETH'),
+(2, 26, 'busops', '0xaaada23b6b5705e23e12f78d064a1f1e62fb6126', 'ETH'),
+(3, 27, 'guddaz', '0xf9c4a2455e7c3eaccf97a20415100c35270e983f', 'ETH'),
+(4, 28, 'paywyze', '0xaf8ccb7b6a5c5020e422225779340ac0f971ef36', 'ETH');
 
 -- --------------------------------------------------------
 
@@ -356,9 +359,10 @@ CREATE TABLE `__buyer_extensions` (
 --
 
 INSERT INTO `__buyer_extensions` (`id`, `user_username`, `_status`, `creator_username`, `created_datetime`, `updated_datetime`, `deleted_datetime`) VALUES
-(1, 'sysadmin', 'deactivated', 'system', '2022-10-13 16:30:04', '2022-10-13 16:30:04', NULL),
-(2, 'busadmin', 'deactivated', 'system', '2022-10-13 16:30:10', '2022-10-13 16:30:10', NULL),
-(3, 'busops', 'deactivated', 'system', '2022-10-13 16:30:55', '2022-10-13 16:30:55', NULL);
+(1, 'sysadmin', 'deactivated', 'system', '2022-10-15 07:02:08', '2022-10-15 07:02:08', NULL),
+(2, 'busadmin', 'deactivated', 'system', '2022-10-15 07:02:14', '2022-10-15 07:02:14', NULL),
+(3, 'reserves', 'deactivated', 'system', '2022-10-15 07:02:48', '2022-10-15 07:02:48', NULL),
+(4, 'busops', 'deactivated', 'system', '2022-10-15 07:03:11', '2022-10-15 07:03:11', NULL);
 
 -- --------------------------------------------------------
 
@@ -400,18 +404,18 @@ CREATE TABLE `__countries` (
 --
 
 INSERT INTO `__countries` (`id`, `name`, `code`, `choice_pymt_method_slugs`, `choice_currency_codes`, `allowed_asset_codes`, `_status`, `creator_username`, `created_datetime`, `updated_datetime`) VALUES
-(1, 'Zimbabwe', 'ZIM', NULL, NULL, NULL, 'active', 'system', '2022-10-13 18:29:45', NULL),
-(2, 'South Africa', 'RSA', NULL, NULL, NULL, 'active', 'system', '2022-10-13 18:29:45', NULL),
-(3, 'United Kingdom', 'UK', NULL, NULL, NULL, 'active', 'system', '2022-10-13 18:29:45', NULL),
-(4, 'United States of America', 'USA', NULL, NULL, NULL, 'active', 'system', '2022-10-13 18:29:45', NULL),
-(5, 'Russia', 'RUS', NULL, NULL, NULL, 'active', 'system', '2022-10-13 18:29:45', NULL),
-(6, 'China', 'CHN', NULL, NULL, NULL, 'active', 'system', '2022-10-13 18:29:45', NULL),
-(7, 'Ghana', 'GHA', NULL, NULL, NULL, 'active', 'system', '2022-10-13 18:29:45', NULL),
-(8, 'Botswana', 'BOT', NULL, NULL, NULL, 'active', 'system', '2022-10-13 18:29:45', NULL),
-(9, 'Zambia', 'ZAM', NULL, NULL, NULL, 'active', 'system', '2022-10-13 18:29:45', NULL),
-(10, 'Algeria', 'ALG', NULL, NULL, NULL, 'active', 'system', '2022-10-13 18:29:45', NULL),
-(11, 'Italy', 'ITA', NULL, NULL, NULL, 'active', 'system', '2022-10-13 18:29:45', NULL),
-(12, 'Nigeria', 'NIG', NULL, NULL, NULL, 'active', 'system', '2022-10-13 18:29:45', NULL);
+(1, 'Zimbabwe', 'ZIM', NULL, NULL, NULL, 'active', 'system', '2022-10-15 09:01:37', NULL),
+(2, 'South Africa', 'RSA', NULL, NULL, NULL, 'active', 'system', '2022-10-15 09:01:37', NULL),
+(3, 'United Kingdom', 'UK', NULL, NULL, NULL, 'active', 'system', '2022-10-15 09:01:37', NULL),
+(4, 'United States of America', 'USA', NULL, NULL, NULL, 'active', 'system', '2022-10-15 09:01:37', NULL),
+(5, 'Russia', 'RUS', NULL, NULL, NULL, 'active', 'system', '2022-10-15 09:01:37', NULL),
+(6, 'China', 'CHN', NULL, NULL, NULL, 'active', 'system', '2022-10-15 09:01:37', NULL),
+(7, 'Ghana', 'GHA', NULL, NULL, NULL, 'active', 'system', '2022-10-15 09:01:37', NULL),
+(8, 'Botswana', 'BOT', NULL, NULL, NULL, 'active', 'system', '2022-10-15 09:01:37', NULL),
+(9, 'Zambia', 'ZAM', NULL, NULL, NULL, 'active', 'system', '2022-10-15 09:01:37', NULL),
+(10, 'Algeria', 'ALG', NULL, NULL, NULL, 'active', 'system', '2022-10-15 09:01:37', NULL),
+(11, 'Italy', 'ITA', NULL, NULL, NULL, 'active', 'system', '2022-10-15 09:01:37', NULL),
+(12, 'Nigeria', 'NIG', NULL, NULL, NULL, 'active', 'system', '2022-10-15 09:01:37', NULL);
 
 -- --------------------------------------------------------
 
@@ -439,13 +443,13 @@ CREATE TABLE `__currencies` (
 --
 
 INSERT INTO `__currencies` (`id`, `name`, `code`, `symbol`, `symbol_before_number`, `usd_rate`, `min_transactable_cash_amount`, `smallest_transactable_cash_denomination_amount`, `_status`, `creator_username`, `created_datetime`, `updated_datetime`) VALUES
-(1, 'US Dollar', 'USD', '$', 1, '1', '10', '1', 'active', 'system', '2022-10-13 18:29:45', NULL),
-(2, 'Euro', 'EUR', '€', 1, '1.02', '10', '1', 'active', 'system', '2022-10-13 18:29:45', NULL),
-(3, 'Pound Sterling', 'GBP', '£', 1, '0.89', '10', '1', 'active', 'system', '2022-10-13 18:29:45', NULL),
-(4, 'South African Rand', 'ZAR', 'R', 0, '18', '100', '10', 'active', 'system', '2022-10-13 18:29:45', NULL),
-(5, 'Zambian Kwacha', 'ZMW', 'K', 0, '14', '100', '10', 'active', 'system', '2022-10-13 18:29:45', NULL),
-(6, 'Algerian Dinar', 'DZD', 'DA', 0, '210', '100', '100', 'active', 'system', '2022-10-13 18:29:45', NULL),
-(7, 'Zimbabwean Dollar', 'ZWL', '$', 1, '800', '500', '50', 'active', 'system', '2022-10-13 18:29:45', NULL);
+(1, 'US Dollar', 'USD', '$', 1, '1', '10', '1', 'active', 'system', '2022-10-15 09:01:36', NULL),
+(2, 'Euro', 'EUR', '€', 1, '1.02', '10', '1', 'active', 'system', '2022-10-15 09:01:36', NULL),
+(3, 'Pound Sterling', 'GBP', '£', 1, '0.89', '10', '1', 'active', 'system', '2022-10-15 09:01:36', NULL),
+(4, 'South African Rand', 'ZAR', 'R', 0, '18', '100', '10', 'active', 'system', '2022-10-15 09:01:36', NULL),
+(5, 'Zambian Kwacha', 'ZMW', 'K', 0, '14', '100', '10', 'active', 'system', '2022-10-15 09:01:36', NULL),
+(6, 'Algerian Dinar', 'DZD', 'DA', 0, '210', '100', '100', 'active', 'system', '2022-10-15 09:01:36', NULL),
+(7, 'Zimbabwean Dollar', 'ZWL', '$', 1, '800', '500', '50', 'active', 'system', '2022-10-15 09:01:36', NULL);
 
 -- --------------------------------------------------------
 
@@ -484,13 +488,13 @@ CREATE TABLE `__email_addresses` (
 --
 
 INSERT INTO `__email_addresses` (`id`, `email_address`, `user_username`, `created_datetime`, `verified_datetime`) VALUES
-(1, 'developer.ankelli@gmail.com', 'developer', '2022-10-13 16:29:59', NULL),
-(2, 'sysadmin@ankelli.com', 'sysadmin', '2022-10-13 16:30:02', NULL),
-(3, 'busadmin@ankelli.com', 'busadmin', '2022-10-13 16:30:08', NULL),
-(4, 'busops@ankelli.com', 'busops', '2022-10-13 16:30:29', NULL),
-(5, 'goodhopedhliwayo@gmail.com', 'guddaz', '2022-10-13 16:30:59', NULL),
-(6, 'paywyze@ankelli.com', 'paywyze', '2022-10-13 16:31:12', NULL),
-(7, 'john@ankelli.com', 'john', '2022-10-13 16:31:53', NULL);
+(1, 'developer.ankelli@gmail.com', 'developer', '2022-10-15 07:02:03', NULL),
+(2, 'sysadmin@ankelli.com', 'sysadmin', '2022-10-15 07:02:07', NULL),
+(3, 'busadmin@ankelli.com', 'busadmin', '2022-10-15 07:02:12', NULL),
+(4, 'reserves@ankelli.com', 'reserves', '2022-10-15 07:02:21', NULL),
+(5, 'busops@ankelli.com', 'busops', '2022-10-15 07:03:05', NULL),
+(6, 'goodhopedhliwayo@gmail.com', 'guddaz', '2022-10-15 07:03:18', NULL),
+(7, 'paywyze@ankelli.com', 'paywyze', '2022-10-15 07:03:51', NULL);
 
 -- --------------------------------------------------------
 
@@ -560,19 +564,19 @@ CREATE TABLE `__files` (
 --
 
 INSERT INTO `__files` (`id`, `parent_table`, `parent_uid`, `filegroup`, `tag`, `title`, `width`, `height`, `uri`, `type`, `filesize`, `original_filename`, `order_index`, `creator_username`, `created_datetime`, `updated_datetime`) VALUES
-(1, '__pymt_methods', 'cash_in_person', 'images', 'pymt_method_icon', 'Cash in person', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/Cash in person.jpg', 'image/jpg', NULL, 'Cash in person.jpg', NULL, 'system', '2022-10-13 16:29:44', NULL),
-(2, '__pymt_methods', 'stanbic_bank', 'images', 'pymt_method_icon', 'Stanbic Bank Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/Stanbic bank.jpg', 'image/jpg', NULL, 'Stanbic Bank Icon.jpg', NULL, 'system', '2022-10-13 16:29:44', NULL),
-(3, '__pymt_methods', 'fnb_bank', 'images', 'pymt_method_icon', 'FNB Bank Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/FNB bank.png', 'image/png', NULL, 'FNB Bank Icon.png', NULL, 'system', '2022-10-13 16:29:44', NULL),
-(4, '__pymt_methods', 'mukuru', 'images', 'pymt_method_icon', 'Mukuru Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/Mukuru.jpg', 'image/jpg', NULL, 'Mukuru Icon.jpg', NULL, 'system', '2022-10-13 16:29:44', NULL),
-(5, '__pymt_methods', 'algerie_poste', 'images', 'pymt_method_icon', 'Algerie poste Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/Algerie poste.jpg', 'image/jpg', NULL, 'Algerie poste Icon.jpg', NULL, 'system', '2022-10-13 16:29:44', NULL),
-(6, '__pymt_methods', 'mtn_momo', 'images', 'pymt_method_icon', 'MTN MOMO Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/MTN MOMO.png', 'image/png', NULL, 'MTN MOMO Icon.png', NULL, 'system', '2022-10-13 16:29:44', NULL),
-(7, '__pymt_methods', 'ecocash', 'images', 'pymt_method_icon', 'Ecocash Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/Ecocash.png', 'image/png', NULL, 'Ecocash Icon.png', NULL, 'system', '2022-10-13 16:29:44', NULL),
-(8, '__pymt_methods', 'paypal', 'images', 'pymt_method_icon', 'Paypal Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/Paypal.png', 'image/png', NULL, 'Paypal Icon.png', NULL, 'system', '2022-10-13 16:29:44', NULL),
-(9, '__pymt_methods', 'skrill', 'images', 'pymt_method_icon', 'Skrill Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/Skrill.jpg', 'image/jpg', NULL, 'Skrill Icon.jpg', NULL, 'system', '2022-10-13 16:29:44', NULL),
-(10, '__pymt_methods', 'world_remit', 'images', 'pymt_method_icon', 'World Remit Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/World Remit.png', 'image/png', NULL, 'World Remit Icon.png', NULL, 'system', '2022-10-13 16:29:44', NULL),
-(11, '__pymt_methods', 'mastercard', 'images', 'pymt_method_icon', 'Mastercard Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/Mastercard.jpeg', 'image/jpeg', NULL, 'Mastercard Icon.jpeg', NULL, 'system', '2022-10-13 16:29:44', NULL),
-(12, '__pymt_methods', 'visa', 'images', 'pymt_method_icon', 'Visa Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/Visa.jpg', 'image/jpg', NULL, 'Visa Icon.jpg', NULL, 'system', '2022-10-13 16:29:44', NULL),
-(13, '__pymt_methods', 'fbc_bank', 'images', 'pymt_method_icon', 'FBC bank Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/FBC bank.jpg', 'image/jpg', NULL, 'FBC bank Icon.jpg', NULL, 'system', '2022-10-13 16:29:44', NULL);
+(1, '__pymt_methods', 'cash_in_person', 'images', 'pymt_method_icon', 'Cash in person', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/Cash in person.jpg', 'image/jpg', NULL, 'Cash in person.jpg', NULL, 'system', '2022-10-15 07:01:32', NULL),
+(2, '__pymt_methods', 'stanbic_bank', 'images', 'pymt_method_icon', 'Stanbic Bank Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/Stanbic bank.jpg', 'image/jpg', NULL, 'Stanbic Bank Icon.jpg', NULL, 'system', '2022-10-15 07:01:32', NULL),
+(3, '__pymt_methods', 'fnb_bank', 'images', 'pymt_method_icon', 'FNB Bank Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/FNB bank.png', 'image/png', NULL, 'FNB Bank Icon.png', NULL, 'system', '2022-10-15 07:01:32', NULL),
+(4, '__pymt_methods', 'mukuru', 'images', 'pymt_method_icon', 'Mukuru Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/Mukuru.jpg', 'image/jpg', NULL, 'Mukuru Icon.jpg', NULL, 'system', '2022-10-15 07:01:32', NULL),
+(5, '__pymt_methods', 'algerie_poste', 'images', 'pymt_method_icon', 'Algerie poste Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/Algerie poste.jpg', 'image/jpg', NULL, 'Algerie poste Icon.jpg', NULL, 'system', '2022-10-15 07:01:32', NULL),
+(6, '__pymt_methods', 'mtn_momo', 'images', 'pymt_method_icon', 'MTN MOMO Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/MTN MOMO.png', 'image/png', NULL, 'MTN MOMO Icon.png', NULL, 'system', '2022-10-15 07:01:32', NULL),
+(7, '__pymt_methods', 'ecocash', 'images', 'pymt_method_icon', 'Ecocash Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/Ecocash.png', 'image/png', NULL, 'Ecocash Icon.png', NULL, 'system', '2022-10-15 07:01:32', NULL),
+(8, '__pymt_methods', 'paypal', 'images', 'pymt_method_icon', 'Paypal Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/Paypal.png', 'image/png', NULL, 'Paypal Icon.png', NULL, 'system', '2022-10-15 07:01:32', NULL),
+(9, '__pymt_methods', 'skrill', 'images', 'pymt_method_icon', 'Skrill Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/Skrill.jpg', 'image/jpg', NULL, 'Skrill Icon.jpg', NULL, 'system', '2022-10-15 07:01:32', NULL),
+(10, '__pymt_methods', 'world_remit', 'images', 'pymt_method_icon', 'World Remit Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/World Remit.png', 'image/png', NULL, 'World Remit Icon.png', NULL, 'system', '2022-10-15 07:01:32', NULL),
+(11, '__pymt_methods', 'mastercard', 'images', 'pymt_method_icon', 'Mastercard Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/Mastercard.jpeg', 'image/jpeg', NULL, 'Mastercard Icon.jpeg', NULL, 'system', '2022-10-15 07:01:32', NULL),
+(12, '__pymt_methods', 'visa', 'images', 'pymt_method_icon', 'Visa Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/Visa.jpg', 'image/jpg', NULL, 'Visa Icon.jpg', NULL, 'system', '2022-10-15 07:01:32', NULL),
+(13, '__pymt_methods', 'fbc_bank', 'images', 'pymt_method_icon', 'FBC bank Icon', NULL, NULL, 'https://ankelli.com//storage/images/pymt_methods/FBC bank.jpg', 'image/jpg', NULL, 'FBC bank Icon.jpg', NULL, 'system', '2022-10-15 07:01:32', NULL);
 
 -- --------------------------------------------------------
 
@@ -600,73 +604,80 @@ CREATE TABLE `__logs` (
 --
 
 INSERT INTO `__logs` (`id`, `session_token`, `action_note`, `action_type`, `action_user_username`, `action_datetime`, `utc_offset`, `batch_code`, `entry_table`, `entry_uid`, `entry_update_result`, `request_location`) VALUES
-('032dXnvBGX1nWyBm', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-13 16:31:38', NULL, NULL, '__user_group_memberships', '10', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
-('03a9qcbwvsV1Fgqy', 'FACTORY_SSN', 'Addition of _SellerExtension entry to database.', 'entry_create', 'system', '2022-10-13 16:30:06', NULL, NULL, '__seller_extensions', 'sysadmin', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('0G00m7UsiP9m6mol', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-13 16:30:03', NULL, NULL, '__user_group_memberships', '3', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('1B4zPFpuAW0gG4JQ', 'FACTORY_SSN', 'Addition of _User entry to database.', 'entry_create', 'system', '2022-10-13 16:31:53', NULL, '1197831C2A5CF', '__users', 'john', NULL, NULL),
-('5HTFFV9ujKOOqZNz', 'FACTORY_SSN', 'Addition of _EmailAddress entry to database.', 'entry_create', 'system', '2022-10-13 16:31:53', NULL, '1197831C2A5CF', '__email_addresses', 'john@ankelli.com', NULL, NULL),
-('7TIapRDFn0Hz7UvO', 'FACTORY_SSN', 'Addition of _User entry to database.', 'entry_create', 'system', '2022-10-13 16:30:08', NULL, '161889405A9FC', '__users', 'busadmin', NULL, NULL),
-('ACPbWrINrz3up4uP', 'FACTORY_SSN', 'Addition of _AdminExtension entry to database.', 'entry_create', 'system', '2022-10-13 16:30:55', NULL, NULL, '__admin_extensions', 'busops', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
-('AH27T1jbJodWAv1w', 'FACTORY_SSN', 'Addition of _AssetWalletAddress entry to database.', 'entry_create', 'system', '2022-10-13 16:31:24', NULL, NULL, '__asset_wallet_addresses', '3', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
-('BGZLVCwE9WkPCgYO', 'FACTORY_SSN', 'Addition of _Notification entry to database.', 'entry_create', 'system', '2022-10-13 16:30:08', NULL, '161889405A9FC', '__notifications', '14600240B2B9C', NULL, NULL),
-('bLgqQWoVkdSQ3b3w', 'FACTORY_SSN', 'Addition of _Asset entry to database.', 'entry_create', 'system', '2022-10-13 16:29:56', NULL, NULL, '__assets', '1', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('BQxr6nu7yiq317Nd', 'FACTORY_SSN', 'Updating of _User entry in database.', 'entry_update', 'system', '2022-10-13 16:31:56', NULL, NULL, '__users', 'john', '[{\"field_name\":\"ttm_customer_id\",\"old_value\":null,\"new_value\":\"63207c7291626c6cd5860a21\"}]', '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('cjgzJhFhNFxnXwU6', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-13 16:30:01', NULL, NULL, '__user_group_memberships', '2', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('cKUE7VVRSphZfCoJ', 'FACTORY_SSN', 'Addition of _EmailAddress entry to database.', 'entry_create', 'system', '2022-10-13 16:30:59', NULL, '191236D4DC62D', '__email_addresses', 'goodhopedhliwayo@gmail.com', NULL, NULL),
-('CuD3p6iBlc0ErTnd', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-13 16:31:07', NULL, NULL, '__user_group_memberships', '9', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('daIz4XT3x9JEaFBE', 'FACTORY_SSN', 'Addition of _BuyerExtension entry to database.', 'entry_create', 'system', '2022-10-13 16:30:05', NULL, NULL, '__buyer_extensions', 'sysadmin', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('dAzWeayjvICxhQla', 'FACTORY_SSN', 'Updating of _User entry in database.', 'entry_update', 'system', '2022-10-13 16:31:01', NULL, NULL, '__users', 'guddaz', '[{\"field_name\":\"ttm_customer_id\",\"old_value\":null,\"new_value\":\"632970417b09c5d6322bc226\"}]', '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('dKnwKFOc25c6W3nh', 'FACTORY_SSN', 'Addition of _AssetWalletAddress entry to database.', 'entry_create', 'system', '2022-10-13 16:32:00', NULL, NULL, '__asset_wallet_addresses', '4', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('dlemP8HDq00sy9Te', 'FACTORY_SSN', 'Addition of _BuyerExtension entry to database.', 'entry_create', 'system', '2022-10-13 16:30:14', NULL, NULL, '__buyer_extensions', 'busadmin', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
-('dYRxKlpZPuCBW1UP', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-13 16:30:50', NULL, NULL, '__user_group_memberships', '7', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
-('EKW8NLhMwPDyafAx', 'FACTORY_SSN', 'Addition of _Notification entry to database.', 'entry_create', 'system', '2022-10-13 16:30:59', NULL, '191236D4DC62D', '__notifications', '18025752A2D8D', NULL, NULL),
-('EuDz5qGn1iOIsoIn', 'FACTORY_SSN', 'Addition of _AssetWallet entry to database.', 'entry_create', 'system', '2022-10-13 16:31:29', NULL, NULL, '__asset_wallets', '3', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
-('FOxz6RvAAaVc19g8', 'FACTORY_SSN', 'User signup.', 'batch_init', 'system', '2022-10-13 16:31:53', NULL, '1197831C2A5CF', NULL, NULL, NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
-('fwe5SvGxgNel9yWF', 'FACTORY_SSN', 'Addition of _Notification entry to database.', 'entry_create', 'system', '2022-10-13 16:30:02', NULL, '11733939D82E8', '__notifications', '107266E96E59B', NULL, NULL),
-('gPZzFb21YNpFijpH', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-13 16:30:07', NULL, NULL, '__user_group_memberships', '4', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('gQkLbGscwFdK5cWl', 'FACTORY_SSN', 'Addition of _EmailAddress entry to database.', 'entry_create', 'system', '2022-10-13 16:29:59', NULL, '123701F8DEEBC', '__email_addresses', 'developer.ankelli@gmail.com', NULL, NULL),
-('gvfLIufz4BIs47sH', 'FACTORY_SSN', 'Updating of _User entry in database.', 'entry_update', 'system', '2022-10-13 16:31:18', NULL, NULL, '__users', 'paywyze', '[{\"field_name\":\"ttm_customer_id\",\"old_value\":null,\"new_value\":\"63298faa64858e37282c6267\"}]', '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
-('hQEbVmaVltX3Prlz', 'FACTORY_SSN', 'User signup.', 'batch_init', 'system', '2022-10-13 16:30:02', NULL, '11733939D82E8', NULL, NULL, NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('iENE63PwQ00mMhZX', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-13 16:30:09', NULL, NULL, '__user_group_memberships', '5', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('JQBKnKgeOWGvEYb3', 'FACTORY_SSN', 'User signup.', 'batch_init', 'system', '2022-10-13 16:29:58', NULL, '123701F8DEEBC', NULL, NULL, NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('K6v0ihjlx2pNAlHe', 'FACTORY_SSN', 'Addition of _AssetWallet entry to database.', 'entry_create', 'system', '2022-10-13 16:30:46', NULL, NULL, '__asset_wallets', '1', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
-('KbyCZwqwpM12bx69', 'FACTORY_SSN', 'User signup.', 'batch_init', 'system', '2022-10-13 16:31:12', NULL, '1410181DD251A', NULL, NULL, NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
-('Ll5pOUhEQUDIO49P', 'FACTORY_SSN', 'Addition of _AssetWalletAddress entry to database.', 'entry_create', 'system', '2022-10-13 16:31:04', NULL, NULL, '__asset_wallet_addresses', '2', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('meJspMtzhf54Bgd1', 'FACTORY_SSN', 'Addition of _EmailAddress entry to database.', 'entry_create', 'system', '2022-10-13 16:31:12', NULL, '1410181DD251A', '__email_addresses', 'paywyze@ankelli.com', NULL, NULL),
-('mesoL5HHvUW1yJb7', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-13 16:31:48', NULL, NULL, '__user_group_memberships', '12', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
-('MFytVHXjDMDEIrwU', 'FACTORY_SSN', 'Addition of _AssetWallet entry to database.', 'entry_create', 'system', '2022-10-13 16:32:01', NULL, NULL, '__asset_wallets', '4', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('mm2C65Nkaw9mCmNP', 'FACTORY_SSN', 'User signup.', 'batch_init', 'system', '2022-10-13 16:30:08', NULL, '161889405A9FC', NULL, NULL, NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('myLqB9Gcd13z8k14', 'FACTORY_SSN', 'Addition of _EmailAddress entry to database.', 'entry_create', 'system', '2022-10-13 16:30:29', NULL, '1044774DB139C', '__email_addresses', 'busops@ankelli.com', NULL, NULL),
-('n9Ml42KAeLLqgSDC', 'FACTORY_SSN', 'Addition of _AdminExtension entry to database.', 'entry_create', 'system', '2022-10-13 16:31:34', NULL, NULL, '__admin_extensions', 'paywyze', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
-('nEuUteK5KGX4w0MQ', 'FACTORY_SSN', 'Addition of _User entry to database.', 'entry_create', 'system', '2022-10-13 16:30:29', NULL, '1044774DB139C', '__users', 'busops', NULL, NULL),
-('oIinJJYKiFuxvstu', 'FACTORY_SSN', 'Addition of _User entry to database.', 'entry_create', 'system', '2022-10-13 16:30:02', NULL, '11733939D82E8', '__users', 'sysadmin', NULL, NULL),
-('OnsoGDGSTJ0padc2', 'FACTORY_SSN', 'Addition of _User entry to database.', 'entry_create', 'system', '2022-10-13 16:29:59', NULL, '123701F8DEEBC', '__users', 'developer', NULL, NULL),
-('OpFlohXcslflL5sQ', 'FACTORY_SSN', 'Addition of _Notification entry to database.', 'entry_create', 'system', '2022-10-13 16:31:53', NULL, '1197831C2A5CF', '__notifications', '127034170F5D6', NULL, NULL),
-('pCJOqV99qiiGeB3u', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-13 16:31:43', NULL, NULL, '__user_group_memberships', '11', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
-('pcQFLN2qP2YPz2Ll', 'FACTORY_SSN', 'Updating of _User entry in database.', 'entry_update', 'system', '2022-10-13 16:30:35', NULL, NULL, '__users', 'busops', '[{\"field_name\":\"ttm_customer_id\",\"old_value\":null,\"new_value\":\"6321ec61d5f2885b44f1bda0\"}]', '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
-('psY7Ix2zgoht8WVX', 'FACTORY_SSN', 'Addition of _BuyerExtension entry to database.', 'entry_create', 'system', '2022-10-13 16:30:56', NULL, NULL, '__buyer_extensions', 'busops', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('qzSmFiUBzxqgVPzt', 'FACTORY_SSN', 'User signup.', 'batch_init', 'system', '2022-10-13 16:30:29', NULL, '1044774DB139C', NULL, NULL, NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
-('RNH96kcw3NLf922s', 'FACTORY_SSN', 'Addition of _SellerExtension entry to database.', 'entry_create', 'system', '2022-10-13 16:30:57', NULL, NULL, '__seller_extensions', 'busops', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('rTuYAIuaW4V2SUeN', 'FACTORY_SSN', 'Addition of _Notification entry to database.', 'entry_create', 'system', '2022-10-13 16:29:59', NULL, '123701F8DEEBC', '__notifications', '161783CCB98BC', NULL, NULL),
-('S3xFNMrQlcdCLxzW', 'FACTORY_SSN', 'Addition of _User entry to database.', 'entry_create', 'system', '2022-10-13 16:31:12', NULL, '1410181DD251A', '__users', 'paywyze', NULL, NULL),
-('sHlLCPe6oTXkiv14', 'FACTORY_SSN', 'Addition of _Notification entry to database.', 'entry_create', 'system', '2022-10-13 16:31:12', NULL, '1410181DD251A', '__notifications', '1221530361665', NULL, NULL),
-('uH53TZNVZpEXrjZN', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-13 16:30:58', NULL, NULL, '__user_group_memberships', '8', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('uHRXDJmrur0Mi364', 'FACTORY_SSN', 'Addition of _AssetWalletAddress entry to database.', 'entry_create', 'system', '2022-10-13 16:30:41', NULL, NULL, '__asset_wallet_addresses', '1', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
-('w7h9mhMvjdM1L7b1', 'FACTORY_SSN', 'Addition of _EmailAddress entry to database.', 'entry_create', 'system', '2022-10-13 16:30:02', NULL, '11733939D82E8', '__email_addresses', 'sysadmin@ankelli.com', NULL, NULL),
-('wfHM3wURgE2NCT0G', 'FACTORY_SSN', 'Updating of _Asset entry in database.', 'entry_update', 'system', '2022-10-13 16:29:57', NULL, NULL, '__assets', '1', '[{\"field_name\":\"usd_asset_exchange_rate\",\"old_value\":\"0.00076\",\"new_value\":0.0007956056798396094}]', '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('xDdOgDjUlaBa41Mv', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-13 16:30:00', NULL, NULL, '__user_group_memberships', '1', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('xLpI04dPmBfhYLY3', 'FACTORY_SSN', 'Addition of _RegToken entry to database.', 'entry_create', 'system', '2022-10-13 16:32:01', NULL, NULL, '__reg_tokens', '1234567890', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('xro1i0WWcR4O38eH', 'FACTORY_SSN', 'Addition of _Notification entry to database.', 'entry_create', 'system', '2022-10-13 16:30:29', NULL, '1044774DB139C', '__notifications', '174394EA93ABD', NULL, NULL),
-('y9Kap5Q7oCRdN1Mk', 'FACTORY_SSN', 'Addition of _SellerExtension entry to database.', 'entry_create', 'system', '2022-10-13 16:30:19', NULL, NULL, '__seller_extensions', 'busadmin', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
-('yd3ad5Z0OfzE32P7', 'FACTORY_SSN', 'Addition of _AdminExtension entry to database.', 'entry_create', 'system', '2022-10-13 16:31:06', NULL, NULL, '__admin_extensions', 'guddaz', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('yjJ9mcnuSYhgHUQk', 'FACTORY_SSN', 'Addition of _AdminExtension entry to database.', 'entry_create', 'system', '2022-10-13 16:30:10', NULL, NULL, '__admin_extensions', 'busadmin', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('YmtgXfdr62mEHQDo', 'FACTORY_SSN', 'Addition of _EmailAddress entry to database.', 'entry_create', 'system', '2022-10-13 16:30:08', NULL, '161889405A9FC', '__email_addresses', 'busadmin@ankelli.com', NULL, NULL),
-('zkSwYuQShTD25oCZ', 'FACTORY_SSN', 'Addition of _User entry to database.', 'entry_create', 'system', '2022-10-13 16:30:59', NULL, '191236D4DC62D', '__users', 'guddaz', NULL, NULL),
-('ZlDaxm8Dk5vrriRd', 'FACTORY_SSN', 'Addition of _AdminExtension entry to database.', 'entry_create', 'system', '2022-10-13 16:30:00', NULL, NULL, '__admin_extensions', 'developer', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('ZRLfG4eN8aZm0tFB', 'FACTORY_SSN', 'User signup.', 'batch_init', 'system', '2022-10-13 16:30:58', NULL, '191236D4DC62D', NULL, NULL, NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('zsgJuMjaftpXr4Ij', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-13 16:30:24', NULL, NULL, '__user_group_memberships', '6', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
-('zyUsjURXBA8CpIJW', 'FACTORY_SSN', 'Addition of _AssetWallet entry to database.', 'entry_create', 'system', '2022-10-13 16:31:05', NULL, NULL, '__asset_wallets', '2', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
-('zz1mLXmgLKteGTY3', 'FACTORY_SSN', 'Addition of _AdminExtension entry to database.', 'entry_create', 'system', '2022-10-13 16:30:04', NULL, NULL, '__admin_extensions', 'sysadmin', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}');
+('07WPJoDdEyaOe4Ap', 'FACTORY_SSN', 'Addition of _Notification entry to database.', 'entry_create', 'system', '2022-10-15 07:02:07', NULL, '138188DBAF93B', '__notifications', '1867754BC14B7', NULL, NULL),
+('2qCxG4rappUXoX38', 'FACTORY_SSN', 'Addition of _Notification entry to database.', 'entry_create', 'system', '2022-10-15 07:03:19', NULL, '109189DA87FCA', '__notifications', '191515F489022', NULL, NULL),
+('2yZZRBE7oPTDLGvL', 'FACTORY_SSN', 'Addition of _EmailAddress entry to database.', 'entry_create', 'system', '2022-10-15 07:02:07', NULL, '138188DBAF93B', '__email_addresses', 'sysadmin@ankelli.com', NULL, NULL),
+('47bl5z3DHDQWxigN', 'FACTORY_SSN', 'Addition of _Notification entry to database.', 'entry_create', 'system', '2022-10-15 07:02:12', NULL, '108674B74056A', '__notifications', '109081798B3FE', NULL, NULL),
+('484rujf9aSdLM78h', 'FACTORY_SSN', 'Addition of _AssetWalletAddress entry to database.', 'entry_create', 'system', '2022-10-15 07:03:31', NULL, NULL, '__asset_wallet_addresses', '3', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
+('6QqRqhntYU0HUKem', 'FACTORY_SSN', 'Addition of _AdminExtension entry to database.', 'entry_create', 'system', '2022-10-15 07:02:48', NULL, NULL, '__admin_extensions', 'reserves', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
+('8nlKCbZQUMHB0G6m', 'FACTORY_SSN', 'Addition of _Notification entry to database.', 'entry_create', 'system', '2022-10-15 07:03:05', NULL, '16349151E973E', '__notifications', '187700730B4B5', NULL, NULL),
+('bOZbBEcz3w5m4boR', 'FACTORY_SSN', 'Addition of _User entry to database.', 'entry_create', 'system', '2022-10-15 07:02:12', NULL, '108674B74056A', '__users', 'busadmin', NULL, NULL),
+('BqkLOtCADJ4Mf3dJ', 'FACTORY_SSN', 'Addition of _AssetWalletAddress entry to database.', 'entry_create', 'system', '2022-10-15 07:03:08', NULL, NULL, '__asset_wallet_addresses', '2', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('BZWaTl5N9npBwyVs', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-15 07:02:43', NULL, NULL, '__user_group_memberships', '7', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
+('dogGMdcWnM5b7BS8', 'FACTORY_SSN', 'User signup.', 'batch_init', 'system', '2022-10-15 07:03:51', NULL, '199660E9253BC', NULL, NULL, NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
+('DptccBFbqkOlYxKh', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-15 07:03:02', NULL, NULL, '__user_group_memberships', '8', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
+('dqkswg3LBlKKCeLt', 'FACTORY_SSN', 'Addition of _AdminExtension entry to database.', 'entry_create', 'system', '2022-10-15 07:03:40', NULL, NULL, '__admin_extensions', 'guddaz', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
+('DxSKNs5uFZgP4GOO', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-15 07:02:16', NULL, NULL, '__user_group_memberships', '6', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('eHiuTvUSJp5oTlc4', 'FACTORY_SSN', 'Addition of _User entry to database.', 'entry_create', 'system', '2022-10-15 07:03:05', NULL, '16349151E973E', '__users', 'busops', NULL, NULL),
+('eJDbEDpep9kNX1ss', 'FACTORY_SSN', 'Addition of _AssetWallet entry to database.', 'entry_create', 'system', '2022-10-15 07:04:08', NULL, NULL, '__asset_wallets', '4', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('EjhfUHZ1zJTyIRvk', 'FACTORY_SSN', 'Addition of _SellerExtension entry to database.', 'entry_create', 'system', '2022-10-15 07:02:58', NULL, NULL, '__seller_extensions', 'reserves', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
+('EtKSP3fFRoEYKKa0', 'FACTORY_SSN', 'Addition of _SellerExtension entry to database.', 'entry_create', 'system', '2022-10-15 07:02:10', NULL, NULL, '__seller_extensions', 'sysadmin', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('EvAzDIdaBeJvntjx', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-15 07:03:13', NULL, NULL, '__user_group_memberships', '10', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('FDA5Ek7ovn5qoMdn', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-15 07:02:04', NULL, NULL, '__user_group_memberships', '1', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('fjfkAQCVUuhfcePG', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-15 07:03:10', NULL, NULL, '__user_group_memberships', '9', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('fXGhIdzMfBn1FaBk', 'FACTORY_SSN', 'Addition of _RegToken entry to database.', 'entry_create', 'system', '2022-10-15 07:04:14', NULL, NULL, '__reg_tokens', '1234567890', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('GAx3CrDyFFO17ZFi', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-15 07:03:45', NULL, NULL, '__user_group_memberships', '11', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
+('geJFzZ94YgoNpFMn', 'FACTORY_SSN', 'Addition of _SellerExtension entry to database.', 'entry_create', 'system', '2022-10-15 07:03:12', NULL, NULL, '__seller_extensions', 'busops', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('GeO3Hr9QNWKdtiRS', 'FACTORY_SSN', 'Addition of _EmailAddress entry to database.', 'entry_create', 'system', '2022-10-15 07:03:05', NULL, '16349151E973E', '__email_addresses', 'busops@ankelli.com', NULL, NULL),
+('GEpAhSlOK9eIcm3f', 'FACTORY_SSN', 'Addition of _AssetWallet entry to database.', 'entry_create', 'system', '2022-10-15 07:03:35', NULL, NULL, '__asset_wallets', '3', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
+('hlJaV2IEmpM0ASti', 'FACTORY_SSN', 'Addition of _EmailAddress entry to database.', 'entry_create', 'system', '2022-10-15 07:02:12', NULL, '108674B74056A', '__email_addresses', 'busadmin@ankelli.com', NULL, NULL),
+('iF6z7ls4lwhFvSQh', 'FACTORY_SSN', 'Addition of _User entry to database.', 'entry_create', 'system', '2022-10-15 07:03:51', NULL, '199660E9253BC', '__users', 'paywyze', NULL, NULL),
+('IgWCQDGSR7w0WIgr', 'FACTORY_SSN', 'Addition of _BuyerExtension entry to database.', 'entry_create', 'system', '2022-10-15 07:02:09', NULL, NULL, '__buyer_extensions', 'sysadmin', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('iUJYDtsnDEgdFhd4', 'FACTORY_SSN', 'Addition of _Notification entry to database.', 'entry_create', 'system', '2022-10-15 07:02:21', NULL, '120305A2EE0AC', '__notifications', '1531342C47015', NULL, NULL),
+('j3r3ilxx5lWEgkW6', 'FACTORY_SSN', 'User signup.', 'batch_init', 'system', '2022-10-15 07:03:04', NULL, '16349151E973E', NULL, NULL, NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('jFNFvr4wncjPxEIi', 'FACTORY_SSN', 'User signup.', 'batch_init', 'system', '2022-10-15 07:03:18', NULL, '109189DA87FCA', NULL, NULL, NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
+('kCvFyTeef0VO9HTZ', 'ICS8SvKwGuTFfV1Z', 'Addition of _Session entry to database.', 'entry_create', NULL, '2022-10-15 07:05:13', '+02:00', NULL, '__sessions', 'ICS8SvKwGuTFfV1Z', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('klNmturJ0sBNeVyj', 'FACTORY_SSN', 'Addition of _AdminExtension entry to database.', 'entry_create', 'system', '2022-10-15 07:04:09', NULL, NULL, '__admin_extensions', 'paywyze', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('MFXbL6otU3wFeij7', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-15 07:02:08', NULL, NULL, '__user_group_memberships', '3', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('mJirQ3l5qch0fisc', 'FACTORY_SSN', 'Addition of _AssetWallet entry to database.', 'entry_create', 'system', '2022-10-15 07:03:09', NULL, NULL, '__asset_wallets', '2', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('mQI5HZjHm5mGQc6z', 'FACTORY_SSN', 'Addition of _AssetWallet entry to database.', 'entry_create', 'system', '2022-10-15 07:02:38', NULL, NULL, '__asset_wallets', '1', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
+('MrhQvlVCkc41qqI1', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-15 07:02:13', NULL, NULL, '__user_group_memberships', '5', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('nEDBXpGYeqrRXlM3', 'FACTORY_SSN', 'Addition of _User entry to database.', 'entry_create', 'system', '2022-10-15 07:02:21', NULL, '120305A2EE0AC', '__users', 'reserves', NULL, NULL),
+('NtQwbaAHEUIbp7CM', 'FACTORY_SSN', 'Updating of _User entry in database.', 'entry_update', 'system', '2022-10-15 07:02:27', NULL, NULL, '__users', 'reserves', '[{\"field_name\":\"ttm_customer_id\",\"old_value\":null,\"new_value\":\"63207c7291626c6cd5860a21\"}]', '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
+('nY3YHPxpBsXtpb5Q', 'FACTORY_SSN', 'Addition of _EmailAddress entry to database.', 'entry_create', 'system', '2022-10-15 07:03:51', NULL, '199660E9253BC', '__email_addresses', 'paywyze@ankelli.com', NULL, NULL),
+('o0jhkck8vgAUaBkc', 'FACTORY_SSN', 'Addition of _AdminExtension entry to database.', 'entry_create', 'system', '2022-10-15 07:02:08', NULL, NULL, '__admin_extensions', 'sysadmin', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('oBW3wj0RuLyMlJnO', 'FACTORY_SSN', 'User signup.', 'batch_init', 'system', '2022-10-15 07:02:21', NULL, '120305A2EE0AC', NULL, NULL, NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
+('OIdgxjMjulFHFRSO', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-15 07:02:11', NULL, NULL, '__user_group_memberships', '4', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('ovfVtOKFiHDc54Bq', 'FACTORY_SSN', 'Addition of _BuyerExtension entry to database.', 'entry_create', 'system', '2022-10-15 07:03:12', NULL, NULL, '__buyer_extensions', 'busops', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('pJDgTuKHM1T3ybMg', 'guGvQvJpsJWxYNSf', 'Addition of _Session entry to database.', 'entry_create', NULL, '2022-10-15 07:05:13', '+02:00', NULL, '__sessions', 'guGvQvJpsJWxYNSf', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('pjN6sKKs4aUJNwdD', 'FACTORY_SSN', 'Updating of _User entry in database.', 'entry_update', 'system', '2022-10-15 07:03:07', NULL, NULL, '__users', 'busops', '[{\"field_name\":\"ttm_customer_id\",\"old_value\":null,\"new_value\":\"6321ec61d5f2885b44f1bda0\"}]', '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('QBY5NEScnP4he4aV', 'FACTORY_SSN', 'Updating of _User entry in database.', 'entry_update', 'system', '2022-10-15 07:04:04', NULL, NULL, '__users', 'paywyze', '[{\"field_name\":\"ttm_customer_id\",\"old_value\":null,\"new_value\":\"63298faa64858e37282c6267\"}]', '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
+('qJuYdKGnhkGdvKzQ', 'FACTORY_SSN', 'Addition of _Notification entry to database.', 'entry_create', 'system', '2022-10-15 07:02:03', NULL, '150051B389A14', '__notifications', '196523D4AA654', NULL, NULL),
+('QqIMwX6LpCQYx1fy', 'FACTORY_SSN', 'Addition of _BuyerExtension entry to database.', 'entry_create', 'system', '2022-10-15 07:02:14', NULL, NULL, '__buyer_extensions', 'busadmin', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('R3wgHZ0WqCMglcnd', 'FACTORY_SSN', 'User signup.', 'batch_init', 'system', '2022-10-15 07:02:07', NULL, '138188DBAF93B', NULL, NULL, NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('R8zYo0pm0NyrcLRn', 'FACTORY_SSN', 'Addition of _BuyerExtension entry to database.', 'entry_create', 'system', '2022-10-15 07:02:53', NULL, NULL, '__buyer_extensions', 'reserves', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
+('rdKLn0IxIWngDKjZ', 'FACTORY_SSN', 'Addition of _SellerExtension entry to database.', 'entry_create', 'system', '2022-10-15 07:02:15', NULL, NULL, '__seller_extensions', 'busadmin', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('RgRcnzlRfTGduRJK', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-15 07:04:12', NULL, NULL, '__user_group_memberships', '13', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('RIhYHzEWZgktwvZm', 'FACTORY_SSN', 'Addition of _AdminExtension entry to database.', 'entry_create', 'system', '2022-10-15 07:03:11', NULL, NULL, '__admin_extensions', 'busops', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('RtI2we3BxPxXOCPe', 'FACTORY_SSN', 'Addition of _AssetWalletAddress entry to database.', 'entry_create', 'system', '2022-10-15 07:02:34', NULL, NULL, '__asset_wallet_addresses', '1', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
+('RTJPQ2skiK28v8E5', 'FACTORY_SSN', 'Addition of _User entry to database.', 'entry_create', 'system', '2022-10-15 07:03:18', NULL, '109189DA87FCA', '__users', 'guddaz', NULL, NULL),
+('sDVThR79puhsMXSS', 'FACTORY_SSN', 'Addition of _EmailAddress entry to database.', 'entry_create', 'system', '2022-10-15 07:02:03', NULL, '150051B389A14', '__email_addresses', 'developer.ankelli@gmail.com', NULL, NULL),
+('SImBqtzyf2uJh9HZ', 'FACTORY_SSN', 'Addition of _EmailAddress entry to database.', 'entry_create', 'system', '2022-10-15 07:03:18', NULL, '109189DA87FCA', '__email_addresses', 'goodhopedhliwayo@gmail.com', NULL, NULL),
+('to3MsbtHUxowIGfe', 'FACTORY_SSN', 'Addition of _Notification entry to database.', 'entry_create', 'system', '2022-10-15 07:03:51', NULL, '199660E9253BC', '__notifications', '19976190B0C49', NULL, NULL),
+('ttIFFcarSxmW1p1b', 'FACTORY_SSN', 'User signup.', 'batch_init', 'system', '2022-10-15 07:02:12', NULL, '108674B74056A', NULL, NULL, NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('u2mcQxRKlrZquJpk', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-15 07:02:06', NULL, NULL, '__user_group_memberships', '2', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('VEQWOteWT283WNqY', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-15 07:04:13', NULL, NULL, '__user_group_memberships', '14', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('VErRnKBt8DYm6UlS', 'FACTORY_SSN', 'Addition of _AdminExtension entry to database.', 'entry_create', 'system', '2022-10-15 07:02:05', NULL, NULL, '__admin_extensions', 'developer', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('Wb4yRGRHdkXqXD4J', 'FACTORY_SSN', 'Addition of _UserGroupMembership entry to database.', 'entry_create', 'system', '2022-10-15 07:04:11', NULL, NULL, '__user_group_memberships', '12', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('wZXa6pjrNfUqsgtY', 'FACTORY_SSN', 'Addition of _User entry to database.', 'entry_create', 'system', '2022-10-15 07:02:03', NULL, '150051B389A14', '__users', 'developer', NULL, NULL),
+('XKWwRtDc1VkYMk9s', 'FACTORY_SSN', 'Addition of _Asset entry to database.', 'entry_create', 'system', '2022-10-15 07:02:01', NULL, NULL, '__assets', '1', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('y3vhlqlJEbdwU0Yp', 'FACTORY_SSN', 'User signup.', 'batch_init', 'system', '2022-10-15 07:02:03', NULL, '150051B389A14', NULL, NULL, NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('Yqab0tX9je1UOxQH', 'FACTORY_SSN', 'Updating of _User entry in database.', 'entry_update', 'system', '2022-10-15 07:03:24', NULL, NULL, '__users', 'guddaz', '[{\"field_name\":\"ttm_customer_id\",\"old_value\":null,\"new_value\":\"632970417b09c5d6322bc226\"}]', '{\"ip\":\"66.102.0.0\",\"countryName\":null,\"countryCode\":\"BR\",\"regionCode\":null,\"regionName\":\"S\\u00e3o Paulo\",\"cityName\":\"S\\u00e3o Paulo\",\"zipCode\":\"01000-000\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"-23.5475\",\"longitude\":\"-46.6361\",\"metroCode\":null,\"areaCode\":null,\"timezone\":\"America\\/Sao_Paulo\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpInfo\"}'),
+('yqLeUSXsYuNID95u', 'FACTORY_SSN', 'Addition of _User entry to database.', 'entry_create', 'system', '2022-10-15 07:02:07', NULL, '138188DBAF93B', '__users', 'sysadmin', NULL, NULL),
+('zfDvn308JbUtNdkv', 'FACTORY_SSN', 'Addition of _AssetWalletAddress entry to database.', 'entry_create', 'system', '2022-10-15 07:04:07', NULL, NULL, '__asset_wallet_addresses', '4', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('ZQYBcnRD7Kjjwllc', 'FACTORY_SSN', 'Addition of _EmailAddress entry to database.', 'entry_create', 'system', '2022-10-15 07:02:21', NULL, '120305A2EE0AC', '__email_addresses', 'reserves@ankelli.com', NULL, NULL),
+('ZrN5gGDM8j6G44c7', 'FACTORY_SSN', 'Addition of _AdminExtension entry to database.', 'entry_create', 'system', '2022-10-15 07:02:14', NULL, NULL, '__admin_extensions', 'busadmin', NULL, '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}'),
+('zTTrugV6xQ9UCOHH', 'FACTORY_SSN', 'Updating of _Asset entry in database.', 'entry_update', 'system', '2022-10-15 07:02:02', NULL, NULL, '__assets', '1', '[{\"field_name\":\"usd_asset_exchange_rate\",\"old_value\":\"1\",\"new_value\":0.0007784152501883559}]', '{\"ip\":\"66.102.0.0\",\"countryName\":\"United States\",\"countryCode\":\"US\",\"regionCode\":\"CA\",\"regionName\":\"California\",\"cityName\":\"Mountain View\",\"zipCode\":\"94043\",\"isoCode\":null,\"postalCode\":null,\"latitude\":\"37.422\",\"longitude\":\"-122.084\",\"metroCode\":null,\"areaCode\":\"CA\",\"timezone\":\"America\\/Los_Angeles\",\"driver\":\"Stevebauman\\\\Location\\\\Drivers\\\\IpApi\"}');
 
 -- --------------------------------------------------------
 
@@ -703,13 +714,13 @@ CREATE TABLE `__notifications` (
 --
 
 INSERT INTO `__notifications` (`id`, `user_username`, `content`, `created_datetime`, `read_datetime`) VALUES
-('107266E96E59B', 'sysadmin', '{\"title\":\"Welcome Note\",\"subtitle\":\"Welcome to the Ankelli Crypto trading Platform.\",\"body\":\"We as the Ankelli Team welcome you to our Crypto trading platform.\\nPlease, enjoy the services we have prepared for you.\\nTo get the most out of your experience here, start by verifying your email address.\"}', '2022-10-13 16:30:02', NULL),
-('1221530361665', 'paywyze', '{\"title\":\"Welcome Note\",\"subtitle\":\"Welcome to the Ankelli Crypto trading Platform.\",\"body\":\"We as the Ankelli Team welcome you to our Crypto trading platform.\\nPlease, enjoy the services we have prepared for you.\\nTo get the most out of your experience here, start by verifying your email address.\"}', '2022-10-13 16:31:12', NULL),
-('127034170F5D6', 'john', '{\"title\":\"Welcome Note\",\"subtitle\":\"Welcome to the Ankelli Crypto trading Platform.\",\"body\":\"We as the Ankelli Team welcome you to our Crypto trading platform.\\nPlease, enjoy the services we have prepared for you.\\nTo get the most out of your experience here, start by verifying your email address.\"}', '2022-10-13 16:31:53', NULL),
-('14600240B2B9C', 'busadmin', '{\"title\":\"Welcome Note\",\"subtitle\":\"Welcome to the Ankelli Crypto trading Platform.\",\"body\":\"We as the Ankelli Team welcome you to our Crypto trading platform.\\nPlease, enjoy the services we have prepared for you.\\nTo get the most out of your experience here, start by verifying your email address.\"}', '2022-10-13 16:30:08', NULL),
-('161783CCB98BC', 'developer', '{\"title\":\"Welcome Note\",\"subtitle\":\"Welcome to the Ankelli Crypto trading Platform.\",\"body\":\"We as the Ankelli Team welcome you to our Crypto trading platform.\\nPlease, enjoy the services we have prepared for you.\\nTo get the most out of your experience here, start by verifying your email address.\"}', '2022-10-13 16:29:59', NULL),
-('174394EA93ABD', 'busops', '{\"title\":\"Welcome Note\",\"subtitle\":\"Welcome to the Ankelli Crypto trading Platform.\",\"body\":\"We as the Ankelli Team welcome you to our Crypto trading platform.\\nPlease, enjoy the services we have prepared for you.\\nTo get the most out of your experience here, start by verifying your email address.\"}', '2022-10-13 16:30:29', NULL),
-('18025752A2D8D', 'guddaz', '{\"title\":\"Welcome Note\",\"subtitle\":\"Welcome to the Ankelli Crypto trading Platform.\",\"body\":\"We as the Ankelli Team welcome you to our Crypto trading platform.\\nPlease, enjoy the services we have prepared for you.\\nTo get the most out of your experience here, start by verifying your email address.\"}', '2022-10-13 16:30:59', NULL);
+('109081798B3FE', 'busadmin', '{\"title\":\"Welcome Note\",\"subtitle\":\"Welcome to the Ankelli Crypto trading Platform.\",\"body\":\"We as the Ankelli Team welcome you to our Crypto trading platform.\\nPlease, enjoy the services we have prepared for you.\\nTo get the most out of your experience here, start by verifying your email address.\"}', '2022-10-15 07:02:12', NULL),
+('1531342C47015', 'reserves', '{\"title\":\"Welcome Note\",\"subtitle\":\"Welcome to the Ankelli Crypto trading Platform.\",\"body\":\"We as the Ankelli Team welcome you to our Crypto trading platform.\\nPlease, enjoy the services we have prepared for you.\\nTo get the most out of your experience here, start by verifying your email address.\"}', '2022-10-15 07:02:21', NULL),
+('1867754BC14B7', 'sysadmin', '{\"title\":\"Welcome Note\",\"subtitle\":\"Welcome to the Ankelli Crypto trading Platform.\",\"body\":\"We as the Ankelli Team welcome you to our Crypto trading platform.\\nPlease, enjoy the services we have prepared for you.\\nTo get the most out of your experience here, start by verifying your email address.\"}', '2022-10-15 07:02:07', NULL),
+('187700730B4B5', 'busops', '{\"title\":\"Welcome Note\",\"subtitle\":\"Welcome to the Ankelli Crypto trading Platform.\",\"body\":\"We as the Ankelli Team welcome you to our Crypto trading platform.\\nPlease, enjoy the services we have prepared for you.\\nTo get the most out of your experience here, start by verifying your email address.\"}', '2022-10-15 07:03:05', NULL),
+('191515F489022', 'guddaz', '{\"title\":\"Welcome Note\",\"subtitle\":\"Welcome to the Ankelli Crypto trading Platform.\",\"body\":\"We as the Ankelli Team welcome you to our Crypto trading platform.\\nPlease, enjoy the services we have prepared for you.\\nTo get the most out of your experience here, start by verifying your email address.\"}', '2022-10-15 07:03:18', NULL),
+('196523D4AA654', 'developer', '{\"title\":\"Welcome Note\",\"subtitle\":\"Welcome to the Ankelli Crypto trading Platform.\",\"body\":\"We as the Ankelli Team welcome you to our Crypto trading platform.\\nPlease, enjoy the services we have prepared for you.\\nTo get the most out of your experience here, start by verifying your email address.\"}', '2022-10-15 07:02:03', NULL),
+('19976190B0C49', 'paywyze', '{\"title\":\"Welcome Note\",\"subtitle\":\"Welcome to the Ankelli Crypto trading Platform.\",\"body\":\"We as the Ankelli Team welcome you to our Crypto trading platform.\\nPlease, enjoy the services we have prepared for you.\\nTo get the most out of your experience here, start by verifying your email address.\"}', '2022-10-15 07:03:51', NULL);
 
 -- --------------------------------------------------------
 
@@ -768,19 +779,19 @@ CREATE TABLE `__permissions` (
 --
 
 INSERT INTO `__permissions` (`id`, `name`, `slug`, `description`, `_status`, `creator_username`, `created_datetime`, `updated_datetime`, `deleted_datetime`) VALUES
-(1, 'Update system config params', 'update_sysconfig_params', 'Permission holder can update system config params.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(2, 'Handle feedback reports', 'handle_feedback_reports', 'Permission holder can handle feedback reports.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(3, 'Manage datalists', 'manage_datalists', 'Permission holder can manage datalists.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(4, 'Manage system tools', 'manage_systools', 'Permission holder can manage system tools.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(5, 'View all logs', 'view_all_logs', 'Permission holder can view all logs.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(6, 'View all transactions', 'view_all_transactions', 'Permission holder can view all transactions.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(7, 'Manage Deposit Tokens', 'manage_deposit_tokens', 'Permission holder can create and edit deposit tokens.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(8, 'Handle Withdrawals', 'handle_withdrawals', 'Permission holder can handle withdrawals.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(9, 'Manage Registration Tokens', 'manage_reg_tokens', 'Permission holder can create and edit registration tokens.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(10, 'Handle flagged users', 'handle_flagged_users', 'Permission holder can handle flagged Users.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(11, 'Handle customer service chats', 'handle_customer_service_chats', 'Permission holder can handle customer service chats.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(12, 'Manage update posts', 'manage_update_posts', 'Permission holder can handle posting and editing update posts.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(13, 'Handle flagged business elems', 'handle_flagged_business_elems', 'Permission holder can handle flagged business elems (Offers, Trades, etc).', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL);
+(1, 'Update system config params', 'update_sysconfig_params', 'Permission holder can update system config params.', 'active', 'system', '2022-10-15 09:01:28', NULL, NULL),
+(2, 'Handle feedback reports', 'handle_feedback_reports', 'Permission holder can handle feedback reports.', 'active', 'system', '2022-10-15 09:01:28', NULL, NULL),
+(3, 'Manage datalists', 'manage_datalists', 'Permission holder can manage datalists.', 'active', 'system', '2022-10-15 09:01:28', NULL, NULL),
+(4, 'Manage system tools', 'manage_systools', 'Permission holder can manage system tools.', 'active', 'system', '2022-10-15 09:01:28', NULL, NULL),
+(5, 'View all logs', 'view_all_logs', 'Permission holder can view all logs.', 'active', 'system', '2022-10-15 09:01:28', NULL, NULL),
+(6, 'View all transactions', 'view_all_transactions', 'Permission holder can view all transactions.', 'active', 'system', '2022-10-15 09:01:28', NULL, NULL),
+(7, 'Manage Deposit Tokens', 'manage_deposit_tokens', 'Permission holder can create and edit deposit tokens.', 'active', 'system', '2022-10-15 09:01:28', NULL, NULL),
+(8, 'Handle Withdrawals', 'handle_withdrawals', 'Permission holder can handle withdrawals.', 'active', 'system', '2022-10-15 09:01:28', NULL, NULL),
+(9, 'Manage Registration Tokens', 'manage_reg_tokens', 'Permission holder can create and edit registration tokens.', 'active', 'system', '2022-10-15 09:01:28', NULL, NULL),
+(10, 'Handle flagged users', 'handle_flagged_users', 'Permission holder can handle flagged Users.', 'active', 'system', '2022-10-15 09:01:28', NULL, NULL),
+(11, 'Handle customer service chats', 'handle_customer_service_chats', 'Permission holder can handle customer service chats.', 'active', 'system', '2022-10-15 09:01:28', NULL, NULL),
+(12, 'Manage update posts', 'manage_update_posts', 'Permission holder can handle posting and editing update posts.', 'active', 'system', '2022-10-15 09:01:28', NULL, NULL),
+(13, 'Handle flagged business elems', 'handle_flagged_business_elems', 'Permission holder can handle flagged business elems (Offers, Trades, etc).', 'active', 'system', '2022-10-15 09:01:28', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -804,19 +815,19 @@ CREATE TABLE `__permission_instances` (
 --
 
 INSERT INTO `__permission_instances` (`id`, `parent_table`, `parent_uid`, `permission_slug`, `_status`, `creator_username`, `created_datetime`, `updated_datetime`) VALUES
-(1, '__user_groups', 'system_administrators', 'update_sysconfig_params', 'active', 'system', '2022-10-13 18:29:44', NULL),
-(2, '__user_groups', 'system_administrators', 'handle_feedback_reports', 'active', 'system', '2022-10-13 18:29:44', NULL),
-(3, '__user_groups', 'system_administrators', 'manage_systools', 'active', 'system', '2022-10-13 18:29:44', NULL),
-(4, '__user_groups', 'system_administrators', 'manage_datalists', 'active', 'system', '2022-10-13 18:29:44', NULL),
-(5, '__user_groups', 'system_administrators', 'view_all_logs', 'active', 'system', '2022-10-13 18:29:44', NULL),
-(6, '__user_groups', 'business_administrators', 'view_all_transactions', 'active', 'system', '2022-10-13 18:29:44', NULL),
-(7, '__user_groups', 'business_administrators', 'manage_deposit_tokens', 'active', 'system', '2022-10-13 18:29:44', NULL),
-(8, '__user_groups', 'business_administrators', 'handle_withdrawals', 'active', 'system', '2022-10-13 18:29:44', NULL),
-(9, '__user_groups', 'user_administrators', 'manage_reg_tokens', 'active', 'system', '2022-10-13 18:29:44', NULL),
-(10, '__user_groups', 'user_administrators', 'handle_flagged_users', 'active', 'system', '2022-10-13 18:29:44', NULL),
-(11, '__user_groups', 'moderators', 'handle_customer_service_chats', 'active', 'system', '2022-10-13 18:29:44', NULL),
-(12, '__user_groups', 'moderators', 'handle_flagged_business_elems', 'active', 'system', '2022-10-13 18:29:44', NULL),
-(13, '__user_groups', 'moderators', 'manage_update_posts', 'active', 'system', '2022-10-13 18:29:44', NULL);
+(1, '__user_groups', 'system_administrators', 'update_sysconfig_params', 'active', 'system', '2022-10-15 09:01:28', NULL),
+(2, '__user_groups', 'system_administrators', 'handle_feedback_reports', 'active', 'system', '2022-10-15 09:01:28', NULL),
+(3, '__user_groups', 'system_administrators', 'manage_systools', 'active', 'system', '2022-10-15 09:01:28', NULL),
+(4, '__user_groups', 'system_administrators', 'manage_datalists', 'active', 'system', '2022-10-15 09:01:28', NULL),
+(5, '__user_groups', 'system_administrators', 'view_all_logs', 'active', 'system', '2022-10-15 09:01:28', NULL),
+(6, '__user_groups', 'business_administrators', 'view_all_transactions', 'active', 'system', '2022-10-15 09:01:28', NULL),
+(7, '__user_groups', 'business_administrators', 'manage_deposit_tokens', 'active', 'system', '2022-10-15 09:01:28', NULL),
+(8, '__user_groups', 'business_administrators', 'handle_withdrawals', 'active', 'system', '2022-10-15 09:01:28', NULL),
+(9, '__user_groups', 'user_administrators', 'manage_reg_tokens', 'active', 'system', '2022-10-15 09:01:28', NULL),
+(10, '__user_groups', 'user_administrators', 'handle_flagged_users', 'active', 'system', '2022-10-15 09:01:28', NULL),
+(11, '__user_groups', 'moderators', 'handle_customer_service_chats', 'active', 'system', '2022-10-15 09:01:28', NULL),
+(12, '__user_groups', 'moderators', 'handle_flagged_business_elems', 'active', 'system', '2022-10-15 09:01:28', NULL),
+(13, '__user_groups', 'moderators', 'manage_update_posts', 'active', 'system', '2022-10-15 09:01:28', NULL);
 
 -- --------------------------------------------------------
 
@@ -899,25 +910,26 @@ CREATE TABLE `__pref_items` (
 --
 
 INSERT INTO `__pref_items` (`id`, `parent_table`, `parent_uid`, `key_name`, `key_slug`, `value`, `value_type`, `creator_username`, `created_datetime`, `updated_datetime`) VALUES
-(1, '__users', 'system', 'Backend rest api enabled', 'backend_rest_api_enabled', '1', 'boolean', 'system', '2022-10-13 18:29:44', NULL),
-(2, '__users', 'system', 'Scaffolding app enabled', 'scaffolding_app_enabled', '1', 'boolean', 'system', '2022-10-13 18:29:44', NULL),
-(3, '__users', 'system', 'Fallback Display Language', 'fallback_pref_lang', 'en', 'enum:langs', 'system', '2022-10-13 18:29:44', NULL),
-(4, '__users', 'system', 'Fallback Display Theme', 'fallback_pref_theme', 'light', 'enum:themes', 'system', '2022-10-13 18:29:44', NULL),
-(5, '__users', 'system', 'Image storage driver', 'image_storage_driver', 'lavarel_file_storage', 'enum:file_storage_drivers', 'system', '2022-10-13 18:29:44', NULL),
-(6, '__users', 'system', 'Document storage driver', 'document_storage_driver', 'lavarel_file_storage', 'enum:file_storage_drivers', 'system', '2022-10-13 18:29:44', NULL),
-(7, '__users', 'system', 'Open Registration enabled', 'open_reg_enabled', '0', 'boolean', 'system', '2022-10-13 18:29:44', NULL),
-(8, '__users', 'system', 'Token registration enabled', 'token_reg_enabled', '0', 'boolean', 'system', '2022-10-13 18:29:44', NULL),
-(9, '__users', 'system', 'Registration token max use count', 'reg_token_max_use_count', '10', 'integer', 'system', '2022-10-13 18:29:44', NULL),
-(10, '__users', 'system', 'Offers to sell enabled', 'offer_to_sell_enabled', '0', 'boolean', 'system', '2022-10-13 18:29:44', NULL),
-(11, '__users', 'system', 'Offers to buy enabled', 'offer_to_buy_enabled', '1', 'boolean', 'system', '2022-10-13 18:29:44', NULL),
-(12, '__users', 'system', 'Min timeout (minutes) for buyer to open trade', 'buyer_open_trade_min_mins_tmt', '10', 'integer', 'system', '2022-10-13 18:29:44', NULL),
-(13, '__users', 'system', 'Max timeout (minutes) for buyer to complete trade (auto flags)', 'buyer_cmplt_trade_max_mins_tmt', '240', 'integer', 'system', '2022-10-13 18:29:44', NULL),
-(14, '__users', 'system', 'Use tatum crypto asset engine API', 'use_ttm_api', '1', 'boolean', 'system', '2022-10-13 18:29:44', NULL),
-(15, '__users', 'system', 'Platform fee factor on trade transactions', 'trade_txn_fee_fctr', '0.01', 'float', 'system', '2022-10-13 18:29:44', NULL),
-(16, '__users', 'system', 'Platform fee factor on direct onchain transfers', 'withdrawal_txn_fee_fctr', '0.01', 'float', 'system', '2022-10-13 18:29:44', NULL),
-(17, '__users', 'system', 'Platform fee factor on direct offchain transfers', 'pymt_txn_fee_fctr', '0.01', 'float', 'system', '2022-10-13 18:29:44', NULL),
-(18, '__users', 'system', 'Platform fee factor on ankelli pay payments', 'pay_txn_fee_fctr', '0.01', 'float', 'system', '2022-10-13 18:29:44', NULL),
-(19, '__users', 'system', 'Platform fee factor on crypto conversions', 'crypto_conv_txn_fee_fctr', '0.01', 'float', 'system', '2022-10-13 18:29:44', NULL);
+(1, '__users', 'system', 'Backend rest api enabled', 'backend_rest_api_enabled', '1', 'boolean', 'system', '2022-10-15 09:01:30', NULL),
+(2, '__users', 'system', 'Scaffolding app enabled', 'scaffolding_app_enabled', '1', 'boolean', 'system', '2022-10-15 09:01:30', NULL),
+(3, '__users', 'system', 'Fallback Display Language', 'fallback_pref_lang', 'en', 'enum:langs', 'system', '2022-10-15 09:01:30', NULL),
+(4, '__users', 'system', 'Fallback Display Theme', 'fallback_pref_theme', 'light', 'enum:themes', 'system', '2022-10-15 09:01:30', NULL),
+(5, '__users', 'system', 'Image storage driver', 'image_storage_driver', 'lavarel_file_storage', 'enum:file_storage_drivers', 'system', '2022-10-15 09:01:30', NULL),
+(6, '__users', 'system', 'Document storage driver', 'document_storage_driver', 'lavarel_file_storage', 'enum:file_storage_drivers', 'system', '2022-10-15 09:01:30', NULL),
+(7, '__users', 'system', 'Open Registration enabled', 'open_reg_enabled', '0', 'boolean', 'system', '2022-10-15 09:01:30', NULL),
+(8, '__users', 'system', 'Token registration enabled', 'token_reg_enabled', '0', 'boolean', 'system', '2022-10-15 09:01:30', NULL),
+(9, '__users', 'system', 'Registration token max use count', 'reg_token_max_use_count', '10', 'integer', 'system', '2022-10-15 09:01:30', NULL),
+(10, '__users', 'system', 'Offers to sell enabled', 'offer_to_sell_enabled', '0', 'boolean', 'system', '2022-10-15 09:01:30', NULL),
+(11, '__users', 'system', 'Offers to buy enabled', 'offer_to_buy_enabled', '1', 'boolean', 'system', '2022-10-15 09:01:30', NULL),
+(12, '__users', 'system', 'Min timeout (minutes) for buyer to open trade', 'buyer_open_trade_min_mins_tmt', '10', 'integer', 'system', '2022-10-15 09:01:30', NULL),
+(13, '__users', 'system', 'Max timeout (minutes) for buyer to complete trade (auto flags)', 'buyer_cmplt_trade_max_mins_tmt', '240', 'integer', 'system', '2022-10-15 09:01:30', NULL),
+(14, '__users', 'system', 'Default Selected Crypto Asset', 'default_crypto_asset_code', 'ETH', 'enum:crypto_asset_codes', 'system', '2022-10-15 09:01:30', NULL),
+(15, '__users', 'system', 'Default Selected Fiat Currency', 'default_fiat_currency_code', 'USD', 'enum:fiat_currency_codes', 'system', '2022-10-15 09:01:30', NULL),
+(16, '__users', 'system', 'Use tatum crypto asset engine API', 'use_ttm_api', '1', 'boolean', 'system', '2022-10-15 09:01:30', NULL),
+(17, '__users', 'system', 'Platform fee factor on trade transactions', 'trade_txn_fee_fctr', '0.01', 'float', 'system', '2022-10-15 09:01:30', NULL),
+(18, '__users', 'system', 'Platform fee factor on payment transfers', 'pymt_txn_fee_fctr', '0.01', 'float', 'system', '2022-10-15 09:01:30', NULL),
+(19, '__users', 'system', 'Platform fee factor on ankelli pay payments', 'ankelli_pay_txn_fee_fctr', '0.01', 'float', 'system', '2022-10-15 09:01:30', NULL),
+(20, '__users', 'system', 'Platform fee factor on crypto conversions', 'crypto_conv_txn_fee_fctr', '0.01', 'float', 'system', '2022-10-15 09:01:30', NULL);
 
 -- --------------------------------------------------------
 
@@ -944,19 +956,19 @@ CREATE TABLE `__pymt_methods` (
 --
 
 INSERT INTO `__pymt_methods` (`id`, `name`, `slug`, `hex_color`, `details_required`, `choice_currency_codes`, `_status`, `creator_username`, `created_datetime`, `updated_datetime`, `deleted_datetime`) VALUES
-(1, 'Cash in person', 'cash_in_person', '5e5d4b', '[\"phone_no\"]', NULL, 'active', 'system', '2022-10-13 18:29:45', NULL, NULL),
-(2, 'Stanbic bank', 'stanbic_bank', '066ef3', '[\"account_holder_name\",\"account_no\"]', '[\"USD\",\"ZWL\"]', 'active', 'system', '2022-10-13 18:29:45', NULL, NULL),
-(3, 'FNB bank', 'fnb_bank', '009eaa', '[\"account_holder_name\",\"account_no\"]', '[\"ZAR\"]', 'active', 'system', '2022-10-13 18:29:45', NULL, NULL),
-(4, 'Mukuru', 'mukuru', 'e77924', '[\"fullname\",\"phone_no\"]', '[\"USD\"]', 'active', 'system', '2022-10-13 18:29:45', NULL, NULL),
-(5, 'Algérie Poste', 'algerie_poste', '01009a', '[\"account_holder_name\",\"account_holder_address\",\"account_no\",\"account_key\"]', '[\"DZD\"]', 'active', 'system', '2022-10-13 18:29:45', NULL, NULL),
-(6, 'MTN Mobile Money', 'mtn_momo', 'feca05', '[\"fullname\",\"phone_no\"]', NULL, 'active', 'system', '2022-10-13 18:29:45', NULL, NULL),
-(7, 'Ecocash', 'ecocash', '005ba4', '[\"fullname\",\"phone_no\"]', '[\"ZWL\"]', 'active', 'system', '2022-10-13 18:29:45', NULL, NULL),
-(8, 'Paypal', 'paypal', '27346a', '[\"fullname\",\"email_address\"]', '[\"USD\",\"EUR\",\"GBP\"]', 'active', 'system', '2022-10-13 18:29:45', NULL, NULL),
-(9, 'Skrill', 'skrill', '862165', '[\"fullname\",\"email_address\"]', NULL, 'active', 'system', '2022-10-13 18:29:45', NULL, NULL),
-(10, 'World Remit', 'world_remit', '604684', '[\"fullname\",\"email_address\"]', NULL, 'active', 'system', '2022-10-13 18:29:45', NULL, NULL),
-(11, 'Mastercard', 'mastercard', 'cc0001', '[\"account_holder_name\",\"account_no\"]', NULL, 'active', 'system', '2022-10-13 18:29:45', NULL, NULL),
-(12, 'Visa', 'visa', '0055a5', '[\"account_holder_name\",\"account_no\"]', NULL, 'active', 'system', '2022-10-13 18:29:45', NULL, NULL),
-(13, 'FBC Bank', 'fbc_bank', '0055a5', '[\"account_holder_name\",\"account_no\"]', '[\"USD\",\"ZWL\"]', 'active', 'system', '2022-10-13 18:29:45', NULL, NULL);
+(1, 'Cash in person', 'cash_in_person', '5e5d4b', '[\"phone_no\"]', NULL, 'active', 'system', '2022-10-15 09:01:37', NULL, NULL),
+(2, 'Stanbic bank', 'stanbic_bank', '066ef3', '[\"account_holder_name\",\"account_no\"]', '[\"USD\",\"ZWL\"]', 'active', 'system', '2022-10-15 09:01:37', NULL, NULL),
+(3, 'FNB bank', 'fnb_bank', '009eaa', '[\"account_holder_name\",\"account_no\"]', '[\"ZAR\"]', 'active', 'system', '2022-10-15 09:01:37', NULL, NULL),
+(4, 'Mukuru', 'mukuru', 'e77924', '[\"fullname\",\"phone_no\"]', '[\"USD\"]', 'active', 'system', '2022-10-15 09:01:37', NULL, NULL),
+(5, 'Algérie Poste', 'algerie_poste', '01009a', '[\"account_holder_name\",\"account_holder_address\",\"account_no\",\"account_key\"]', '[\"DZD\"]', 'active', 'system', '2022-10-15 09:01:37', NULL, NULL),
+(6, 'MTN Mobile Money', 'mtn_momo', 'feca05', '[\"fullname\",\"phone_no\"]', NULL, 'active', 'system', '2022-10-15 09:01:37', NULL, NULL),
+(7, 'Ecocash', 'ecocash', '005ba4', '[\"fullname\",\"phone_no\"]', '[\"ZWL\"]', 'active', 'system', '2022-10-15 09:01:37', NULL, NULL),
+(8, 'Paypal', 'paypal', '27346a', '[\"fullname\",\"email_address\"]', '[\"USD\",\"EUR\",\"GBP\"]', 'active', 'system', '2022-10-15 09:01:37', NULL, NULL),
+(9, 'Skrill', 'skrill', '862165', '[\"fullname\",\"email_address\"]', NULL, 'active', 'system', '2022-10-15 09:01:37', NULL, NULL),
+(10, 'World Remit', 'world_remit', '604684', '[\"fullname\",\"email_address\"]', NULL, 'active', 'system', '2022-10-15 09:01:37', NULL, NULL),
+(11, 'Mastercard', 'mastercard', 'cc0001', '[\"account_holder_name\",\"account_no\"]', NULL, 'active', 'system', '2022-10-15 09:01:37', NULL, NULL),
+(12, 'Visa', 'visa', '0055a5', '[\"account_holder_name\",\"account_no\"]', NULL, 'active', 'system', '2022-10-15 09:01:37', NULL, NULL),
+(13, 'FBC Bank', 'fbc_bank', '0055a5', '[\"account_holder_name\",\"account_no\"]', '[\"USD\",\"ZWL\"]', 'active', 'system', '2022-10-15 09:01:37', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -976,7 +988,7 @@ CREATE TABLE `__reg_tokens` (
 --
 
 INSERT INTO `__reg_tokens` (`token`, `_status`, `creator_username`, `created_datetime`) VALUES
-('1234567890', 'usable', 'system', '2022-10-13 16:32:01');
+('1234567890', 'usable', 'system', '2022-10-15 07:04:13');
 
 -- --------------------------------------------------------
 
@@ -1018,9 +1030,10 @@ CREATE TABLE `__seller_extensions` (
 --
 
 INSERT INTO `__seller_extensions` (`id`, `user_username`, `_status`, `creator_username`, `created_datetime`, `updated_datetime`, `deleted_datetime`) VALUES
-(1, 'sysadmin', 'deactivated', 'system', '2022-10-13 16:30:05', '2022-10-13 16:30:05', NULL),
-(2, 'busadmin', 'deactivated', 'system', '2022-10-13 16:30:14', '2022-10-13 16:30:14', NULL),
-(3, 'busops', 'deactivated', 'system', '2022-10-13 16:30:56', '2022-10-13 16:30:56', NULL);
+(1, 'sysadmin', 'deactivated', 'system', '2022-10-15 07:02:09', '2022-10-15 07:02:09', NULL),
+(2, 'busadmin', 'deactivated', 'system', '2022-10-15 07:02:14', '2022-10-15 07:02:14', NULL),
+(3, 'reserves', 'deactivated', 'system', '2022-10-15 07:02:53', '2022-10-15 07:02:53', NULL),
+(4, 'busops', 'deactivated', 'system', '2022-10-15 07:03:12', '2022-10-15 07:03:12', NULL);
 
 -- --------------------------------------------------------
 
@@ -1045,9 +1058,11 @@ CREATE TABLE `__sessions` (
 --
 
 INSERT INTO `__sessions` (`token`, `user_username`, `device_info`, `agent_app_info`, `_status`, `created_datetime`, `updated_datetime`, `signin_datetime`, `signout_datetime`) VALUES
-('FACTORY_SSN', 'system', '{\"name\":\"Factory device\",\"version\":1}', '{\"name\":\"Factory agent app\",\"version\":1}', 'ended', '2022-10-13 18:29:44', NULL, NULL, NULL),
-('TATUM_NOTIFS_SSN', 'system', '{\"name\":\"Tatum Notification Station device\",\"version\":1}', '{\"name\":\"Tatum Notification Station agent app\",\"version\":1}', 'active', '2022-10-13 18:29:44', NULL, NULL, NULL),
-('TEST_SSN', NULL, '{\"name\":\"Factory device\",\"version\":1}', '{\"name\":\"Factory agent app\",\"version\":1}', 'active', '2022-10-13 18:29:44', NULL, NULL, NULL);
+('FACTORY_SSN', 'system', '{\"name\":\"Factory device\",\"version\":1}', '{\"name\":\"Factory agent app\",\"version\":1}', 'ended', '2022-10-15 09:01:30', NULL, NULL, NULL),
+('guGvQvJpsJWxYNSf', NULL, '{\"name\":null,\"version\":null}', '{\"name\":\"Ankelli Web App\",\"version\":\"1.0.0\",\"extra\":\"Ankelli Web App\"}', 'empty', '2022-10-15 07:05:12', '2022-10-15 07:05:12', NULL, NULL),
+('ICS8SvKwGuTFfV1Z', NULL, '{\"name\":null,\"version\":null}', '{\"name\":\"Ankelli Web App\",\"version\":\"1.0.0\",\"extra\":\"Ankelli Web App\"}', 'empty', '2022-10-15 07:05:12', '2022-10-15 07:05:12', NULL, NULL),
+('TATUM_NOTIFS_SSN', 'system', '{\"name\":\"Tatum Notification Station device\",\"version\":1}', '{\"name\":\"Tatum Notification Station agent app\",\"version\":1}', 'active', '2022-10-15 09:01:30', NULL, NULL, NULL),
+('TEST_SSN', NULL, '{\"name\":\"Factory device\",\"version\":1}', '{\"name\":\"Factory agent app\",\"version\":1}', 'active', '2022-10-15 09:01:30', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1144,14 +1159,14 @@ CREATE TABLE `__users` (
 --
 
 INSERT INTO `__users` (`id`, `username`, `email_address`, `password`, `reg_token`, `avatar_image_id`, `ttm_customer_id`, `_status`, `created_datetime`, `updated_datetime`, `deleted_datetime`) VALUES
-(1, 'system', 'system', '', NULL, NULL, NULL, 'active', '2022-10-13 18:29:43', NULL, NULL),
-(2, 'developer', 'developer.ankelli@gmail.com', '$2y$10$qa4mpVkaRjJESMlrP6cEXOSVexHwhd0S6ncYOrmDBEBEfDQHWCNnG', NULL, NULL, NULL, 'active', '2022-10-13 16:29:58', '2022-10-13 16:29:58', NULL),
-(3, 'sysadmin', 'sysadmin@ankelli.com', '$2y$10$HJwk6I7Kt4dBKKMVk5VsGO.l9qDzZkLE6WNyoD6gICp6lF1xdbbfO', NULL, NULL, NULL, 'active', '2022-10-13 16:30:01', '2022-10-13 16:30:01', NULL),
-(4, 'busadmin', 'busadmin@ankelli.com', '$2y$10$Yqw2wfWOGXhIVwqSwNeoSOKC2kSEoN2pYtpz.3F37DV2xKdqENpnK', NULL, NULL, NULL, 'active', '2022-10-13 16:30:07', '2022-10-13 16:30:07', NULL),
-(5, 'busops', 'busops@ankelli.com', '$2y$10$eJQM3L830yEU6Wvh1E6JoerJ2D3rR8nSEKHeLZrpJUjK8aMVXOPcS', NULL, NULL, '6321ec61d5f2885b44f1bda0', 'active', '2022-10-13 16:30:24', '2022-10-13 16:30:35', NULL),
-(6, 'guddaz', 'goodhopedhliwayo@gmail.com', '$2y$10$/jAuLAfH5uGfOqMBkAeBY.mb3NGfqCbae3bJZV9lxTHKRfn/XmMMK', NULL, NULL, '632970417b09c5d6322bc226', 'active', '2022-10-13 16:30:58', '2022-10-13 16:31:01', NULL),
-(7, 'paywyze', 'paywyze@ankelli.com', '$2y$10$CgtkYD3LLicRJ7MdAuCUc.GBq.xsOsLYVsljPXEPFjiQoACelzLUS', NULL, NULL, '63298faa64858e37282c6267', 'active', '2022-10-13 16:31:07', '2022-10-13 16:31:18', NULL),
-(8, 'john', 'john@ankelli.com', '$2y$10$he451MHLjDKaXFwLVttpH.6Vr410foZniIbBsY6QxYwNxYwY1Emtm', NULL, NULL, '63207c7291626c6cd5860a21', 'active', '2022-10-13 16:31:48', '2022-10-13 16:31:56', NULL);
+(1, 'system', 'system', '', NULL, NULL, NULL, 'active', '2022-10-15 09:01:22', NULL, NULL),
+(2, 'developer', 'developer.ankelli@gmail.com', '$2y$10$1GuohhUjlAaIQVVbuGZsyea0wBuM.hTbFlEM2fik2Zv8FStMkotpS', NULL, NULL, NULL, 'active', '2022-10-15 07:02:02', '2022-10-15 07:02:02', NULL),
+(3, 'sysadmin', 'sysadmin@ankelli.com', '$2y$10$.PUN8q3yLBzr4VHUwkUdZeNIUwjybr9VcmGJH9JlDZbr1uey3tJtu', NULL, NULL, NULL, 'active', '2022-10-15 07:02:06', '2022-10-15 07:02:06', NULL),
+(4, 'busadmin', 'busadmin@ankelli.com', '$2y$10$mzgkRRHhn7uftXV3NcHHKuVTDk6W54g3sel6Ug/9v3IRh.sEyNAPC', NULL, NULL, NULL, 'active', '2022-10-15 07:02:11', '2022-10-15 07:02:11', NULL),
+(5, 'reserves', 'reserves@ankelli.com', '$2y$10$ACtFaxEmOsSEOGhapRmrruvpVX5oYERFcse1frczDqeOejmOR2b/i', NULL, NULL, '63207c7291626c6cd5860a21', 'active', '2022-10-15 07:02:16', '2022-10-15 07:02:27', NULL),
+(6, 'busops', 'busops@ankelli.com', '$2y$10$feW.sJxrvxoqtClSHlqd7utWH0vfcX5vvALBaReRsL6JvHSNBEGtO', NULL, NULL, '6321ec61d5f2885b44f1bda0', 'active', '2022-10-15 07:03:03', '2022-10-15 07:03:07', NULL),
+(7, 'guddaz', 'goodhopedhliwayo@gmail.com', '$2y$10$fm.Lkl/O3q3n/t9r7SkCAeU7xixUF6zioEHqaTc2qWQ80/sDwCONq', NULL, NULL, '632970417b09c5d6322bc226', 'active', '2022-10-15 07:03:13', '2022-10-15 07:03:24', NULL),
+(8, 'paywyze', 'paywyze@ankelli.com', '$2y$10$3Nbyw83rTo8uh5RzcuLE0uP135YDVyIKOI6eI9/6Sfkl26FnRl6XC', NULL, NULL, '63298faa64858e37282c6267', 'active', '2022-10-15 07:03:45', '2022-10-15 07:04:04', NULL);
 
 -- --------------------------------------------------------
 
@@ -1176,16 +1191,16 @@ CREATE TABLE `__user_groups` (
 --
 
 INSERT INTO `__user_groups` (`id`, `name`, `slug`, `description`, `_status`, `creator_username`, `created_datetime`, `updated_datetime`, `deleted_datetime`) VALUES
-(1, 'Default Users', 'default_users', 'Group for Default User accounts created on system initialization and factory_data loading. \nNew users cannot be added to this group.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(2, 'Administrators', 'administrators', 'Automatically joined group (Users with active Admin Extension). \nMembers can be added to other admin groups.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(3, 'Developers', 'developers', 'Admin group for unrestricted system users. \nMembers have access to all features and OTP access to account named \"developer\". \nOnly \"developer\" account can add members to this group.\nGroup used for System Development and Maintenance.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(4, 'System Administrators', 'system_administrators', 'Admin Group for System Administrators. \nMembers can manage system functions and sysconfig params. \nMembers have OTP access to account named \"sysadmin\".\nOnly \"sysadmin\" account can add members to this group.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(5, 'Business Administrators', 'business_administrators', 'Admin group for Business Administrators.\nMembers have access to business related features.\nMembers have OTP access to accounts named \"busops\" and \"busadmin\".\nOnly \"busadmin\" account can add members to this group.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(6, 'User Administrators', 'user_administrators', 'Admin group for User Administrators. \nMembers can manage other users and user related queries.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(7, 'Platform moderators', 'moderators', 'Group for Platform moderators. \nMembers can respond in the customer service chat module, handle flagged business elements, manage daily updates.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(8, 'Sellers', 'sellers', 'Automatically joined group (Users with active Seller Extension) for members who have sold assets on the platform.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(9, 'Buyers', 'buyers', 'Automatically joined group (Users with active Buyer Extension) for buyers who have bought assets on the platform.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL),
-(10, 'Beta Testers', 'beta_testers', 'User Group for selected individuals to test certain features before they are published.', 'active', 'system', '2022-10-13 18:29:44', NULL, NULL);
+(1, 'Default Users', 'default_users', 'Group for Default User accounts created on system initialization and factory_data loading. \nNew users cannot be added to this group.', 'active', 'system', '2022-10-15 09:01:27', NULL, NULL),
+(2, 'Administrators', 'administrators', 'Automatically joined group (Users with active Admin Extension). \nMembers can be added to other admin groups.', 'active', 'system', '2022-10-15 09:01:27', NULL, NULL),
+(3, 'Developers', 'developers', 'Admin group for unrestricted system users. \nMembers have access to all features and OTP access to account named \"developer\". \nOnly \"developer\" account can add members to this group.\nGroup used for System Development and Maintenance.', 'active', 'system', '2022-10-15 09:01:27', NULL, NULL),
+(4, 'System Administrators', 'system_administrators', 'Admin Group for System Administrators. \nMembers can manage system functions and sysconfig params. \nMembers have OTP access to account named \"sysadmin\".\nOnly \"sysadmin\" account can add members to this group.', 'active', 'system', '2022-10-15 09:01:27', NULL, NULL),
+(5, 'Business Administrators', 'business_administrators', 'Admin group for Business Administrators.\nMembers have access to business related features.\nMembers have OTP access to accounts named \"busops\" and \"busadmin\".\nOnly \"busadmin\" account can add members to this group.', 'active', 'system', '2022-10-15 09:01:27', NULL, NULL),
+(6, 'User Administrators', 'user_administrators', 'Admin group for User Administrators. \nMembers can manage other users and user related queries.', 'active', 'system', '2022-10-15 09:01:27', NULL, NULL),
+(7, 'Platform moderators', 'moderators', 'Group for Platform moderators. \nMembers can respond in the customer service chat module, handle flagged business elements, manage daily updates.', 'active', 'system', '2022-10-15 09:01:27', NULL, NULL),
+(8, 'Sellers', 'sellers', 'Automatically joined group (Users with active Seller Extension) for members who have sold assets on the platform.', 'active', 'system', '2022-10-15 09:01:27', NULL, NULL),
+(9, 'Buyers', 'buyers', 'Automatically joined group (Users with active Buyer Extension) for buyers who have bought assets on the platform.', 'active', 'system', '2022-10-15 09:01:27', NULL, NULL),
+(10, 'Beta Testers', 'beta_testers', 'User Group for selected individuals to test certain features before they are published.', 'active', 'system', '2022-10-15 09:01:27', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1208,18 +1223,20 @@ CREATE TABLE `__user_group_memberships` (
 --
 
 INSERT INTO `__user_group_memberships` (`id`, `user_username`, `user_group_slug`, `_status`, `creator_username`, `created_datetime`, `updated_datetime`) VALUES
-(1, 'developer', 'default_users', 'active', 'system', '2022-10-13 16:29:59', '2022-10-13 16:29:59'),
-(2, 'developer', 'developers', 'active', 'system', '2022-10-13 16:30:00', '2022-10-13 16:30:00'),
-(3, 'sysadmin', 'default_users', 'active', 'system', '2022-10-13 16:30:02', '2022-10-13 16:30:02'),
-(4, 'sysadmin', 'system_administrators', 'active', 'system', '2022-10-13 16:30:06', '2022-10-13 16:30:06'),
-(5, 'busadmin', 'default_users', 'active', 'system', '2022-10-13 16:30:08', '2022-10-13 16:30:08'),
-(6, 'busadmin', 'business_administrators', 'active', 'system', '2022-10-13 16:30:19', '2022-10-13 16:30:19'),
-(7, 'busops', 'default_users', 'active', 'system', '2022-10-13 16:30:46', '2022-10-13 16:30:46'),
-(8, 'busops', 'business_administrators', 'active', 'system', '2022-10-13 16:30:57', '2022-10-13 16:30:57'),
-(9, 'guddaz', 'developers', 'active', 'system', '2022-10-13 16:31:06', '2022-10-13 16:31:06'),
-(10, 'paywyze', 'system_administrators', 'active', 'system', '2022-10-13 16:31:34', '2022-10-13 16:31:34'),
-(11, 'paywyze', 'user_administrators', 'active', 'system', '2022-10-13 16:31:38', '2022-10-13 16:31:38'),
-(12, 'paywyze', 'business_administrators', 'active', 'system', '2022-10-13 16:31:43', '2022-10-13 16:31:43');
+(1, 'developer', 'default_users', 'active', 'system', '2022-10-15 07:02:03', '2022-10-15 07:02:03'),
+(2, 'developer', 'developers', 'active', 'system', '2022-10-15 07:02:05', '2022-10-15 07:02:05'),
+(3, 'sysadmin', 'default_users', 'active', 'system', '2022-10-15 07:02:07', '2022-10-15 07:02:07'),
+(4, 'sysadmin', 'system_administrators', 'active', 'system', '2022-10-15 07:02:10', '2022-10-15 07:02:10'),
+(5, 'busadmin', 'default_users', 'active', 'system', '2022-10-15 07:02:12', '2022-10-15 07:02:12'),
+(6, 'busadmin', 'business_administrators', 'active', 'system', '2022-10-15 07:02:15', '2022-10-15 07:02:15'),
+(7, 'reserves', 'default_users', 'active', 'system', '2022-10-15 07:02:38', '2022-10-15 07:02:38'),
+(8, 'reserves', 'business_administrators', 'active', 'system', '2022-10-15 07:02:58', '2022-10-15 07:02:58'),
+(9, 'busops', 'default_users', 'active', 'system', '2022-10-15 07:03:09', '2022-10-15 07:03:09'),
+(10, 'busops', 'business_administrators', 'active', 'system', '2022-10-15 07:03:12', '2022-10-15 07:03:12'),
+(11, 'guddaz', 'developers', 'active', 'system', '2022-10-15 07:03:40', '2022-10-15 07:03:40'),
+(12, 'paywyze', 'system_administrators', 'active', 'system', '2022-10-15 07:04:09', '2022-10-15 07:04:09'),
+(13, 'paywyze', 'user_administrators', 'active', 'system', '2022-10-15 07:04:11', '2022-10-15 07:04:11'),
+(14, 'paywyze', 'business_administrators', 'active', 'system', '2022-10-15 07:04:12', '2022-10-15 07:04:12');
 
 -- --------------------------------------------------------
 
@@ -1614,7 +1631,7 @@ ALTER TABLE `failed_jobs`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1303;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=505;
 
 --
 -- AUTO_INCREMENT for table `oauth_clients`
@@ -1638,7 +1655,7 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `__admin_extensions`
 --
 ALTER TABLE `__admin_extensions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `__assets`
@@ -1662,7 +1679,7 @@ ALTER TABLE `__asset_wallet_addresses`
 -- AUTO_INCREMENT for table `__buyer_extensions`
 --
 ALTER TABLE `__buyer_extensions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `__countries`
@@ -1728,7 +1745,7 @@ ALTER TABLE `__posts`
 -- AUTO_INCREMENT for table `__pref_items`
 --
 ALTER TABLE `__pref_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `__pymt_methods`
@@ -1746,7 +1763,7 @@ ALTER TABLE `__reviews`
 -- AUTO_INCREMENT for table `__seller_extensions`
 --
 ALTER TABLE `__seller_extensions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `__users`
@@ -1764,7 +1781,7 @@ ALTER TABLE `__user_groups`
 -- AUTO_INCREMENT for table `__user_group_memberships`
 --
 ALTER TABLE `__user_group_memberships`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Constraints for dumped tables

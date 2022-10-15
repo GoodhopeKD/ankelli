@@ -42,6 +42,7 @@ export const funds_menu = {
         {
             title: 'Deposit',
             path: '/deposit',
+            restricted_for_default_users: true,
             children: [
                 {
                     title: 'Receive crypto',
@@ -52,18 +53,19 @@ export const funds_menu = {
                     title: 'Token topup',
                     path: '/deposit/token-topup',
                     element: (props) => <DepositTokenTopupScreen {...props} />,
-                    restricted_for_default_users: true,
                 },
             ]
         },
         {
             title: 'Withdraw',
             path: '/withdraw',
+            restricted_for_default_users: true,
             element: (props) => <BCWithdrawScreen {...props} />,
         },
         {
             title: 'Convert crypto',
             path: '/crypto-conversion',
+            restricted_for_default_users: true,
             element: (props) => <ExampleElement {...props} />,
         },
         {

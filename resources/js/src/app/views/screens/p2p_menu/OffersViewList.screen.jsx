@@ -142,7 +142,7 @@ class OffersViewListScreen extends React.Component {
             asset_options.push({
                 value: asset_code,
                 searchable_text: asset_code + asset.name + asset.description,
-                output_element: () => <>{asset.name} <i className="text-primary">{asset_code}</i></>
+                output_element: () => <>{asset.name} <i className="text-primary">{asset.fe_asset_code}</i></>
             })
         })
 
@@ -281,7 +281,7 @@ class OffersViewListScreen extends React.Component {
                                             </td>
                                             {offer.offer_to === 'buy' ? <>
                                                 <td className="align-middle">
-                                                    <b>{offer.asset_code}</b> <i>for</i> <b>{offer.currency_code}</b>
+                                                    <b>{asset.fe_asset_code}</b> <i>for</i> <b>{offer.currency_code}</b>
                                                     <br /><small className='text-muted'>🕑 Trade: {offer.buyer_cmplt_trade_mins_tmt} mins</small>
                                                 </td>
                                                 <td className="align-middle">{window.currencyAmountString(offer.offer_price, currency)}</td>
@@ -300,7 +300,7 @@ class OffersViewListScreen extends React.Component {
                                                     </div>
                                                 </td>}
                                             </> : <>
-                                                <td className="align-middle"><b>{offer.currency_code}</b> <i>for</i> <b>{offer.asset_code}</b>
+                                                <td className="align-middle"><b>{offer.currency_code}</b> <i>for</i> <b>{asset.fe_asset_code}</b>
                                                     <br /><small className="text-muted"><i>{this.props.auth_user && this.props.auth_user.username == offer.creator_username ? 'Last updated' : 'Posted'} {(new _DateTime(offer.updated_datetime).prettyDatetime())}</i></small></td>
                                                 <td className="align-middle">{window.currencyAmountString(offer.offer_price, currency)}</td>
                                                 <td className="align-middle">

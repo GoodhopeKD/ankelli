@@ -17,11 +17,13 @@ return new class extends Migration
             $table->id();
             $table->string('name', 64)->unique();
             $table->string('code', 64)->unique();
+            $table->string('fe_asset_code', 64);
             $table->string('chain', 64);
             $table->string('xpub', 255)->unique()->nullable();
             $table->string('smallest_display_unit', 38); // unsignedDecimal
             $table->unsignedDecimal('withdrawal_txn_fee_usd_fctr', $precision = 8, $scale = 4);
-            $table->unsignedDecimal('payment_txn_fee_usd_fctr', $precision = 8, $scale = 4);
+            $table->unsignedTinyInteger('withdrawal_min_limit_usd_fctr');
+            $table->unsignedInteger('withdrawal_max_limit_usd_fctr');
             $table->string('usd_asset_exchange_rate', 38); // unsignedDecimal
             $table->text('onchain_disclaimer');
             $table->enum('_status', ['active', 'deactivated'])->default('active');

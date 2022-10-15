@@ -23,6 +23,7 @@ class _AssetWalletResourceCollection extends ResourceCollection
                     'usable_balance_asset_value' => $_this->usable_balance_asset_value,
                     'total_balance_asset_value' => $_this->total_balance_asset_value,
                     '_status' => $_this->_status,
+                    'asset_wallet_addresses' => $_this->asset_wallet_addresses_f(),
                     
                     //'created_datetime'      => $_this->created_datetime,
                     //'updated_datetime'      => $_this->updated_datetime,

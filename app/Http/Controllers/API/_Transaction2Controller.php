@@ -572,7 +572,7 @@ class _Transaction2Controller extends Controller
         $validated_data['txn_context'] = 'offchain';
         $validated_data['operation_slug'] = 'PAYMENT';
         $asset = _Asset::firstWhere('code', $validated_data['asset_code']);
-        $validated_data['txn_fee_asset_value'] = $asset->usd_asset_exchange_rate * $asset->payment_txn_fee_usd_fctr;
+        $validated_data['txn_fee_asset_value'] = $validated_data['asset_value'] * _PrefItem::firstWhere('key_slug', 'pymt_txn_fee_fctr')->value_f();
         $validated_data['asset_value'] = $validated_data['asset_value'];
         return (new _Transaction2Controller)->store(new Request($validated_data));
     }

@@ -10,7 +10,7 @@ import { _User, _DateTime, _Session, _Notification, _Input, _Transaction } from 
 class PlatformSendPaymentScreen extends React.Component {
 
     default_input = {
-        asset_code: 'ETH',
+        asset_code: this.props.sysconfig_params.default_crypto_asset_code,
         asset_value: new _Input(),
         recipient_user_tag: 'username',
         recipient_username: new _Input(),
@@ -89,13 +89,13 @@ class PlatformSendPaymentScreen extends React.Component {
                 asset_options.push({
                     value: asset_code,
                     searchable_text: asset_code + asset.name + asset.description,
-                    output_element: () => <>{asset.name} <i className="text-primary">{asset_code}</i></>
+                    output_element: () => <>{asset.name} <i className="text-primary">{asset.fe_asset_code}</i></>
                 })
             }
         })
 
         const asset = this.props.datalists.active_assets[this.state.input.asset_code]
-        const txn_fee_asset_value = parseFloat(asset.withdrawal_txn_fee_usd_fctr) * parseFloat(asset.usd_asset_exchange_rate)
+        const txn_fee_asset_value = parseFloat(this.props.sysconfig_params.pymt_txn_fee_fctr) * parseFloat(this.state.input.asset_value)
 
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container-xl py-3">
@@ -218,7 +218,7 @@ class PlatformSendPaymentScreen extends React.Component {
                                         </div>
                                     </div>
                                     <div className="col">
-                                        <label htmlFor="output_current_balance" className="form-label">Total to be debited from account. (Incl. {window.currencyAmountString(asset.withdrawal_txn_fee_usd_fctr, this.props.datalists.active_currencies['USD'])} payment fee) </label>
+                                        <label htmlFor="output_current_balance" className="form-label">Total to be debited from account. (Incl. a {this.props.sysconfig_params.pymt_txn_fee_fctr * 100}% payment fee) </label>
                                         <span className="form-control" id='output_current_balance'>{window.assetValueString(parseFloat(this.state.input.asset_value ?? 0) + txn_fee_asset_value, asset)}</span>
                                     </div>
                                 </div>

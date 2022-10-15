@@ -10,8 +10,8 @@ import CustomSelect from 'app/views/components/CustomSelect'
 class DepositTokenTopupScreen extends React.Component {
 
     default_input = {
-        asset_code: 'ETH',
-        currency_code: 'USD',
+        asset_code: this.props.sysconfig_params.default_crypto_asset_code,
+        currency_code: this.props.sysconfig_params.default_fiat_currency_code,
         token: new _Input(),
     }
 
@@ -61,7 +61,7 @@ class DepositTokenTopupScreen extends React.Component {
             asset_options.push({
                 value: asset_code,
                 searchable_text: asset_code + asset.name + asset.description,
-                output_element: () => <>{asset.name} <i className="text-primary">{asset_code}</i></>
+                output_element: () => <>{asset.name} <i className="text-primary">{asset.fe_asset_code}</i></>
             })
         })
 
@@ -144,6 +144,7 @@ class DepositTokenTopupScreen extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
+        sysconfig_params: state.sysconfig_params_data,
         datalists: state.datalists_data,
         auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_wallets']) : null,
     }

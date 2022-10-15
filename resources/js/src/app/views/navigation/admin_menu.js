@@ -1,5 +1,5 @@
 import React from "react"
-import CustodialWalletManagementScreen from 'app/views/screens/admin_menu/funds-admin/CustodialWalletManagement.screen'
+import PlatformWalletManagementScreen from 'app/views/screens/admin_menu/funds-admin/PlatformWalletManagement.screen'
 import DepositTokensViewListScreen from 'app/views/screens/admin_menu/funds-admin/DepositTokensViewList.screen'
 import DepositTokensCreateNewScreen from 'app/views/screens/admin_menu/funds-admin/DepositTokensCreateNew.screen'
 import RegTokensViewListScreen from 'app/views/screens/admin_menu/accounts-admin/RegTokensViewList.screen'
@@ -79,51 +79,34 @@ export const admin_menu = {
             title: 'Funds admin',
             path: '/funds-admin',
             required_active_user_group_membership_slugs: ['business_administrators'],
+            restricted_for_default_users: true,
             children: [
                 {
-                    title: 'Manage mother wallets',
-                    path: '/funds-admin/mother-wallets-management',
-                    element: (props) => <CustodialWalletManagementScreen {...props} />,
+                    title: 'Manage platform wallets',
+                    path: '/funds-admin/platform-wallets-management',
+                    element: (props) => <PlatformWalletManagementScreen {...props} />,
                     required_active_user_group_membership_slugs: ['business_administrators'],
                     show_in_menu: true,
                 },
-                // Deposits management
+                // Deposit tokens management
                 {
                     title: 'Deposit Tokens',
-                    path: '/funds-admin/deposit_tokens',
+                    path: '/funds-admin/deposit-tokens',
                     element: (props) => <DepositTokensViewListScreen {...props} />,
                     required_active_user_group_membership_slugs: ['business_administrators'],
                     show_in_menu: true,
                 },
                 {
                     title: 'New Deposit Token',
-                    path: '/funds-admin/deposit_tokens/new',
+                    path: '/funds-admin/deposit-tokens/new',
                     element: (props) => <DepositTokensCreateNewScreen {...props} />,
                     required_active_user_group_membership_slugs: ['business_administrators'],
-                    restricted_for_default_users: true,
                     show_in_menu: false,
                 },
                 {
                     title: 'Edit Deposit Token',
-                    path: '/funds-admin/deposit_tokens/:deposit_token_id/edit',
+                    path: '/funds-admin/deposit-tokens/:deposit_token_id/edit',
                     element: (props) => <ExampleElement {...props} />,
-                    restricted_for_default_users: true,
-                    show_in_menu: false,
-                },
-                // Withdrawals management
-                {
-                    title: 'Withdrawal requests',
-                    path: '/funds-admin/withdrawal-requests',
-                    element: (props) => <ExampleElement {...props} />,
-                    required_active_user_group_membership_slugs: ['business_administrators'],
-                    show_in_menu: true,
-                },
-                {
-                    title: 'Handle Withdrawal Request',
-                    path: '/funds-admin/withdrawal-requests/:withdrawal_request_id/edit',
-                    element: (props) => <ExampleElement {...props} />,
-                    required_active_user_group_membership_slugs: ['business_administrators'],
-                    restricted_for_default_users: true,
                     show_in_menu: false,
                 },
             ]
@@ -302,6 +285,7 @@ export const admin_menu = {
         {
             title: 'Datalists',
             path: '/datalists',
+            restricted_for_default_users: true,
             children: [
                 {
                     title: 'Assets List',

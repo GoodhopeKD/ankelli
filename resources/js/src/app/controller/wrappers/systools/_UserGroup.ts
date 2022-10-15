@@ -87,7 +87,7 @@ export default class _UserGroup extends _Wrapper_ implements Omit<typeof _UserGr
     /* Creator(s) */
 
     public static async create(args: typeof _UserGroupRespObj) {
-        return this._mainLaravelDBAPICreate('admin/systools/user_groups', args)
+        return this._mainLaravelDBAPICreate('admin/systools/user-groups', args)
     }
 
     /* Readers */

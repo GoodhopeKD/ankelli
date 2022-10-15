@@ -153,8 +153,29 @@ class __AuxController extends Controller
 
     public function sysconfig_params_enum_options()
     {
+        $crypto_assets = json_decode((new _AssetController)->index( new Request(['_status' =>'active']) )->toJson(),true)['data'];
+        $crypto_asset_code_options = [];
+        foreach ($crypto_crypto_assets as $crypto_asset) {
+            array_push($crypto_asset_code_options, ['slug' => $crypto_asset->fe_asset_code, 'name' => $crypto_asset->name ]);
+        }
+
+        $fiat_currencies = json_decode((new _CurrencyController)->index( new Request(['_status' =>'active']) )->toJson(),true)['data'];
+        $fiat_currency_code_options = [];
+        foreach ($crypto_fiat_currencies as $fiat_currency) {
+            array_push($fiat_currency_code_options, ['slug' => $fiat_currency->code, 'name' => $fiat_currency->name.' ('.$fiat_currency->symbol.')' ]);
+        }
         return response()->json([
             'data' => [
+                [
+                    'slug' => 'crypto_asset_codes',
+                    'name' => 'Crypto Assets',
+                    'options' => $crypto_asset_code_options,
+                ],
+                [
+                    'slug' => 'fiat_currency_codes',
+                    'name' => 'Fiat Currencies',
+                    'options' => $fiat_currency_code_options,
+                ],
                 [
                     'slug' => 'langs',
                     'name' => 'Display Languages',
@@ -269,34 +290,39 @@ class __AuxController extends Controller
         session()->put('active_session_token', 'FACTORY_SSN' );
         session()->put('api_auth_user_username', 'system');
 
+        $factory_fe_asset_code = 'USDT';
         $factory_asset_code = 'ETH';
         $factory_asset_chain = 'ETH';
         $created_asset = null;
 
-        if ($factory_asset_code === 'ETH'){
+        if ($factory_fe_asset_code === 'ETH'){
             $created_asset = (new _AssetController)->store( Request::create('','',[
                 'name' => 'Ethereum',
                 'code' => 'ETH',
+                'fe_asset_code' => 'ETH',
                 'chain' => 'ETH',
                 'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent',
                 'smallest_display_unit' => '0.0000000001',
                 'withdrawal_txn_fee_usd_fctr' => 1,
-                'payment_txn_fee_usd_fctr' => 1,
+                'withdrawal_min_limit_usd_fctr' => 1,
+                'withdrawal_max_limit_usd_fctr' => 1000,
                 'usd_asset_exchange_rate' => '0.00076',
                 'onchain_disclaimer' => "This platform is still in test mode on the sepolia testnet chain.
 Onchain transactions should be handled accordingly."
             ],[],[],['HTTP_accept'=>'application/json']))->getData();
         }
 
-        if ($factory_asset_code === 'USDT'){
+        if ($factory_fe_asset_code === 'USDT'){
             $created_asset = (new _AssetController)->store( Request::create('','',[
                 'name' => 'Tether USD',
-                'code' => 'USDT',
+                'code' => 'ETH',
+                'fe_asset_code' => 'USDT',
                 'chain' => 'ETH',
                 'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent',
                 'smallest_display_unit' => '0.00001',
                 'withdrawal_txn_fee_usd_fctr' => 1,
-                'payment_txn_fee_usd_fctr' => 1,
+                'withdrawal_min_limit_usd_fctr' => 1,
+                'withdrawal_max_limit_usd_fctr' => 1000,
                 'usd_asset_exchange_rate' => 1,
                 'onchain_disclaimer' => "This platform is still in test mode using the testnet chain.
 USDT doesn't exist on testnet so we're using ETH but referring to it here as USDT.
@@ -393,6 +419,38 @@ Handle all internal transactions normally but know that these values will be ref
             'user_group_slug' => 'business_administrators',
         ]));
 
+        // user:reserves
+        (new _UserController)->store( new Request([
+            'username' => 'reserves',
+            'email_address' => 'reserves@ankelli.com',
+            'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
+        ]));
+        (new _AssetWalletController)->store( new Request([
+            'asset_code' => $factory_asset_code,
+            'asset_chain' => $factory_asset_chain,
+            'user_username' => 'reserves',
+        ]));
+        (new _UserGroupMembershipController)->store( new Request([
+            'user_username' => 'reserves',
+            'user_group_slug' => 'default_users',
+        ]));
+        (new _AdminExtensionController)->store( new Request([
+            'user_username' => 'reserves',
+            'post_title' => 'Ankelli Asset Reserves',
+        ]));
+        (new _BuyerExtensionController)->store( new Request([
+            'user_username' => 'reserves',
+            '_status' => 'deactivated',
+        ]));
+        (new _SellerExtensionController)->store( new Request([
+            'user_username' => 'reserves',
+            '_status' => 'deactivated',
+        ]));
+        (new _UserGroupMembershipController)->store( new Request([
+            'user_username' => 'reserves',
+            'user_group_slug' => 'business_administrators',
+        ]));
+
         // user:busops // used for collecting platform fees and deposit token topups
         (new _UserController)->store( new Request([
             'username' => 'busops',
@@ -410,7 +468,7 @@ Handle all internal transactions normally but know that these values will be ref
         ]));
         (new _AdminExtensionController)->store( new Request([
             'user_username' => 'busops',
-            'post_title' => 'Ankelli Asset Reserves',
+            'post_title' => 'Ankelli Business Operations',
         ]));
         (new _BuyerExtensionController)->store( new Request([
             'user_username' => 'busops',
@@ -467,7 +525,7 @@ Handle all internal transactions normally but know that these values will be ref
         ]));
 
         // user:john
-        (new _UserController)->store( new Request([
+        /*(new _UserController)->store( new Request([
             'username' => 'john', 'email_address' => 'john@ankelli.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
@@ -475,7 +533,7 @@ Handle all internal transactions normally but know that these values will be ref
             'asset_code' => $factory_asset_code,
             'asset_chain' => $factory_asset_chain,
             'user_username' => 'john',
-        ]));
+        ]));*/
 
         if ($token_reg_changed){
             (new _PrefItemController)->update( new Request([
@@ -493,6 +551,8 @@ Handle all internal transactions normally but know that these values will be ref
 
     public function load_test_data()
     {
+        $factory_asset_code = 'ETH';
+
         if (_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()){
             return;
         }
@@ -535,7 +595,7 @@ Handle all internal transactions normally but know that these values will be ref
             (new _TransactionController)->test_transfer( new Request([
                 'recipient_username' => $internalisation[0], 
                 'recipient_note' => $internalisation[2],
-                'asset_code' => 'USDT',
+                'asset_code' => $factory_asset_code,
                 'asset_value' => $internalisation[1],
             ]));
             sleep(3);
@@ -554,13 +614,13 @@ Handle all internal transactions normally but know that these values will be ref
             // Deposit token -> transaction
             session()->put('api_auth_user_username', 'paywyze');
             $deposit_token = (new _DepositTokenController)->store( Request::create('','',[
-                'asset_code' => 'USDT',
+                'asset_code' => $factory_asset_code,
                 'asset_value' => $deposit_tokener[1],
                 'currency_code' => $deposit_tokener[2],
                 'currency_amount' => $deposit_tokener[3],
             ],[],[],['HTTP_accept'=>'application/json']))->getData();
             session()->put('api_auth_user_username', $deposit_tokener[0]);
-            (new _DepositTokenController)->use( $deposit_token->token, 'USDT' );
+            (new _DepositTokenController)->use( $deposit_token->token, $factory_asset_code );
             sleep(3);
         }
         
@@ -570,7 +630,7 @@ Handle all internal transactions normally but know that these values will be ref
         $offer = (new _OfferController)->store( Request::create('','',[
             'country_name' => 'Zimbabwe',
             'offer_to' => 'buy',
-            'asset_code' => 'USDT',
+            'asset_code' => $factory_asset_code,
             'currency_code' => 'USD',
             'offer_price' => 0.94,
             'min_trade_purchase_amount' => 100,
@@ -638,7 +698,7 @@ Handle all internal transactions normally but know that these values will be ref
             'country_name' => 'Zimbabwe',
             'location' => 'Norton', 
             'offer_to' => 'sell',
-            'asset_code' => 'USDT',
+            'asset_code' => $factory_asset_code,
             'currency_code' => 'USD',
             'offer_price' => 0.94,
             'buyer_cmplt_trade_mins_tmt' => 120,
@@ -655,7 +715,7 @@ Handle all internal transactions normally but know that these values will be ref
         $offer = (new _OfferController)->store( Request::create('','',[
             'country_name' => 'Zimbabwe',
             'offer_to' => 'buy',
-            'asset_code' => 'USDT',
+            'asset_code' => $factory_asset_code,
             'currency_code' => 'USD',
             'offer_price' => 0.95,
             'min_trade_purchase_amount' => 100,
@@ -699,7 +759,7 @@ Handle all internal transactions normally but know that these values will be ref
         $offer = (new _OfferController)->store( Request::create('','',[
             'country_name' => 'Zimbabwe',
             'offer_to' => 'buy',
-            'asset_code' => 'USDT',
+            'asset_code' => $factory_asset_code,
             'currency_code' => 'USD',
             'offer_price' => 0.94,
             'min_trade_purchase_amount' => 100,
@@ -743,7 +803,7 @@ Handle all internal transactions normally but know that these values will be ref
         $offer = (new _OfferController)->store( Request::create('','',[
             'country_name' => 'Zambia',
             'offer_to' => 'buy',
-            'asset_code' => 'USDT',
+            'asset_code' => $factory_asset_code,
             'currency_code' => 'USD',
             'offer_price' => 0.94,
             'min_trade_purchase_amount' => 100,
@@ -787,7 +847,7 @@ Handle all internal transactions normally but know that these values will be ref
             'country_name' => 'Zambia',
             'location' => 'Lusaka CBD', 
             'offer_to' => 'buy',
-            'asset_code' => 'USDT',
+            'asset_code' => $factory_asset_code,
             'currency_code' => 'USD',
             'offer_price' => 0.94,
             'min_trade_purchase_amount' => 100,
@@ -831,7 +891,7 @@ Handle all internal transactions normally but know that these values will be ref
             'country_name' => 'Zambia',
             'location' => 'Lusaka CBD', 
             'offer_to' => 'buy',
-            'asset_code' => 'USDT',
+            'asset_code' => $factory_asset_code,
             'currency_code' => 'ZMW',
             'offer_price' => 13.3,
             'min_trade_purchase_amount' => 2000,
@@ -874,7 +934,7 @@ Handle all internal transactions normally but know that these values will be ref
         $offer = (new _OfferController)->store( Request::create('','',[
             'country_name' => 'Zimbabwe',
             'offer_to' => 'buy',
-            'asset_code' => 'USDT',
+            'asset_code' => $factory_asset_code,
             'currency_code' => 'USD',
             'offer_price' => 0.94,
             'min_trade_purchase_amount' => 200,
@@ -917,7 +977,7 @@ Handle all internal transactions normally but know that these values will be ref
         $offer = (new _OfferController)->store( Request::create('','',[
             'country_name' => 'South Africa',
             'offer_to' => 'buy',
-            'asset_code' => 'USDT',
+            'asset_code' => $factory_asset_code,
             'currency_code' => 'ZAR',
             'offer_price' => 16.92,
             'min_trade_purchase_amount' => 1000,
@@ -960,7 +1020,7 @@ Handle all internal transactions normally but know that these values will be ref
         $offer = (new _OfferController)->store( Request::create('','',[
             'country_name' => 'South Africa',
             'offer_to' => 'buy',
-            'asset_code' => 'USDT',
+            'asset_code' => $factory_asset_code,
             'currency_code' => 'ZAR',
             'offer_price' => 17.02,
             'min_trade_purchase_amount' => 500,
@@ -1003,7 +1063,7 @@ Handle all internal transactions normally but know that these values will be ref
         $offer = (new _OfferController)->store( Request::create('','',[
             'country_name' => 'Italy',
             'offer_to' => 'buy',
-            'asset_code' => 'USDT',
+            'asset_code' => $factory_asset_code,
             'currency_code' => 'EUR',
             'offer_price' => 0.94,
             'min_trade_purchase_amount' => 200,
@@ -1046,7 +1106,7 @@ Handle all internal transactions normally but know that these values will be ref
         $offer = (new _OfferController)->store( Request::create('','',[
             'country_name' => 'Algeria',
             'offer_to' => 'buy',
-            'asset_code' => 'USDT',
+            'asset_code' => $factory_asset_code,
             'currency_code' => 'DZD',
             'offer_price' => 200,
             'min_trade_purchase_amount' => 10000,
@@ -1090,7 +1150,7 @@ Handle all internal transactions normally but know that these values will be ref
             'country_name' => 'Zimbabwe',
             'location' => 'Marondera', 
             'offer_to' => 'buy',
-            'asset_code' => 'USDT',
+            'asset_code' => $factory_asset_code,
             'currency_code' => 'USD',
             'offer_price' => 0.94,
             'min_trade_purchase_amount' => 50,
@@ -1163,7 +1223,7 @@ Handle all internal transactions normally but know that these values will be ref
         $offer = (new _OfferController)->store( Request::create('','',[
             'country_name' => 'Algeria',
             'offer_to' => 'buy',
-            'asset_code' => 'USDT',
+            'asset_code' => $factory_asset_code,
             'currency_code' => 'DZD',
             'offer_price' => 195,
             'min_trade_purchase_amount' => 20000,
@@ -1206,7 +1266,7 @@ Handle all internal transactions normally but know that these values will be ref
         $offer = (new _OfferController)->store( Request::create('','',[
             'country_name' => 'Zimbabwe',
             'offer_to' => 'buy',
-            'asset_code' => 'USDT',
+            'asset_code' => $factory_asset_code,
             'currency_code' => 'USD',
             'offer_price' => 0.94,
             'min_trade_purchase_amount' => 100,
@@ -1230,7 +1290,7 @@ Handle all internal transactions normally but know that these values will be ref
             'country_name' => 'Zimbabwe',
             'location' => 'Marondera', 
             'offer_to' => 'buy',
-            'asset_code' => 'USDT',
+            'asset_code' => $factory_asset_code,
             'currency_code' => 'USD',
             'offer_price' => 0.95,
             'min_trade_purchase_amount' => 200,

@@ -204,7 +204,7 @@ class _TransactionController extends Controller
                 'total_balance_asset_value' => $new_total_balance_asset_value,
             ]), $sender_asset_wallet->id );
 
-            if ( !in_array($element->sender_username, ['busops']) ){
+            if ( !in_array($element->sender_username, ['busops', 'reserves']) ){
                 // Create notification
                 (new _NotificationController)->store( new Request([
                     'user_username' => $element->sender_username,
@@ -243,7 +243,7 @@ class _TransactionController extends Controller
                 'total_balance_asset_value' => $new_total_balance_asset_value,
             ]), $recipient_asset_wallet->id );
 
-            if ( !in_array($element->recipient_username, ['busops']) ){
+            if ( !in_array($element->recipient_username, ['busops', 'reserves']) ){
                 // Create notification
                 (new _NotificationController)->store( new Request([
                     'user_username' => $element->recipient_username,
@@ -265,13 +265,23 @@ class _TransactionController extends Controller
     {
         $element = _Transaction::findOrFail($ref_code);
 
-        if ($element->recipient_username == 'busops'){
+        if ($element->recipient_username == 'reserves'){
             return response()->json( [ 'ref_code' => $element->ref_code ] );
         }
 
         $validated_data = [];
 
-        $busops_address = _AssetWalletAddress::firstWhere(['user_username' => 'busops', 'asset_code' => $element->asset_code]);
+        $reserves_addresses = _AssetWalletAddress::where(['user_username' => 'reserves', 'asset_code' => $element->asset_code])->get();
+        $reserves_address = null;
+        $lowest_balance = null;
+        foreach ($reserves_addresses as $_reserves_address) {
+            $balance = (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => $_reserves_address->bc_address]))->getData()->balance;
+            if ($lowest_balance === null) $lowest_balance = $balance;
+            if ($balance <= $lowest_balance){
+                $reserves_address = $_reserves_address;
+            }
+        }
+
         $focused_address = _AssetWalletAddress::firstWhere(['user_username' => $element->recipient_username, 'asset_code' => $element->asset_code]);
 
         switch ($element->asset_code) {
@@ -280,12 +290,12 @@ class _TransactionController extends Controller
                 if ( $balance > 0 ) {
                     $estimated_fee =  (new Tatum\FeeEstimation\EstimateEthereumTransactionFeeController)->EthEstimateGas(new Request([
                         'from' => $focused_address->bc_address,
-                        'to' => $busops_address->bc_address,
+                        'to' => $reserves_address->bc_address,
                         'amount' => $balance,
                     ]))->getData();
                     $transferrable = ($balance - ($element->ttm_centralization_factor)*((float)$estimated_fee->gasLimit * ((float)$estimated_fee->gasPrice) / pow(10,18)));
                     $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\EthereumController)->EthBlockchainTransfer(new Request([
-                        'to' => $busops_address->bc_address,
+                        'to' => $reserves_address->bc_address,
                         'currency' => 'ETH',
                         'amount' => $transferrable.'',
                         'index' => $focused_address->ttm_derivation_key,
@@ -321,6 +331,8 @@ class _TransactionController extends Controller
         return response()->json( [ 'ref_code' => $element->ref_code ] );
     }
 
+    private $ETH_USDT_FCTR = 1000;
+
     public function transfer_account_to_account($request)
     {
         $validated_data = $request->validate([
@@ -334,6 +346,8 @@ class _TransactionController extends Controller
         if ( !_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
             return response()->json( [ 'reference' => 'placeholder_'.random_int(100000, 199999).strtolower(substr(md5(microtime()),rand(0,9),7)) ] );
         }
+        $asset = _Asset::firstWhere('code', $validated_data['asset_code']);
+        if ( $asset->fe_asset_code === 'USDT' ) $validated_data['asset_value'] = $validated_data['asset_value'] / $this->ETH_USDT_FCTR;
         $ttm_request_object = [
             'curency' => $validated_data['asset_code'],
             'amount' => $validated_data['asset_value'].'',
@@ -454,7 +468,7 @@ class _TransactionController extends Controller
         (new _TransactionController)->update_local_wallets( $element->ref_code );
         usleep(500);
         $asset = _Asset::firstWhere('code', $validated_data['asset_code']);
-        (new _TransactionController)->process_platform_charge(new Request([ 'asset_value' => $asset->usd_asset_exchange_rate * $asset->payment_txn_fee_usd_fctr ]), $element->ref_code);
+        (new _TransactionController)->process_platform_charge(new Request([ 'asset_value' => $validated_data['asset_value'] * _PrefItem::firstWhere('key_slug', 'pymt_txn_fee_fctr')->value_f() ]), $element->ref_code);
 
         return response()->json( [ 'ref_code' => $element->ref_code ] );
     }
@@ -480,10 +494,6 @@ class _TransactionController extends Controller
             return abort(422, 'Sender password incorrect');
         }
 
-        if ( false ){
-            return abort(422, "We're currently experiencing traffic issues, please try again after a short while");
-        }
-
         $validated_data['_status'] = 'pending';
         $validated_data['operation_slug'] = 'WITHDRAWAL';
 
@@ -494,15 +504,52 @@ class _TransactionController extends Controller
             'blockage_type_slug' => 'withdrawal_escrow',
         ]), _AssetWallet::firstWhere(['user_username' => $validated_data['sender_username'], 'asset_code' => $validated_data['asset_code']])->id )->getData()->id;
 
-        $busops_address = _AssetWalletAddress::firstWhere(['user_username' => 'busops', 'asset_code' => $validated_data['asset_code']]);
+        $reserves_wallet = _AssetWallet::firstWhere(['user_username' => 'reserves', 'asset_code' => $validated_data['asset_code']]);
+        $reserves_addresses = _AssetWalletAddress::where(['user_username' => 'reserves', 'asset_code' => $element->asset_code])->get();
+        shuffle($reserves_addresses);
 
-        switch ($validated_data['asset_code']) {
+        switch ($asset->fe_asset_code) {
             case 'ETH':
-                $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\EthereumController)->EthBlockchainTransfer(new Request([
-                    'to' => $validated_data['recipient_bc_address'],
-                    'currency' => $validated_data['asset_code'],
+                $reserves_address = null;                
+                foreach ($reserves_addresses as $_reserves_address) {
+                    $balance = (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => $_reserves_address->bc_address]))->getData()->balance;
+                    if ($balance > $validated_data['asset_value']){
+                        $reserves_address = $_reserves_address;
+                        break;
+                    }
+                }
+                if ($reserves_address === null){
+                    return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
+                }
+                $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
+                $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\VirtualAccounts\BCOperationController)->EthTransfer(new Request([
+                    'address' => $validated_data['recipient_bc_address'],
                     'amount' => $validated_data['asset_value'].'',
-                    'index' => $busops_address->ttm_derivation_key,
+                    'index' => $reserves_address->ttm_derivation_key,
+                    'senderAccountId' => $reserves_wallet->ttm_virtual_account_id,
+                    'senderNote' => 'OBO: '.$element->ref_code,
+                ]))->getData()->signatureId;
+                break;
+
+            case 'USDT':
+                $reserves_address = null;                
+                foreach ($reserves_addresses as $_reserves_address) {
+                    $balance = (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => $_reserves_address->bc_address]))->getData()->balance;
+                    if ($balance > ($validated_data['asset_value'] / $this->ETH_USDT_FCTR)){
+                        $reserves_address = $_reserves_address;
+                        break;
+                    }
+                }
+                if ($reserves_address === null){
+                    return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
+                }
+                $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
+                $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\VirtualAccounts\BCOperationController)->EthTransfer(new Request([
+                    'address' => $validated_data['recipient_bc_address'],
+                    'amount' => ($validated_data['asset_value'] / $this->ETH_USDT_FCTR).'',
+                    'index' => $reserves_address->ttm_derivation_key,
+                    'senderAccountId' => $reserves_wallet->ttm_virtual_account_id,
+                    'senderNote' => 'OBO: '.$element->ref_code,
                 ]))->getData()->signatureId;
                 break;
         }
@@ -612,7 +659,7 @@ class _TransactionController extends Controller
             'recipient_note' => isset($validated_data['recipient_note']) ? $validated_data['recipient_note'] : 'Transfer from external wallet to Ankelli wallet',
             'recipient_bc_address' => strtolower( $validated_data['to'] ),
             'asset_code' => $recipient_asset_wallet->asset_code,
-            'asset_value' => $validated_data['amount'],
+            'asset_value' => $validated_data['amount'] * $this->ETH_USDT_FCTR,
             'bc_txn_id' => $validated_data['txId'],
             'ttm_reference' => $validated_data['reference'],
             'transfer_datetime' => date('Y-m-d H:i:s', $validated_data['date'] / 1000)

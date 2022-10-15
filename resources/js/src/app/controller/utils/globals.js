@@ -56,7 +56,9 @@ window.currencyAmountInput = (amount, round_down = false) => {
 }
 
 window.currencyAmountString = (amount, currency = { symbol: '' }, show_symbol = true, round_down = false) => {
-	return (currency.symbol_before_number ? (show_symbol ? currency.symbol : '') : '') + window.currencyAmountInput(amount, round_down).toLocaleString('zw-ZW') + (currency.symbol_before_number ? '' : (show_symbol ? currency.symbol : ''))
+	var output = window.currencyAmountInput(amount, round_down).toLocaleString('zw-ZW')
+	output = ('' + output).length > 0 ? output : 0
+	return (currency.symbol_before_number ? (show_symbol ? currency.symbol : '') : '') + output + (currency.symbol_before_number ? '' : (show_symbol ? currency.symbol : ''))
 }
 
 window.assetValueInput = (value, asset = { smallest_display_unit: 0.01 }, round_down = false) => {
@@ -66,8 +68,10 @@ window.assetValueInput = (value, asset = { smallest_display_unit: 0.01 }, round_
 	return rounder((parseFloat(value) + Number.EPSILON) * some_const) / some_const
 }
 
-window.assetValueString = (value, asset = { code: '', smallest_display_unit: 0.01 }, show_code = true, round_down = false) => {
-	return window.assetValueInput(value, asset, round_down) + (show_code ? ' ' + asset.code : '')
+window.assetValueString = (value, asset = { fe_asset_code: '', smallest_display_unit: 0.01 }, show_code = true, round_down = false) => {
+	var output = window.assetValueInput(value, asset, round_down)
+	output = ('' + output).length > 0 ? output : 0
+	return output + (show_code ? ' ' + asset.fe_asset_code : '')
 }
 
 window.instanceToRespObj = (obj) => {

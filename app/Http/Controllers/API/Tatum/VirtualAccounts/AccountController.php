@@ -88,13 +88,13 @@ class AccountController extends Controller
             //'one_of' => ['required', 'string', Rule::in(['createAccount','createAccountXpub'])],
             'currency' => ['required', 'string'],
             'externalId' => ['required', 'string', 'max:100'],
-            //'xpub' => ['required_if:one_of,=,createAccountXpub', 'nullable', 'string', 'max:192'],
+            'xpub' => ['nullable', 'nullable', 'string', 'max:192'],
             'accountingCurrency' => ['nullable', 'string', 'max:3'],
         ]);
 
         $payload = [
             "currency" => $validated_data['currency'],
-            //"xpub" => $validated_data['xpub'],
+            "xpub" => $validated_data['xpub'],
             "customer" => [
                 "externalId" => $validated_data['externalId'],
                 "accountingCurrency" => $validated_data['accountingCurrency'] ?? "USD",

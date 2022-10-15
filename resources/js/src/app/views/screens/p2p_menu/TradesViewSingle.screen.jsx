@@ -201,8 +201,8 @@ class TradesViewSingleScreen extends React.Component {
                                                         <span>{auth_user_is_buyer ? <> Seller</> : <> Buyer</>}: <Link to={'/accounts/profiles/' + trade_peer_username} style={{ textDecoration: 'none' }} target='_blank'>@{trade_peer_username}</Link></span>
                                                         <span>{auth_user_is_seller ? <>Seller</> : <>Buyer</>}: <Link to={'/accounts/profile'} style={{ textDecoration: 'none' }} target='_blank'>@{this.props.auth_user.username}</Link> (you)</span>
                                                     </p>
-                                                    <p>{this.focused_trade.was_offer_to == 'buy' && <>Purchase</>} {this.focused_trade.was_offer_to == 'sell' && <>Sale</>} amount: {window.currencyAmountString(this.focused_trade.currency_amount, currency)} ({currency.code})</p>
-                                                    <span>Asset value on sale: {window.assetValueString(this.focused_trade.currency_amount / this.focused_trade.offer_price, asset)} (@ {window.currencyAmountString(this.focused_trade.offer_price, currency)})</span>
+                                                    <p>{auth_user_is_buyer && <>Amount you should pay</>} {auth_user_is_seller && <>Amount you'll receive</>}: {window.currencyAmountString(this.focused_trade.currency_amount, currency)} ({currency.code})</p>
+                                                    <span>Asset value {auth_user_is_buyer && "you'll receive"} {auth_user_is_seller && "you'll release"}: {window.assetValueString(this.focused_trade.currency_amount / this.focused_trade.offer_price, asset)} (@ {window.currencyAmountString(this.focused_trade.offer_price, currency)})</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -215,8 +215,10 @@ class TradesViewSingleScreen extends React.Component {
                                             </h4>
                                             <div id="collapse_pymt_details" className="accordion-collapse collapse" data-bs-parent="#accordion_trade_details" >
                                                 <div className="accordion-body">
+                                                    {auth_user_is_buyer && <p>Here are the details you should use to pay the seller</p>}
+                                                    {auth_user_is_seller && <p>Here are the details you provided that the buyer will use to make payment</p>}
                                                     {['active', 'flagged'].includes(this.focused_trade._status) && <>
-                                                        <span>{pymt_method.name} <img src={pymt_method.icon.uri} alt={pymt_method.name + " icon"} width="24" height="24" className="mx-2" /> payment details:</span>
+                                                        <span>Method: <img src={pymt_method.icon.uri} alt={pymt_method.name + " icon"} width="24" height="24" className="mx-2" /> {pymt_method.name}, Details:</span>
                                                         {Object.keys(this.state.input.pymt_details).map((detail_key, index) => {
                                                             return <div key={index} className="input-group mt-3">
                                                                 <div className="form-floating">

@@ -10,7 +10,7 @@ import CustomSelect from 'app/views/components/CustomSelect'
 class CryptoAssetWalletsScreen extends React.Component {
 
     default_input = {
-        asset_code: 'ETH',
+        asset_code: this.props.sysconfig_params.default_crypto_asset_code,
     }
 
     state = {
@@ -67,7 +67,7 @@ class CryptoAssetWalletsScreen extends React.Component {
             asset_options.push({
                 value: asset_code,
                 searchable_text: asset_code + asset.name + asset.description,
-                output_element: () => <>{asset.name} <i className="text-primary">{asset_code}</i></>
+                output_element: () => <>{asset.name} <i className="text-primary">{asset.fe_asset_code}</i></>
             })
         })
 
@@ -91,8 +91,9 @@ class CryptoAssetWalletsScreen extends React.Component {
                                 </thead>
                                 <tbody>
                                     {this.props.auth_user.asset_wallets.map((asset_wallet, index) => {
+                                        const asset = this.props.datalists.active_assets[asset_wallet.asset_code]
                                         return <tr key={index} >
-                                            <td className="align-middle">{asset_wallet.asset_code}</td>
+                                            <td className="align-middle">{asset.fe_asset_code}</td>
                                             <td className="align-middle">{asset_wallet.usable_balance_asset_value}</td>
                                             <td className="align-middle">{asset_wallet.total_balance_asset_value}</td>
                                         </tr>
@@ -127,7 +128,7 @@ class CryptoAssetWalletsScreen extends React.Component {
                                                     </div>
                                                     <div className="col">
                                                         <button className="btn btn-success w-100" disabled={this.state.btn_create_wallet_working || this.props.auth_user.hasAssetWallet(this.state.input.asset_code)} onClick={this.handleSubmit} >
-                                                            {this.state.btn_create_wallet_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Generate {this.state.input.asset_code} wallet</>}
+                                                            {this.state.btn_create_wallet_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Generate {this.props.datalists.active_assets[this.state.input.asset_code].fe_asset_code} wallet</>}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -155,6 +156,7 @@ class CryptoAssetWalletsScreen extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
+        sysconfig_params: state.sysconfig_params_data,
         datalists: state.datalists_data,
         auth_user: state.auth_user_data ? new _User(state.auth_user_data, ['asset_wallets']) : null,
     }

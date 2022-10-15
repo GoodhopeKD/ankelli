@@ -182,7 +182,7 @@ export default withRouter(class SysToolsViewListScreen extends React.Component {
                                                         <td className="align-middle">{system_tools_item.name}</td>
                                                         <td className="align-middle" style={{ whiteSpace: 'pre-wrap' }}>{system_tools_item.description}</td>
                                                         <td className="align-middle">{system_tools_item._status}</td>
-                                                        <td className="align-middle"><Link className="btn btn-sm btn-info" to={"/admin/systools/user_groups/" + system_tools_item.slug + "/user-group-memberships"}>Open</Link></td>
+                                                        <td className="align-middle"><Link className="btn btn-sm btn-info" to={"/admin/systools/user-groups/" + system_tools_item.slug + "/user-group-memberships"}>Open</Link></td>
                                                     </>}
                                                     {this.props.title == 'View User Group Members' && <>
                                                         <td className="align-middle">{system_tools_item.user_username}</td>

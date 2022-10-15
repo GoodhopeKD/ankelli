@@ -111,7 +111,7 @@ class DepositTokensViewListScreen extends React.Component {
             asset_options.push({
                 value: asset_code,
                 searchable_text: asset_code + asset.name + asset.description,
-                output_element: () => <>{asset.name} <i className="text-primary">{asset_code}</i></>
+                output_element: () => <>{asset.name} <i className="text-primary">{asset.fe_asset_code}</i></>
             })
         })
 
@@ -253,7 +253,7 @@ class DepositTokensViewListScreen extends React.Component {
                             <div className="d-flex gap-2" >
 
                                 <div>
-                                    <Link to={'/funds-admin/deposit_tokens/new'} className='btn btn-success' >Create new</Link>
+                                    <Link to={'/admin/funds-admin/deposit-tokens/new'} className='btn btn-success' >Create new</Link>
                                 </div>
 
                                 <div>

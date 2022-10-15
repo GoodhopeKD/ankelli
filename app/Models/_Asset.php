@@ -17,11 +17,13 @@ class _Asset extends Model
     protected $fillable = [
         'name',
         'code',
+        'fe_asset_code',
         'chain',
         'xpub',
         'smallest_display_unit',
         'withdrawal_txn_fee_usd_fctr',
-        'payment_txn_fee_usd_fctr',
+        'withdrawal_min_limit_usd_fctr',
+        'withdrawal_max_limit_usd_fctr',
         'usd_asset_exchange_rate',
         'onchain_disclaimer',
         '_status',
@@ -45,7 +47,6 @@ class _Asset extends Model
     protected $casts = [
         //'smallest_display_unit' => 'float',
         //'withdrawal_txn_fee_usd_fctr' => 'float',
-        //'payment_txn_fee_usd_fctr' => 'float',
         //'usd_asset_exchange_rate' => 'float',
     ];
 

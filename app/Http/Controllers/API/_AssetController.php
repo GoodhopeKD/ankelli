@@ -47,12 +47,14 @@ class _AssetController extends Controller
     public function store(Request $request)
     {
         $validated_data = $request->validate([
-            'name' => ['required', 'string', 'max:64'],
-            'code' => ['required', 'string', 'max:64'],
+            'name' => ['required', 'string', 'max:64', 'unique:__assets,name'],
+            'code' => ['required', 'string', 'max:64', 'unique:__assets,code'],
+            'fe_asset_code' => ['required', 'string', 'max:64'],
             'chain' => ['required', 'string', 'max:64'],
             'smallest_display_unit' => ['required', 'numeric', 'min:0'],
             'withdrawal_txn_fee_usd_fctr' => ['required', 'numeric', 'min:0'],
-            'payment_txn_fee_usd_fctr' => ['required', 'numeric', 'min:0'],
+            'withdrawal_min_limit_usd_fctr' => ['required', 'integer', 'min:0'],
+            'withdrawal_max_limit_usd_fctr' => ['required', 'integer', 'min:0'],
             'usd_asset_exchange_rate' => ['required', 'numeric', 'min:0'],
             'onchain_disclaimer' => ['required', 'string'],
             'mnemonic' => ['required', 'string', 'max:500'],
@@ -118,7 +120,8 @@ class _AssetController extends Controller
         $validated_data = $request->validate([
             'smallest_display_unit' => ['sometimes', 'numeric', 'min:0'],
             'withdrawal_txn_fee_usd_fctr' => ['sometimes', 'numeric', 'min:0'],
-            'payment_txn_fee_usd_fctr' => ['sometimes', 'numeric', 'min:0'],
+            'withdrawal_min_limit_usd_fctr' => ['sometimes', 'integer', 'min:0'],
+            'withdrawal_max_limit_usd_fctr' => ['sometimes', 'integer', 'min:0'],
             'usd_asset_exchange_rate' => ['sometimes', 'numeric', 'min:0'],
             'onchain_disclaimer' => ['sometimes', 'string'],
             '_status' => ['sometimes', 'string', Rule::in(['active', 'deactivated'])],

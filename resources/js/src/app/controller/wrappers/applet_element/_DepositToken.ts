@@ -61,13 +61,13 @@ export default class _DepositToken extends _Wrapper_ implements Omit<typeof _Dep
     /* Creator(s) */
 
     public static async create(args: typeof _DepositTokenRespObj) {
-        return this._mainLaravelDBAPICreate('funds/deposit_tokens', args)
+        return this._mainLaravelDBAPICreate('funds/deposit-tokens', args)
     }
 
     /* Reader(s) */
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('funds/deposit_tokens', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('funds/deposit-tokens', params, page_select, per_page)
     }
 
     public static async use(args: typeof _DepositTokenRespObj) {
@@ -75,7 +75,7 @@ export default class _DepositToken extends _Wrapper_ implements Omit<typeof _Dep
             .dispatch({
                 type: 'APP_BACKEND_API_CALL',
                 method: 'GET',
-                endpoint: 'funds/deposit_tokens/' + args.token + '/use/' + args.asset_code,
+                endpoint: 'funds/deposit-tokens/' + args.token + '/use/' + args.asset_code,
                 data: args
             })
             .then((resp: any) => { return Promise.resolve(resp) })

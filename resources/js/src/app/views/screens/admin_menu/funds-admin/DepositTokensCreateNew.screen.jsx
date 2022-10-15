@@ -2,7 +2,7 @@ import React from "react"
 import { connect } from 'react-redux'
 import _ from 'lodash'
 
-import { _User, _Input, _DepositToken, _Notification } from 'app/controller'
+import { _User, _Input, _AssetWallet, _DepositToken, _Notification } from 'app/controller'
 import SideBar from 'app/views/components/SideBar'
 import CustomSelect from 'app/views/components/CustomSelect'
 import withRouter from "app/views/navigation/withRouter"
@@ -10,9 +10,9 @@ import withRouter from "app/views/navigation/withRouter"
 class DepositTokensCreateNewScreen extends React.Component {
 
     default_input = {
-        asset_code: 'ETH',
+        asset_code: this.props.sysconfig_params.default_crypto_asset_code,
         asset_value: new _Input(),
-        currency_code: 'USD',
+        currency_code: this.props.sysconfig_params.default_fiat_currency_code,
         currency_amount: new _Input(),
         sender_password: new _Input()
     }
@@ -20,7 +20,7 @@ class DepositTokensCreateNewScreen extends React.Component {
     state = {
         btn_create_deposit_token_working: false,
         input: _.cloneDeep(this.default_input),
-        ankelli_busops_user_asset_wallets: [],
+        asset_wallets_totals: { users: 0, busops: 0, reserves: 0 },
         errors: [],
     }
 
@@ -76,12 +76,14 @@ class DepositTokensCreateNewScreen extends React.Component {
         }
     }
 
-    componentDidMount = async () => {
-        await _User.getOne({ username: 'busops' })
-            .then(ankelli_busops_user => this.setState({ ankelli_busops_user_asset_wallets: ankelli_busops_user.asset_wallets }))
-            .catch(e => console.log(e))
+    loadAssetWalletsTotals = async () => {
+        const asset_wallets_totals = await _AssetWallet.asset_wallets_totals(this.state.input.asset_code).catch(e => console.log(e))
+        this.setState({ asset_wallets_totals })
     }
 
+    componentDidMount = () => {
+        this.loadAssetWalletsTotals()
+    }
     render() {
 
         const asset_options = [];
@@ -90,7 +92,7 @@ class DepositTokensCreateNewScreen extends React.Component {
             asset_options.push({
                 value: asset_code,
                 searchable_text: asset_code + asset.name + asset.description,
-                output_element: () => <>{asset.name} <i className="text-primary">{asset_code}</i></>
+                output_element: () => <>{asset.name} <i className="text-primary">{asset.fe_asset_code}</i></>
             })
         })
 
@@ -151,12 +153,12 @@ class DepositTokensCreateNewScreen extends React.Component {
                                                     options={asset_options}
                                                     max_shown_options_count={5}
                                                     selected_option_value={this.state.input.asset_code}
-                                                    onChange={asset_code => this.handleInputChange('asset_code', asset_code, true)}
+                                                    onChange={asset_code => { this.handleInputChange('asset_code', asset_code, true); this.loadAssetWalletsTotals(); }}
                                                 />
                                             </div>
                                             <div className="col">
-                                                <label htmlFor="output_current_balance" className="form-label">Reserves balance</label>
-                                                <span className="form-control" id='output_current_balance'>{window.assetValueString((this.state.ankelli_busops_user_asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</span>
+                                                <label htmlFor="output_current_balance" className="form-label">Busops balance</label>
+                                                <span className="form-control" id='output_current_balance'>{window.assetValueString(this.state.asset_wallets_totals.busops, asset)}</span>
                                             </div>
                                         </div>
                                     </div>
@@ -166,7 +168,7 @@ class DepositTokensCreateNewScreen extends React.Component {
                                             required
                                             value={this.state.input.asset_value}
                                             min={asset.smallest_display_unit}
-                                            max={window.assetValueInput((this.state.ankelli_busops_user_asset_wallets.find(aacc => aacc.asset_code == asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}
+                                            max={window.assetValueInput(this.state.asset_wallets_totals.busops, asset)}
                                             onChange={elem => this.handleInputChange('asset_value', elem.target.value)}
                                         />
                                     </div>
@@ -236,6 +238,7 @@ class DepositTokensCreateNewScreen extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
+        sysconfig_params: state.sysconfig_params_data,
         datalists: state.datalists_data,
         auth_user: state.auth_user_data ? new _User(state.auth_user_data) : null,
     }

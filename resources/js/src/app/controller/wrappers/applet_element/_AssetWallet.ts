@@ -4,7 +4,7 @@ import _DateTime from 'app/controller/wrappers/auxilliary/_DateTime'
 import _Wrapper_ from 'app/controller/wrappers/_Wrapper_'
 /* Actions, Configs imports */
 import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend_api.actions'
-
+import { mainLaravelDBRestAPICallWrapper } from 'app/controller/actions/rest_api.actions'
 /*
     Type Definitions
 */
@@ -55,12 +55,23 @@ export default class _AssetWallet extends _Wrapper_ implements Omit<typeof _Asse
     /* Creator(s) */
 
     public static async create(args: typeof _AssetWalletRespObj) {
-        return this._mainLaravelDBAPICreate('funds/asset_wallets', args)
+        return this._mainLaravelDBAPICreate('funds/asset-wallets', args)
     }
 
     /* Readers */
 
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
-        return this._mainLaravelDBAPIGetCollection('funds/asset_wallets', params, page_select, per_page)
+        return this._mainLaravelDBAPIGetCollection('funds/asset-wallets', params, page_select, per_page)
+    }
+
+    public static async asset_wallets_totals(asset_code: string) {
+        return await mainLaravelDBRestAPICallWrapper
+            .dispatch({
+                type: 'APP_BACKEND_API_CALL',
+                method: 'GET',
+                endpoint: 'admin/funds/asset-wallets-totals?asset_code=' + asset_code,
+            })
+            .then((resp: any) => { return Promise.resolve(resp) })
+            .catch((e: any) => { return Promise.reject(e) })
     }
 }

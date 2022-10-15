@@ -9,44 +9,6 @@ use Illuminate\Validation\Rule;
 class BCOperationController extends Controller
 {
     /**
-     * Send BTC from a virtual account to the blockchain
-     * https://apidoc.tatum.io/tag/Blockchain-operations#operation/BtcTransfer
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function BtcTransfer(Request $request)
-    {
-        $validated_data = $request->validate([
-            'one_of' => ['required', 'string', Rule::in(['TransferBtc','TransferBtcMnemonic','TransferBtcKMS'])],
-            'address' => ['required', 'string', 'size:42'],
-            'amount' => ['required', 'string', 'max:38'],
-            'index' => ['required_if:one_of,=,TransferBtcMnemonic', 'integer', 'max:2147483647'],
-            'senderAccountId' => ['required', 'string', 'size:24'],
-            'senderNote' => ['required', 'string', 'max:500'],
-            'privateKey' => ['required_if:one_of,=,TransferBtc', 'string', 'size:66'],
-            'mnemonic' => ['required_if:one_of,=,TransferBtcMnemonic', 'string', 'max:500'],
-            'signatureId' => ['required_if:one_of,=,TransferBtcKMS', 'string'],
-        ]);
-
-        $payload = $validated_data;
-        
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_HTTPHEADER => [
-                "Content-Type: application/json",
-                "x-api-key: ".env('TATUM_X_API_KEY'),
-            ],
-            CURLOPT_POSTFIELDS => json_encode($payload),
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/offchain/bitcoin/transfer",
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => "POST",
-        ]);
-
-        return $this->ttm_cURL_call_tail($curl);
-    }
-
-    /**
      * Send ETH from a virtual account to the blockchain
      * https://apidoc.tatum.io/tag/Blockchain-operations#operation/EthTransfer
      *
@@ -56,16 +18,18 @@ class BCOperationController extends Controller
     public function EthTransfer(Request $request)
     {
         $validated_data = $request->validate([
-            'one_of' => ['required', 'string', Rule::in(['TransferEth','TransferEthMnemonic','TransferEthKMS'])],
+            //'one_of' => ['required', 'string', Rule::in(['TransferEth','TransferEthMnemonic','TransferEthKMS'])],
             'address' => ['required', 'string', 'size:42'],
             'amount' => ['required', 'string', 'max:38'],
-            'index' => ['required_if:one_of,=,TransferEthMnemonic', 'integer', 'max:2147483647'],
+            'index' => ['sometimes', 'integer', 'max:2147483647'],
             'senderAccountId' => ['required', 'string', 'size:24'],
             'senderNote' => ['required', 'string', 'max:500'],
-            'privateKey' => ['required_if:one_of,=,TransferEth', 'string', 'size:66'],
-            'mnemonic' => ['required_if:one_of,=,TransferEthMnemonic', 'string', 'max:500'],
-            'signatureId' => ['required_if:one_of,=,TransferEthKMS', 'string'],
+            //'privateKey' => ['required_if:one_of,=,TransferEth', 'string', 'size:66'],
+            //'mnemonic' => ['required_if:one_of,=,TransferEthMnemonic', 'string', 'max:500'],
+            //'signatureId' => ['required_if:one_of,=,TransferEthKMS', 'string'],
         ]);
+
+        $validated_data['signatureId'] = env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID');
 
         $payload = $validated_data;
         

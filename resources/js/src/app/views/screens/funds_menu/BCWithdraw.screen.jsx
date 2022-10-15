@@ -10,7 +10,7 @@ import { _User, _DateTime, _Session, _Notification, _Input, _Transaction } from 
 class BCWithdrawScreen extends React.Component {
 
     default_input = {
-        asset_code: 'ETH',
+        asset_code: this.props.sysconfig_params.default_crypto_asset_code,
         asset_value: new _Input(),
         recipient_bc_address: new _Input(),
         sender_password: new _Input('Def-Pass#123'),
@@ -85,7 +85,7 @@ class BCWithdrawScreen extends React.Component {
                 asset_options.push({
                     value: asset_code,
                     searchable_text: asset_code + asset.name + asset.description,
-                    output_element: () => <>{asset.name} <i className="text-primary">{asset_code}</i></>
+                    output_element: () => <>{asset.name} <i className="text-primary">{asset.fe_asset_code}</i></>
                 })
             }
         })

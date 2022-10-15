@@ -6,6 +6,13 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class _AssetWalletAddressResource extends JsonResource
 {
+    protected $with_balance = null;
+
+    public function with_balance(bool $value){
+        $this->with_balance = $value;
+        return $this;
+    }
+
     /**
      * Transform the resource into an array.
      *
@@ -14,6 +21,9 @@ class _AssetWalletAddressResource extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return array_filter(array_merge(
+            parent::toArray($request), [
+                'balance' => $this->with_balance ? $this->balance_f() : null,
+            ]), static function($var){ return $var !== null;} );
     }
 }

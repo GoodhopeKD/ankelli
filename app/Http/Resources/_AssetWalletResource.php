@@ -19,6 +19,7 @@ class _AssetWalletResource extends JsonResource
                 'usable_balance_asset_value' => $this->usable_balance_asset_value,
                 'total_balance_asset_value' => $this->total_balance_asset_value,
                 '_status' => $this->_status,
+                'asset_wallet_addresses' => $this->asset_wallet_addresses_f(),
             ]), static function($var){ return $var !== null;} );
     }
 }

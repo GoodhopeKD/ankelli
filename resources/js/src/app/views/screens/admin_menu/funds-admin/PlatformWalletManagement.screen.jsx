@@ -1,20 +1,18 @@
 import React from "react"
 import { connect } from 'react-redux'
 
-import { _Input, _DateTime, _Session, _Notification, _AssetWalletAddress } from 'app/controller'
+import { _Input, _DateTime, _Session, _Notification, _AssetWallet, _AssetWalletAddress } from 'app/controller'
 
 import SideBar from 'app/views/components/SideBar'
 import CustomSelect from 'app/views/components/CustomSelect'
 
-class CustodialWalletManagementScreen extends React.Component {
+class PlatformWalletManagementScreen extends React.Component {
 
     default_input = {
-        asset_code: 'ETH',
-        asset_wallet_id: '',
+        asset_code: this.props.sysconfig_params.default_crypto_asset_code,
     }
 
     state = {
-
         asset_wallet_addresses_list_loaded: false,
         list: [],
         list_loaded: false,
@@ -26,6 +24,8 @@ class CustodialWalletManagementScreen extends React.Component {
 
         input: _.cloneDeep(this.default_input),
         errors: [],
+
+        asset_wallets_totals: { users: 0, busops: 0, reserves: 0 },
     }
 
     handleInputChange(field = 'field.deep_field', value, use_raw = false) {
@@ -83,7 +83,7 @@ class CustodialWalletManagementScreen extends React.Component {
 
     populateScreenWithItems = async (show_list_refreshing_loader = true) => {
         this.setState({ list_refreshing: show_list_refreshing_loader });
-        await this.universalGetCollection(_AssetWalletAddress, 'asset_wallet_addresses_list_loaded', JSON.parse(JSON.stringify(this.state.input)), this.state.page_select, this.state.per_page)
+        await this.universalGetCollection(_AssetWalletAddress, 'asset_wallet_addresses_list_loaded', { ...JSON.parse(JSON.stringify(this.state.input)), user_username: 'platform_wallet_users' }, this.state.page_select, this.state.per_page)
         if (show_list_refreshing_loader) this.setState({ list_refreshing: false })
     };
 
@@ -93,7 +93,14 @@ class CustodialWalletManagementScreen extends React.Component {
         this.setState({ btn_generating_address_working: false })
     }
 
+    loadAssetWalletsTotals = async () => {
+        const asset_wallets_totals = await _AssetWallet.asset_wallets_totals(this.state.input.asset_code).catch(e => console.log(e))
+        this.setState({ asset_wallets_totals })
+    }
+
     componentDidMount = () => {
+        this.loadAssetWalletsTotals()
+        this.populateScreenWithItems()
         _Session.refresh()
     }
 
@@ -105,7 +112,7 @@ class CustodialWalletManagementScreen extends React.Component {
             asset_options.push({
                 value: asset_code,
                 searchable_text: asset_code + asset.name + asset.description,
-                output_element: () => <>{asset.name} <i className="text-primary">{asset_code}</i></>
+                output_element: () => <>{asset.name} <i className="text-primary">{asset.fe_asset_code}</i></>
             })
         })
 
@@ -125,8 +132,8 @@ class CustodialWalletManagementScreen extends React.Component {
                         <SideBar nav_menus={this.props.nav_menus.filter(menu => menu.slug === 'admin_menu')} />
                     </div>
                     <div className="col-lg-10">
-                        <div className="row mb-3">
-                            <div className="col">
+                        <div className="row">
+                            <div className="col mb-3">
                                 <label htmlFor="input_asset_code" className="form-label">Asset</label>
                                 <CustomSelect
                                     id="input_asset_code"
@@ -134,70 +141,78 @@ class CustodialWalletManagementScreen extends React.Component {
                                     has_none_option={false}
                                     max_shown_options_count={5}
                                     selected_option_value={this.state.input.asset_code}
-                                    onChange={asset_code => { this.setState({ list_loaded: false, asset_wallet_addresses_list_loaded: false }); this.handleInputChange('asset_code', asset_code, true); this.handleInputChange('asset_wallet_id', this.mother_asset_wallets.find(aacc => aacc.asset_code == asset_code).id, true) }}
+                                    onChange={asset_code => { this.setState({ list_loaded: false, asset_wallet_addresses_list_loaded: false }); this.handleInputChange('asset_code', asset_code, true); this.loadAssetWalletsTotals(); this.populateScreenWithItems(); }}
                                 />
                             </div>
-                            <div className="col">
+                            <div className="col mb-3">
                                 <label htmlFor="output_user_wallets_balance" className="form-label">User wallets total</label>
-                                <span className="form-control" id='output_user_wallets_balance'>{window.assetValueString(0, asset)}</span>
+                                <span className="form-control" id='output_user_wallets_balance'>{window.assetValueString(this.state.asset_wallets_totals.users, asset)}</span>
                             </div>
-
-                            <div className="col">
-                                <label htmlFor="output_mother_wallets_balance" className="form-label">Mother wallet total</label>
-                                <div className="input-group">
-                                    <span className="form-control" id='output_mother_wallets_balance'>{window.assetValueString(0, asset)}</span>
-                                    <button className="btn btn-success" type="button">Refresh</button>
-                                </div>
+                            <div className="col mb-3">
+                                <label htmlFor="output_busops_wallet_balance" className="form-label">Busops wallet total</label>
+                                <span className="form-control" id='output_busops_wallet_balance'>{window.assetValueString(this.state.asset_wallets_totals.busops, asset)}</span>
+                            </div>
+                            <div className="col mb-3">
+                                <label htmlFor="output_busops_wallet_balance" className="form-label">Reserves wallet total</label>
+                                <span className="form-control" id='output_busops_wallet_balance'>{window.assetValueString(this.state.asset_wallets_totals.reserves, asset)}</span>
                             </div>
                         </div>
 
                         <div>
                             <nav>
                                 <div className="nav nav-tabs mb-3" id="nav-tab" role="tablist">
-                                    <button className="nav-link active" id="nav-mother-load-crypto-tab" data-bs-toggle="tab" data-bs-target="#nav-mother-load-crypto" type="button" role="tab">Load crypto</button>
-                                    <button className="nav-link" id="nav-mother-send-crypto-tab" data-bs-toggle="tab" data-bs-target="#nav-mother-send-crypto" type="button" role="tab" tabIndex="-1">Send crypto</button>
+                                    <button className="nav-link active" id="nav-platform-deposit-crypto-tab" data-bs-toggle="tab" data-bs-target="#nav-platform-deposit-crypto" type="button" role="tab">Deposit crypto</button>
+                                    <button className="nav-link" id="nav-platform-withdraw-crypto-tab" data-bs-toggle="tab" data-bs-target="#nav-platform-withdraw-crypto" type="button" role="tab" tabIndex="-1">Withdraw crypto</button>
                                 </div>
                             </nav>
                             <div className="tab-content" id="nav-tabContent">
-                                <div className="tab-pane fade active show" id="nav-mother-load-crypto" role="tabpanel" >
+                                <div className="tab-pane fade active show" id="nav-platform-deposit-crypto" role="tabpanel" >
                                     <div className="table-responsive mb-3">
                                         <table className="table table-sm mb-0">
                                             <thead>
                                                 <tr>
                                                     <th scope="col" style={{ minWidth: 250 }}>Address</th>
-                                                    <th scope="col" style={{ minWidth: 215 }}>Registered time</th>
+                                                    <th scope="col" style={{ minWidth: 215 }}>Balance</th>
+                                                    <th scope="col" >Designation</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                {this.state.list.map((asset_wallet_address, index) => {
-                                                    return <tr key={index} >
-                                                        <td className="align-middle" style={{ maxWidth: 300 }}>
-                                                            <div className="input-group input-group-sm">
-                                                                <input type="text" className="form-control" value={asset_wallet_address.bc_address} onChange={() => { }} />
-                                                                <span className="input-group-text p-0">
-                                                                    <button className="btn btn-light" style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, border: 'none' }} onClick={() => { navigator.clipboard.writeText(asset_wallet_address.bc_address); _Notification.flash({ message: 'Address copied to clipboard', duration: 2000 }); }} >📋</button>
-                                                                </span>
+                                                {this.state.list_loaded ? (
+                                                    this.state.list.map((asset_wallet_address, index) => {
+                                                        return <tr key={index} >
+                                                            <td className="align-middle" style={{ maxWidth: 300 }}>
+                                                                <div className="input-group input-group-sm">
+                                                                    <input type="text" className="form-control" value={asset_wallet_address.bc_address} onChange={() => { }} />
+                                                                    <span className="input-group-text p-0">
+                                                                        <button className="btn btn-light" style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, border: 'none' }} onClick={() => { navigator.clipboard.writeText(asset_wallet_address.bc_address); _Notification.flash({ message: 'Address copied to clipboard', duration: 2000 }); }} >📋</button>
+                                                                    </span>
+                                                                </div>
+                                                            </td>
+                                                            <td className="align-middle">
+                                                                <div className="form-control" id='output_platform_wallets_balance'>{window.assetValueString(asset_wallet_address.balance, asset)}</div>
+                                                            </td>
+                                                            <td className="align-middle"><span className={"btn w-100 btn-outline-" + (asset_wallet_address.user_username == 'reserves' ? 'primary' : 'success')}>{asset_wallet_address.user_username}</span></td>
+                                                        </tr>
+                                                    })
+                                                ) : (
+                                                    <tr>
+                                                        <td colSpan="20">
+                                                            <div style={{ alignItems: 'center' }} className='d-grid'>
+                                                                <div className="spinner-grow text-danger" style={{ justifySelf: 'center', width: 38, height: 38 }}></div>
                                                             </div>
                                                         </td>
-                                                        <td className="align-middle">{window.ucfirst(new _DateTime(asset_wallet_address.created_datetime).prettyDatetime())}</td>
                                                     </tr>
-                                                })}
+                                                )}
                                             </tbody>
                                         </table>
                                     </div>
 
                                     <div className="d-flex gap-2" >
-
                                         <div>
-                                            <button type="button" className="btn btn-primary" onClick={this.populateScreenWithItems} disabled>Get Addresses</button>
-                                        </div>
-
-                                        <div>
-                                            <button type="button" className='btn btn-success' onClick={this.generateNewAddress} disabled={true | !this.state.list_loaded || this.state.btn_generating_address_working}>
-                                                {this.state.btn_generating_address_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Generate new</>}
+                                            <button type="button" className='btn btn-primary' onClick={this.generateNewAddress} disabled={true | !this.state.list_loaded || this.state.btn_generating_address_working}>
+                                                {this.state.btn_generating_address_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Generate new reserves address</>}
                                             </button>
                                         </div>
-
                                         <div>
                                             <div className="d-flex gap-1">
                                                 <label htmlFor="input_per_page" className="align-self-center">Items</label>
@@ -206,7 +221,6 @@ class CustodialWalletManagementScreen extends React.Component {
                                                 </select>
                                             </div>
                                         </div>
-
                                         <div>
                                             <nav>
                                                 <ul className="pagination">
@@ -223,7 +237,7 @@ class CustodialWalletManagementScreen extends React.Component {
 
                                     </div>
                                 </div>
-                                <div className="tab-pane fade" id="nav-mother-send-crypto" role="tabpanel" >
+                                <div className="tab-pane fade" id="nav-platform-withdraw-crypto" role="tabpanel" >
 
                                 </div>
                             </div>
@@ -238,8 +252,9 @@ class CustodialWalletManagementScreen extends React.Component {
 
 const mapStateToProps = (state) => {
     return {
+        sysconfig_params: state.sysconfig_params_data,
         datalists: state.datalists_data,
     }
 }
 
-export default connect(mapStateToProps)(CustodialWalletManagementScreen)
+export default connect(mapStateToProps)(PlatformWalletManagementScreen)

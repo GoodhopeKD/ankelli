@@ -27,14 +27,18 @@ class _AssetWalletAddressController extends Controller
         if ( $result === null ){
             $simple_query_args = [];
 
-            if ( request()->asset_wallet_id ){ $simple_query_args = array_merge( $simple_query_args, [ 'asset_wallet_id' => request()->asset_wallet_id ]); }
+            if ( request()->user_username && request()->user_username !== 'platform_wallet_users' ){ $simple_query_args = array_merge( $simple_query_args, [ 'user_username' => request()->user_username ]); }
+            if ( request()->asset_code ){ $simple_query_args = array_merge( $simple_query_args, [ 'asset_code' => request()->asset_code ]); }
 
             $eloquent_query = _AssetWalletAddress::where($simple_query_args);
             
-            $result = $eloquent_query->orderByDesc('created_datetime')->paginate(request()->per_page)->withQueryString();
+            if (request()->user_username == 'platform_wallet_users')
+            $eloquent_query = $eloquent_query->whereIn('user_username', ['busops', 'reserves']);
+
+            $result = $eloquent_query->paginate(request()->per_page)->withQueryString();
         }
 
-        return $result ? _AssetWalletAddressResource::collection( $result ) : null;
+        return $result ? (new _AssetWalletAddressResourceCollection( $result ))->with_balance( request()->user_username == 'platform_wallet_users' ) : null;
     }
 
     /**
@@ -78,9 +82,11 @@ class _AssetWalletAddressController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(int $id)
     {
-        //
+        $element = _AssetWalletAddress::find($id);
+        if (!$element) return abort(404, '_AssetWalletAddress with specified reference code not found');
+        return response()->json( (new _AssetWalletAddressResource( $element ))->with_balance(true) );
     }
 
     /**
