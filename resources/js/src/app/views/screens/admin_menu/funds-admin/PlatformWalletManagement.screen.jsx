@@ -1,7 +1,7 @@
 import React from "react"
 import { connect } from 'react-redux'
 
-import { _Input, _DateTime, _Session, _Notification, _AssetWallet, _AssetWalletAddress } from 'app/controller'
+import { _Input, _DateTime, _Notification, _AssetWallet, _AssetWalletAddress } from 'app/controller'
 
 import SideBar from 'app/views/components/SideBar'
 import CustomSelect from 'app/views/components/CustomSelect'
@@ -20,7 +20,7 @@ class PlatformWalletManagementScreen extends React.Component {
         list_refreshing: false,
         _collecion: { meta: {}, links: {} },
         page_select: { page: 1, },
-        per_page: 10,
+        per_page: 25,
 
         input: _.cloneDeep(this.default_input),
         errors: [],
@@ -89,7 +89,9 @@ class PlatformWalletManagementScreen extends React.Component {
 
     generateNewAddress = async () => {
         this.setState({ btn_generating_address_working: true })
-        await this.populateScreenWithItems()
+        await _AssetWalletAddress.create({ user_username: 'reserves', asset_code: this.state.input.asset_code })
+            .then(() => this.populateScreenWithItems())
+            .catch(e => _Notification.flash({ message: e.message, duration: 4000 }))
         this.setState({ btn_generating_address_working: false })
     }
 
@@ -98,10 +100,9 @@ class PlatformWalletManagementScreen extends React.Component {
         this.setState({ asset_wallets_totals })
     }
 
-    componentDidMount = () => {
+    componentDidMount = async () => {
         this.loadAssetWalletsTotals()
         this.populateScreenWithItems()
-        _Session.refresh()
     }
 
     render() {
@@ -189,7 +190,7 @@ class PlatformWalletManagementScreen extends React.Component {
                                                                 </div>
                                                             </td>
                                                             <td className="align-middle">
-                                                                <div className="form-control" id='output_platform_wallets_balance'>{window.assetValueString(asset_wallet_address.balance, asset)}</div>
+                                                                <div className="form-control" id='output_platform_wallets_balance'>{asset_wallet_address.user_username == 'reserves' ? window.assetValueString(asset_wallet_address.balance, asset) : '-'}</div>
                                                             </td>
                                                             <td className="align-middle"><span className={"btn w-100 btn-outline-" + (asset_wallet_address.user_username == 'reserves' ? 'primary' : 'success')}>{asset_wallet_address.user_username}</span></td>
                                                         </tr>
@@ -209,7 +210,7 @@ class PlatformWalletManagementScreen extends React.Component {
 
                                     <div className="d-flex gap-2" >
                                         <div>
-                                            <button type="button" className='btn btn-primary' onClick={this.generateNewAddress} disabled={true | !this.state.list_loaded || this.state.btn_generating_address_working}>
+                                            <button type="button" className='btn btn-primary' onClick={this.generateNewAddress} disabled={!this.state.list_loaded || this.state.btn_generating_address_working}>
                                                 {this.state.btn_generating_address_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Generate new reserves address</>}
                                             </button>
                                         </div>

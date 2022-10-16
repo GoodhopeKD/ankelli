@@ -35,7 +35,7 @@ class _AssetWalletController extends Controller
     }
 
     // tempFunction
-    public function tempFunction()
+    public function hvknk()
     {
         return (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => '0x0688af85d9fc2805151f5ffa66b7b505a59cc732']))->getData();
     }
@@ -218,7 +218,7 @@ class _AssetWalletController extends Controller
     }
 
     // tempFunction
-    public function getAllWebhooks()
+    public function tempFunction()
     {
         return (new Tatum\Subscriptions\NotificationSubscriptionController)->getAllWebhooks(new Request())->getData();
     }

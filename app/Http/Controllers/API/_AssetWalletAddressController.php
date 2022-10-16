@@ -56,6 +56,13 @@ class _AssetWalletAddressController extends Controller
             'asset_code' => ['required', 'string', 'exists:__assets,code'],
         ]);
 
+        $max_per_user_per_asset_code = 1;
+        if ( $validated_data['user_username'] === 'reserves' ) $max_per_user_per_asset_code = 2;
+
+        if ( _AssetWalletAddress::where(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']])->get()->count() >= $max_per_user_per_asset_code ){
+            return abort(422, 'Max number of addresses per crypto asset for this user reached');
+        }
+
         if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() && !isset($validated_data['bc_address']) ){
             $asset_wallet = _AssetWallet::firstWhere(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']])->makeVisible(['ttm_virtual_account_id']);
             $ttm_element = (new Tatum\VirtualAccounts\BCAddressController)->generateDepositAddress(new Request(['id' => $asset_wallet->ttm_virtual_account_id]))->getData();

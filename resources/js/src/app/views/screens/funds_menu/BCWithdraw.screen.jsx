@@ -181,7 +181,7 @@ class BCWithdrawScreen extends React.Component {
                                         </div>
                                         <form onSubmit={e => { e.preventDefault(); this.handleSubmit2() }}>
                                             <div className="modal-body">
-                                                <p>{window.assetValueString(this.state.input.asset_value + txn_fee_asset_value, asset)} is about to be debited from your account. Enter password to continue.</p>
+                                                <p>{window.assetValueString(parseFloat(this.state.input.asset_value) + txn_fee_asset_value, asset)} is about to be debited from your account. Enter password to continue.</p>
                                                 <div className="form-floating mb-3">
                                                     <input
                                                         type="password"

@@ -32,14 +32,21 @@ class _AssetWalletAddress extends Model
         'ttm_derivation_key',
     ];
 
+    private $ETH_USDT_FCTR = 1000;
+
     public function balance_f()
     {
         $balance = null;
-        switch ($this->asset_code) {
-            case 'ETH':
-                if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() )
-                $balance = (new \App\Http\Controllers\API\Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => $this->bc_address]))->getData()->balance;
-                break;
+        if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+            switch ($this->asset_code) {
+                case 'ETH':
+                    if ( $this->user_username === 'reserves' ){
+                        $balance = (new \App\Http\Controllers\API\Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => $this->bc_address]))->getData()->balance;
+                        $asset = _Asset::firstWhere('code', $this->asset_code);
+                        if ( $asset->fe_asset_code === 'USDT' ) $balance *= $this->ETH_USDT_FCTR;
+                    }
+                    break;
+            }
         }
         return $balance;
     }

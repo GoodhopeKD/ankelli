@@ -43,7 +43,7 @@ class DepositTokensCreateNewScreen extends React.Component {
         const asset = this.props.datalists.active_assets[this.state.input.asset_code]
 
         if (!(input.asset_value > 0)) { errors.push('Asset value invalid') }
-        if (!input.asset_value.isValid('number', 0, (this.state.ankelli_busops_user_asset_wallets.find(aacc => aacc.asset_code === asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value)) { errors.push("Asset value not within bounds") }
+        if (!input.asset_value.isValid('number', 0, this.state.asset_wallets_totals.busops)) { errors.push("Asset value not within bounds") }
 
         if (errors.length === 0) {
             this.setState({ errors, input }) // Reload input error/success indicators on text/password/number inputs
@@ -168,6 +168,7 @@ class DepositTokensCreateNewScreen extends React.Component {
                                             required
                                             value={this.state.input.asset_value}
                                             min={asset.smallest_display_unit}
+                                            step={asset.smallest_display_unit}
                                             max={window.assetValueInput(this.state.asset_wallets_totals.busops, asset)}
                                             onChange={elem => this.handleInputChange('asset_value', elem.target.value)}
                                         />

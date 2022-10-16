@@ -310,6 +310,10 @@ class __AuxController extends Controller
                 'onchain_disclaimer' => "This platform is still in test mode on the sepolia testnet chain.
 Onchain transactions should be handled accordingly."
             ],[],[],['HTTP_accept'=>'application/json']))->getData();
+
+            if ( $use_ttm_api ){
+                (new _AssetController)->updateRate($created_asset->id);
+            }
         }
 
         if ($factory_fe_asset_code === 'USDT'){
@@ -329,10 +333,6 @@ USDT doesn't exist on testnet so we're using ETH but referring to it here as USD
 The system does an internal conversion such that 1 ETH = 1000 USDT.
 Handle all internal transactions normally but know that these values will be reflected differently outside this platform."
             ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        }
-
-        if ( $use_ttm_api ){
-            (new _AssetController)->updateRate($created_asset->id);
         }
 
         $token_reg_changed = false;

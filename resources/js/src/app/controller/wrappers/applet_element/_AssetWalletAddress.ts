@@ -56,9 +56,9 @@ export default class _AssetWalletAddress extends _Wrapper_ implements Omit<typeo
 
     /* Creator(s) */
 
-    /*public static async create(args: typeof _AssetWalletAddressRespObj) {
+    public static async create(args: typeof _AssetWalletAddressRespObj) {
         return this._mainLaravelDBAPICreate('funds/asset-wallet-addresses', args)
-    }*/
+    }
 
     /* Readers */
 

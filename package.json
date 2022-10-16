@@ -2,6 +2,7 @@
     "private": true,
     "scripts": {
         "prepare-upload": "sudo chmod -R 777 . && find . -name \".DS_Store\" -type f -delete && dot_clean .",
+        "prod-bluehost":"mv .env .env.local && mv .env.bluehost .env && npm run production && mv .env .env.bluehost && mv .env.local .env",
         "dev": "npm run development",
         "development": "mix",
         "watch": "mix watch",

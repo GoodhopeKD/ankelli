@@ -119,7 +119,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('p2p/offers', '_OfferController')->only(['store', 'update', 'destroy'])->parameter('offers', 'ref_code');
     Route::apiResource('p2p/trades', '_TradeController')->except(['destroy'])->parameter('trades', 'ref_code');
     Route::apiResource('funds/asset-wallets', '_AssetWalletController')->only('store')->parameter('asset_wallets', 'id');
-    Route::apiResource('funds/asset-wallet-addresses', '_AssetWalletAddressController')->only('index', 'show')->parameter('asset_wallet_addresses', 'id');
+    Route::apiResource('funds/asset-wallet-addresses', '_AssetWalletAddressController')->only('index', 'store', 'show')->parameter('asset_wallet_addresses', 'id');
     Route::apiResource('content/messages', '_MessageController')->only(['index', 'store'])->parameter('messages', 'id');
     Route::apiResource('content/pinnings', '_PinningController')->only(['store', 'update', 'destroy'])->parameter('pinnings', 'id');
     Route::apiResource('content/reviews', '_ReviewController')->only(['store', 'update'])->parameter('reviews', 'id');

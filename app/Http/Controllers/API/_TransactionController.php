@@ -272,7 +272,7 @@ class _TransactionController extends Controller
 
         $validated_data = [];
 
-        $reserves_addresses = _AssetWalletAddress::where(['user_username' => 'reserves', 'asset_code' => $element->asset_code])->get();
+        $reserves_addresses = _AssetWalletAddress::where(['user_username' => 'reserves', 'asset_code' => $element->asset_code])->inRandomOrder()->get();
         $reserves_address = null;
         $lowest_balance = null;
         foreach ($reserves_addresses as $_reserves_address) {
@@ -325,7 +325,7 @@ class _TransactionController extends Controller
         (new Tatum\Security\KMSController)->DeletePendingTransactionToSign(new Request(['id' => $element->ttm_bc_txn_signature_id]));
         $validated_data = [
             'ttm_bc_txn_signature_id' => null,
-            'ttm_centralization_factor' => $element->ttm_centralization_factor + 0.05,
+            'ttm_centralization_factor' => $element->ttm_centralization_factor + 0.005,
         ];
         (new _TransactionController)->update( new Request($validated_data), $ref_code );
         (new _TransactionController)->centralize_assets( $ref_code );
@@ -511,8 +511,7 @@ class _TransactionController extends Controller
         ]), _AssetWallet::firstWhere(['user_username' => $validated_data['sender_username'], 'asset_code' => $validated_data['asset_code']])->id )->getData()->id;
 
         $reserves_wallet = _AssetWallet::firstWhere(['user_username' => 'reserves', 'asset_code' => $validated_data['asset_code']]);
-        $reserves_addresses = _AssetWalletAddress::where(['user_username' => 'reserves', 'asset_code' => $element->asset_code])->get();
-        shuffle($reserves_addresses);
+        $reserves_addresses = _AssetWalletAddress::where(['user_username' => 'reserves', 'asset_code' => $validated_data['asset_code']])->inRandomOrder()->get();
 
         switch ($asset->fe_asset_code) {
             case 'ETH':
@@ -559,8 +558,8 @@ class _TransactionController extends Controller
                 ]))->getData()->signatureId;
                 break;
         }
-
-        $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
+        unset($validated_data['ttm_amount_blockage_id']);
+        (new _TransactionController)->update( new Request($validated_data), $element->ref_code );
         return response()->json( [ 'ref_code' => $element->ref_code ] );
     }
 
@@ -581,7 +580,7 @@ class _TransactionController extends Controller
         (new _TransactionController)->transfer_account_to_account(new Request([
             'asset_code' => $element->asset_code,
             'asset_value' => $element->asset_value,
-            'recipient_username' => 'busops',
+            'recipient_username' => 'reserves',
             'recipient_note' => 'Transfer for processing of withdrawal '.$element->ref_code,
             'sender_username' => $element->sender_username,
             'sender_note' => 'Transfer for processing of withdrawal '.$element->ref_code,

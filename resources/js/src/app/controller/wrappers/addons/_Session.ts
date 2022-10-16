@@ -80,8 +80,8 @@ export default class _Session extends _Wrapper_ implements Omit<typeof _SessionR
         return this._mainLaravelDBAPIGetCollection('accounts/sessions', params, page_select, per_page)
     }
 
-    public static refresh() {
-        mainLaravelDBRestAPICallWrapper.dispatch({ type: 'APP_BACKEND_API_CALL', method: 'POST', endpoint: 'accounts' })
+    public static async refresh() {
+        return mainLaravelDBRestAPICallWrapper.dispatch({ type: 'APP_BACKEND_API_CALL', method: 'POST', endpoint: 'accounts' })
     }
 
     /* Updaters */
