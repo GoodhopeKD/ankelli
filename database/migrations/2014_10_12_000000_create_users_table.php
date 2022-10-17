@@ -35,6 +35,11 @@ return new class extends Migration
                 'email_address' => 'system',
                 'password' => '',
             ],
+            [
+                'username' => 'reserves',
+                'email_address' => 'reserves',
+                'password' => '',
+            ],
         ]);
     }
 

@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('__asset_wallet_addresses', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('ttm_derivation_key')->unique()->nullable();
+            //$table->unsignedInteger('ttm_derivation_key')->unique()->nullable();
             $table->string('user_username', 64)->nullable();
             $table->foreign('user_username')
                     ->references('username')

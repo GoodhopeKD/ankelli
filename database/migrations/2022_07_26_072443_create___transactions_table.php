@@ -18,7 +18,7 @@ return new class extends Migration
 
             $table->string('ttm_reference', 255)->nullable();
             $table->string('ttm_bc_txn_signature_id', 255)->unique()->nullable();
-            $table->unsignedDecimal('ttm_centralization_factor', $precision = 3, $scale = 2)->nullable();
+            //$table->unsignedDecimal('ttm_centralization_factor', $precision = 3, $scale = 2)->nullable();
             $table->string('ttm_amount_blockage_id', 96)->nullable();
             $table->string('asset_value_escrowed', 38)->nullable(); // unsignedDecimal
             $table->string('bc_txn_id', 255)->unique()->nullable();

@@ -56,7 +56,7 @@ export default class CustomSelect extends React.Component {
                     <ul className="list-unstyled mb-0">
                         {options.filter(option => option.searchable_text.toLowerCase().includes(this.state.search_query_string.toLowerCase())).slice(0, max_shown_options_count).map((option, index) =>
                             <li key={index} >
-                                <a className="dropdown-item d-flex align-items-center gap-2 py-2" href="#"
+                                <a className={"dropdown-item d-flex align-items-center gap-2 py-2" + (shown_element.value == option.value ? ' selected' : '')} href="#"
                                     onClick={e => {
                                         e.preventDefault()
                                         if (option.value != shown_element.value)
@@ -69,7 +69,7 @@ export default class CustomSelect extends React.Component {
                         )}
                         {has_none_option && <>
                             <li>
-                                <a className="dropdown-item d-flex align-items-center gap-2 py-2 list-group-item-warning" href="#"
+                                <a className={"dropdown-item d-flex align-items-center gap-2 py-2 list-group-item-warning" + (shown_element.value == this.props.none_option_value ? ' selected' : '')} href="#"
                                     onClick={e => {
                                         e.preventDefault()
                                         if (this.props.none_option_value != shown_element.value)

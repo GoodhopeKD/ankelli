@@ -175,9 +175,9 @@ class TradesViewListScreen extends React.Component {
                                             </td>
                                             <td className="align-middle">
                                                 {auth_user_is_buyer ? <>
-                                                    <b>{trade.currency_code}</b> <i>for</i> <b>{asset.fe_asset_code}</b> <small className="text-muted">(buying)</small>
+                                                    <b>{trade.currency_code}</b> <i>for</i> <b>{asset.unit}</b> <small className="text-muted">(buying)</small>
                                                 </> : <>
-                                                    <b>{asset.fe_asset_code}</b> <i>for</i> <b>{trade.currency_code}</b> <small className="text-muted">(selling)</small>
+                                                    <b>{asset.unit}</b> <i>for</i> <b>{trade.currency_code}</b> <small className="text-muted">(selling)</small>
                                                 </>}
                                                 {!trade_closed && <><br /><small className='text-muted'>🕑 {(trade.mins_remaining > 0) ? trade.mins_remaining + ' mins remaining' : -1 * trade.mins_remaining + ' mins late'}</small></>}
                                             </td>

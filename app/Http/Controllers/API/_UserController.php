@@ -234,6 +234,23 @@ class _UserController extends Controller
      */
     public function update(Request $request, string $username)
     {
+        /*$validated_data = $request->validate([
+            'username' => ['bail', 'sometimes', 'alpha_dash'],
+            'ttm_customer_id' => ['sometimes', 'string', 'size:24'],
+            'avatar_image_id' => ['sometimes', 'integer'],
+            '_status' => ['sometimes', Rule::in('active', 'inactive', 'suspended', 'deactivated')],
+        ]);
+
+        $ttm_customer = (new Tatum\VirtualAccounts\CustomerController)->getCustomerByExternalOrInternalId(new Request(['id' => $username]))->getData();
+        $ttm_customer_id = $ttm_customer->id;
+        $ttm_customer_update_data = [ 'id' => $ttm_customer_id ];
+        if (isset($validated_data['username'])){
+            $ttm_customer_update_data['externalId'] = $validated_data['username'];
+        }
+        (new Tatum\VirtualAccounts\CustomerController)->updateCustomer(new Request($ttm_customer_update_data));
+
+        return;*/
+
         $validated_data = $request->validate([
             'username' => ['bail', 'sometimes', 'alpha_dash', 'between:4,64', 'unique:__users,username'],
             'ttm_customer_id' => ['sometimes', 'string', 'size:24'],

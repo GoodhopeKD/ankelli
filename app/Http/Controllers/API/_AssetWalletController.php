@@ -35,9 +35,36 @@ class _AssetWalletController extends Controller
     }
 
     // tempFunction
-    public function hvknk()
+    public function tempFunction()
     {
-        return (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => '0x0688af85d9fc2805151f5ffa66b7b505a59cc732']))->getData();
+        return (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => 'TNajmLQSwa12CbmSnDrUNUBeoUDprHaPV8']))->getData();
+    }
+
+    // tempFunction
+    public function sffsff()
+    {
+        $factory_assets = [
+            ['chain' => 'TRON', 'code' => 'TRON', 'unit' => 'USDT', 'mnemonic' => 'entry width slam speak thumb road olive ability input salute oxygen slot blur imitate reject force web dove ball lady lion stock input video'],
+            ['chain' => 'ETH', 'code' => 'ETH', 'unit' => 'USDT', 'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent'],
+        ];
+
+        $factory_addresses = [];
+        
+        foreach ($factory_assets as $factory_asset) {
+            switch ($factory_asset['chain']) {
+                case 'ETH':
+                    $pkey = (new Tatum\Blockchain\EthereumController)->EthGenerateAddressPrivateKey(new Request(['mnemonic' => $factory_asset['mnemonic'], 'index' => 0]))->getData()->key;
+                    break;
+                case 'TRON':
+                    $pkey = (new Tatum\Blockchain\TronController)->TronGenerateAddressPrivateKey(new Request(['mnemonic' => $factory_asset['mnemonic'], 'index' => 0]))->getData()->key;
+                    break;
+            }
+            array_push( $factory_addresses, [
+                'chain' => $factory_asset['chain'],
+                'pkey' => $pkey,
+            ]);
+        }
+        return $factory_addresses;
     }
 
     // tempFunction
@@ -92,13 +119,23 @@ class _AssetWalletController extends Controller
     // tempFunction
     public function ReceivePendingTransactionsToSign()
     {
-        return (new Tatum\Security\KMSController)->ReceivePendingTransactionsToSign(new Request(['chain' => 'ETH']))->getData();
+        $chains = ['TRON', 'ETH'];
+        $txns = [];
+        foreach ($chains as $chain) {
+            $txns = array_merge($txns, (new Tatum\Security\KMSController)->ReceivePendingTransactionsToSign(new Request(['chain' => $chain]))->getData());
+        }
+        return $txns;
     }
 
     // tempFunction
     public function DeletePendingTransactionsToSign()
     {
-        foreach ((new Tatum\Security\KMSController)->ReceivePendingTransactionsToSign(new Request(['chain' => 'ETH']))->getData() as $txn) {
+        $chains = ['TRON', 'ETH'];
+        $txns = [];
+        foreach ($chains as $chain) {
+            $txns = array_merge($txns, (new Tatum\Security\KMSController)->ReceivePendingTransactionsToSign(new Request(['chain' => $chain]))->getData());
+        }
+        foreach ($txns as $txn) {
             (new Tatum\Security\KMSController)->DeletePendingTransactionToSign(new Request(['id' => $txn->id]));
         }
     }
@@ -167,7 +204,22 @@ class _AssetWalletController extends Controller
 
     public function findAllCustomers()
     {
-        return (new Tatum\VirtualAccounts\CustomerController)->findAllCustomers(new Request())->getData();
+        $customers = [];
+        foreach ((new Tatum\VirtualAccounts\CustomerController)->findAllCustomers(new Request())->getData() as $_customer) {
+            $customer = ['data' => $_customer, 'accounts' => []];
+            try {
+                foreach ((new Tatum\VirtualAccounts\AccountController)->getAccountsByCustomerId(new Request(['id' => $_customer->id]))->getData() as $_acct) {
+                    $customer_acct = [ 'data' => $_acct, 'addresses' => []];
+                    foreach ((new Tatum\VirtualAccounts\BCAddressController)->getAllDepositAddresses(new Request(['id' => $_acct->id]))->getData() as $_address) {
+                        array_push( $customer_acct['addresses'] , $_address );
+                    }
+                    array_push( $customer['accounts'] , $customer_acct );
+                }
+            } catch (\Throwable $th) {}
+            array_push( $customers , $customer );
+        };
+
+        return $customers;
     }
 
     // tempFunction
@@ -202,6 +254,7 @@ class _AssetWalletController extends Controller
     // tempFunction
     public function getTransactions()
     {
+        return (new Tatum\VirtualAccounts\TransactionController)->getTransactions(new Request())->getData();
         $transactions = [];
         $offset = 0;
         while (count((new Tatum\VirtualAccounts\TransactionController)->getTransactions(new Request(['offset' => $offset]))->getData())) {
@@ -218,7 +271,7 @@ class _AssetWalletController extends Controller
     }
 
     // tempFunction
-    public function tempFunction()
+    public function getAllWebhooks()
     {
         return (new Tatum\Subscriptions\NotificationSubscriptionController)->getAllWebhooks(new Request())->getData();
     }
@@ -262,6 +315,7 @@ class _AssetWalletController extends Controller
     }
 
     private $ETH_USDT_FCTR = 1000;
+    private $TRX_USDT_FCTR = 10;
 
     /**
      * Store a newly created resource in storage.
@@ -301,16 +355,20 @@ class _AssetWalletController extends Controller
             $ttm_element = $ttm_element ?? (new Tatum\VirtualAccounts\AccountController)->createAccount(new Request([
                 'currency' => $validated_data['asset_code'],
                 'externalId' => $validated_data['user_username'],
-                'xpub' => _Asset::firstWhere(['code' => $validated_data['asset_code']])->makeVisible(['xpub'])->xpub,
+                //'xpub' => _Asset::firstWhere(['code' => $validated_data['asset_code']])->makeVisible(['xpub'])->xpub,
                 'accountingCurrency' => 'USD',
             ]))->getData();
 
             $validated_data['ttm_virtual_account_id'] = $ttm_element->id;
             $validated_data['usable_balance_asset_value'] = $ttm_element->balance->availableBalance;
             $validated_data['total_balance_asset_value'] = $ttm_element->balance->accountBalance;
-            if ($asset->fe_asset_code === 'USDT'){
+            if ($asset->chain === 'ETH' && $asset->code === 'ETH' && $asset->unit === 'USDT'){
                 $validated_data['usable_balance_asset_value'] *= $this->ETH_USDT_FCTR;
                 $validated_data['total_balance_asset_value'] *= $this->ETH_USDT_FCTR;
+            }
+            if ($asset->chain === 'TRON' && $asset->code === 'TRON' && $asset->unit === 'USDT'){
+                $validated_data['usable_balance_asset_value'] *= $this->TRX_USDT_FCTR;
+                $validated_data['total_balance_asset_value'] *= $this->TRX_USDT_FCTR;
             }
             if ($validated_data['total_balance_asset_value'] !== $validated_data['usable_balance_asset_value']){
                 (new Tatum\VirtualAccounts\AccountController)->deleteAllBlockAmount(new Request(['id' => $ttm_element->id]));
@@ -343,8 +401,8 @@ class _AssetWalletController extends Controller
                     $asset_wallet_address_params = [
                         'user_username' => $validated_data['user_username'],
                         'asset_code' => $validated_data['asset_code'],
-                        'bc_address' => strtolower( $ttm_element->address ),
-                        'ttm_derivation_key' => $ttm_element->derivationKey,
+                        'bc_address' => $ttm_element->address,
+                        //'ttm_derivation_key' => $ttm_element->derivationKey,
                     ];
                     if ( !_AssetWalletAddress::where($asset_wallet_address_params)->exists() ){
                         (new _AssetWalletAddressController)->store(new Request($asset_wallet_address_params));
@@ -400,7 +458,8 @@ class _AssetWalletController extends Controller
         ]), $id );
         if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
             $asset = _Asset::firstWhere('code', $element->asset_code);
-            if ( $asset->fe_asset_code === 'USDT' ) $validated_data['asset_value'] /= $this->ETH_USDT_FCTR;
+            if ( $asset->chain === 'ETH' && $asset->code === 'ETH' && $asset->unit === 'USDT' ) $validated_data['asset_value'] /= $this->ETH_USDT_FCTR;
+            if ( $asset->chain === 'TRON' && $asset->code === 'TRON' && $asset->unit === 'USDT' ) $validated_data['asset_value'] /= $this->TRX_USDT_FCTR;
             return (new Tatum\VirtualAccounts\AccountController)->blockAmount(new Request([
                 'id' => $element->ttm_virtual_account_id,
                 'amount' => $validated_data['asset_value'].'',

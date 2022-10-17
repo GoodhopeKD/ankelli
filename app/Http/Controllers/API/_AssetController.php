@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 use App\Models\_PrefItem;
-use App\Models\_AssetCustodialWalletAddress;
 
 use App\Models\_Asset;
 use App\Http\Resources\_AssetResource;
@@ -15,6 +14,8 @@ use App\Http\Resources\_AssetResourceCollection;
 
 class _AssetController extends Controller
 {
+    private $ACTIVATION_BATCH_SIZE = 20;
+
     /**
      * Display a listing of the resource.
      *
@@ -49,7 +50,7 @@ class _AssetController extends Controller
         $validated_data = $request->validate([
             'name' => ['required', 'string', 'max:64', 'unique:__assets,name'],
             'code' => ['required', 'string', 'max:64', 'unique:__assets,code'],
-            'fe_asset_code' => ['required', 'string', 'max:64'],
+            'unit' => ['required', 'string', 'max:64'],
             'chain' => ['required', 'string', 'max:64'],
             'smallest_display_unit' => ['required', 'numeric', 'min:0'],
             'withdrawal_txn_fee_usd_fctr' => ['required', 'numeric', 'min:0'],
@@ -57,16 +58,52 @@ class _AssetController extends Controller
             'withdrawal_max_limit_usd_fctr' => ['required', 'integer', 'min:0'],
             'usd_asset_exchange_rate' => ['required', 'numeric', 'min:0'],
             'onchain_disclaimer' => ['required', 'string'],
-            'mnemonic' => ['required', 'string', 'max:500'],
+            'mnemonic' => ['required_without:gp_owner_bc_address', 'string', 'max:500'],
+            'gp_owner_bc_address' => ['required_without:mnemonic', 'string', 'max:128'],
         ]);
 
         $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
-
         
-        if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
-            $ttm_element = (new Tatum\Blockchain\EthereumController)->EthGenerateWallet(new Request(['mnemonic' => $validated_data['mnemonic']]))->getData();
-            $validated_data['xpub'] = $ttm_element->xpub;
+        if ( !isset($validated_data['gp_owner_bc_address']) && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+            switch ($validated_data['chain']) {
+                case 'ETH':
+                    $validated_data['xpub'] = (new Tatum\Blockchain\EthereumController)->EthGenerateWallet(new Request(['mnemonic' => $validated_data['mnemonic']]))->getData()->xpub;
+                    $validated_data['gp_owner_bc_address'] = (new Tatum\Blockchain\EthereumController)->EthGenerateAddress(new Request(['xpub' => $validated_data['xpub'], 'index' => 0]))->getData()->address;
+                    //$validated_data['gp_owner_bc_address_pkey'] = (new Tatum\Blockchain\EthereumController)->EthGenerateAddressPrivateKey(new Request(['mnemonic' => $validated_data['mnemonic'], 'index' => 0]))->getData()->key;
+                    break;
+                case 'TRON':
+                    $validated_data['xpub'] = (new Tatum\Blockchain\TronController)->GenerateTronwallet(new Request(['mnemonic' => $validated_data['mnemonic']]))->getData()->xpub;
+                    $validated_data['gp_owner_bc_address'] = (new Tatum\Blockchain\TronController)->TronGenerateAddress(new Request(['xpub' => $validated_data['xpub'], 'index' => 0]))->getData()->address;
+                    //$validated_data['gp_owner_bc_address_pkey'] = (new Tatum\Blockchain\TronController)->TronGenerateAddressPrivateKey(new Request(['mnemonic' => $validated_data['mnemonic'], 'index' => 0]))->getData()->key;
+                    break;
+            }
         }
+        
+        if ( !_Asset::where(['chain' => $validated_data['chain']])->exists() ){
+            $validated_data['chain_gp_addresses_storage'] = true;
+        }
+
+        if ( isset($validated_data['chain_gp_addresses_storage']) && $validated_data['chain_gp_addresses_storage'] && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+            // Generate gas pump addresses
+            $from = 0;
+            $to = $from + $this->ACTIVATION_BATCH_SIZE - 1;
+            $validated_data['ttm_activated_unused_gp_addresses_offset_index'] = $to + 1;
+            $ttm_element = (new Tatum\SmartContracts\GasPumpController)->PrecalculateGasPumpAddresses(new Request([
+                'chain' => $validated_data['chain'],
+                'owner' => $validated_data['gp_owner_bc_address'],
+                'from' => $from,
+                'to' => $to,
+            ]))->getData();
+            $validated_data['ttm_activated_unused_gp_addresses'] = $ttm_element;
+            // Activate gas pump addresses
+            (new Tatum\SmartContracts\GasPumpController)->ActivateGasPumpAddresses(new Request([
+                'chain' => $validated_data['chain'],
+                'owner' => $validated_data['gp_owner_bc_address'],
+                'from' => $from,
+                'to' => $to,
+            ]));
+        }
+
         $element = _Asset::create($validated_data);
         
         // Handle _Log
@@ -99,7 +136,7 @@ class _AssetController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function updateRate(int $id)
+    public function updateUSDRate(int $id)
     {
         $element = _Asset::findOrFail($id);
         $ttm_element = (new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => $element->code, 'basePair' => 'USD']))->getData();
@@ -118,6 +155,7 @@ class _AssetController extends Controller
     public function update(Request $request, int $id)
     {
         $validated_data = $request->validate([
+            'ttm_activated_unused_gp_addresses' => ['sometimes', 'array'],
             'smallest_display_unit' => ['sometimes', 'numeric', 'min:0'],
             'withdrawal_txn_fee_usd_fctr' => ['sometimes', 'numeric', 'min:0'],
             'withdrawal_min_limit_usd_fctr' => ['sometimes', 'integer', 'min:0'],
@@ -163,5 +201,36 @@ class _AssetController extends Controller
     public function destroy(int $id)
     {
         //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function activate_next_gp_addresses_batch(int $id)
+    {
+        $validated_data = [];
+        $element = _Asset::findOrFail($id)->makeVisible(['ttm_activated_unused_gp_addresses_offset_index']);
+        // Generate
+        $from = $element->ttm_activated_unused_gp_addresses_offset_index;
+        $to = $from + $this->ACTIVATION_BATCH_SIZE - 1;
+        $validated_data['ttm_activated_unused_gp_addresses_offset_index'] = $to + 1;
+        $ttm_element = (new Tatum\SmartContracts\GasPumpController)->PrecalculateGasPumpAddresses(new Request([
+            'chain' => $element->chain,
+            'owner' => $element->gp_owner_bc_address,
+            'from' => $from,
+            'to' => $to,
+        ]))->getData();
+        $validated_data['ttm_activated_unused_gp_addresses'] = $ttm_element;
+        // Activate
+        (new Tatum\SmartContracts\GasPumpController)->ActivateGasPumpAddresses(new Request([
+            'chain' => $element->chain,
+            'owner' => $element->gp_owner_bc_address,
+            'from' => $from,
+            'to' => $to,
+        ]));
+        $element->update($validated_data);
     }
 }

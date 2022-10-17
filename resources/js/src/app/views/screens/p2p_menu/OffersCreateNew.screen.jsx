@@ -121,7 +121,7 @@ class OffersCreateNewScreen extends React.Component {
             asset_options.push({
                 value: asset_code,
                 searchable_text: asset_code + asset.name + asset.description,
-                output_element: () => <>{asset.name} <i className="text-primary">{asset.fe_asset_code}</i></>
+                output_element: () => <>{asset.name} <i className="text-primary">{asset.unit}</i></>
             })
         })
 
@@ -282,7 +282,7 @@ class OffersCreateNewScreen extends React.Component {
                                     </h4>
                                     <div id="collapse_input_info" className="accordion-collapse collapse show" data-bs-parent="#accordion_input_info" >
                                         <div className="accordion-body pb-0">
-                                            <p>Offer price is amount of {currency.code} per unit {asset.fe_asset_code}</p>
+                                            <p>Offer price is amount of {currency.code} per unit {asset.unit}</p>
                                             {this.state.input.offer_to == 'buy' && <>
                                                 <p>The asset value you get is calculated as follows:</p>
                                                 <p className="text-muted">{'$asset_value = $purchase_amount / $offer_price'}</p>
@@ -378,7 +378,7 @@ class OffersCreateNewScreen extends React.Component {
                                             required
                                             onChange={elem => this.handleInputChange('min_trade_sell_value', elem.target.value)}
                                         />
-                                        <span className="input-group-text">{asset.fe_asset_code}</span>
+                                        <span className="input-group-text">{asset.unit}</span>
                                         <span className="input-group-text">You get {window.currencyAmountString(this.assetToCurrency(this.state.input.min_trade_sell_value.toRaw()), currency, true, true)}</span>
                                     </div>
                                 </div>
@@ -394,7 +394,7 @@ class OffersCreateNewScreen extends React.Component {
                                             required
                                             onChange={elem => this.handleInputChange('max_trade_sell_value', elem.target.value)}
                                         />
-                                        <span className="input-group-text">{asset.fe_asset_code}</span>
+                                        <span className="input-group-text">{asset.unit}</span>
                                         <span className="input-group-text">You get {window.currencyAmountString(this.assetToCurrency(this.state.input.max_trade_sell_value.toRaw()), currency, true, true)}</span>
                                     </div>
                                 </div>
@@ -410,7 +410,7 @@ class OffersCreateNewScreen extends React.Component {
                                             required
                                             onChange={elem => this.handleInputChange('offer_total_sell_value', elem.target.value)}
                                         />
-                                        <span className="input-group-text">{asset.fe_asset_code}</span>
+                                        <span className="input-group-text">{asset.unit}</span>
                                         <span className="input-group-text">You get {window.currencyAmountString(this.assetToCurrency(this.state.input.offer_total_sell_value.toRaw()), currency, true, true)}</span>
                                     </div>
                                 </div>

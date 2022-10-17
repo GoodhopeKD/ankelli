@@ -65,7 +65,7 @@ class _TransactionController extends Controller
         $validated_data = $request->validate([
             'ttm_reference' => ['sometimes', 'string', 'unique:__transactions,ttm_reference'],
             'ttm_bc_txn_signature_id' => ['nullable', 'string', 'unique:__transactions,ttm_bc_txn_signature_id'],
-            'ttm_centralization_factor' => ['nullable', 'numeric', 'between:1,2'],
+            //'ttm_centralization_factor' => ['nullable', 'numeric', 'between:1,2'],
             'ttm_amount_blockage_id' => ['nullable', 'string', 'unique:__transactions,ttm_amount_blockage_id'],
             'asset_value_escrowed' => ['nullable', 'numeric', 'min:0'],
             'bc_txn_id' => ['nullable', 'string', 'unique:__transactions,bc_txn_id'],
@@ -153,7 +153,7 @@ class _TransactionController extends Controller
         $validated_data = $request->validate([
             'ttm_bc_txn_signature_id' => ['nullable', 'string', 'unique:__transactions,ttm_bc_txn_signature_id'],
             'ttm_amount_blockage_id' => ['nullable', 'string', 'unique:__transactions,ttm_amount_blockage_id'],
-            'ttm_centralization_factor' => ['nullable', 'numeric', 'between:1,2'],
+            //'ttm_centralization_factor' => ['nullable', 'numeric', 'between:1,2'],
             'bc_txn_id' => ['sometimes', 'string', 'unique:__transactions,bc_txn_id'],    
             '_status' => ['sometimes', 'string', Rule::in(['pending', 'failed', 'completed'])],
             'transfer_result' => ['sometimes', 'array'],
@@ -262,7 +262,7 @@ class _TransactionController extends Controller
         return response()->json( [ 'ref_code' => $element->ref_code ] );
     }
 
-    public function centralize_assets(string $ref_code)
+    public function centralize_assets_xpub(string $ref_code)
     {
         $element = _Transaction::findOrFail($ref_code);
 
@@ -294,13 +294,152 @@ class _TransactionController extends Controller
                         'to' => $reserves_address->bc_address,
                         'amount' => $balance,
                     ]))->getData();
-                    $transferrable = ($balance - ($element->ttm_centralization_factor)*((float)$estimated_fee->gasLimit * ((float)$estimated_fee->gasPrice) / pow(10,18)));
+                    $transferrable = ($balance - $element->ttm_centralization_factor*((float)$estimated_fee->gasLimit * ((float)$estimated_fee->gasPrice) / pow(10,18)));
                     $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\EthereumController)->EthBlockchainTransfer(new Request([
                         'to' => $reserves_address->bc_address,
                         'currency' => 'ETH',
                         'amount' => $transferrable.'',
                         'index' => $focused_address->ttm_derivation_key,
                         'fee' => ['gasLimit' => $estimated_fee->gasLimit, 'gasPrice' => ((float)$estimated_fee->gasPrice / pow(10,9)).'' ],
+                    ]))->getData()->signatureId;
+                    (new _TransactionController)->update( new Request($validated_data), $ref_code );
+                }
+                return response()->json( [ 'ref_code' => $element->ref_code ] );
+
+            case 'TRON':
+                $balance = (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => $focused_address->bc_address]))->getData()->balance/1000000;
+                if ( $balance > 0 ) {
+                    $transferrable = ($balance - $element->ttm_centralization_factor*0.002);
+                    $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\TronController)->TronTransfer(new Request([
+                        'from' => $focused_address->bc_address,
+                        'to' => $reserves_address->bc_address,
+                        'amount' => $transferrable.'',
+                        'index' => $focused_address->ttm_derivation_key,
+                    ]))->getData()->signatureId;
+                    (new _TransactionController)->update( new Request($validated_data), $ref_code );
+                }
+                return response()->json( [ 'ref_code' => $element->ref_code ] );
+
+            case 'USDT_TRON':
+                $tron_acct = (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => $focused_address->bc_address]))->getData();
+                $balance = 0;
+                if (count($tron_acct->trc20) && isset($tron_acct->trc20[env('TRON_USDT_TOKEN_ADDRESS')])) $balance = $tron_acct->trc20[env('TRON_USDT_TOKEN_ADDRESS')];
+                if ( $balance > 0 ) {
+                    $feeLimit = $element->ttm_centralization_factor*0.002;
+                    $transferrable = ($balance - $feeLimit);
+                    $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\TronController)->TronTransferTrc20(new Request([
+                        'from' => $focused_address->bc_address,
+                        'to' => $reserves_address->bc_address,
+                        'tokenAddress' => env('TRON_USDT_TOKEN_ADDRESS'),
+                        'amount' => $transferrable.'', // in TRX
+                        'feeLimit' => $feeLimit.'', // in TRX
+                        'index' => $focused_address->ttm_derivation_key,
+                    ]))->getData()->signatureId;
+                    (new _TransactionController)->update( new Request($validated_data), $ref_code );
+                }
+                return response()->json( [ 'ref_code' => $element->ref_code ] );
+        }
+    }
+
+    public function centralize_assets(string $ref_code)
+    {
+        $element = _Transaction::findOrFail($ref_code);
+
+        if ($element->recipient_username == 'reserves'){
+            return response()->json( [ 'ref_code' => $element->ref_code ] );
+        }
+
+        $validated_data = [];
+
+        $asset = _Asset::firstWhere('code', $element->asset_code );
+
+        $reserves_addresses = _AssetWalletAddress::where(['user_username' => 'reserves', 'asset_code' => $element->asset_code])->inRandomOrder()->get();
+        $reserves_address = null;
+        $lowest_balance = null;
+        $focused_address = _AssetWalletAddress::firstWhere(['user_username' => $element->recipient_username, 'asset_code' => $element->asset_code]);
+
+        switch ($element->asset_code) {
+            case 'ETH':
+                foreach ($reserves_addresses as $_reserves_address) {
+                    $balance = (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => $_reserves_address->bc_address]))->getData()->balance;
+                    if ($lowest_balance === null) $lowest_balance = $balance;
+                    if ($balance <= $lowest_balance){
+                        $reserves_address = $_reserves_address;
+                    }
+                }
+                $balance = (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => $focused_address->bc_address]))->getData()->balance;
+                if ( $balance > 0 ) {
+                    $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
+                        'chain' => 'ETH',
+                        'custodialAddress' => $focused_address->bc_address,
+                        'recipient' => $reserves_address->bc_address,
+                        'contractType' => 3,
+                        'amount' => $balance.'',
+                    ]))->getData()->signatureId;
+                    (new _TransactionController)->update( new Request($validated_data), $ref_code );
+                }
+                return response()->json( [ 'ref_code' => $element->ref_code ] );
+
+            case 'USDT':
+                $reserves_address = $reserves_addresses[0];
+                $balance = $element->asset_value;
+                if ( $balance > 0 ) {
+                    $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
+                        'chain' => 'ETH',
+                        'custodialAddress' => $focused_address->bc_address,
+                        'recipient' => $reserves_address->bc_address,
+                        'contractType' => 0,
+                        'tokenAddress' => env('ETH_USDT_TOKEN_ADDRESS'),
+                        'amount' => $balance.'', // in ETH
+                    ]))->getData()->signatureId;
+                    (new _TransactionController)->update( new Request($validated_data), $ref_code );
+                }
+                return response()->json( [ 'ref_code' => $element->ref_code ] );
+
+            case 'TRON':
+                foreach ($reserves_addresses as $_reserves_address) {
+                    $balance = (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => $_reserves_address->bc_address]))->getData()->balance/1000000;
+                    if ($lowest_balance === null) $lowest_balance = $balance;
+                    if ($balance <= $lowest_balance){
+                        $reserves_address = $_reserves_address;
+                    }
+                }
+                $balance = (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => $focused_address->bc_address]))->getData()->balance/1000000;
+                if ( $balance > 0 ) {
+                    $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
+                        'chain' => 'TRON',
+                        'custodialAddress' => $focused_address->bc_address,
+                        'from' => $focused_address->bc_address,
+                        'recipient' => $reserves_address->bc_address,
+                        'contractType' => 3,
+                        'amount' => $balance.'',
+                    ]))->getData()->signatureId;
+                    (new _TransactionController)->update( new Request($validated_data), $ref_code );
+                }
+                return response()->json( [ 'ref_code' => $element->ref_code ] );
+
+            case 'USDT_TRON':
+                foreach ($reserves_addresses as $_reserves_address) {
+                    $balance = 0;
+                    $tron_acct = (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => $focused_address->bc_address]))->getData();
+                    if (count($tron_acct->trc20) && isset($tron_acct->trc20[env('TRON_USDT_TOKEN_ADDRESS')])) $balance = $tron_acct->trc20[env('TRON_USDT_TOKEN_ADDRESS')];
+                    if ($lowest_balance === null) $lowest_balance = $balance;
+                    if ($balance <= $lowest_balance){
+                        $reserves_address = $_reserves_address;
+                    }
+                }
+                $balance = 0;
+                $tron_acct = (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => $focused_address->bc_address]))->getData();
+                if (count($tron_acct->trc20) && isset($tron_acct->trc20[env('TRON_USDT_TOKEN_ADDRESS')])) $balance = $tron_acct->trc20[env('TRON_USDT_TOKEN_ADDRESS')];
+                if ( $balance > 0 ) {
+                    $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
+                        'chain' => 'TRON',
+                        'custodialAddress' => $focused_address->bc_address,
+                        'from' => $focused_address->bc_address,
+                        'recipient' => $reserves_address->bc_address,
+                        'contractType' => 0,
+                        'tokenAddress' => env('TRON_USDT_TOKEN_ADDRESS'),
+                        'amount' => $balance.'', // in TRX
                     ]))->getData()->signatureId;
                     (new _TransactionController)->update( new Request($validated_data), $ref_code );
                 }
@@ -313,7 +452,7 @@ class _TransactionController extends Controller
         $element = _Transaction::findOrFail($ref_code);
         $validated_data = [
             'ttm_bc_txn_signature_id' => null,
-            'ttm_centralization_factor' => null,
+            //'ttm_centralization_factor' => null,
         ];
         (new _TransactionController)->update( new Request($validated_data), $ref_code );
         return response()->json( [ 'ref_code' => $element->ref_code ] );
@@ -325,7 +464,7 @@ class _TransactionController extends Controller
         (new Tatum\Security\KMSController)->DeletePendingTransactionToSign(new Request(['id' => $element->ttm_bc_txn_signature_id]));
         $validated_data = [
             'ttm_bc_txn_signature_id' => null,
-            'ttm_centralization_factor' => $element->ttm_centralization_factor + 0.005,
+            //'ttm_centralization_factor' => $element->ttm_centralization_factor + 0.005,
         ];
         (new _TransactionController)->update( new Request($validated_data), $ref_code );
         (new _TransactionController)->centralize_assets( $ref_code );
@@ -333,6 +472,7 @@ class _TransactionController extends Controller
     }
 
     private $ETH_USDT_FCTR = 1000;
+    private $TRX_USDT_FCTR = 10;
 
     public function transfer_account_to_account($request)
     {
@@ -345,10 +485,11 @@ class _TransactionController extends Controller
             'sender_note' => ['required', 'string', 'max:255'],
         ]);
         if ( !_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
-            return response()->json( [ 'reference' => 'placeholder_'.random_int(100000, 199999).strtolower(substr(md5(microtime()),rand(0,9),7)) ] );
+            return response()->json( [ 'reference' => 'placeholder_'.random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7)) ] );
         }
         $asset = _Asset::firstWhere('code', $validated_data['asset_code']);
-        if ( $asset->fe_asset_code === 'USDT' ) $validated_data['asset_value'] = $validated_data['asset_value'] / $this->ETH_USDT_FCTR;
+        if ( $asset->chain === 'ETH' && $asset->code === 'ETH' && $asset->unit === 'USDT' ) $validated_data['asset_value'] = $validated_data['asset_value'] / $this->ETH_USDT_FCTR;
+        if ( $asset->chain === 'TRON' && $asset->code === 'TRON' && $asset->unit === 'USDT' ) $validated_data['asset_value'] = $validated_data['asset_value'] / $this->TRX_USDT_FCTR;
         $ttm_request_object = [
             'curency' => $validated_data['asset_code'],
             'amount' => $validated_data['asset_value'].'',
@@ -485,6 +626,199 @@ class _TransactionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    public function process_withdrawal_xpub(Request $request)
+    {
+        $validated_data = $request->validate([
+            'asset_code' => ['required', 'string', 'exists:__assets,code'],
+            'asset_value' => ['required', 'numeric', 'min:0'],
+            'recipient_bc_address' => ['required', 'string', 'between:13,128'],
+            'sender_password' => ['required', 'string', 'between:8,32'],
+            'sender_note' => ['required', 'string', 'max:255'],
+        ]);
+
+        $validated_data['sender_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        if (!Hash::check($validated_data['sender_password'], _User::firstWhere('username', $validated_data['sender_username'])->makeVisible(['password'])->password)) {
+            return abort(422, 'Sender password incorrect');
+        }
+
+        $validated_data['_status'] = 'pending';
+        $validated_data['operation_slug'] = 'WITHDRAWAL';
+
+        $asset = _Asset::firstWhere('code', $validated_data['asset_code']);
+        $validated_data['asset_value_escrowed'] = $validated_data['asset_value'] + $asset->usd_asset_exchange_rate * $asset->withdrawal_txn_fee_usd_fctr;
+        $validated_data['ttm_amount_blockage_id'] = (new _AssetWalletController)->blockAssetValue( new Request([
+            'asset_value' => $validated_data['asset_value_escrowed'],
+            'blockage_type_slug' => 'withdrawal_escrow',
+        ]), _AssetWallet::firstWhere(['user_username' => $validated_data['sender_username'], 'asset_code' => $validated_data['asset_code']])->id )->getData()->id;
+
+        $reserves_wallet = _AssetWallet::firstWhere(['user_username' => 'reserves', 'asset_code' => $validated_data['asset_code']]);
+        $reserves_addresses = _AssetWalletAddress::where(['user_username' => 'reserves', 'asset_code' => $validated_data['asset_code']])->inRandomOrder()->get();
+
+    
+        switch ($asset->chain) {
+            case 'ETH':
+                $mainnet = false;
+                if ( $mainnet ){
+                    $reserves_address = null;
+                    if ($asset->code === 'ETH'){
+                        foreach ($reserves_addresses as $_reserves_address) {
+                            $balance = (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => $_reserves_address->bc_address]))->getData()->balance;
+                            if ($balance > $validated_data['asset_value']){
+                                $reserves_address = $_reserves_address;
+                                break;
+                            }
+                        }
+                    } else {
+                        $reserves_address = $reserves_addresses[0];
+                    }
+                    if ($reserves_address === null){
+                        return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
+                    }
+                    $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\EthereumController)->EthBlockchainTransfer(new Request([
+                        'to' => $validated_data['recipient_bc_address'],
+                        'currency' => $asset->code,
+                        'amount' => $validated_data['asset_value'].'',
+                        'index' => $reserves_address->ttm_derivation_key,
+                    ]))->getData()->signatureId;
+                } else {
+                    switch ($asset->unit) {
+                        case 'ETH':
+                            $reserves_address = null;                
+                            foreach ($reserves_addresses as $_reserves_address) {
+                                $balance = (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => $_reserves_address->bc_address]))->getData()->balance;
+                                if ($balance > $validated_data['asset_value']){
+                                    $reserves_address = $_reserves_address;
+                                    break;
+                                }
+                            }
+                            if ($reserves_address === null){
+                                return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
+                            }
+                            $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\EthereumController)->EthBlockchainTransfer(new Request([
+                                'to' => $validated_data['recipient_bc_address'],
+                                'currency' => 'ETH',
+                                'amount' => $validated_data['asset_value'].'',
+                                'index' => $reserves_address->ttm_derivation_key,
+                            ]))->getData()->signatureId;
+                            break;
+            
+                        case 'USDT':
+                            $reserves_address = null;                
+                            foreach ($reserves_addresses as $_reserves_address) {
+                                $balance = (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => $_reserves_address->bc_address]))->getData()->balance;
+                                if ($balance > ($validated_data['asset_value'] / $this->ETH_USDT_FCTR)){
+                                    $reserves_address = $_reserves_address;
+                                    break;
+                                }
+                            }
+                            if ($reserves_address === null){
+                                return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
+                            }
+                            $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\EthereumController)->EthBlockchainTransfer(new Request([
+                                'to' => $validated_data['recipient_bc_address'],
+                                'currency' => 'ETH',
+                                'amount' => ($validated_data['asset_value'] / $this->ETH_USDT_FCTR).'',
+                                'index' => $reserves_address->ttm_derivation_key,
+                            ]))->getData()->signatureId;
+                            break;
+                    }
+                }
+                break;
+
+            case 'TRON':
+                $mainnet = false;
+                if ( $mainnet ){
+                    $reserves_address = null;                
+                    foreach ($reserves_addresses as $_reserves_address) {
+                        $tron_acct = (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => $_reserves_address->bc_address]))->getData();
+                        $balance = 0;
+                        if ($asset->code === 'TRON') $balance = $tron_acct->balance/1000000;
+                        if ($asset->code === 'USDT_TRON' && count($tron_acct->trc20) && isset($tron_acct->trc20[env('TRON_USDT_TOKEN_ADDRESS')])) $balance = $tron_acct->trc20[env('TRON_USDT_TOKEN_ADDRESS')];
+                        if ($balance > $validated_data['asset_value']){
+                            $reserves_address = $_reserves_address;
+                            break;
+                        }
+                    }
+                    if ($reserves_address === null){
+                        return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
+                    }
+                    switch ($asset->code) {
+                        case 'TRON':
+                            $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\TronController)->TronTransfer(new Request([
+                                'from' => $reserves_address->bc_address,
+                                'to' => $validated_data['recipient_bc_address'],
+                                'amount' => $validated_data['asset_value'].'',
+                                'index' => $reserves_address->ttm_derivation_key,
+                            ]))->getData()->signatureId;
+                            break;
+
+                        case 'USDT_TRON':
+                            $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\TronController)->TronTransferTrc20(new Request([
+                                'from' => $reserves_address->bc_address,
+                                'to' => $validated_data['recipient_bc_address'],
+                                'tokenAddress' => env('TRON_USDT_TOKEN_ADDRESS'),
+                                'amount' => $validated_data['asset_value'].'', // in TRX
+                                'feeLimit' => $validated_data['asset_value'].'', // in TRX
+                                'index' => $reserves_address->ttm_derivation_key,
+                            ]))->getData()->signatureId;
+                            break;
+                    }
+                } else {
+                    switch ($asset->unit) {
+                        case 'TRX':
+                            $reserves_address = null;                
+                            foreach ($reserves_addresses as $_reserves_address) {
+                                $balance = (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => $_reserves_address->bc_address]))->getData()->balance/1000000;
+                                if ($balance > $validated_data['asset_value']){
+                                    $reserves_address = $_reserves_address;
+                                    break;
+                                }
+                            }
+                            if ($reserves_address === null){
+                                return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
+                            }
+                            $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\TronController)->TronTransfer(new Request([
+                                'from' => $reserves_address->bc_address,
+                                'to' => $validated_data['recipient_bc_address'],
+                                'amount' => $validated_data['asset_value'].'',
+                                'index' => $reserves_address->ttm_derivation_key,
+                            ]))->getData()->signatureId;
+                            break;
+            
+                        case 'USDT':
+                            $reserves_address = null;                
+                            foreach ($reserves_addresses as $_reserves_address) {
+                                $balance = (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => $_reserves_address->bc_address]))->getData()->balance/1000000;
+                                if ($balance > ($validated_data['asset_value'] / $this->TRX_USDT_FCTR)){
+                                    $reserves_address = $_reserves_address;
+                                    break;
+                                }
+                            }
+                            if ($reserves_address === null){
+                                return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
+                            }
+                            $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\TronController)->TronTransfer(new Request([
+                                'from' => $reserves_address->bc_address,
+                                'to' => $validated_data['recipient_bc_address'],
+                                'amount' => ($validated_data['asset_value'] / $this->TRX_USDT_FCTR).'',
+                                'index' => $reserves_address->ttm_derivation_key,
+                            ]))->getData()->signatureId;
+                            break;
+                    }
+                }
+                break;
+        }
+
+        $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
+        return response()->json( [ 'ref_code' => $element->ref_code ] );
+    }
+
+    /**
+     * Process a withdrawal from user wallet to blockchain address
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
     public function process_withdrawal(Request $request)
     {
         $validated_data = $request->validate([
@@ -513,53 +847,172 @@ class _TransactionController extends Controller
         $reserves_wallet = _AssetWallet::firstWhere(['user_username' => 'reserves', 'asset_code' => $validated_data['asset_code']]);
         $reserves_addresses = _AssetWalletAddress::where(['user_username' => 'reserves', 'asset_code' => $validated_data['asset_code']])->inRandomOrder()->get();
 
-        switch ($asset->fe_asset_code) {
+    
+        switch ($asset->chain) {
             case 'ETH':
-                $reserves_address = null;                
-                foreach ($reserves_addresses as $_reserves_address) {
-                    $balance = (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => $_reserves_address->bc_address]))->getData()->balance;
-                    if ($balance > $validated_data['asset_value']){
-                        $reserves_address = $_reserves_address;
-                        break;
+                $mainnet = false;
+                if ( $mainnet ){
+                    $reserves_address = null;
+                    if ($asset->code === 'ETH'){
+                        foreach ($reserves_addresses as $_reserves_address) {
+                            $balance = (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => $_reserves_address->bc_address]))->getData()->balance;
+                            if ($balance > $validated_data['asset_value']){
+                                $reserves_address = $_reserves_address;
+                                break;
+                            }
+                        }
+                    } else {
+                        $reserves_address = $reserves_addresses[0];
+                    }
+                    if ($reserves_address === null){
+                        return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
+                    }
+                    $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
+                        'chain' => 'ETH',
+                        'custodialAddress' => $reserves_address->bc_address,
+                        'recipient' => $validated_data['recipient_bc_address'],
+                        'contractType' => 3,
+                        'amount' => $validated_data['asset_value'].'',
+                    ]))->getData()->signatureId;
+                } else {
+                    switch ($asset->unit) {
+                        case 'ETH':
+                            $reserves_address = null;                
+                            foreach ($reserves_addresses as $_reserves_address) {
+                                $balance = (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => $_reserves_address->bc_address]))->getData()->balance;
+                                if ($balance > $validated_data['asset_value']){
+                                    $reserves_address = $_reserves_address;
+                                    break;
+                                }
+                            }
+                            if ($reserves_address === null){
+                                return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
+                            }
+                            $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
+                                'chain' => 'ETH',
+                                'custodialAddress' => $reserves_address->bc_address,
+                                'recipient' => $validated_data['recipient_bc_address'],
+                                'contractType' => 3,
+                                'amount' => $validated_data['asset_value'].'',
+                            ]))->getData()->signatureId;
+                            break;
+            
+                        case 'USDT':
+                            $reserves_address = null;                
+                            foreach ($reserves_addresses as $_reserves_address) {
+                                $balance = (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => $_reserves_address->bc_address]))->getData()->balance;
+                                if ($balance > ($validated_data['asset_value'] / $this->ETH_USDT_FCTR)){
+                                    $reserves_address = $_reserves_address;
+                                    break;
+                                }
+                            }
+                            if ($reserves_address === null){
+                                return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
+                            }
+                            $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
+                                'chain' => 'ETH',
+                                'custodialAddress' => $reserves_address->bc_address,
+                                'recipient' => $validated_data['recipient_bc_address'],
+                                'contractType' => 3,
+                                'amount' => ($validated_data['asset_value'] / $this->ETH_USDT_FCTR).'',
+                            ]))->getData()->signatureId;
+                            break;
                     }
                 }
-                if ($reserves_address === null){
-                    return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
-                }
-                $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
-                $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\VirtualAccounts\BCOperationController)->EthTransfer(new Request([
-                    'address' => $validated_data['recipient_bc_address'],
-                    'amount' => $validated_data['asset_value'].'',
-                    'index' => $reserves_address->ttm_derivation_key,
-                    'senderAccountId' => $reserves_wallet->ttm_virtual_account_id,
-                    'senderNote' => 'OBO: '.$element->ref_code,
-                ]))->getData()->signatureId;
                 break;
 
-            case 'USDT':
-                $reserves_address = null;                
-                foreach ($reserves_addresses as $_reserves_address) {
-                    $balance = (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => $_reserves_address->bc_address]))->getData()->balance;
-                    if ($balance > ($validated_data['asset_value'] / $this->ETH_USDT_FCTR)){
-                        $reserves_address = $_reserves_address;
-                        break;
+            case 'TRON':
+                $mainnet = false;
+                if ( $mainnet ){
+                    $reserves_address = null;                
+                    foreach ($reserves_addresses as $_reserves_address) {
+                        $tron_acct = (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => $_reserves_address->bc_address]))->getData();
+                        $balance = 0;
+                        if ($asset->code === 'TRON') $balance = $tron_acct->balance/1000000;
+                        if ($asset->code === 'USDT_TRON' && count($tron_acct->trc20) && isset($tron_acct->trc20[env('TRON_USDT_TOKEN_ADDRESS')])) $balance = $tron_acct->trc20[env('TRON_USDT_TOKEN_ADDRESS')];
+                        if ($balance > $validated_data['asset_value']){
+                            $reserves_address = $_reserves_address;
+                            break;
+                        }
+                    }
+                    if ($reserves_address === null){
+                        return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
+                    }
+                    switch ($asset->code) {
+                        case 'TRON':
+                            $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
+                                'chain' => 'TRON',
+                                'custodialAddress' => $reserves_address->bc_address,
+                                'from' => $reserves_address->bc_address,
+                                'recipient' => $validated_data['recipient_bc_address'],
+                                'contractType' => 3,
+                                'amount' => $validated_data['asset_value'].'',
+                            ]))->getData()->signatureId;
+                            break;
+
+                        case 'USDT_TRON':
+                            $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
+                                'chain' => 'TRON',
+                                'custodialAddress' => $reserves_address->bc_address,
+                                'from' => $reserves_address->bc_address,
+                                'recipient' => $validated_data['recipient_bc_address'],
+                                'contractType' => 0,
+                                'tokenAddress' => env('TRON_USDT_TOKEN_ADDRESS'),
+                                'amount' => $validated_data['asset_value'].'', // in TRX
+                            ]))->getData()->signatureId;
+                            break;
+                    }
+                } else {
+                    switch ($asset->unit) {
+                        case 'TRX':
+                            $reserves_address = null;                
+                            foreach ($reserves_addresses as $_reserves_address) {
+                                $balance = (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => $_reserves_address->bc_address]))->getData()->balance/1000000;
+                                if ($balance > $validated_data['asset_value']){
+                                    $reserves_address = $_reserves_address;
+                                    break;
+                                }
+                            }
+                            if ($reserves_address === null){
+                                return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
+                            }
+                            $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
+                                'chain' => 'TRON',
+                                'custodialAddress' => $reserves_address->bc_address,
+                                'from' => $reserves_address->bc_address,
+                                'recipient' => $validated_data['recipient_bc_address'],
+                                'contractType' => 3,
+                                'amount' => $validated_data['asset_value'].'',
+                            ]))->getData()->signatureId;
+                            break;
+            
+                        case 'USDT':
+                            $reserves_address = null;                
+                            foreach ($reserves_addresses as $_reserves_address) {
+                                $balance = (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => $_reserves_address->bc_address]))->getData()->balance/1000000;
+                                if ($balance > ($validated_data['asset_value'] / $this->TRX_USDT_FCTR)){
+                                    $reserves_address = $_reserves_address;
+                                    break;
+                                }
+                            }
+                            if ($reserves_address === null){
+                                return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
+                            }
+                            $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
+                                'chain' => 'TRON',
+                                'custodialAddress' => $reserves_address->bc_address,
+                                'from' => $reserves_address->bc_address,
+                                'recipient' => $validated_data['recipient_bc_address'],
+                                'contractType' => 3,
+                                'amount' => ($validated_data['asset_value'] / $this->TRX_USDT_FCTR).'',
+                            ]))->getData()->signatureId;
+                            break;
                     }
                 }
-                if ($reserves_address === null){
-                    return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
-                }
-                $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
-                $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\VirtualAccounts\BCOperationController)->EthTransfer(new Request([
-                    'address' => $validated_data['recipient_bc_address'],
-                    'amount' => ($validated_data['asset_value'] / $this->ETH_USDT_FCTR).'',
-                    'index' => $reserves_address->ttm_derivation_key,
-                    'senderAccountId' => $reserves_wallet->ttm_virtual_account_id,
-                    'senderNote' => 'OBO: '.$element->ref_code,
-                ]))->getData()->signatureId;
                 break;
         }
-        unset($validated_data['ttm_amount_blockage_id']);
-        (new _TransactionController)->update( new Request($validated_data), $element->ref_code );
+
+        $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
         return response()->json( [ 'ref_code' => $element->ref_code ] );
     }
 
@@ -634,9 +1087,6 @@ class _TransactionController extends Controller
             'date' => ['required'],
         ]);
 
-        $recipient_asset_wallet = _AssetWallet::firstWhere(['ttm_virtual_account_id' => $validated_data['accountId']]);
-        $recipient_asset_wallet_address = _AssetWalletAddress::firstWhere(['bc_address' => strtolower( $validated_data['to'] )]);
-
         $transactions = (new Tatum\VirtualAccounts\TransactionController)->getTransactionsByAccountId(new Request(['id' => $validated_data['accountId'], 'currency' => $validated_data['currency']]))->getData();
         $actual_transaction = null;
         if ( count($transactions) ){
@@ -654,17 +1104,21 @@ class _TransactionController extends Controller
         }
 
         $recipient_asset_wallet = _AssetWallet::firstWhere(['ttm_virtual_account_id' => $validated_data['accountId']]);
+        $asset = _Asset::firstWhere('code', $recipient_asset_wallet->asset_code);
+
+        $validated_data['amount'] *= ( ($asset->chain === 'ETH' && $asset->code === 'ETH' && $asset->unit === 'USDT') ? $this->ETH_USDT_FCTR : 1 );
+        $validated_data['amount'] *= ( ($asset->chain === 'TRON' && $asset->code === 'TRON' && $asset->unit === 'USDT') ? $this->TRX_USDT_FCTR : 1 );
 
         $txn_recon_data = [
-            'ttm_centralization_factor' => 1,
+            //'ttm_centralization_factor' => 1,
             '_status' => 'completed',
             'operation_slug' => 'DEPOSIT',
-            'sender_bc_address' => strtolower( $validated_data['from'] ),
+            'sender_bc_address' => $validated_data['from'],
             'recipient_username' => $recipient_asset_wallet->user_username,
             'recipient_note' => isset($validated_data['recipient_note']) ? $validated_data['recipient_note'] : 'Transfer from external wallet to Ankelli wallet',
-            'recipient_bc_address' => strtolower( $validated_data['to'] ),
+            'recipient_bc_address' => $validated_data['to'],
             'asset_code' => $recipient_asset_wallet->asset_code,
-            'asset_value' => $validated_data['amount'] * $this->ETH_USDT_FCTR,
+            'asset_value' => $validated_data['amount'],
             'bc_txn_id' => $validated_data['txId'],
             'ttm_reference' => $validated_data['reference'],
             'transfer_datetime' => date('Y-m-d H:i:s', $validated_data['date'] / 1000)

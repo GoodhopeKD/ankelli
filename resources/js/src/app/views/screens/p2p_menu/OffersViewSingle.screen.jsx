@@ -166,8 +166,8 @@ class OffersViewSingleScreen extends React.Component {
                             </div>}
 
                             <div>
-                                <p>Asset you'll sell: {asset.name} ({asset.fe_asset_code})</p>
-                                {window.isset(this.props.auth_user) && <p>Your usable {asset.fe_asset_code} balance: {window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code === asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</p>}
+                                <p>Asset you'll sell: {asset.name} ({asset.unit})</p>
+                                {window.isset(this.props.auth_user) && <p>Your usable {asset.unit} balance: {window.assetValueString((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code === asset.code) ?? { usable_balance_asset_value: 0 }).usable_balance_asset_value, asset)}</p>}
                                 <p>Currency : {currency.name} ({currency.code}) </p>
                                 <p>Offer price : {window.currencyAmountString(this.focused_offer.offer_price, currency)}</p>
                                 {this.focused_offer.offer_to == 'buy' && <p>Purchase limits per trade : {window.currencyAmountString(this.focused_offer.min_trade_purchase_amount, currency)} - {window.currencyAmountString(this.focused_offer.max_trade_purchase_amount, currency)}</p>}
@@ -213,7 +213,7 @@ class OffersViewSingleScreen extends React.Component {
                                                         value={window.assetValueInput(this.state.asset_value, asset)}
                                                         onChange={elem => this.assetToCurrency(elem.target.value)}
                                                     />
-                                                    <span className="input-group-text">{asset.fe_asset_code}</span>
+                                                    <span className="input-group-text">{asset.unit}</span>
                                                 </div>
                                                 {this.focused_offer.offer_to == 'buy' && <div className="form-text">= $amount * (1 + $trade_txn_fee_factor) / $offer_price</div>}
                                                 {this.focused_offer.offer_to == 'sell' && <div className="form-text">= $amount / $offer_price</div>}
@@ -252,7 +252,7 @@ class OffersViewSingleScreen extends React.Component {
                                 </div>
 
                                 <button className="btn btn-primary" disabled={this.state.btn_proceed_working || offer_created_by_auth_user} type={!window.isset(this.props.auth_user) ? "button" : "submit"} data-bs-toggle={!window.isset(this.props.auth_user) ? "modal" : undefined} data-bs-target={!window.isset(this.props.auth_user) ? "#signin_modal" : undefined} >
-                                    {this.state.btn_proceed_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Proceed to {this.focused_offer.offer_to == 'buy' ? 'Sell' : 'Buy'} {asset.fe_asset_code}</>}
+                                    {this.state.btn_proceed_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Proceed to {this.focused_offer.offer_to == 'buy' ? 'Sell' : 'Buy'} {asset.unit}</>}
                                 </button>
                             </form>
 
@@ -290,7 +290,7 @@ class OffersViewSingleScreen extends React.Component {
                                                 <div className="modal-footer justify-content-between">
                                                     <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" >Cancel</button>
                                                     <button type="submit" className="btn btn-primary" disabled={this.state.btn_proceed_working || offer_created_by_auth_user} >
-                                                        {this.state.btn_proceed_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Proceed to {this.focused_offer.offer_to == 'buy' ? 'Sell' : 'Buy'} {asset.fe_asset_code}</>}
+                                                        {this.state.btn_proceed_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Proceed to {this.focused_offer.offer_to == 'buy' ? 'Sell' : 'Buy'} {asset.unit}</>}
                                                     </button>
                                                 </div>
                                             </form>

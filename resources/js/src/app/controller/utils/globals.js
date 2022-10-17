@@ -68,10 +68,10 @@ window.assetValueInput = (value, asset = { smallest_display_unit: 0.01 }, round_
 	return rounder((parseFloat(value) + Number.EPSILON) * some_const) / some_const
 }
 
-window.assetValueString = (value, asset = { fe_asset_code: '', smallest_display_unit: 0.01 }, show_code = true, round_down = false) => {
+window.assetValueString = (value, asset = { unit: '', smallest_display_unit: 0.01 }, show_code = true, round_down = false) => {
 	var output = window.assetValueInput(value, asset, round_down)
 	output = ('' + output).length > 0 ? output : 0
-	return output + (show_code ? ' ' + asset.fe_asset_code : '')
+	return output + (show_code ? ' ' + asset.unit : '')
 }
 
 window.instanceToRespObj = (obj) => {

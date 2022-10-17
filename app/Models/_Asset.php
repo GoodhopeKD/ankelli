@@ -17,9 +17,16 @@ class _Asset extends Model
     protected $fillable = [
         'name',
         'code',
-        'fe_asset_code',
+        'unit',
         'chain',
-        'xpub',
+
+        //'xpub',
+
+        'gp_owner_bc_address',
+        'chain_gp_addresses_storage',
+        'ttm_activated_unused_gp_addresses',
+        'ttm_activated_unused_gp_addresses_offset_index',
+
         'smallest_display_unit',
         'withdrawal_txn_fee_usd_fctr',
         'withdrawal_min_limit_usd_fctr',
@@ -36,7 +43,10 @@ class _Asset extends Model
      * @var array
      */
     protected $hidden = [
-        'xpub',
+        //'xpub',
+        'chain_gp_addresses_storage',
+        'ttm_activated_unused_gp_addresses',
+        'ttm_activated_unused_gp_addresses_offset_index',
     ];
 
     /**
@@ -45,6 +55,8 @@ class _Asset extends Model
      * @var array
      */
     protected $casts = [
+        'chain_gp_addresses_storage' => 'boolean',
+        'ttm_activated_unused_gp_addresses' => 'array',
         //'smallest_display_unit' => 'float',
         //'withdrawal_txn_fee_usd_fctr' => 'float',
         //'usd_asset_exchange_rate' => 'float',

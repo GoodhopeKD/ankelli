@@ -17,9 +17,16 @@ return new class extends Migration
             $table->id();
             $table->string('name', 64)->unique();
             $table->string('code', 64)->unique();
-            $table->string('fe_asset_code', 64);
+            $table->string('unit', 64);
             $table->string('chain', 64);
-            $table->string('xpub', 255)->unique()->nullable();
+
+            //$table->string('xpub', 255)->nullable();
+
+            $table->string('gp_owner_bc_address', 128)->nullable();
+            $table->boolean('chain_gp_addresses_storage')->default(false);
+            $table->mediumText('ttm_activated_unused_gp_addresses')->nullable();
+            $table->unsignedInteger('ttm_activated_unused_gp_addresses_offset_index')->nullable();
+
             $table->string('smallest_display_unit', 38); // unsignedDecimal
             $table->unsignedDecimal('withdrawal_txn_fee_usd_fctr', $precision = 8, $scale = 4);
             $table->unsignedTinyInteger('withdrawal_min_limit_usd_fctr');

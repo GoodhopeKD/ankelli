@@ -19,7 +19,7 @@ class _Transaction extends Model
 
         'ttm_reference',
         'ttm_bc_txn_signature_id',
-        'ttm_centralization_factor',
+        //'ttm_centralization_factor',
         'ttm_amount_blockage_id',
         'asset_value_escrowed',
         'bc_txn_id',

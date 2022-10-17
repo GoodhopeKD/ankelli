@@ -42,7 +42,7 @@ class BCDepositScreen extends React.Component {
                 asset_options.push({
                     value: asset_code,
                     searchable_text: asset_code + asset.name + asset.description,
-                    output_element: () => <>{asset.name} <i className="text-primary">{asset.fe_asset_code}</i></>
+                    output_element: () => <>{asset.name} <i className="text-primary">{asset.unit}</i></>
                 })
             }
         })
@@ -81,7 +81,7 @@ class BCDepositScreen extends React.Component {
                                 return <div key={index} className="text-center" >
                                     <div className="row justify-content-center">
                                         <div className="col-12 col-md-10 col-lg-8 col-xl-6">
-                                            <p><b>{asset.name} ({asset.fe_asset_code}) deposit address</b></p>
+                                            <p><b>{asset.name} ({asset.unit}) deposit address</b></p>
                                             <div className="input-group mb-3">
                                                 <input type="text" className="form-control" value={asset_wallet_address.bc_address} onChange={() => { }} />
                                                 <span className="input-group-text p-0">

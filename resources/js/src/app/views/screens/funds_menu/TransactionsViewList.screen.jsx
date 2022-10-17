@@ -114,7 +114,7 @@ class TransactionsViewListScreen extends React.Component {
             asset_options.push({
                 value: asset_code,
                 searchable_text: asset_code + asset.name + asset.description,
-                output_element: () => <>{asset.name} <i className="text-primary">{asset.fe_asset_code}</i></>
+                output_element: () => <>{asset.name} <i className="text-primary">{asset.unit}</i></>
             })
         })
 

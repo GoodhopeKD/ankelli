@@ -25,7 +25,7 @@ class PlatformWalletManagementScreen extends React.Component {
         input: _.cloneDeep(this.default_input),
         errors: [],
 
-        asset_wallets_totals: { users: 0, busops: 0, reserves: 0 },
+        asset_wallets_totals: { users: 0, busops: 0 },
     }
 
     handleInputChange(field = 'field.deep_field', value, use_raw = false) {
@@ -113,7 +113,7 @@ class PlatformWalletManagementScreen extends React.Component {
             asset_options.push({
                 value: asset_code,
                 searchable_text: asset_code + asset.name + asset.description,
-                output_element: () => <>{asset.name} <i className="text-primary">{asset.fe_asset_code}</i></>
+                output_element: () => <>{asset.name} <i className="text-primary">{asset.unit}</i></>
             })
         })
 
@@ -153,10 +153,6 @@ class PlatformWalletManagementScreen extends React.Component {
                                 <label htmlFor="output_busops_wallet_balance" className="form-label">Busops wallet total</label>
                                 <span className="form-control" id='output_busops_wallet_balance'>{window.assetValueString(this.state.asset_wallets_totals.busops, asset)}</span>
                             </div>
-                            <div className="col mb-3">
-                                <label htmlFor="output_busops_wallet_balance" className="form-label">Reserves wallet total</label>
-                                <span className="form-control" id='output_busops_wallet_balance'>{window.assetValueString(this.state.asset_wallets_totals.reserves, asset)}</span>
-                            </div>
                         </div>
 
                         <div>
@@ -180,6 +176,18 @@ class PlatformWalletManagementScreen extends React.Component {
                                             <tbody>
                                                 {this.state.list_loaded ? (
                                                     this.state.list.map((asset_wallet_address, index) => {
+                                                        let btn_color = 'primary'
+                                                        switch (asset_wallet_address.user_username) {
+                                                            case 'reserves':
+                                                                btn_color = 'primary'
+                                                                break;
+                                                            case 'gaspump':
+                                                                btn_color = 'success'
+                                                                break;
+                                                            case 'busops':
+                                                                btn_color = 'info'
+                                                                break;
+                                                        }
                                                         return <tr key={index} >
                                                             <td className="align-middle" style={{ maxWidth: 300 }}>
                                                                 <div className="input-group input-group-sm">
@@ -190,9 +198,9 @@ class PlatformWalletManagementScreen extends React.Component {
                                                                 </div>
                                                             </td>
                                                             <td className="align-middle">
-                                                                <div className="form-control" id='output_platform_wallets_balance'>{asset_wallet_address.user_username == 'reserves' ? window.assetValueString(asset_wallet_address.balance, asset) : '-'}</div>
+                                                                <div className="form-control" id='output_platform_wallets_balance'>{asset_wallet_address.user_username !== 'busops' ? window.assetValueString(asset_wallet_address.balance, asset) : '-'}</div>
                                                             </td>
-                                                            <td className="align-middle"><span className={"btn w-100 btn-outline-" + (asset_wallet_address.user_username == 'reserves' ? 'primary' : 'success')}>{asset_wallet_address.user_username}</span></td>
+                                                            <td className="align-middle"><span className={"btn w-100 btn-outline-" + btn_color}>{asset_wallet_address.user_username}</span></td>
                                                         </tr>
                                                     })
                                                 ) : (

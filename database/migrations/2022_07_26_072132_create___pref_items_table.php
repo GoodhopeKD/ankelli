@@ -209,7 +209,7 @@ return new class extends Migration
             [
                 'key_name' => 'Default Selected Crypto Asset',
                 'key_slug' => 'default_crypto_asset_code',
-                'value' => 'ETH',
+                'value' => 'TRON',
                 'value_type' => 'enum:crypto_asset_codes',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
