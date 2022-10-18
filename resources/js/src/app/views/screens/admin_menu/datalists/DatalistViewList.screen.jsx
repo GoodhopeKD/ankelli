@@ -136,38 +136,43 @@ export default class DatalistViewListScreen extends React.Component {
                                     <thead>
                                         <tr>
                                             {this.props.title == 'Assets List' && <>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Code</th>
-                                                <th scope="col" style={{ minWidth: 185 }}>Smallest Display Unit</th>
-                                                <th scope="col" style={{ minWidth: 200 }}>Onchain Disclaimer</th>
-                                                <th scope="col">Status</th>
+                                                <th scope="col" className="align-middle small" style={{ minWidth: 80 }}>Name</th>
+                                                <th scope="col" className="align-middle small">Chain</th>
+                                                <th scope="col" className="align-middle small">Code</th>
+                                                <th scope="col" className="align-middle small">Unit</th>
+                                                <th scope="col" className="align-middle small">Widthrawal Fee (USD)</th>
+                                                <th scope="col" className="align-middle small" style={{ minWidth: 170 }}>Widthrawal Limits</th>
+                                                <th scope="col" className="align-middle small" style={{ minWidth: 80 }}>USD rate</th>
+                                                <th scope="col" className="align-middle small" style={{ minWidth: 85 }}>Smallest Display Unit</th>
+                                                <th scope="col" className="align-middle small" style={{ minWidth: 200 }}>Onchain Disclaimer</th>
+                                                <th scope="col" className="align-middle small">Status</th>
                                             </>}
                                             {this.props.title == 'Currencies List' && <>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Code</th>
-                                                <th scope="col">Symbol</th>
-                                                <th scope="col">Symbol Located</th>
-                                                <th scope="col">USD rate</th>
-                                                <th scope="col">Min transactable cash amount</th>
-                                                <th scope="col">Smallest transactable cash denomination amount</th>
-                                                <th scope="col">Status</th>
+                                                <th scope="col" className="align-middle small">Name</th>
+                                                <th scope="col" className="align-middle small">Code</th>
+                                                <th scope="col" className="align-middle small">Symbol</th>
+                                                <th scope="col" className="align-middle small">Symbol Located</th>
+                                                <th scope="col" className="align-middle small">USD rate</th>
+                                                <th scope="col" className="align-middle small">Min transactable cash amount</th>
+                                                <th scope="col" className="align-middle small">Smallest transactable cash denomination amount</th>
+                                                <th scope="col" className="align-middle small">Status</th>
                                             </>}
                                             {this.props.title == 'Payment Methods List' && <>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Slug</th>
-                                                <th scope="col">Choice currencies</th>
-                                                <th scope="col" style={{ width: 400 }}>Details required</th>
-                                                <th scope="col">Hex color</th>
-                                                <th scope="col">Icon</th>
-                                                <th scope="col">Status</th>
+                                                <th scope="col" className="align-middle small">Name</th>
+                                                <th scope="col" className="align-middle small">Slug</th>
+                                                <th scope="col" className="align-middle small">Choice currencies</th>
+                                                <th scope="col" className="align-middle small" style={{ width: 400 }}>Details required</th>
+                                                <th scope="col" className="align-middle small">Hex color</th>
+                                                <th scope="col" className="align-middle small">Icon</th>
+                                                <th scope="col" className="align-middle small">Status</th>
                                             </>}
                                             {this.props.title == 'Countries List' && <>
-                                                <th scope="col">Name</th>
-                                                <th scope="col">Code</th>
-                                                <th scope="col">Choice payment methods</th>
-                                                <th scope="col">Choice currencies</th>
-                                                <th scope="col">Allowed assets</th>
-                                                <th scope="col">Status</th>
+                                                <th scope="col" className="align-middle small">Name</th>
+                                                <th scope="col" className="align-middle small">Code</th>
+                                                <th scope="col" className="align-middle small">Choice payment methods</th>
+                                                <th scope="col" className="align-middle small">Choice currencies</th>
+                                                <th scope="col" className="align-middle small">Allowed assets</th>
+                                                <th scope="col" className="align-middle small">Status</th>
                                             </>}
                                         </tr>
                                     </thead>
@@ -176,38 +181,43 @@ export default class DatalistViewListScreen extends React.Component {
                                             this.state.list.map((datalist_item, index) => {
                                                 return <tr key={index} >
                                                     {this.props.title == 'Assets List' && <>
-                                                        <td className="align-middle">{datalist_item.name}</td>
-                                                        <td className="align-middle">{datalist_item.code}</td>
-                                                        <td className="align-middle">{datalist_item.smallest_display_unit}</td>
-                                                        <td className="align-middle" style={{ whiteSpace: 'pre-wrap' }}>{datalist_item.onchain_disclaimer}</td>
-                                                        <td className="align-middle">{datalist_item._status}</td>
+                                                        <td className="align-middle small">{datalist_item.name}</td>
+                                                        <td className="align-middle small">{datalist_item.chain}</td>
+                                                        <td className="align-middle small">{datalist_item.code}</td>
+                                                        <td className="align-middle small">{datalist_item.unit}</td>
+                                                        <td className="align-middle small">${datalist_item.withdrawal_txn_fee_usd_fctr}</td>
+                                                        <td className="align-middle small">{datalist_item.withdrawal_min_limit_usd_fctr * datalist_item.usd_asset_exchange_rate} - {datalist_item.withdrawal_max_limit_usd_fctr * datalist_item.usd_asset_exchange_rate} {datalist_item.unit}</td>
+                                                        <td className="align-middle small">{datalist_item.usd_asset_exchange_rate} {datalist_item.unit}</td>
+                                                        <td className="align-middle small">{datalist_item.smallest_display_unit}</td>
+                                                        <td className="align-middle small" style={{ whiteSpace: 'pre-wrap' }}>{datalist_item.onchain_disclaimer}</td>
+                                                        <td className="align-middle small">{datalist_item._status}</td>
                                                     </>}
                                                     {this.props.title == 'Currencies List' && <>
-                                                        <td className="align-middle">{datalist_item.name}</td>
-                                                        <td className="align-middle">{datalist_item.code}</td>
-                                                        <td className="align-middle">{datalist_item.symbol}</td>
-                                                        <td className="align-middle">{datalist_item.symbol_before_number ? 'Before Number' : 'After Number'}</td>
-                                                        <td className="align-middle">{datalist_item.usd_rate}</td>
-                                                        <td className="align-middle">{datalist_item.min_transactable_cash_amount}</td>
-                                                        <td className="align-middle">{datalist_item.smallest_transactable_cash_denomination_amount}</td>
-                                                        <td className="align-middle">{datalist_item._status}</td>
+                                                        <td className="align-middle small">{datalist_item.name}</td>
+                                                        <td className="align-middle small">{datalist_item.code}</td>
+                                                        <td className="align-middle small">{datalist_item.symbol}</td>
+                                                        <td className="align-middle small">{datalist_item.symbol_before_number ? 'Before Number' : 'After Number'}</td>
+                                                        <td className="align-middle small">{datalist_item.usd_rate}</td>
+                                                        <td className="align-middle small">{datalist_item.min_transactable_cash_amount}</td>
+                                                        <td className="align-middle small">{datalist_item.smallest_transactable_cash_denomination_amount}</td>
+                                                        <td className="align-middle small">{datalist_item._status}</td>
                                                     </>}
                                                     {this.props.title == 'Payment Methods List' && <>
-                                                        <td className="align-middle">{datalist_item.name}</td>
-                                                        <td className="align-middle">{datalist_item.slug}</td>
-                                                        <td className="align-middle">{JSON.stringify(datalist_item.choice_currency_codes, null, 2)}</td>
-                                                        <td className="align-middle">{JSON.stringify(datalist_item.details_required, null, 2)}</td>
-                                                        <td className="align-middle"><button className="btn btn-sm" style={{ backgroundColor: '#' + datalist_item.hex_color }}>{datalist_item.hex_color}</button></td>
-                                                        <td className="align-middle"><img src={datalist_item.icon.uri} alt={datalist_item.name + " icon"} width="40" height="40" className="rounded-1 me-2" /></td>
-                                                        <td className="align-middle">{datalist_item._status}</td>
+                                                        <td className="align-middle small">{datalist_item.name}</td>
+                                                        <td className="align-middle small">{datalist_item.slug}</td>
+                                                        <td className="align-middle small">{JSON.stringify(datalist_item.choice_currency_codes, null, 2)}</td>
+                                                        <td className="align-middle small">{JSON.stringify(datalist_item.details_required, null, 2)}</td>
+                                                        <td className="align-middle small"><button className="btn btn-sm" style={{ backgroundColor: '#' + datalist_item.hex_color }}>{datalist_item.hex_color}</button></td>
+                                                        <td className="align-middle small"><img src={datalist_item.icon.uri} alt={datalist_item.name + " icon"} width="40" height="40" className="rounded-1 me-2" /></td>
+                                                        <td className="align-middle small">{datalist_item._status}</td>
                                                     </>}
                                                     {this.props.title == 'Countries List' && <>
-                                                        <td className="align-middle">{datalist_item.name}</td>
-                                                        <td className="align-middle">{datalist_item.code}</td>
-                                                        <td className="align-middle">{JSON.stringify(datalist_item.choice_pymt_method_slugs, null, 2)}</td>
-                                                        <td className="align-middle">{JSON.stringify(datalist_item.choice_currency_codes, null, 2)}</td>
-                                                        <td className="align-middle">{JSON.stringify(datalist_item.allowed_asset_codes, null, 2)}</td>
-                                                        <td className="align-middle">{datalist_item._status}</td>
+                                                        <td className="align-middle small">{datalist_item.name}</td>
+                                                        <td className="align-middle small">{datalist_item.code}</td>
+                                                        <td className="align-middle small">{JSON.stringify(datalist_item.choice_pymt_method_slugs, null, 2)}</td>
+                                                        <td className="align-middle small">{JSON.stringify(datalist_item.choice_currency_codes, null, 2)}</td>
+                                                        <td className="align-middle small">{JSON.stringify(datalist_item.allowed_asset_codes, null, 2)}</td>
+                                                        <td className="align-middle small">{datalist_item._status}</td>
                                                     </>}
                                                 </tr>
                                             })

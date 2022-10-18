@@ -42,6 +42,6 @@ class _SessionResource extends JsonResource
             'signout_datetime' => $this->signout_datetime,
             'last_active_datetime' => $this->last_active_datetime_f(),
             'last_request_location' => json_decode( $last_request_location ),
-        ], static function($var){ return $var !== null;} );
+        ], static function($var){ return $var !== null; } );
     }
 }

@@ -31,7 +31,7 @@ return new class extends Migration
             $table->unsignedDecimal('withdrawal_txn_fee_usd_fctr', $precision = 8, $scale = 4);
             $table->unsignedTinyInteger('withdrawal_min_limit_usd_fctr');
             $table->unsignedInteger('withdrawal_max_limit_usd_fctr');
-            $table->string('usd_asset_exchange_rate', 38); // unsignedDecimal
+            $table->string('usd_asset_exchange_rate', 38)->nullable(); // unsignedDecimal
             $table->text('onchain_disclaimer');
             $table->enum('_status', ['active', 'deactivated'])->default('active');
 

@@ -206,6 +206,9 @@ class _AssetWalletController extends Controller
     {
         $customers = [];
         foreach ((new Tatum\VirtualAccounts\CustomerController)->findAllCustomers(new Request())->getData() as $_customer) {
+
+            if ( str_contains($_customer->externalId, '_')){ continue; }
+
             $customer = ['data' => $_customer, 'accounts' => []];
             try {
                 foreach ((new Tatum\VirtualAccounts\AccountController)->getAccountsByCustomerId(new Request(['id' => $_customer->id]))->getData() as $_acct) {

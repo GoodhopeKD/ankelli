@@ -413,6 +413,7 @@ class _TransactionController extends Controller
                         'recipient' => $reserves_address->bc_address,
                         'contractType' => 3,
                         'amount' => $balance.'',
+                        'feeLimit' => $asset->usd_asset_exchange_rate / 5,
                     ]))->getData()->signatureId;
                     (new _TransactionController)->update( new Request($validated_data), $ref_code );
                 }
@@ -439,7 +440,8 @@ class _TransactionController extends Controller
                         'recipient' => $reserves_address->bc_address,
                         'contractType' => 0,
                         'tokenAddress' => env('TRON_USDT_TOKEN_ADDRESS'),
-                        'amount' => $balance.'', // in TRX
+                        'amount' => $balance.'',
+                        'feeLimit' => $asset->usd_asset_exchange_rate / 5, // in TRX
                     ]))->getData()->signatureId;
                     (new _TransactionController)->update( new Request($validated_data), $ref_code );
                 }
@@ -757,8 +759,8 @@ class _TransactionController extends Controller
                                 'from' => $reserves_address->bc_address,
                                 'to' => $validated_data['recipient_bc_address'],
                                 'tokenAddress' => env('TRON_USDT_TOKEN_ADDRESS'),
-                                'amount' => $validated_data['asset_value'].'', // in TRX
-                                'feeLimit' => $validated_data['asset_value'].'', // in TRX
+                                'amount' => ($validated_data['asset_value'] * $asset->usd_asset_exchange_rate).'', // in TRX
+                                'feeLimit' => $asset->usd_asset_exchange_rate / 5, // in TRX
                                 'index' => $reserves_address->ttm_derivation_key,
                             ]))->getData()->signatureId;
                             break;
@@ -867,13 +869,14 @@ class _TransactionController extends Controller
                     if ($reserves_address === null){
                         return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
                     }
-                    $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
+                    $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request(array_filter([
                         'chain' => 'ETH',
                         'custodialAddress' => $reserves_address->bc_address,
                         'recipient' => $validated_data['recipient_bc_address'],
-                        'contractType' => 3,
+                        'contractType' => ($asset->chain === $asset->code ? 3 : 0),
+                        'tokenAddress' => ($asset->chain === $asset->code ? null : env('ETH_USDT_TOKEN_ADDRESS')),
                         'amount' => $validated_data['asset_value'].'',
-                    ]))->getData()->signatureId;
+                    ], static function($var){ return $var !== null; } )))->getData()->signatureId;
                 } else {
                     switch ($asset->unit) {
                         case 'ETH':
@@ -947,6 +950,7 @@ class _TransactionController extends Controller
                                 'recipient' => $validated_data['recipient_bc_address'],
                                 'contractType' => 3,
                                 'amount' => $validated_data['asset_value'].'',
+                                'feeLimit' => $asset->usd_asset_exchange_rate / 5,
                             ]))->getData()->signatureId;
                             break;
 
@@ -958,7 +962,8 @@ class _TransactionController extends Controller
                                 'recipient' => $validated_data['recipient_bc_address'],
                                 'contractType' => 0,
                                 'tokenAddress' => env('TRON_USDT_TOKEN_ADDRESS'),
-                                'amount' => $validated_data['asset_value'].'', // in TRX
+                                'amount' => $validated_data['asset_value'].'',
+                                'feeLimit' => $asset->usd_asset_exchange_rate / 5, // in TRX
                             ]))->getData()->signatureId;
                             break;
                     }
@@ -983,6 +988,7 @@ class _TransactionController extends Controller
                                 'recipient' => $validated_data['recipient_bc_address'],
                                 'contractType' => 3,
                                 'amount' => $validated_data['asset_value'].'',
+                                'feeLimit' => $asset->usd_asset_exchange_rate / 5,
                             ]))->getData()->signatureId;
                             break;
             
@@ -1005,6 +1011,7 @@ class _TransactionController extends Controller
                                 'recipient' => $validated_data['recipient_bc_address'],
                                 'contractType' => 3,
                                 'amount' => ($validated_data['asset_value'] / $this->TRX_USDT_FCTR).'',
+                                'feeLimit' => $asset->usd_asset_exchange_rate / 5,
                             ]))->getData()->signatureId;
                             break;
                     }

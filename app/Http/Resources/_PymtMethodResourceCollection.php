@@ -22,7 +22,7 @@ class _PymtMethodResourceCollection extends ResourceCollection
                     'creator_username' => null,
                     'created_datetime' => null,
                     'updated_datetime' => null,
-                ]), static function($var){ return $var !== null;} );
+                ]), static function($var){ return $var !== null; } );
             }),
         ];
     }

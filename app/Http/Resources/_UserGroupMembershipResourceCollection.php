@@ -20,7 +20,7 @@ class _UserGroupMembershipResourceCollection extends ResourceCollection
                     is_array($_this->resource) ? $_this->resource: $_this->resource->toArray(), [
                     'created_datetime' => null,
                     'updated_datetime' => null,
-                ]), static function($var){ return $var !== null;} );
+                ]), static function($var){ return $var !== null; } );
             }),
         ];
     }

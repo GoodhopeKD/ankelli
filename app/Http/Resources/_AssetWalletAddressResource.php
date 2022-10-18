@@ -24,6 +24,6 @@ class _AssetWalletAddressResource extends JsonResource
         return array_filter(array_merge(
             parent::toArray($request), [
                 'balance' => $this->with_balance ? $this->balance_f() : null,
-            ]), static function($var){ return $var !== null;} );
+            ]), static function($var){ return $var !== null; } );
     }
 }

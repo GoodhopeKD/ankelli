@@ -56,12 +56,11 @@ class GasPumpController extends Controller
             'from' => ['required', 'integer', 'min:0'],
             'to' => ['required', 'integer', 'min:0'],
             'feeCurrency' => ['required_if:chain,=,CELO', 'string', Rule::in(['CELO','CUSD','CEUR'])],
-            //'feeLimit' => ['required_if:chain,=,TRON', 'numeric', 'min:0'],
-            //'index' => ['required', 'integer', 'min:0'],
+            'feeLimit' => ['required_if:chain,=,TRON', 'numeric', 'min:0'],
+            'index' => ['sometimes', 'integer', 'between:0,2147483647'],
             //'signatureId' => ['required', 'string'],
         ]);
 
-        if ( $validated_data['chain'] === 'TRON' ) $validated_data['feeLimit'] = 200;
         $validated_data['signatureId'] = env('TATUM_KMS_'.$validated_data['chain'].'_GP_OWNER_BC_ADDRESS_SIGNATURE_ID');
 
         $payload = $validated_data;
@@ -93,7 +92,7 @@ class GasPumpController extends Controller
         $validated_data = $request->validate([
             'chain' => ['required', 'string', Rule::in(["BSC","CELO","ETH","KLAY","MATIC","ONE","TRON"])],
             'owner' => ['required', 'string', 'between:13,128'],
-            'index' => ['required', 'numeric', 'min:0'],
+            'index' => ['required', 'integer', 'between:0,2147483647'],
         ]);
 
         $curl = curl_init();
@@ -151,17 +150,15 @@ class GasPumpController extends Controller
             'from' => ['required_if:chain,=,TRON', 'string', 'size:34'],
             'recipient' => ['required', 'string', 'between:34,42'],
             'contractType' => ['required', 'integer', Rule::in([0, 3])], // 0 for ERC20, 3 for native
-            'tokenAddress' => ['sometimes', 'string', 'between:34,42'], // for ERC20
+            'tokenAddress' => ['required_if:contractType,=,0', 'string', 'between:34,42'], // for ERC20
             'amount' => ['required', 'string', 'max:38'],
-            'index' => ['nullable', 'integer', 'between:0,2147483647'],
+            'index' => ['sometimes', 'integer', 'between:0,2147483647'],
             'feeCurrency' => ['required_if:chain,=,CELO', 'string', Rule::in(['CELO','CUSD','CEUR'])],
-            //'feeLimit' => ['required_if:chain,=,TRON', 'numeric', 'min:0'],
-            //'fee' => ['required_if:chain,=,CELO', 'array'],
+            'feeLimit' => ['required_if:chain,=,TRON', 'numeric', 'min:0'],
+            'fee' => ['required_if:chain,=,CELO', 'array'],
             //'signatureId' => ['required', 'string'],
         ]);
 
-        if ( $validated_data['chain'] === 'TRON' ) $validated_data['feeLimit'] = 200;
-        if ( $validated_data['chain'] === 'CELO' ) $validated_data['fee'] = [ 'gasLimit' => 400, 'gasPrice' => 400 ];
         $validated_data['signatureId'] = env('TATUM_KMS_'.$validated_data['chain'].'_GP_OWNER_BC_ADDRESS_SIGNATURE_ID');
 
         $payload = $validated_data;

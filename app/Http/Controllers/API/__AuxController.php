@@ -252,8 +252,10 @@ class __AuxController extends Controller
     }
 
     private $factory_assets = [
-        ['chain' => 'TRON', 'code' => 'TRON', 'unit' => 'USDT', 'mnemonic' => 'entry width slam speak thumb road olive ability input salute oxygen slot blur imitate reject force web dove ball lady lion stock input video'],
-        ['chain' => 'ETH', 'code' => 'ETH', 'unit' => 'USDT', 'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent'],
+        ['chain' => 'TRON', 'code' => 'TRON', 'unit' => 'TRX', 'mnemonic' => 'entry width slam speak thumb road olive ability input salute oxygen slot blur imitate reject force web dove ball lady lion stock input video'],
+        ['chain' => 'ETH', 'code' => 'ETH', 'unit' => 'ETH', 'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent'],
+        //['chain' => 'TRON', 'code' => 'TRON', 'unit' => 'USDT', 'mnemonic' => 'entry width slam speak thumb road olive ability input salute oxygen slot blur imitate reject force web dove ball lady lion stock input video'],
+        //['chain' => 'ETH', 'code' => 'ETH', 'unit' => 'USDT', 'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent'],
     ];
 
     public function load_factory_data()
@@ -314,7 +316,6 @@ class __AuxController extends Controller
                         'withdrawal_txn_fee_usd_fctr' => 1,
                         'withdrawal_min_limit_usd_fctr' => 1,
                         'withdrawal_max_limit_usd_fctr' => 1000,
-                        'usd_asset_exchange_rate' => '0.00076',
                         'onchain_disclaimer' => "",
                     ],[],[],['HTTP_accept'=>'application/json']))->getData();
                     if ( $use_ttm_api ){
@@ -349,7 +350,6 @@ class __AuxController extends Controller
                         'withdrawal_txn_fee_usd_fctr' => 1,
                         'withdrawal_min_limit_usd_fctr' => 1,
                         'withdrawal_max_limit_usd_fctr' => 1000,
-                        'usd_asset_exchange_rate' => '16.17',
                         'onchain_disclaimer' => "",
                     ],[],[],['HTTP_accept'=>'application/json']))->getData();
                     if ( $use_ttm_api ){
@@ -388,7 +388,6 @@ class __AuxController extends Controller
                         'withdrawal_txn_fee_usd_fctr' => 1,
                         'withdrawal_min_limit_usd_fctr' => 1,
                         'withdrawal_max_limit_usd_fctr' => 1000,
-                        'usd_asset_exchange_rate' => '0.00076',
                         'onchain_disclaimer' => "This platform is still in test mode on the sepolia testnet chain.
 Onchain transactions should be handled accordingly."
                     ],[],[],['HTTP_accept'=>'application/json']))->getData();
@@ -410,7 +409,7 @@ Onchain transactions should be handled accordingly."
                         'withdrawal_min_limit_usd_fctr' => 1,
                         'withdrawal_max_limit_usd_fctr' => 1000,
                         'usd_asset_exchange_rate' => 1,
-                        'onchain_disclaimer' => "This platform is still in test mode using the testnet chain.
+                        'onchain_disclaimer' => "This platform is still in test mode using the sepolia testnet chain.
 USDT doesn't exist on testnet so we're using ETH but referring to it here as USDT.
 The system does an internal conversion such that 1 ETH = 1000 USDT.
 Handle all internal transactions normally but know that these values will be reflected differently outside this platform."
@@ -428,8 +427,7 @@ Handle all internal transactions normally but know that these values will be ref
                         'withdrawal_txn_fee_usd_fctr' => 1,
                         'withdrawal_min_limit_usd_fctr' => 1,
                         'withdrawal_max_limit_usd_fctr' => 1000,
-                        'usd_asset_exchange_rate' => '16.17',
-                        'onchain_disclaimer' => "This platform is still in test mode on the tron testnet chain.
+                        'onchain_disclaimer' => "This platform is still in test mode on the shasta testnet chain.
 Onchain transactions should be handled accordingly."
                     ],[],[],['HTTP_accept'=>'application/json']))->getData();
     
@@ -450,7 +448,7 @@ Onchain transactions should be handled accordingly."
                         'withdrawal_min_limit_usd_fctr' => 1,
                         'withdrawal_max_limit_usd_fctr' => 1000,
                         'usd_asset_exchange_rate' => 1,
-                        'onchain_disclaimer' => "This platform is still in test mode using the testnet chain.
+                        'onchain_disclaimer' => "This platform is still in test mode using the shasta testnet chain.
 USDT doesn't exist on testnet so we're using TRX but referring to it here as USDT.
 The system does an internal conversion such that 1 TRX = 10 USDT.
 Handle all internal transactions normally but know that these values will be reflected differently outside this platform."

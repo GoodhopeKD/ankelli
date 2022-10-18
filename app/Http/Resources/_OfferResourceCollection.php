@@ -21,7 +21,7 @@ class _OfferResourceCollection extends ResourceCollection
                     'creator_rating' => $_this->creator_rating_f(),
                     'creator_trades_as_buyer_stats' => $_this->creator_trades_as_buyer_stats_f(),
                     'created_datetime' => null,
-                ]), static function($var){ return $var !== null;} );
+                ]), static function($var){ return $var !== null; } );
             }),
         ];
     }

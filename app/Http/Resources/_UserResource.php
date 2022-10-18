@@ -21,6 +21,6 @@ class _UserResource extends JsonResource
             'asset_wallets' => $this->asset_wallets_f(),
             'user_group_memberships' => $this->user_group_memberships_f(),
             'active_user_group_membership_slugs' => $this->active_user_group_membership_slugs_f(),
-        ]), static function($var){ return $var !== null;} );
+        ]), static function($var){ return $var !== null; } );
     }
 }

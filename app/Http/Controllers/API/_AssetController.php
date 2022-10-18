@@ -56,7 +56,7 @@ class _AssetController extends Controller
             'withdrawal_txn_fee_usd_fctr' => ['required', 'numeric', 'min:0'],
             'withdrawal_min_limit_usd_fctr' => ['required', 'integer', 'min:0'],
             'withdrawal_max_limit_usd_fctr' => ['required', 'integer', 'min:0'],
-            'usd_asset_exchange_rate' => ['required', 'numeric', 'min:0'],
+            'usd_asset_exchange_rate' => ['sometimes', 'numeric', 'min:0'],
             'onchain_disclaimer' => ['required', 'string'],
             'mnemonic' => ['required_without:gp_owner_bc_address', 'string', 'max:500'],
             'gp_owner_bc_address' => ['required_without:mnemonic', 'string', 'max:128'],
@@ -83,6 +83,10 @@ class _AssetController extends Controller
             $validated_data['chain_gp_addresses_storage'] = true;
         }
 
+        if ( !isset($validated_data['usd_asset_exchange_rate']) && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+            $validated_data['usd_asset_exchange_rate'] = 1/((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => $validated_data['code'], 'basePair' => 'USD']))->getData()->value);
+        }
+
         if ( isset($validated_data['chain_gp_addresses_storage']) && $validated_data['chain_gp_addresses_storage'] && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
             // Generate gas pump addresses
             $from = 0;
@@ -96,12 +100,13 @@ class _AssetController extends Controller
             ]))->getData();
             $validated_data['ttm_activated_unused_gp_addresses'] = $ttm_element;
             // Activate gas pump addresses
-            (new Tatum\SmartContracts\GasPumpController)->ActivateGasPumpAddresses(new Request([
+            /*(new Tatum\SmartContracts\GasPumpController)->ActivateGasPumpAddresses(new Request(array_filter([
                 'chain' => $validated_data['chain'],
                 'owner' => $validated_data['gp_owner_bc_address'],
                 'from' => $from,
                 'to' => $to,
-            ]));
+                'feeLimit' => ($validated_data['chain'] === 'TRON' ? $validated_data['usd_asset_exchange_rate'] : null),
+            ], static function($var){ return $var !== null; } )));*/
         }
 
         $element = _Asset::create($validated_data);
@@ -213,6 +218,9 @@ class _AssetController extends Controller
     {
         $validated_data = [];
         $element = _Asset::findOrFail($id)->makeVisible(['ttm_activated_unused_gp_addresses_offset_index']);
+        if (!$element->chain_gp_addresses_storage){
+            return abort(422, 'Asset not storage for gaspump addresses');
+        }
         // Generate
         $from = $element->ttm_activated_unused_gp_addresses_offset_index;
         $to = $from + $this->ACTIVATION_BATCH_SIZE - 1;
@@ -225,12 +233,13 @@ class _AssetController extends Controller
         ]))->getData();
         $validated_data['ttm_activated_unused_gp_addresses'] = $ttm_element;
         // Activate
-        (new Tatum\SmartContracts\GasPumpController)->ActivateGasPumpAddresses(new Request([
+        (new Tatum\SmartContracts\GasPumpController)->ActivateGasPumpAddresses(new Request(array_filter([
             'chain' => $element->chain,
             'owner' => $element->gp_owner_bc_address,
             'from' => $from,
             'to' => $to,
-        ]));
+            'feeLimit' => ($element->chain === 'TRON' ? $element->usd_asset_exchange_rate : null),
+        ], static function($var){ return $var !== null; } )));
         $element->update($validated_data);
     }
 }
