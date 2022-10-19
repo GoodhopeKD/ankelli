@@ -252,10 +252,10 @@ class __AuxController extends Controller
     }
 
     private $factory_assets = [
-        ['chain' => 'TRON', 'code' => 'TRON', 'unit' => 'TRX', 'mnemonic' => 'entry width slam speak thumb road olive ability input salute oxygen slot blur imitate reject force web dove ball lady lion stock input video'],
-        ['chain' => 'ETH', 'code' => 'ETH', 'unit' => 'ETH', 'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent'],
-        //['chain' => 'TRON', 'code' => 'TRON', 'unit' => 'USDT', 'mnemonic' => 'entry width slam speak thumb road olive ability input salute oxygen slot blur imitate reject force web dove ball lady lion stock input video'],
-        //['chain' => 'ETH', 'code' => 'ETH', 'unit' => 'USDT', 'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent'],
+        //['chain' => 'TRON', 'code' => 'TRON', 'unit' => 'TRX', 'mnemonic' => 'entry width slam speak thumb road olive ability input salute oxygen slot blur imitate reject force web dove ball lady lion stock input video'],
+        //['chain' => 'ETH', 'code' => 'ETH', 'unit' => 'ETH', 'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent'],
+        ['chain' => 'TRON', 'code' => 'TRON', 'unit' => 'USDT', 'mnemonic' => 'entry width slam speak thumb road olive ability input salute oxygen slot blur imitate reject force web dove ball lady lion stock input video'],
+        ['chain' => 'ETH', 'code' => 'ETH', 'unit' => 'USDT', 'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent'],
     ];
 
     public function load_factory_data()
@@ -313,10 +313,11 @@ class __AuxController extends Controller
                         'chain' => 'ETH',
                         'mnemonic' => $factory_asset['mnemonic'],
                         'smallest_display_unit' => '0.0000000001',
-                        'withdrawal_txn_fee_usd_fctr' => 1,
-                        'withdrawal_min_limit_usd_fctr' => 1,
-                        'withdrawal_max_limit_usd_fctr' => 1000,
+                        'withdrawal_txn_fee_usd_fctr' => 3.5,
+                        'withdrawal_min_limit' => 0.0005,
+                        'withdrawal_max_limit' => 1,
                         'onchain_disclaimer' => "",
+                        'ttm_gp_activation_batch_size' => 5,
                     ],[],[],['HTTP_accept'=>'application/json']))->getData();
                     if ( $use_ttm_api ){
                         (new _AssetController)->updateUSDRate($created_asset->id);
@@ -331,11 +332,12 @@ class __AuxController extends Controller
                         'chain' => 'ETH',
                         'mnemonic' => $factory_asset['mnemonic'],
                         'smallest_display_unit' => '0.00001',
-                        'withdrawal_txn_fee_usd_fctr' => 1,
-                        'withdrawal_min_limit_usd_fctr' => 1,
-                        'withdrawal_max_limit_usd_fctr' => 1000,
+                        'withdrawal_txn_fee_usd_fctr' => 4.5,
+                        'withdrawal_min_limit' => 1,
+                        'withdrawal_max_limit' => 1000,
                         'usd_asset_exchange_rate' => 1,
-                        'onchain_disclaimer' => "This Tether USD asset is a token on the Ethereum network."
+                        'onchain_disclaimer' => "This Tether USD asset is a token on the Ethereum network.",
+                        'ttm_gp_activation_batch_size' => 5,
                     ]));
                 }
 
@@ -348,9 +350,10 @@ class __AuxController extends Controller
                         'mnemonic' => $factory_asset['mnemonic'],
                         'smallest_display_unit' => '0.0000000001',
                         'withdrawal_txn_fee_usd_fctr' => 1,
-                        'withdrawal_min_limit_usd_fctr' => 1,
-                        'withdrawal_max_limit_usd_fctr' => 1000,
+                        'withdrawal_min_limit' => 10,
+                        'withdrawal_max_limit' => 15000,
                         'onchain_disclaimer' => "",
+                        'ttm_gp_activation_batch_size' => 5,
                     ],[],[],['HTTP_accept'=>'application/json']))->getData();
                     if ( $use_ttm_api ){
                         (new _AssetController)->updateUSDRate($created_asset->id);
@@ -365,11 +368,12 @@ class __AuxController extends Controller
                         'chain' => 'TRON',
                         'mnemonic' => $factory_asset['mnemonic'],
                         'smallest_display_unit' => '0.00001',
-                        'withdrawal_txn_fee_usd_fctr' => 1,
-                        'withdrawal_min_limit_usd_fctr' => 1,
-                        'withdrawal_max_limit_usd_fctr' => 1000,
+                        'withdrawal_txn_fee_usd_fctr' => 1.5,
+                        'withdrawal_min_limit' => 1,
+                        'withdrawal_max_limit' => 1000,
                         'usd_asset_exchange_rate' => 1,
-                        'onchain_disclaimer' => "This Tether USD asset is a token on the Tron network."
+                        'onchain_disclaimer' => "This Tether USD asset is a token on the Tron network.",
+                        'ttm_gp_activation_batch_size' => 5,
                     ]));
                 }
             }
@@ -385,11 +389,12 @@ class __AuxController extends Controller
                         'chain' => 'ETH',
                         'mnemonic' => $factory_asset['mnemonic'],
                         'smallest_display_unit' => '0.0000000001',
-                        'withdrawal_txn_fee_usd_fctr' => 1,
-                        'withdrawal_min_limit_usd_fctr' => 1,
-                        'withdrawal_max_limit_usd_fctr' => 1000,
+                        'withdrawal_txn_fee_usd_fctr' => 3.5,
+                        'withdrawal_min_limit' => 0.0005,
+                        'withdrawal_max_limit' => 1,
                         'onchain_disclaimer' => "This platform is still in test mode on the sepolia testnet chain.
-Onchain transactions should be handled accordingly."
+Onchain transactions should be handled accordingly.",
+                        'ttm_gp_activation_batch_size' => 20,
                     ],[],[],['HTTP_accept'=>'application/json']))->getData();
     
                     if ( $use_ttm_api ){
@@ -406,13 +411,14 @@ Onchain transactions should be handled accordingly."
                         'mnemonic' => $factory_asset['mnemonic'],
                         'smallest_display_unit' => '0.00001',
                         'withdrawal_txn_fee_usd_fctr' => 1,
-                        'withdrawal_min_limit_usd_fctr' => 1,
-                        'withdrawal_max_limit_usd_fctr' => 1000,
+                        'withdrawal_min_limit' => 1,
+                        'withdrawal_max_limit' => 1000,
                         'usd_asset_exchange_rate' => 1,
                         'onchain_disclaimer' => "This platform is still in test mode using the sepolia testnet chain.
 USDT doesn't exist on testnet so we're using ETH but referring to it here as USDT.
 The system does an internal conversion such that 1 ETH = 1000 USDT.
-Handle all internal transactions normally but know that these values will be reflected differently outside this platform."
+Handle all platform transactions normally but know that these values will be reflected differently outside this platform.",
+                        'ttm_gp_activation_batch_size' => 5,
                     ]));
                 }
 
@@ -425,10 +431,11 @@ Handle all internal transactions normally but know that these values will be ref
                         'mnemonic' => $factory_asset['mnemonic'],
                         'smallest_display_unit' => '0.0000001',
                         'withdrawal_txn_fee_usd_fctr' => 1,
-                        'withdrawal_min_limit_usd_fctr' => 1,
-                        'withdrawal_max_limit_usd_fctr' => 1000,
+                        'withdrawal_min_limit' => 10,
+                        'withdrawal_max_limit' => 15000,
                         'onchain_disclaimer' => "This platform is still in test mode on the shasta testnet chain.
-Onchain transactions should be handled accordingly."
+Onchain transactions should be handled accordingly.",
+                        'ttm_gp_activation_batch_size' => 5,
                     ],[],[],['HTTP_accept'=>'application/json']))->getData();
     
                     if ( $use_ttm_api ){
@@ -444,14 +451,15 @@ Onchain transactions should be handled accordingly."
                         'chain' => 'TRON',
                         'mnemonic' => $factory_asset['mnemonic'],
                         'smallest_display_unit' => '0.00001',
-                        'withdrawal_txn_fee_usd_fctr' => 1,
-                        'withdrawal_min_limit_usd_fctr' => 1,
-                        'withdrawal_max_limit_usd_fctr' => 1000,
+                        'withdrawal_txn_fee_usd_fctr' => 1.5,
+                        'withdrawal_min_limit' => 1,
+                        'withdrawal_max_limit' => 1000,
                         'usd_asset_exchange_rate' => 1,
                         'onchain_disclaimer' => "This platform is still in test mode using the shasta testnet chain.
 USDT doesn't exist on testnet so we're using TRX but referring to it here as USDT.
 The system does an internal conversion such that 1 TRX = 10 USDT.
-Handle all internal transactions normally but know that these values will be reflected differently outside this platform."
+Handle all internal transactions normally but know that these values will be reflected differently outside this platform.",
+                        'ttm_gp_activation_batch_size' => 5,
                     ]));
                 }
             }
@@ -548,6 +556,10 @@ Handle all internal transactions normally but know that these values will be ref
                 'asset_chain' => $factory_asset['chain'],
                 'user_username' => 'reserves',
             ]));
+            (new _AssetWalletAddressController)->store( new Request([
+                'asset_code' => $factory_asset['code'],
+                'user_username' => 'reserves',
+            ]));
         }
 
         // user:busops // used for collecting platform fees and deposit token topups
@@ -560,6 +572,10 @@ Handle all internal transactions normally but know that these values will be ref
             (new _AssetWalletController)->store( new Request([
                 'asset_code' => $factory_asset['code'],
                 'asset_chain' => $factory_asset['chain'],
+                'user_username' => 'busops',
+            ]));
+            (new _AssetWalletAddressController)->store( new Request([
+                'asset_code' => $factory_asset['code'],
                 'user_username' => 'busops',
             ]));
         }
@@ -595,6 +611,10 @@ Handle all internal transactions normally but know that these values will be ref
                 'asset_chain' => $factory_asset['chain'],
                 'user_username' => 'guddaz',
             ]));
+            (new _AssetWalletAddressController)->store( new Request([
+                'asset_code' => $factory_asset['code'],
+                'user_username' => 'guddaz',
+            ]));
         }
         (new _AdminExtensionController)->store( new Request([
             'user_username' => 'guddaz', 'post_title' => 'Head System Developer',
@@ -613,6 +633,10 @@ Handle all internal transactions normally but know that these values will be ref
             (new _AssetWalletController)->store( new Request([
                 'asset_code' => $factory_asset['code'],
                 'asset_chain' => $factory_asset['chain'],
+                'user_username' => 'paywyze',
+            ]));
+            (new _AssetWalletAddressController)->store( new Request([
+                'asset_code' => $factory_asset['code'],
                 'user_username' => 'paywyze',
             ]));
         }
@@ -638,6 +662,10 @@ Handle all internal transactions normally but know that these values will be ref
             (new _AssetWalletController)->store( new Request([
                 'asset_code' => $factory_asset['code'],
                 'asset_chain' => $factory_asset['chain'],
+                'user_username' => 'john',
+            ]));
+            (new _AssetWalletAddressController)->store( new Request([
+                'asset_code' => $factory_asset['code'],
                 'user_username' => 'john',
             ]));
         }*/

@@ -141,10 +141,10 @@ export default class DatalistViewListScreen extends React.Component {
                                                 <th scope="col" className="align-middle small">Code</th>
                                                 <th scope="col" className="align-middle small">Unit</th>
                                                 <th scope="col" className="align-middle small">Widthrawal Fee (USD)</th>
-                                                <th scope="col" className="align-middle small" style={{ minWidth: 170 }}>Widthrawal Limits</th>
+                                                <th scope="col" className="align-middle small" style={{ minWidth: 140 }}>Widthrawal Limits</th>
                                                 <th scope="col" className="align-middle small" style={{ minWidth: 80 }}>USD rate</th>
                                                 <th scope="col" className="align-middle small" style={{ minWidth: 85 }}>Smallest Display Unit</th>
-                                                <th scope="col" className="align-middle small" style={{ minWidth: 200 }}>Onchain Disclaimer</th>
+                                                <th scope="col" className="align-middle small" style={{ minWidth: 300 }}>Onchain Disclaimer</th>
                                                 <th scope="col" className="align-middle small">Status</th>
                                             </>}
                                             {this.props.title == 'Currencies List' && <>
@@ -185,9 +185,9 @@ export default class DatalistViewListScreen extends React.Component {
                                                         <td className="align-middle small">{datalist_item.chain}</td>
                                                         <td className="align-middle small">{datalist_item.code}</td>
                                                         <td className="align-middle small">{datalist_item.unit}</td>
-                                                        <td className="align-middle small">${datalist_item.withdrawal_txn_fee_usd_fctr}</td>
-                                                        <td className="align-middle small">{datalist_item.withdrawal_min_limit_usd_fctr * datalist_item.usd_asset_exchange_rate} - {datalist_item.withdrawal_max_limit_usd_fctr * datalist_item.usd_asset_exchange_rate} {datalist_item.unit}</td>
-                                                        <td className="align-middle small">{datalist_item.usd_asset_exchange_rate} {datalist_item.unit}</td>
+                                                        <td className="align-middle small">{window.currencyAmountString(datalist_item.withdrawal_txn_fee_usd_fctr, { symbol: '$', symbol_before_number: true })}</td>
+                                                        <td className="align-middle small">{datalist_item.withdrawal_min_limit} - {datalist_item.withdrawal_max_limit} {datalist_item.unit}</td>
+                                                        <td className="align-middle small">{window.assetValueString(datalist_item.usd_asset_exchange_rate, datalist_item)}</td>
                                                         <td className="align-middle small">{datalist_item.smallest_display_unit}</td>
                                                         <td className="align-middle small" style={{ whiteSpace: 'pre-wrap' }}>{datalist_item.onchain_disclaimer}</td>
                                                         <td className="align-middle small">{datalist_item._status}</td>

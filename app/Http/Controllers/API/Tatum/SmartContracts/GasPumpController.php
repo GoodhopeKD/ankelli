@@ -58,10 +58,10 @@ class GasPumpController extends Controller
             'feeCurrency' => ['required_if:chain,=,CELO', 'string', Rule::in(['CELO','CUSD','CEUR'])],
             'feeLimit' => ['required_if:chain,=,TRON', 'numeric', 'min:0'],
             'index' => ['sometimes', 'integer', 'between:0,2147483647'],
-            //'signatureId' => ['required', 'string'],
+            'signatureId' => ['nullable', 'string'],
         ]);
 
-        $validated_data['signatureId'] = env('TATUM_KMS_'.$validated_data['chain'].'_GP_OWNER_BC_ADDRESS_SIGNATURE_ID');
+        $validated_data['signatureId'] = $validated_data['signatureId'] ?? env('TATUM_KMS_'.$validated_data['chain'].'_GP_OWNER_BC_ADDRESS_SIGNATURE_ID');
 
         $payload = $validated_data;
 
@@ -156,10 +156,10 @@ class GasPumpController extends Controller
             'feeCurrency' => ['required_if:chain,=,CELO', 'string', Rule::in(['CELO','CUSD','CEUR'])],
             'feeLimit' => ['required_if:chain,=,TRON', 'numeric', 'min:0'],
             'fee' => ['required_if:chain,=,CELO', 'array'],
-            //'signatureId' => ['required', 'string'],
+            'signatureId' => ['nullable', 'string'],
         ]);
 
-        $validated_data['signatureId'] = env('TATUM_KMS_'.$validated_data['chain'].'_GP_OWNER_BC_ADDRESS_SIGNATURE_ID');
+        $validated_data['signatureId'] = $validated_data['signatureId'] ?? env('TATUM_KMS_'.$validated_data['chain'].'_GP_OWNER_BC_ADDRESS_SIGNATURE_ID');
 
         $payload = $validated_data;
 

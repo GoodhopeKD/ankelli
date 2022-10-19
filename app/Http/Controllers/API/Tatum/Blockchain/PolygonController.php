@@ -9,13 +9,13 @@ use Illuminate\Validation\Rule;
 class EthereumController extends Controller
 {
     /**
-     * Generate Ethereum wallet
-     * https://apidoc.tatum.io/tag/Ethereum#operation/EthGenerateWallet
+     * Generate Polygon wallet
+     * https://apidoc.tatum.io/tag/Polygon#operation/PolygonGenerateWallet
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function EthGenerateWallet(Request $request)
+    public function PolygonGenerateWallet(Request $request)
     {
         $validated_data = $request->validate([
             'mnemonic' => ['required', 'string', 'max:500'],
@@ -30,7 +30,7 @@ class EthereumController extends Controller
             CURLOPT_HTTPHEADER => [
                 "x-api-key: ".env('TATUM_X_API_KEY'),
             ],
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ethereum/wallet?".http_build_query($query_params),
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/polygon/wallet?".http_build_query($query_params),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "GET",
         ]);
@@ -38,13 +38,13 @@ class EthereumController extends Controller
     }
 
     /**
-     * Generate Ethereum account address from Extended public key
-     * https://apidoc.tatum.io/tag/Ethereum#operation/EthGenerateAddress
+     * Generate Polygon account address from Extended public key
+     * https://apidoc.tatum.io/tag/Polygon#operation/PolygonGenerateAddress
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function EthGenerateAddress(Request $request)
+    public function PolygonGenerateAddress(Request $request)
     {
         $validated_data = $request->validate([
             'xpub' => ['required', 'string', 'max:192'],
@@ -56,7 +56,7 @@ class EthereumController extends Controller
             CURLOPT_HTTPHEADER => [
                 "x-api-key: ".env('TATUM_X_API_KEY'),
             ],
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ethereum/address/".$validated_data['xpub']."/".$validated_data['index'],
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/polygon/address/".$validated_data['xpub']."/".$validated_data['index'],
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "GET",
         ]);
@@ -64,13 +64,13 @@ class EthereumController extends Controller
     }
 
     /**
-     * Generate Ethereum private key
-     * https://apidoc.tatum.io/tag/Ethereum#operation/EthGenerateAddressPrivateKey
+     * Generate Polygon private key
+     * https://apidoc.tatum.io/tag/Polygon#operation/PolygonGenerateAddressPrivateKey
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function EthGenerateAddressPrivateKey(Request $request)
+    public function PolygonGenerateAddressPrivateKey(Request $request)
     {
         $validated_data = $request->validate([
             'mnemonic' => ['required', 'string', 'max:500'],
@@ -86,7 +86,7 @@ class EthereumController extends Controller
                 "x-api-key: ".env('TATUM_X_API_KEY'),
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ethereum/wallet/priv",
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/polygon/wallet/priv",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);
@@ -95,13 +95,13 @@ class EthereumController extends Controller
 
 
     /**
-     * Get Ethereum account balance
-     * https://apidoc.tatum.io/tag/Ethereum#operation/EthGetBalance
+     * Get Polygon Account balance
+     * https://apidoc.tatum.io/tag/Polygon#operation/PolygonGetBalance
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function EthGetBalance(Request $request)
+    public function PolygonGetBalance(Request $request)
     {
         $validated_data = $request->validate([
             'address' => ['required', 'string'],
@@ -112,7 +112,7 @@ class EthereumController extends Controller
             CURLOPT_HTTPHEADER => [
                 "x-api-key: ".env('TATUM_X_API_KEY'),
             ],
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ethereum/account/balance/".$validated_data['address']."?".http_build_query(['type' => 'testnet']),
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/polygon/account/balance/".$validated_data['address']."?".http_build_query(['type' => 'testnet']),
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "GET",
         ]);
@@ -121,24 +121,24 @@ class EthereumController extends Controller
     }
 
     /**
-     * Send Ethereum / ERC20 from account to account
-     * https://apidoc.tatum.io/tag/Ethereum#operation/EthBlockchainTransfer
+     * Send MATIC from account to account
+     * https://apidoc.tatum.io/tag/Polygon#operation/PolygonBlockchainTransfer
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function EthBlockchainTransfer(Request $request)
+    public function PolygonBlockchainTransfer(Request $request)
     {
         $validated_data = $request->validate([
             'to' => ['required', 'string', 'size:42'],
-            'currency' => ['required', 'string', Rule::in(["USDT","LEO","LINK","UNI","FREE","GMC","GMC_BSC","RMD","MKR","USDC","BAT","TUSD","BUSD","PAX","PAXG","MMY","WBTC","XCON","ETH"])],
+            'currency' => ['required', 'string', Rule::in(["BETH","BBTC","BADA","WMATIC","BDOT","BXRP","BLTC","BBCH","MATIC"])],
             'amount' => ['required', 'string', 'max:38'],
             'index' => ['sometimes', 'integer', 'between:0,2147483647'],
             'fee' => ['sometimes', 'array'],
             'signatureId' => ['nullable', 'string'],
         ]);
 
-        $validated_data['signatureId'] = $validated_data['signatureId'] ?? env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID');
+        $validated_data['signatureId'] = $validated_data['signatureId'] ?? env('TATUM_KMS_MATIC_WALLET_SIGNATURE_ID');
 
         $payload = $validated_data;
 
@@ -149,7 +149,7 @@ class EthereumController extends Controller
                 "x-api-key: ".env('TATUM_X_API_KEY'),
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/ethereum/transaction",
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/polygon/transaction",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);

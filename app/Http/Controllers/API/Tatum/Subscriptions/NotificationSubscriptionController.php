@@ -11,7 +11,6 @@ class NotificationSubscriptionController extends Controller
     /**
      * Create a subscription
      * https://apidoc.tatum.io/tag/Notification-subscriptions#operation/createSubscription
-     * one_of: CreateSubscriptionIncoming
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response

@@ -85,14 +85,13 @@ class AccountController extends Controller
     public function createAccount(Request $request)
     {
         $validated_data = $request->validate([
-            //'one_of' => ['required', 'string', Rule::in(['createAccount','createAccountXpub'])],
             'currency' => ['required', 'string'],
             'externalId' => ['required', 'string', 'max:100'],
             'xpub' => ['nullable', 'string', 'max:192'],
             'accountingCurrency' => ['nullable', 'string', 'max:3'],
         ]);
 
-        $payload = [
+        $payload = array_filter([
             "currency" => $validated_data['currency'],
             "xpub" => $validated_data['xpub'] ?? null,
             "customer" => [
@@ -100,7 +99,7 @@ class AccountController extends Controller
                 "accountingCurrency" => $validated_data['accountingCurrency'] ?? "USD",
             ],
             "accountingCurrency" => $validated_data['accountingCurrency'] ?? "USD",
-        ];
+        ], static function($var){ return $var !== null; } );
 
         $curl = curl_init();
         curl_setopt_array($curl, [

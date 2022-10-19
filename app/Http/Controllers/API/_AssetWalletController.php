@@ -35,9 +35,36 @@ class _AssetWalletController extends Controller
     }
 
     // tempFunction
-    public function tempFunction()
+    public function TronGetAccount()
     {
         return (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => 'TNajmLQSwa12CbmSnDrUNUBeoUDprHaPV8']))->getData();
+    }
+
+    // tempFunction
+    public function tempFunction()
+    {
+        return json_decode( stripslashes('{\"visible\":false,\"txID\":\"2eb09fd77bf559e4ff748f8387244cc5d75af9038dffe8ee64e30b69c12706b9\",\"raw_data\":{\"contract\":[{\"parameter\":{\"value\":{\"data\":\"f2881e21000000000000000000000000000000000000000000000000000000000000dead000000000000000000000000000000000000000000000000000000000000000300000000000000000000000095e0acffee51ade74662bbb313979b26eaf40d7400000000000000000000000000000000000000000000000000000000004c4b400000000000000000000000000000000000000000000000000000000000000000\",\"owner_address\":\"418a59bf8026179a34fa7de05165790fa10adff860\",\"contract_address\":\"41d44cdd409377ab5ecd8fa8b738640c42088720fa\"},\"type_url\":\"type.googleapis.com/protocol.TriggerSmartContract\"},\"type\":\"TriggerSmartContract\"}],\"ref_block_bytes\":\"dd94\",\"ref_block_hash\":\"ff08084fc6a00636\",\"expiration\":1666199781000,\"fee_limit\":5000000,\"timestamp\":1666199721703},\"raw_data_hex\":\"0a02dd942208ff08084fc6a006364088fdfb89bf305a9002081f128b020a31747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e54726967676572536d617274436f6e747261637412d5010a15418a59bf8026179a34fa7de05165790fa10adff860121541d44cdd409377ab5ecd8fa8b738640c42088720fa22a401f2881e21000000000000000000000000000000000000000000000000000000000000dead000000000000000000000000000000000000000000000000000000000000000300000000000000000000000095e0acffee51ade74662bbb313979b26eaf40d7400000000000000000000000000000000000000000000000000000000004c4b40000000000000000000000000000000000000000000000000000000000000000070e7adf889bf309001c096b102\"}') );
+        return json_decode( stripslashes('{\"visible\":false,\"txID\":\"6c96dba9a1ded08851602087eedbd00558c444062acaec9fe76a684b5b6897c2\",\"raw_data\":{\"contract\":[{\"parameter\":{\"value\":{\"data\":\"ae666ab60000000000000000000000008a59bf8026179a34fa7de05165790fa10adff8600000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000004\",\"owner_address\":\"418a59bf8026179a34fa7de05165790fa10adff860\",\"contract_address\":\"41f49fed2fb9cf354e0100eeb9318bbf230aeb58c9\"},\"type_url\":\"type.googleapis.com/protocol.TriggerSmartContract\"},\"type\":\"TriggerSmartContract\"}],\"ref_block_bytes\":\"d83c\",\"ref_block_hash\":\"8b8b2dbe25289042\",\"expiration\":1666195116000,\"fee_limit\":150000000,\"timestamp\":1666195057321},\"raw_data_hex\":\"0a02d83c22088b8b2dbe2528904240e09fdf87bf305af002081f12eb020a31747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e54726967676572536d617274436f6e747261637412b5020a15418a59bf8026179a34fa7de05165790fa10adff860121541f49fed2fb9cf354e0100eeb9318bbf230aeb58c9228402ae666ab60000000000000000000000008a59bf8026179a34fa7de05165790fa10adff860000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000000470a9d5db87bf30900180a3c347\"}') );
+        $addresses = [];
+        for ($i=25; $i <= 34; $i++) {
+            //array_push($addresses, (new Tatum\Blockchain\TronController)->TronGenerateAddress(new Request(['xpub' => 'xpub6DeqaexdQMHHYA4zrs6LeUE5A5UEbuhLUSxEchGvRia9VkmoPiAhc5mYd8PuC3A37N4AiVdS6NVozpUtACyJES6vsY4tN3ZWuovwLkMN97a', 'index' => $i]))->getData()->address);
+            (new Tatum\Blockchain\TronController)->TronTransfer(new Request([
+                'from' => (new Tatum\Blockchain\TronController)->TronGenerateAddress(new Request(['xpub' => 'xpub6DeqaexdQMHHYA4zrs6LeUE5A5UEbuhLUSxEchGvRia9VkmoPiAhc5mYd8PuC3A37N4AiVdS6NVozpUtACyJES6vsY4tN3ZWuovwLkMN97a', 'index' => $i]))->getData()->address,
+                'to' => 'TNajmLQSwa12CbmSnDrUNUBeoUDprHaPV8',
+                'amount' => '5',
+                'index' => $i,
+                'signatureId' => 'af6b3126-caa4-4134-bba1-53a277926222',
+            ]))->getData();
+        }
+        return;
+        return $addresses;
+        return (new Tatum\Blockchain\TronController)->TronFreeze(new Request([
+            'from' => 'TNajmLQSwa12CbmSnDrUNUBeoUDprHaPV8',
+            'receiver' => 'TNajmLQSwa12CbmSnDrUNUBeoUDprHaPV8',
+            'duration' => 3,
+            'resource' => 'ENERGY',
+            'amount' => '5',
+        ]))->getData();
     }
 
     // tempFunction
@@ -144,10 +171,10 @@ class _AssetWalletController extends Controller
     public function PrecalculateGasPumpAddresses()
     {
         return (new Tatum\SmartContracts\GasPumpController)->PrecalculateGasPumpAddresses(new Request([
-            'chain' => 'ETH',
-            'owner' => '0x4e9470217400b27ccdb64237e6776abcda535956',
+            'chain' => 'TRON',
+            'owner' => 'TNajmLQSwa12CbmSnDrUNUBeoUDprHaPV8',
             'from' => 0,
-            'to' => 15,
+            'to' => 9,
         ]));
     }
 
@@ -173,6 +200,12 @@ class _AssetWalletController extends Controller
     }
 
     // tempFunction
+    public function addressExists()
+    {
+        return (new Tatum\VirtualAccounts\BCAddressController)->addressExists(new Request(['currency' => 'TRON', 'address' => 'TJ7qnkLBTKq9UmRAZzJ3585nTE22Wqohbt']));
+    }
+
+    // tempFunction
     public function assignAddress()
     {
         return (new Tatum\VirtualAccounts\BCAddressController)->assignAddress(new Request(['id' => '6343de9567b043ee14be9970', 'address' => '0x02A2e5E52755Cc77Da42658bC55686494F051155']));
@@ -188,12 +221,6 @@ class _AssetWalletController extends Controller
     public function CustodialGetWallet()
     {
         return (new Tatum\Security\CustodialManagedWalletController)->CustodialGetWallet(new Request(['id' => "7dc19c98-a3f5-44f6-8ca1-10ae57af6832", 'export' => 'true']));
-    }
-
-    // tempFunction
-    public function addressExists()
-    {
-        return (new Tatum\VirtualAccounts\BCAddressController)->addressExists(new Request(['currency' => 'ETH', 'address' => '0x010b6ab0abeeb921964161cd2e23c50250e546bf']));
     }
 
     // tempFunction
@@ -397,25 +424,6 @@ class _AssetWalletController extends Controller
 
         $element = _AssetWallet::create($validated_data);
 
-        if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
-            $ttm_elements = (new Tatum\VirtualAccounts\BCAddressController)->getAllDepositAddresses(new Request(['id' => $validated_data['ttm_virtual_account_id']]))->getData();
-            if (count($ttm_elements)){
-                foreach ($ttm_elements as $ttm_element) {
-                    $asset_wallet_address_params = [
-                        'user_username' => $validated_data['user_username'],
-                        'asset_code' => $validated_data['asset_code'],
-                        'bc_address' => $ttm_element->address,
-                        //'ttm_derivation_key' => $ttm_element->derivationKey,
-                    ];
-                    if ( !_AssetWalletAddress::where($asset_wallet_address_params)->exists() ){
-                        (new _AssetWalletAddressController)->store(new Request($asset_wallet_address_params));
-                    }
-                }
-            } else {
-                (new _AssetWalletAddressController)->store(new Request(['asset_code' => $validated_data['asset_code'], 'user_username' => $validated_data['user_username']]));
-            }
-        }
-        
         // Handle _Log
         (new _LogController)->store( new Request([
             'action_note' => 'Addition of _AssetWallet entry to database.',

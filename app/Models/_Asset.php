@@ -23,14 +23,15 @@ class _Asset extends Model
         //'xpub',
 
         'gp_owner_bc_address',
-        'chain_gp_addresses_storage',
-        'ttm_activated_unused_gp_addresses',
-        'ttm_activated_unused_gp_addresses_offset_index',
+        'ttm_gp_chain_addresses_storage',
+        'ttm_gp_activation_batch_size',
+        'ttm_gp_activation_offset_index',
+        'ttm_gp_activated_batch_addresses',
 
         'smallest_display_unit',
         'withdrawal_txn_fee_usd_fctr',
-        'withdrawal_min_limit_usd_fctr',
-        'withdrawal_max_limit_usd_fctr',
+        'withdrawal_min_limit',
+        'withdrawal_max_limit',
         'usd_asset_exchange_rate',
         'onchain_disclaimer',
         '_status',
@@ -44,9 +45,9 @@ class _Asset extends Model
      */
     protected $hidden = [
         //'xpub',
-        'chain_gp_addresses_storage',
-        'ttm_activated_unused_gp_addresses',
-        'ttm_activated_unused_gp_addresses_offset_index',
+        'ttm_gp_chain_addresses_storage',
+        'ttm_gp_activated_batch_addresses',
+        'ttm_gp_activation_offset_index',
     ];
 
     /**
@@ -55,10 +56,12 @@ class _Asset extends Model
      * @var array
      */
     protected $casts = [
-        'chain_gp_addresses_storage' => 'boolean',
-        'ttm_activated_unused_gp_addresses' => 'array',
+        'ttm_gp_chain_addresses_storage' => 'boolean',
+        'ttm_gp_activated_batch_addresses' => 'array',
         //'smallest_display_unit' => 'float',
         //'withdrawal_txn_fee_usd_fctr' => 'float',
+        //'withdrawal_min_limit' => 'float',
+        //'withdrawal_max_limit' => 'float',
         //'usd_asset_exchange_rate' => 'float',
     ];
 

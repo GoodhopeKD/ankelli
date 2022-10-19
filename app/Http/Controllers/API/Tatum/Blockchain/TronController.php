@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API\Tatum\Blockchain;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class TronController extends Controller
 {
@@ -118,6 +119,43 @@ class TronController extends Controller
     }
 
     /**
+     * Freeze the balance of a TRON account
+     * https://apidoc.tatum.io/tag/Tron#operation/TronFreeze
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function TronFreeze(Request $request)
+    {
+        $validated_data = $request->validate([
+            'from' => ['required', 'string', 'size:34'],
+            'index' => ['sometimes', 'integer', 'between:0,2147483647'],
+            'receiver' => ['required', 'string', 'size:34'],
+            'duration' => ['required', 'integer', 'min:3'],
+            'resource' => ['required', 'string', Rule::in(['BANDWIDTH','ENERGY'])],
+            'amount' => ['required', 'string', 'max:38'],
+            'signatureId' => ['nullable', 'string'],
+        ]);
+
+        $validated_data['signatureId'] = $validated_data['signatureId'] ?? env('TATUM_KMS_TRON_GP_OWNER_BC_ADDRESS_SIGNATURE_ID');
+
+        $payload = $validated_data;
+
+        $curl = curl_init();
+        curl_setopt_array($curl, [
+            CURLOPT_HTTPHEADER => [
+                "Content-Type: application/json",
+                "x-api-key: ".env('TATUM_X_API_KEY'),
+            ],
+            CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/tron/freezeBalance",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CUSTOMREQUEST => "POST",
+        ]);
+        return $this->ttm_cURL_call_tail($curl);
+    }
+
+    /**
      * Send TRX to a TRON account
      * https://apidoc.tatum.io/tag/Tron#operation/TronTransfer
      *
@@ -127,13 +165,14 @@ class TronController extends Controller
     public function TronTransfer(Request $request)
     {
         $validated_data = $request->validate([
-            'from' => ['required', 'string', 'size:32'],
-            'to' => ['required', 'string', 'size:32'],
+            'from' => ['required', 'string', 'size:34'],
+            'to' => ['required', 'string', 'size:34'],
             'amount' => ['required', 'string', 'max:38'],
             'index' => ['sometimes', 'integer', 'between:0,2147483647'],
+            'signatureId' => ['nullable', 'string'],
         ]);
 
-        $validated_data['signatureId'] = env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID');
+        $validated_data['signatureId'] = $validated_data['signatureId'] ?? env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID');
 
         $payload = $validated_data;
 
@@ -161,15 +200,16 @@ class TronController extends Controller
     public function TronTransferTrc20(Request $request)
     {
         $validated_data = $request->validate([
-            'from' => ['required', 'string', 'size:32'],
-            'to' => ['required', 'string', 'size:32'],
-            'tokenAddress' => ['required', 'string', 'size:32'],
+            'from' => ['required', 'string', 'size:34'],
+            'to' => ['required', 'string', 'size:34'],
+            'tokenAddress' => ['required', 'string', 'size:34'],
             'amount' => ['required', 'string', 'max:38'],
             'feeLimit' => ['required', 'integer', 'min:0'],
             'index' => ['sometimes', 'integer', 'between:0,2147483647'],
+            'signatureId' => ['nullable', 'string'],
         ]);
 
-        $validated_data['signatureId'] = env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID');
+        $validated_data['signatureId'] = $validated_data['signatureId'] ?? env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID');
 
         $payload = $validated_data;
 

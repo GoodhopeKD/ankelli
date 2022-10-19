@@ -23,14 +23,15 @@ return new class extends Migration
             //$table->string('xpub', 255)->nullable();
 
             $table->string('gp_owner_bc_address', 128)->nullable();
-            $table->boolean('chain_gp_addresses_storage')->default(false);
-            $table->mediumText('ttm_activated_unused_gp_addresses')->nullable();
-            $table->unsignedInteger('ttm_activated_unused_gp_addresses_offset_index')->nullable();
+            $table->boolean('ttm_gp_chain_addresses_storage')->default(false);
+            $table->unsignedTinyInteger('ttm_gp_activation_batch_size')->nullable();
+            $table->unsignedInteger('ttm_gp_activation_offset_index')->nullable();
+            $table->mediumText('ttm_gp_activated_batch_addresses')->nullable();
 
             $table->string('smallest_display_unit', 38); // unsignedDecimal
             $table->unsignedDecimal('withdrawal_txn_fee_usd_fctr', $precision = 8, $scale = 4);
-            $table->unsignedTinyInteger('withdrawal_min_limit_usd_fctr');
-            $table->unsignedInteger('withdrawal_max_limit_usd_fctr');
+            $table->string('withdrawal_min_limit', 38);
+            $table->string('withdrawal_max_limit', 38);
             $table->string('usd_asset_exchange_rate', 38)->nullable(); // unsignedDecimal
             $table->text('onchain_disclaimer');
             $table->enum('_status', ['active', 'deactivated'])->default('active');
