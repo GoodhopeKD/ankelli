@@ -133,12 +133,10 @@ class EthereumController extends Controller
             'to' => ['required', 'string', 'size:42'],
             'currency' => ['required', 'string', Rule::in(["BETH","BBTC","BADA","WMATIC","BDOT","BXRP","BLTC","BBCH","MATIC"])],
             'amount' => ['required', 'string', 'max:38'],
-            'index' => ['sometimes', 'integer', 'between:0,2147483647'],
             'fee' => ['sometimes', 'array'],
-            'signatureId' => ['nullable', 'string'],
+            'signatureId' => ['required', 'string'],
+            'index' => ['sometimes', 'integer', 'between:0,2147483647'],
         ]);
-
-        $validated_data['signatureId'] = $validated_data['signatureId'] ?? env('TATUM_KMS_MATIC_WALLET_SIGNATURE_ID');
 
         $payload = $validated_data;
 

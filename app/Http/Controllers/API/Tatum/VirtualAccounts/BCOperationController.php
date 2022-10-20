@@ -20,14 +20,12 @@ class BCOperationController extends Controller
         $validated_data = $request->validate([
             'address' => ['required', 'string', 'size:42'],
             'amount' => ['required', 'string', 'max:38'],
-            'index' => ['sometimes', 'integer', 'between:0,2147483647'],
             'senderAccountId' => ['required', 'string', 'size:24'],
             'senderNote' => ['required', 'string', 'max:500'],
-            'signatureId' => ['nullable', 'string'],
+            'signatureId' => ['required', 'string'],
+            'index' => ['sometimes', 'integer', 'between:0,2147483647'],
         ]);
-
-        $validated_data['signatureId'] = $validated_data['signatureId'] ?? env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID');
-
+        
         $payload = $validated_data;
         
         $curl = curl_init();

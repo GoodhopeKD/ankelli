@@ -115,6 +115,8 @@ class _AssetController extends Controller
                     'from' => $from,
                     'to' => $to,
                     'feeLimit' => ($validated_data['chain'] === 'TRON' ? 30 * $validated_data['ttm_gp_activation_batch_size'] : null),
+                    'signatureId' => env('TATUM_KMS_'.$validated_data['chain'].'_WALLET_SIGNATURE_ID'),
+                    'index' => 0,
                 ], static function($var){ return $var !== null; } )));
             }
         }
@@ -250,6 +252,8 @@ class _AssetController extends Controller
             'from' => $from,
             'to' => $to,
             'feeLimit' => ($element->chain === 'TRON' ? 30 * $element->ttm_gp_activation_batch_size : null),
+            'signatureId' => env('TATUM_KMS_'.$element->chain.'_WALLET_SIGNATURE_ID'),
+            'index' => 0,
         ], static function($var){ return $var !== null; } )));
         $element->update($validated_data);
     }

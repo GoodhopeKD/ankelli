@@ -133,12 +133,9 @@ class TronController extends Controller
             'duration' => ['required', 'integer', 'min:3'],
             'resource' => ['required', 'string', Rule::in(['BANDWIDTH','ENERGY'])],
             'amount' => ['required', 'string', 'max:38'],
-            'signatureId' => ['nullable', 'string'],
-            'index' => ['nullable', 'integer', 'between:0,2147483647'],
+            'signatureId' => ['required', 'string'],
+            'index' => ['sometimes', 'integer', 'between:0,2147483647'],
         ]);
-
-        $validated_data['signatureId'] = $validated_data['signatureId'] ?? env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID');
-        $validated_data['index'] = $validated_data['index'] ?? 0;
 
         $payload = $validated_data;
 
@@ -169,11 +166,9 @@ class TronController extends Controller
             'from' => ['required', 'string', 'size:34'],
             'to' => ['required', 'string', 'size:34'],
             'amount' => ['required', 'string', 'max:38'],
+            'signatureId' => ['required', 'string'],
             'index' => ['sometimes', 'integer', 'between:0,2147483647'],
-            'signatureId' => ['nullable', 'string'],
         ]);
-
-        $validated_data['signatureId'] = $validated_data['signatureId'] ?? env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID');
 
         $payload = $validated_data;
 
@@ -206,11 +201,9 @@ class TronController extends Controller
             'tokenAddress' => ['required', 'string', 'size:34'],
             'amount' => ['required', 'string', 'max:38'],
             'feeLimit' => ['required', 'integer', 'min:0'],
+            'signatureId' => ['required', 'string'],
             'index' => ['sometimes', 'integer', 'between:0,2147483647'],
-            'signatureId' => ['nullable', 'string'],
         ]);
-
-        $validated_data['signatureId'] = $validated_data['signatureId'] ?? env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID');
 
         $payload = $validated_data;
 

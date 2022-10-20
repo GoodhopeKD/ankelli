@@ -132,14 +132,12 @@ class EthereumController extends Controller
         $validated_data = $request->validate([
             'to' => ['required', 'string', 'size:42'],
             'currency' => ['required', 'string', Rule::in(["USDT","LEO","LINK","UNI","FREE","GMC","GMC_BSC","RMD","MKR","USDC","BAT","TUSD","BUSD","PAX","PAXG","MMY","WBTC","XCON","ETH"])],
-            'amount' => ['required', 'string', 'max:38'],
             'index' => ['sometimes', 'integer', 'between:0,2147483647'],
             'fee' => ['sometimes', 'array'],
-            'signatureId' => ['nullable', 'string'],
+            'signatureId' => ['required', 'string'],
+            'amount' => ['required', 'string', 'max:38'],
         ]);
-
-        $validated_data['signatureId'] = $validated_data['signatureId'] ?? env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID');
-
+        
         $payload = $validated_data;
 
         $curl = curl_init();

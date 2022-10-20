@@ -77,17 +77,19 @@ class _AssetWalletAddressController extends Controller
             $asset_wallet = _AssetWallet::firstWhere(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']])->makeVisible(['ttm_virtual_account_id']);
             $ttm_elements = (new Tatum\VirtualAccounts\BCAddressController)->getAllDepositAddresses(new Request(['id' => $asset_wallet->ttm_virtual_account_id]))->getData();
             if (count($ttm_elements)){
+                $xpub_derivation_key = 0;
                 foreach ($ttm_elements as $ttm_element) {
                     if ( $validated_data['asset_code'] === $ttm_element->currency ){
                         $asset_wallet_address_params = array_filter([
                             'user_username' => $validated_data['user_username'],
                             'asset_code' => $validated_data['asset_code'],
                             'bc_address' => $ttm_element->address,
-                            'xpub_derivation_key' => $ttm_element->derivationKey ?? null,
-                        ]);
+                            'xpub_derivation_key' => $xpub_derivation_key,
+                        ], static function($var){ return $var !== null; } );
                         if ( !_AssetWalletAddress::where($asset_wallet_address_params)->exists() ){
                             return (new _AssetWalletAddressController)->store(new Request( array_merge( $asset_wallet_address_params, ['bypass_max_per_user_per_asset_code' => true]) ));
                         }
+                        $xpub_derivation_key++;
                     }
                 }
             }
@@ -113,7 +115,7 @@ class _AssetWalletAddressController extends Controller
                         }
                         $chosen_address = $ttm_element->address;
                         $validated_data['xpub_derivation_key'] = $xpub_derivation_key;
-                        $xpub_derivation_key += 1;
+                        $xpub_derivation_key++;
                     } else {
                         if (!count($asset->ttm_gp_activated_batch_addresses)){
                             (new _AssetController)->activate_next_gp_addresses_batch($asset->id);

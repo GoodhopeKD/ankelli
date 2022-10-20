@@ -28,17 +28,6 @@ class _AssetWalletController extends Controller
         //
     }
 
-    public function tempFunction()
-    {
-        return (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
-            'chain' => 'ETH',
-            'custodialAddress' => '0xa5ba7cea75e871e89a0dff8944434e97ca60cdb2',
-            'recipient' => '0x0688af85d9fc2805151f5ffa66b7b505a59cc732',
-            'contractType' => 3,
-            'amount' => (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => '0xa5ba7cea75e871e89a0dff8944434e97ca60cdb2']))->getData()->balance.'',
-        ]))->getData();
-    }
-
     // tempFunction
     public function EthGetBalance()
     {
@@ -63,8 +52,8 @@ class _AssetWalletController extends Controller
                 'from' => (new Tatum\Blockchain\TronController)->TronGenerateAddress(new Request(['xpub' => 'xpub6DeqaexdQMHHYA4zrs6LeUE5A5UEbuhLUSxEchGvRia9VkmoPiAhc5mYd8PuC3A37N4AiVdS6NVozpUtACyJES6vsY4tN3ZWuovwLkMN97a', 'index' => $i]))->getData()->address,
                 'to' => 'TNajmLQSwa12CbmSnDrUNUBeoUDprHaPV8',
                 'amount' => '5',
-                'index' => $i,
                 'signatureId' => 'af6b3126-caa4-4134-bba1-53a277926222',
+                'index' => $i,
             ]))->getData();
         }
         return;
@@ -75,6 +64,8 @@ class _AssetWalletController extends Controller
             'duration' => 3,
             'resource' => 'ENERGY',
             'amount' => '5',
+            'signatureId' => env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID'),
+            'index' => 0,
         ]))->getData();
     }
 
@@ -132,8 +123,9 @@ class _AssetWalletController extends Controller
                     'to' => '0x0688af85d9fc2805151f5ffa66b7b505a59cc732',
                     'currency' => 'ETH',
                     'amount' => $address['transferrable'].'',
-                    'index' => $address['xpub_derivation_key'],
                     'fee' => $address['estimated_fee'],
+                    'signatureId' => env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID'),
+                    'index' => $address['xpub_derivation_key'],
                 ]))->getData()->signatureId;
                 array_push($addresses, $address);
             }
@@ -143,15 +135,31 @@ class _AssetWalletController extends Controller
     }
 
     // tempFunction
-    public function EthBlockchainTransfer()
+    public function tempFunction()
     {
-        return (new Tatum\Blockchain\EthereumController)->EthBlockchainTransfer(new Request([
-            'to' => '0xaaada23b6b5705e23e12f78d064a1f1e62fb6126',
-            'currency' => 'ETH',
-            'amount' => '0.05',
-            'index' => 29,
-            'signatureId' => '508e642c-f959-4e73-a07b-087e9215f26d',
+        return _AssetWalletAddress::where(['user_username' => 'reserves'])->inRandomOrder()->get()->makeVisible(['xpub_derivation_key']);
+        /*(new _TransactionController)->transfer_account_to_account(new Request([
+            'asset_code' => 'ETH',
+            'asset_value' => 150,
+            'recipient_username' => 'guddaz',
+            'recipient_note' => 'Print',
+            'sender_username' => 'reserves',
+            'sender_note' => 'Print',
+        ]));*/
+        /*$amount = 0.05;
+        $estimated_fee =  (new Tatum\FeeEstimation\EstimateEthereumTransactionFeeController)->EthEstimateGas(new Request([
+            'from' => '0x1A1D7374e30469395c3408b0DD4BB7b5411fC180',
+            'to' => '0x0688af85d9fc2805151f5ffa66b7b505a59cc732',
+            'amount' => $amount.'',
         ]))->getData();
+        return (new Tatum\Blockchain\EthereumController)->EthBlockchainTransfer(new Request([
+            'to' => '0x0688af85d9fc2805151f5ffa66b7b505a59cc732',
+            'currency' => 'ETH',
+            'amount' => ($amount - (float)$estimated_fee->gasLimit * ((float)$estimated_fee->gasPrice) / pow(10,18)).'',
+            'fee' => ['gasLimit' => $estimated_fee->gasLimit, 'gasPrice' => ((float)$estimated_fee->gasPrice / pow(10,9)).'' ],
+            'signatureId' => env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID'),
+            'index' => 1,
+        ]));*/
     }
 
     // tempFunction
@@ -197,6 +205,8 @@ class _AssetWalletController extends Controller
             'owner' => '0x4e9470217400b27ccdb64237e6776abcda535956',
             'from' => 16,
             'to' => 16,
+            'signatureId' => env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID'),
+            'index' => 0,
         ]));
     }
 
@@ -245,12 +255,20 @@ class _AssetWalletController extends Controller
         $customers = [];
         foreach ((new Tatum\VirtualAccounts\CustomerController)->findAllCustomers(new Request())->getData() as $_customer) {
 
-            //if ( str_contains($_customer->externalId, '_')){ continue; }
+            if ( str_contains($_customer->externalId, '_')){ continue; }
 
             $customer = ['data' => $_customer, 'accounts' => []];
             try {
                 foreach ((new Tatum\VirtualAccounts\AccountController)->getAccountsByCustomerId(new Request(['id' => $_customer->id]))->getData() as $_acct) {
                     $customer_acct = [ 'data' => $_acct, 'addresses' => []];
+                    /*(new Tatum\VirtualAccounts\TransactionController)->sendTransaction(new Request([
+                        'curency' => $_acct->currency,
+                        'amount' => $_acct->balance->accountBalance,
+                        'recipientAccountId' => _AssetWallet::firstWhere(['user_username' => 'busops', 'asset_code' => $_acct->currency])->ttm_virtual_account_id,
+                        'recipientNote' => 'Transfer',
+                        'senderAccountId' => $_acct->id,
+                        'senderNote' => 'Transfer',
+                    ]));*/
                     foreach ((new Tatum\VirtualAccounts\BCAddressController)->getAllDepositAddresses(new Request(['id' => $_acct->id]))->getData() as $_address) {
                         //(new Tatum\VirtualAccounts\BCAddressController)->removeAddress(new Request(['id' => $_acct->id, 'address' => $_address->address]));
                         array_push( $customer_acct['addresses'] , $_address );

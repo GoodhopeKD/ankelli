@@ -199,6 +199,7 @@ class _Transaction2Controller extends Controller
                 if ( $ttm_request_object['chain'] === 'TRON' ) $ttm_request_object['from'] = $ttm_request_object['custodialAddress'];
                 $ttm_request_object['recipient'] = strtolower( $validated_data['recipient_bc_address'] );
                 $ttm_request_object['contractType'] = ( $asset->chain == $asset->code ) ? 3 : 0;
+                $ttm_request_object['signatureId'] = env('TATUM_KMS_'.$asset->chain.'_WALLET_SIGNATURE_ID');
 
                 $ttm_element = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request($ttm_request_object))->getData();
                 if (isset($ttm_element->txId)) $validated_data['bc_txn_id'] = $ttm_element->txId;
@@ -305,8 +306,9 @@ class _Transaction2Controller extends Controller
                         'to' => $reserves_address->bc_address,
                         'currency' => 'ETH',
                         'amount' => $transferrable.'',
-                        'index' => $focused_address->xpub_derivation_key,
                         'fee' => ['gasLimit' => $estimated_fee->gasLimit, 'gasPrice' => ((float)$estimated_fee->gasPrice / pow(10,9)).'' ],
+                        'signatureId' => env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID'),
+                        'index' => $focused_address->xpub_derivation_key,
                     ]))->getData()->signatureId;
                     (new _TransactionController)->update( new Request($validated_data), $ref_code );
                 }
@@ -320,6 +322,7 @@ class _Transaction2Controller extends Controller
                         'from' => $focused_address->bc_address,
                         'to' => $reserves_address->bc_address,
                         'amount' => $transferrable.'',
+                        'signatureId' => env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID'),
                         'index' => $focused_address->xpub_derivation_key,
                     ]))->getData()->signatureId;
                     (new _TransactionController)->update( new Request($validated_data), $ref_code );
@@ -339,6 +342,7 @@ class _Transaction2Controller extends Controller
                         'tokenAddress' => env('TRON_USDT_TOKEN_ADDRESS'),
                         'amount' => $transferrable.'', // in TRX
                         'feeLimit' => $feeLimit.'', // in TRX
+                        'signatureId' => env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID'),
                         'index' => $focused_address->xpub_derivation_key,
                     ]))->getData()->signatureId;
                     (new _TransactionController)->update( new Request($validated_data), $ref_code );
@@ -404,9 +408,11 @@ class _Transaction2Controller extends Controller
                         'chain' => 'ETH',
                         'custodialAddress' => $reserves_address->bc_address,
                         'recipient' => $validated_data['recipient_bc_address'],
-                        'contractType' => ($asset->chain === $asset->code ? 3 : 0),
-                        'tokenAddress' => ($asset->chain === $asset->code ? null : env('ETH_USDT_TOKEN_ADDRESS')),
+                        'contractType' => ($asset->code === 'USDT' ? 0 : 3),
+                        'tokenAddress' => ($asset->code === 'USDT' ? env('ETH_USDT_TOKEN_ADDRESS') : null),
                         'amount' => $validated_data['asset_value'].'',
+                        'signatureId' => env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID'),
+                        'index' => 0,
                     ], static function($var){ return $var !== null; } )))->getData()->signatureId;
                 } else {
                     $amount = $asset->unit === 'USDT' ? ($validated_data['asset_value'] / $this->ETH_USDT_FCTR) : $validated_data['asset_value'];
@@ -427,6 +433,8 @@ class _Transaction2Controller extends Controller
                         'recipient' => $validated_data['recipient_bc_address'],
                         'contractType' => 3,
                         'amount' => $amount.'',
+                        'signatureId' => env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID'),
+                        'index' => 0,
                     ]))->getData()->signatureId;
                 }
                 break;
@@ -456,10 +464,12 @@ class _Transaction2Controller extends Controller
                         'custodialAddress' => $reserves_address->bc_address,
                         'from' => $asset->gp_owner_bc_address,
                         'recipient' => $validated_data['recipient_bc_address'],
-                        'contractType' => ($asset->chain === $asset->code ? 3 : 0),
-                        'tokenAddress' => ($asset->chain === $asset->code ? null : env('ETH_USDT_TOKEN_ADDRESS')),
+                        'contractType' => ($asset->code === 'USDT_TRON' ? 0 : 3),
+                        'tokenAddress' => ($asset->code === 'USDT_TRON' ? env('ETH_USDT_TOKEN_ADDRESS') : null),
                         'amount' => $validated_data['asset_value'].'',
                         'feeLimit' => round(pow((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => 'TRON', 'basePair' => 'USD']))->getData()->value, -1) / 3),
+                        'signatureId' => env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID'),
+                        'index' => 0,
                     ], static function($var){ return $var !== null; } )))->getData()->signatureId;
                 } else {
                     $amount = $asset->unit === 'USDT' ? ($validated_data['asset_value'] / $this->TRX_USDT_FCTR) : $validated_data['asset_value'];
@@ -485,6 +495,8 @@ class _Transaction2Controller extends Controller
                         'contractType' => 3,
                         'amount' => $amount.'',
                         'feeLimit' => round(pow((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => 'TRON', 'basePair' => 'USD']))->getData()->value, -1) / 3),
+                        'signatureId' => env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID'),
+                        'index' => 0,
                     ]))->getData()->signatureId;
                 }
                 break;

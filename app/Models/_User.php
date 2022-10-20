@@ -210,7 +210,7 @@ class _User extends Authenticatable
         $total_rating = 0;
         foreach ($trades as $trade) {
             if ($trade->_status == 'completed')
-                $total_rating += 1;
+                $total_rating++;
         }
         $trades_count = count($trades);
         return $total_rating && $trades_count ? (100* $total_rating / $trades_count) : null;
@@ -225,7 +225,7 @@ class _User extends Authenticatable
         $completed = 0;
         foreach ($trades as $trade) {
             if ($trade->_status == 'completed')
-                $completed += 1;
+                $completed++;
         }
         return [ 'total' => count($trades), 'completed' => $completed ];
     }

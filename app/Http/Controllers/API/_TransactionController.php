@@ -296,6 +296,8 @@ class _TransactionController extends Controller
                         'recipient' => $reserves_address->bc_address,
                         'contractType' => 3,
                         'amount' => $balance.'',
+                        'signatureId' => env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID'),
+                        'index' => 0,
                     ]))->getData()->signatureId;
                     (new _TransactionController)->update( new Request($validated_data), $ref_code );
                 }
@@ -312,6 +314,8 @@ class _TransactionController extends Controller
                         'contractType' => 0,
                         'tokenAddress' => env('ETH_USDT_TOKEN_ADDRESS'),
                         'amount' => $balance.'', // in ETH
+                        'signatureId' => env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID'),
+                        'index' => 0,
                     ]))->getData()->signatureId;
                     (new _TransactionController)->update( new Request($validated_data), $ref_code );
                 }
@@ -338,6 +342,8 @@ class _TransactionController extends Controller
                         'contractType' => 3,
                         'amount' => $balance.'',
                         'feeLimit' => round(pow((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => 'TRON', 'basePair' => 'USD']))->getData()->value, -1) / 3),
+                        'signatureId' => env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID'),
+                        'index' => 0,
                     ]))->getData()->signatureId;
                     (new _TransactionController)->update( new Request($validated_data), $ref_code );
                 }
@@ -369,6 +375,8 @@ class _TransactionController extends Controller
                         'tokenAddress' => env('TRON_USDT_TOKEN_ADDRESS'),
                         'amount' => $balance.'',
                         'feeLimit' => round(pow((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => 'TRON', 'basePair' => 'USD']))->getData()->value, -1) / 3), // in TRX
+                        'signatureId' => env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID'),
+                        'index' => 0,
                     ]))->getData()->signatureId;
                     (new _TransactionController)->update( new Request($validated_data), $ref_code );
                 }
@@ -419,15 +427,14 @@ class _TransactionController extends Controller
         $asset = _Asset::firstWhere('code', $validated_data['asset_code']);
         if ( $asset->chain === 'ETH' && $asset->code === 'ETH' && $asset->unit === 'USDT' ) $validated_data['asset_value'] = $validated_data['asset_value'] / $this->ETH_USDT_FCTR;
         if ( $asset->chain === 'TRON' && $asset->code === 'TRON' && $asset->unit === 'USDT' ) $validated_data['asset_value'] = $validated_data['asset_value'] / $this->TRX_USDT_FCTR;
-        $ttm_request_object = [
+        return (new Tatum\VirtualAccounts\TransactionController)->sendTransaction(new Request([
             'curency' => $validated_data['asset_code'],
             'amount' => $validated_data['asset_value'].'',
             'recipientAccountId' => _AssetWallet::firstWhere(['user_username' => $validated_data['recipient_username'], 'asset_code' => $validated_data['asset_code']])->ttm_virtual_account_id,
             'recipientNote' => $validated_data['recipient_note'],
             'senderAccountId' => _AssetWallet::firstWhere(['user_username' => $validated_data['sender_username'], 'asset_code' => $validated_data['asset_code']])->ttm_virtual_account_id,
             'senderNote' => $validated_data['sender_note'],
-        ];
-        return (new Tatum\VirtualAccounts\TransactionController)->sendTransaction(new Request($ttm_request_object));
+        ]));
     }
 
     public function process_platform_charge(Request $request, $ref_code)
@@ -604,8 +611,9 @@ class _TransactionController extends Controller
                     }
                     $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\EthereumController)->EthBlockchainTransfer(new Request([
                         'to' => $validated_data['recipient_bc_address'],
-                        'currency' => $asset->code, // sends both ETH, USDT
+                        'currency' => $asset->code,
                         'amount' => $validated_data['asset_value'].'',
+                        'signatureId' => env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID'),
                         'index' => $reserves_address->xpub_derivation_key,
                     ]))->getData()->signatureId;
                 } else {
@@ -625,6 +633,7 @@ class _TransactionController extends Controller
                         'to' => $validated_data['recipient_bc_address'],
                         'currency' => 'ETH',
                         'amount' => $amount.'',
+                        'signatureId' => env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID'),
                         'index' => $reserves_address->xpub_derivation_key,
                     ]))->getData()->signatureId;
                 }
@@ -656,6 +665,7 @@ class _TransactionController extends Controller
                                 'from' => $reserves_address->bc_address,
                                 'to' => $validated_data['recipient_bc_address'],
                                 'amount' => $validated_data['asset_value'].'',
+                                'signatureId' => env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID'),
                                 'index' => $reserves_address->xpub_derivation_key,
                             ]))->getData()->signatureId;
                             break;
@@ -665,8 +675,9 @@ class _TransactionController extends Controller
                                 'from' => $reserves_address->bc_address,
                                 'to' => $validated_data['recipient_bc_address'],
                                 'tokenAddress' => env('TRON_USDT_TOKEN_ADDRESS'),
-                                'amount' => ($validated_data['asset_value'] * pow((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => 'TRON', 'basePair' => 'USD']))->getData()->value).'', // in TRX
+                                'amount' => ($validated_data['asset_value'] * pow((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => 'TRON', 'basePair' => 'USD']))->getData()->value)).'', // in TRX
                                 'feeLimit' => round(pow((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => 'TRON', 'basePair' => 'USD']))->getData()->value, -1) / 3), // in TRX
+                                'signatureId' => env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID'),
                                 'index' => $reserves_address->xpub_derivation_key,
                             ]))->getData()->signatureId;
                             break;
@@ -691,6 +702,7 @@ class _TransactionController extends Controller
                         'from' => $reserves_address->bc_address,
                         'to' => $validated_data['recipient_bc_address'],
                         'amount' => $amount.'',
+                        'signatureId' => env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID'),
                         'index' => $reserves_address->xpub_derivation_key,
                     ]))->getData()->signatureId;
                 }
