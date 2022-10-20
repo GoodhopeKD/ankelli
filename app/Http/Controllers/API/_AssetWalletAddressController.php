@@ -38,13 +38,13 @@ class _AssetWalletAddressController extends Controller
             $result = $eloquent_query->paginate(request()->per_page)->withQueryString();
         }
 
-        if ( request()->user_username === 'platform_wallet_users' && isset( request()->asset_code ) ){
+        /*if ( request()->user_username === 'platform_wallet_users' && isset( request()->asset_code ) ){
             $result->push(new _AssetWalletAddress([
                 'user_username' => 'gaspump',
                 'bc_address' => _Asset::firstWhere(['code' => request()->asset_code ])->gp_owner_bc_address,
                 'asset_code' => request()->asset_code,
             ]));
-        }
+        }*/
 
         return $result ? (new _AssetWalletAddressResourceCollection( $result ))->with_balance( request()->user_username === 'platform_wallet_users' ) : null;
     }
@@ -61,7 +61,7 @@ class _AssetWalletAddressController extends Controller
             'user_username' => ['required', 'string', 'exists:__users,username'],
             'asset_code' => ['required', 'string', 'exists:__assets,code'],
             'bc_address' => ['required_with:bypass_max_per_user_per_asset_code', 'string'],
-            //'ttm_derivation_key' => ['required_with:bc_address', 'integer', 'between:0,2147483647'],
+            'xpub_derivation_key' => ['sometimes', 'integer', 'between:0,2147483647'],
             'bypass_max_per_user_per_asset_code' => ['sometimes', 'boolean'],
         ]);
 
@@ -79,12 +79,12 @@ class _AssetWalletAddressController extends Controller
             if (count($ttm_elements)){
                 foreach ($ttm_elements as $ttm_element) {
                     if ( $validated_data['asset_code'] === $ttm_element->currency ){
-                        $asset_wallet_address_params = [
+                        $asset_wallet_address_params = array_filter([
                             'user_username' => $validated_data['user_username'],
                             'asset_code' => $validated_data['asset_code'],
                             'bc_address' => $ttm_element->address,
-                            //'ttm_derivation_key' => $ttm_element->derivationKey,
-                        ];
+                            'xpub_derivation_key' => $ttm_element->derivationKey ?? null,
+                        ]);
                         if ( !_AssetWalletAddress::where($asset_wallet_address_params)->exists() ){
                             return (new _AssetWalletAddressController)->store(new Request( array_merge( $asset_wallet_address_params, ['bypass_max_per_user_per_asset_code' => true]) ));
                         }
@@ -94,29 +94,45 @@ class _AssetWalletAddressController extends Controller
 
             if ( false ){
                 $ttm_element = (new Tatum\VirtualAccounts\BCAddressController)->generateDepositAddress(new Request(['id' => $asset_wallet->ttm_virtual_account_id]))->getData();
-                $validated_data['ttm_derivation_key'] = $ttm_element->derivationKey;
+                $validated_data['xpub_derivation_key'] = $ttm_element->derivationKey;
                 $validated_data['bc_address'] = $ttm_element->address;
             } else {
                 $address_picked = false;
+                $xpub_derivation_key = 0;
                 while ($address_picked === false) {
-                    $asset = _Asset::firstWhere(['chain' => $asset_wallet->asset_chain, 'ttm_gp_chain_addresses_storage' => true])->makeVisible(['ttm_gp_activated_batch_addresses']);
-                    if (!count($asset->ttm_gp_activated_batch_addresses)){
-                        (new _AssetController)->activate_next_gp_addresses_batch($asset->id);
-                        $asset = _Asset::firstWhere(['chain' => $asset_wallet->asset_chain, 'ttm_gp_chain_addresses_storage' => true])->makeVisible(['ttm_gp_activated_batch_addresses']);
+                    $asset = _Asset::firstWhere(['chain' => $asset_wallet->asset_chain, 'ttm_gp_chain_addresses_storage' => true])->makeVisible(['ttm_gp_activated_batch_addresses', 'xpub']);
+                    $chosen_address = null;
+                    if ( $validated_data['user_username'] === 'reserves' ){
+                        switch ($asset->chain) {
+                            case 'ETH':
+                                $ttm_element = (new Tatum\Blockchain\EthereumController)->EthGenerateAddress(new Request(['xpub' => $asset->xpub, 'index' => $xpub_derivation_key]))->getData();
+                                break;
+                            case 'TRON':
+                                $ttm_element = (new Tatum\Blockchain\TronController)->TronGenerateAddress(new Request(['xpub' => $asset->xpub, 'index' => $xpub_derivation_key]))->getData();
+                                break;
+                        }
+                        $chosen_address = $ttm_element->address;
+                        $validated_data['xpub_derivation_key'] = $xpub_derivation_key;
+                        $xpub_derivation_key += 1;
+                    } else {
+                        if (!count($asset->ttm_gp_activated_batch_addresses)){
+                            (new _AssetController)->activate_next_gp_addresses_batch($asset->id);
+                            $asset = _Asset::firstWhere(['chain' => $asset_wallet->asset_chain, 'ttm_gp_chain_addresses_storage' => true])->makeVisible(['ttm_gp_activated_batch_addresses']);
+                        }
+                        $ttm_gp_activated_batch_addresses = $asset->ttm_gp_activated_batch_addresses;
+                        $chosen_address = array_shift($ttm_gp_activated_batch_addresses);
+                        (new _AssetController)->update(new Request(['ttm_gp_activated_batch_addresses' => $ttm_gp_activated_batch_addresses]), $asset->id);
                     }
-                    $ttm_gp_activated_batch_addresses = $asset->ttm_gp_activated_batch_addresses;
-                    $chosen_gp_address = array_shift($ttm_gp_activated_batch_addresses);
-                    (new _AssetController)->update(new Request(['ttm_gp_activated_batch_addresses' => $ttm_gp_activated_batch_addresses]), $asset->id);
                     $address_usable = false;
                     try {
-                        if ((new Tatum\VirtualAccounts\BCAddressController)->addressExists(new Request(['address' => strtolower( $chosen_gp_address ), 'currency' => $asset_wallet->asset_code]))->getData()){ $address_usable = false; }
+                        if ((new Tatum\VirtualAccounts\BCAddressController)->addressExists(new Request(['address' => strtolower( $chosen_address ), 'currency' => $asset_wallet->asset_code]))->getData()){ $address_usable = false; }
                     } catch (\Throwable $th) {
                         $message = $th->getMessage();
                         if (str_contains($message, 'The combination of address')){ $address_usable = true; }
                         if (str_contains($message, 'Unable to find sender account')){ $address_usable = false; }
                     }
                     if ( $address_usable ){
-                        $ttm_element = (new Tatum\VirtualAccounts\BCAddressController)->assignAddress(new Request(['id' => $asset_wallet->ttm_virtual_account_id, 'address' => $chosen_gp_address ]))->getData();
+                        $ttm_element = (new Tatum\VirtualAccounts\BCAddressController)->assignAddress(new Request(['id' => $asset_wallet->ttm_virtual_account_id, 'address' => $chosen_address ]))->getData();
                         $validated_data['bc_address'] = $ttm_element->address;
                         $address_picked = true;
                     }

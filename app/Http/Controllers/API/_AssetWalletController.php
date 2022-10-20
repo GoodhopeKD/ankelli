@@ -28,6 +28,17 @@ class _AssetWalletController extends Controller
         //
     }
 
+    public function tempFunction()
+    {
+        return (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
+            'chain' => 'ETH',
+            'custodialAddress' => '0xa5ba7cea75e871e89a0dff8944434e97ca60cdb2',
+            'recipient' => '0x0688af85d9fc2805151f5ffa66b7b505a59cc732',
+            'contractType' => 3,
+            'amount' => (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => '0xa5ba7cea75e871e89a0dff8944434e97ca60cdb2']))->getData()->balance.'',
+        ]))->getData();
+    }
+
     // tempFunction
     public function EthGetBalance()
     {
@@ -41,7 +52,7 @@ class _AssetWalletController extends Controller
     }
 
     // tempFunction
-    public function tempFunction()
+    public function sdfssfs()
     {
         return json_decode( stripslashes('{\"visible\":false,\"txID\":\"2eb09fd77bf559e4ff748f8387244cc5d75af9038dffe8ee64e30b69c12706b9\",\"raw_data\":{\"contract\":[{\"parameter\":{\"value\":{\"data\":\"f2881e21000000000000000000000000000000000000000000000000000000000000dead000000000000000000000000000000000000000000000000000000000000000300000000000000000000000095e0acffee51ade74662bbb313979b26eaf40d7400000000000000000000000000000000000000000000000000000000004c4b400000000000000000000000000000000000000000000000000000000000000000\",\"owner_address\":\"418a59bf8026179a34fa7de05165790fa10adff860\",\"contract_address\":\"41d44cdd409377ab5ecd8fa8b738640c42088720fa\"},\"type_url\":\"type.googleapis.com/protocol.TriggerSmartContract\"},\"type\":\"TriggerSmartContract\"}],\"ref_block_bytes\":\"dd94\",\"ref_block_hash\":\"ff08084fc6a00636\",\"expiration\":1666199781000,\"fee_limit\":5000000,\"timestamp\":1666199721703},\"raw_data_hex\":\"0a02dd942208ff08084fc6a006364088fdfb89bf305a9002081f128b020a31747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e54726967676572536d617274436f6e747261637412d5010a15418a59bf8026179a34fa7de05165790fa10adff860121541d44cdd409377ab5ecd8fa8b738640c42088720fa22a401f2881e21000000000000000000000000000000000000000000000000000000000000dead000000000000000000000000000000000000000000000000000000000000000300000000000000000000000095e0acffee51ade74662bbb313979b26eaf40d7400000000000000000000000000000000000000000000000000000000004c4b40000000000000000000000000000000000000000000000000000000000000000070e7adf889bf309001c096b102\"}') );
         return json_decode( stripslashes('{\"visible\":false,\"txID\":\"6c96dba9a1ded08851602087eedbd00558c444062acaec9fe76a684b5b6897c2\",\"raw_data\":{\"contract\":[{\"parameter\":{\"value\":{\"data\":\"ae666ab60000000000000000000000008a59bf8026179a34fa7de05165790fa10adff8600000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000000500000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000030000000000000000000000000000000000000000000000000000000000000004\",\"owner_address\":\"418a59bf8026179a34fa7de05165790fa10adff860\",\"contract_address\":\"41f49fed2fb9cf354e0100eeb9318bbf230aeb58c9\"},\"type_url\":\"type.googleapis.com/protocol.TriggerSmartContract\"},\"type\":\"TriggerSmartContract\"}],\"ref_block_bytes\":\"d83c\",\"ref_block_hash\":\"8b8b2dbe25289042\",\"expiration\":1666195116000,\"fee_limit\":150000000,\"timestamp\":1666195057321},\"raw_data_hex\":\"0a02d83c22088b8b2dbe2528904240e09fdf87bf305af002081f12eb020a31747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e54726967676572536d617274436f6e747261637412b5020a15418a59bf8026179a34fa7de05165790fa10adff860121541f49fed2fb9cf354e0100eeb9318bbf230aeb58c9228402ae666ab60000000000000000000000008a59bf8026179a34fa7de05165790fa10adff860000000000000000000000000000000000000000000000000000000000000004000000000000000000000000000000000000000000000000000000000000000050000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000000470a9d5db87bf30900180a3c347\"}') );
@@ -97,15 +108,15 @@ class _AssetWalletController extends Controller
     // tempFunction
     public function ssdsf()
     {
-        (new _AssetWalletController)->DeletePendingTransactionToSign();
+        //(new _AssetWalletController)->DeletePendingTransactionToSign();
         $transfer = false;
         $addresses = [];
         for ($i=36; $i <= 46; $i++) {
             $address = [];
-            $address['xpub_index'] = $i;
+            $address['xpub_derivation_key'] = $i;
             $address['address'] = (new Tatum\Blockchain\EthereumController)->EthGenerateAddress(new Request([
                 'xpub' => 'xpub6ERKWaEy6mLBzYWoo5P19QTexUufpijY5qod5xaH2ksiYtekeFYAoT3JoK87XKULgG7g3yvvxKwsGEVdkTqcC3BFjthMtJendsN1WH9nHoX',
-                'index' => $address['xpub_index'],
+                'index' => $address['xpub_derivation_key'],
             ]))->getData()->address;
             $address['balance'] = (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => $address['address']]))->getData()->balance;
             if ( $address['balance'] > 0 ) {
@@ -121,7 +132,7 @@ class _AssetWalletController extends Controller
                     'to' => '0x0688af85d9fc2805151f5ffa66b7b505a59cc732',
                     'currency' => 'ETH',
                     'amount' => $address['transferrable'].'',
-                    'index' => $address['xpub_index'],
+                    'index' => $address['xpub_derivation_key'],
                     'fee' => $address['estimated_fee'],
                 ]))->getData()->signatureId;
                 array_push($addresses, $address);
@@ -202,7 +213,7 @@ class _AssetWalletController extends Controller
     // tempFunction
     public function addressExists()
     {
-        return (new Tatum\VirtualAccounts\BCAddressController)->addressExists(new Request(['currency' => 'TRON', 'address' => 'TJ7qnkLBTKq9UmRAZzJ3585nTE22Wqohbt']));
+        return (new Tatum\VirtualAccounts\BCAddressController)->addressExists(new Request(['currency' => 'TRON', 'address' => 'TNajmLQSwa12CbmSnDrUNUBeoUDprHaPV8']));
     }
 
     // tempFunction
@@ -234,13 +245,14 @@ class _AssetWalletController extends Controller
         $customers = [];
         foreach ((new Tatum\VirtualAccounts\CustomerController)->findAllCustomers(new Request())->getData() as $_customer) {
 
-            if ( str_contains($_customer->externalId, '_')){ continue; }
+            //if ( str_contains($_customer->externalId, '_')){ continue; }
 
             $customer = ['data' => $_customer, 'accounts' => []];
             try {
                 foreach ((new Tatum\VirtualAccounts\AccountController)->getAccountsByCustomerId(new Request(['id' => $_customer->id]))->getData() as $_acct) {
                     $customer_acct = [ 'data' => $_acct, 'addresses' => []];
                     foreach ((new Tatum\VirtualAccounts\BCAddressController)->getAllDepositAddresses(new Request(['id' => $_acct->id]))->getData() as $_address) {
+                        //(new Tatum\VirtualAccounts\BCAddressController)->removeAddress(new Request(['id' => $_acct->id, 'address' => $_address->address]));
                         array_push( $customer_acct['addresses'] , $_address );
                     }
                     array_push( $customer['accounts'] , $customer_acct );

@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('unit', 64);
             $table->string('chain', 64);
 
-            //$table->string('xpub', 255)->nullable();
+            $table->string('xpub', 255)->nullable();
 
             $table->string('gp_owner_bc_address', 128)->nullable();
             $table->boolean('ttm_gp_chain_addresses_storage')->default(false);

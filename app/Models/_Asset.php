@@ -20,7 +20,7 @@ class _Asset extends Model
         'unit',
         'chain',
 
-        //'xpub',
+        'xpub',
 
         'gp_owner_bc_address',
         'ttm_gp_chain_addresses_storage',
@@ -44,7 +44,7 @@ class _Asset extends Model
      * @var array
      */
     protected $hidden = [
-        //'xpub',
+        'xpub',
         'ttm_gp_chain_addresses_storage',
         'ttm_gp_activated_batch_addresses',
         'ttm_gp_activation_offset_index',

@@ -26,6 +26,7 @@ class _AssetWalletAddressResourceCollection extends ResourceCollection
                 return array_filter(array_merge(
                     is_array($_this->resource) ? $_this->resource: $_this->resource->toArray(), [
                     'balance' => $this->with_balance ? $_this->balance_f() : null,
+                    'user_username' => ( $_this->xpub_derivation_key === 0 ) ? 'reserves/gaspump' : $_this->user_username,
                 ]), static function($var){ return $var !== null; } );
             }),
         ];

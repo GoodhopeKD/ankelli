@@ -21,7 +21,7 @@ export const _AssetWalletAddressRespObj = {
     user_username: undefined as undefined | null | string,
     asset_code: undefined as undefined | null | string,
     bc_address: undefined as undefined | null | string,
-    ttm_derivation_key: undefined as undefined | null | number,
+    xpub_derivation_key: undefined as undefined | null | number,
     onchain_txn_count: undefined as undefined | null | number,
 
     created_datetime: undefined as undefined | null | string,
@@ -37,7 +37,7 @@ export default class _AssetWalletAddress extends _Wrapper_ implements Omit<typeo
     user_username: string | null = null
     asset_code: string | null = null
     bc_address: string | null = null
-    ttm_derivation_key: number | null = null
+    xpub_derivation_key: number | null = null
     onchain_txn_count: number | null = null
 
     created_datetime: _DateTime | null = null

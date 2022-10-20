@@ -26,7 +26,7 @@ tatum-kms generatemanagedwallet ETH --path=/Applications/XAMPP/xamppfiles/htdocs
 
 Remove stored wallet
 ```properties
-tatum-kms removewallet 5ae102d3-6981-491e-bae5-8abefbd2321b --path=/Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/wallet.dat
+tatum-kms removewallet 6842c662-6e2e-4026-9974-db19eb00bf86 --path=/Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/wallet.dat
 ```
 
 Store private key of an address wallet

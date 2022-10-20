@@ -61,7 +61,7 @@ class GasPumpController extends Controller
             'signatureId' => ['nullable', 'string'],
         ]);
 
-        $validated_data['signatureId'] = $validated_data['signatureId'] ?? env('TATUM_KMS_'.$validated_data['chain'].'_GP_OWNER_BC_ADDRESS_SIGNATURE_ID');
+        $validated_data['signatureId'] = $validated_data['signatureId'] ?? env('TATUM_KMS_'.$validated_data['chain'].'_WALLET_SIGNATURE_ID');
 
         $payload = $validated_data;
 
@@ -152,14 +152,15 @@ class GasPumpController extends Controller
             'contractType' => ['required', 'integer', Rule::in([0, 3])], // 0 for ERC20, 3 for native
             'tokenAddress' => ['required_if:contractType,=,0', 'string', 'between:34,42'], // for ERC20
             'amount' => ['required', 'string', 'max:38'],
-            'index' => ['sometimes', 'integer', 'between:0,2147483647'],
             'feeCurrency' => ['required_if:chain,=,CELO', 'string', Rule::in(['CELO','CUSD','CEUR'])],
             'feeLimit' => ['required_if:chain,=,TRON', 'numeric', 'min:0'],
             'fee' => ['required_if:chain,=,CELO', 'array'],
             'signatureId' => ['nullable', 'string'],
+            'index' => ['nullable', 'integer', 'between:0,2147483647'],
         ]);
 
-        $validated_data['signatureId'] = $validated_data['signatureId'] ?? env('TATUM_KMS_'.$validated_data['chain'].'_GP_OWNER_BC_ADDRESS_SIGNATURE_ID');
+        $validated_data['signatureId'] = $validated_data['signatureId'] ?? env('TATUM_KMS_'.$validated_data['chain'].'_WALLET_SIGNATURE_ID');
+        $validated_data['index'] = $validated_data['index'] ?? 0;
 
         $payload = $validated_data;
 
