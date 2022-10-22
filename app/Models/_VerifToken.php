@@ -41,7 +41,7 @@ class _VerifToken extends Model
      */
     public function email_address()
     {
-        return $this->belongsTo( _EmailAddress::class, 'receiving_resource_id' );
+        return $this->belongsTo(_EmailAddress::class, 'receiving_resource_id');
     }
 
     /**
@@ -49,18 +49,18 @@ class _VerifToken extends Model
      */
     public function phone_no()
     {
-        return $this->belongsTo( _PhoneNo::class, 'receiving_resource_id' );
+        return $this->belongsTo(_PhoneNo::class, 'receiving_resource_id');
     }
 
     public function receiving_resource_value_f()
     {
         $receiving_resource_value = null;
-        switch ( $this->receiving_resource_table ) {
+        switch ($this->receiving_resource_table) {
             case '__email_addresses':
-                $receiving_resource_value = ( $this->email_address ) ? $this->email_address->email_address : null;
+                $receiving_resource_value = ($this->email_address) ? $this->email_address->email_address : null;
                 break;
             case '__phone_nos':
-                $receiving_resource_value = ( $this->phone_no ) ? '+'.ltrim($this->phone_no->country_calling_code, '+').ltrim($this->phone_no->number, '0');
+                $receiving_resource_value = ($this->phone_no) ? '+'.ltrim($this->phone_no->country_calling_code, '+').ltrim($this->phone_no->number, '0');
                 break;
         }
         return $receiving_resource_value;

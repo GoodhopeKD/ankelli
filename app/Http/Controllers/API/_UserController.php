@@ -33,20 +33,20 @@ class _UserController extends Controller
     {
         $result = null;
 
-        if ( $result === null && request()->get_as_addon_prop && request()->get_as_addon_prop == true ){
+        if ($result === null && request()->get_as_addon_prop && request()->get_as_addon_prop == true){
             $result = _User::where(['_status'=>'active'])
             ->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->paginate(request()->per_page)->withQueryString(); 
         }
         
-        if ( $result === null ){
+        if ($result === null){
             $simple_query_args = [];
 
-            if ( request()->_status && request()->_status !== 'all' ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => request()->_status ]); }
-            if ( !isset(request()->_status) ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => 'active' ]); }
+            if (request()->_status && request()->_status !== 'all'){ $simple_query_args = array_merge($simple_query_args, [ '_status' => request()->_status ]); }
+            if (!isset(request()->_status)){ $simple_query_args = array_merge($simple_query_args, [ '_status' => 'active' ]); }
 
             $eloquent_query = _User::where($simple_query_args);
 
-            if ( request()->user_username && is_string( request()->user_username ) ){
+            if (request()->user_username && is_string(request()->user_username)){
                 $eloquent_query = $eloquent_query
                 ->where(['creator_username' => request()->user_username, 'visible_to_creator' => true])
                 ->orWhere(function($query) { $query->where(['offer_creator_username' => request()->user_username, 'visible_to_offer_creator' => true]); });
@@ -55,7 +55,7 @@ class _UserController extends Controller
             $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->paginate(request()->per_page)->withQueryString();
         }
 
-        return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _UserResource::collection( $result ) : new _UserResourceCollection( $result ) ) : null;
+        return $result ? (request()->get_with_meta && request()->get_with_meta == true ? _UserResource::collection($result) : new _UserResourceCollection($result)) : null;
     }
 
     /**
@@ -75,20 +75,20 @@ class _UserController extends Controller
             'password' => ['required', 'string', 'between:8,32', 'confirmed'],
         ]);
 
-        if ( $token_reg_enabled ){
-            $reg_token_check = (array)(new __AuxController)->usability_check( new Request([ 'param_name' => 'reg_token', 'param_value' => $validated_data['reg_token'] ]) )->getData();
-            if ( !$reg_token_check['usable']){
+        if ($token_reg_enabled){
+            $reg_token_check = (array)(new __AuxController)->usability_check(new Request([ 'param_name' => 'reg_token', 'param_value' => $validated_data['reg_token'] ]))->getData();
+            if (!$reg_token_check['usable']){
                 return abort(422, $reg_token_check['message']);
             }
         }
 
-        $username_check = (array)(new __AuxController)->availability_check( new Request([ 'param_name' => 'username', 'param_value' => $validated_data['username'] ]) )->getData();
-        if ( !$username_check['available']){
+        $username_check = (array)(new __AuxController)->availability_check(new Request([ 'param_name' => 'username', 'param_value' => $validated_data['username'] ]))->getData();
+        if (!$username_check['available']){
             return abort(422, $username_check['message']);
         }
 
-        $email_address_check = (array)(new __AuxController)->availability_check( new Request([ 'param_name' => 'email_address', 'param_value' => $validated_data['email_address'] ]) )->getData();
-        if ( !$email_address_check['available']){
+        $email_address_check = (array)(new __AuxController)->availability_check(new Request([ 'param_name' => 'email_address', 'param_value' => $validated_data['email_address'] ]))->getData();
+        if (!$email_address_check['available']){
             return abort(422, $email_address_check['message']);
         }
 
@@ -104,7 +104,7 @@ class _UserController extends Controller
 
         // Initialise _Log Batch Handling
         $log_batch_code = random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => 'User signup.',
             'action_type' => 'batch_init',
             'batch_code' => $log_batch_code,
@@ -112,7 +112,7 @@ class _UserController extends Controller
         // End Initialise _Log Batch Handling
         
         // Handle _Log
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note'   => 'Addition of _User entry to database.',
             'action_type'   => 'entry_create',
             'entry_table'   => '__users',
@@ -122,7 +122,7 @@ class _UserController extends Controller
         // End _Log Handling
 
         // Create _User's Email address
-        (new _EmailAddressController)->store( new Request([
+        (new _EmailAddressController)->store(new Request([
             'email_address' => $api_auth_user->email_address,
             'user_username' => $api_auth_user->username,
             'batch_code' => $log_batch_code,
@@ -130,7 +130,7 @@ class _UserController extends Controller
         // End Create _User's Email address
 
         // Create notification to verify email
-        (new _NotificationController)->store( new Request([
+        (new _NotificationController)->store(new Request([
             'user_username' => $api_auth_user->username,
             'content' => [
                 'title' => 'Welcome Note',
@@ -141,19 +141,19 @@ class _UserController extends Controller
         ]));
         // End Create notification to verify email
 
-        if ( !( session()->get('active_session_token') && in_array(session()->get('active_session_token'), ['FACTORY_SSN', 'TEST_SSN']) )){
+        if (!(session()->get('active_session_token') && in_array(session()->get('active_session_token'), ['FACTORY_SSN', 'TEST_SSN']))){
             // Handle _Session
             $active_session_data = $request->active_session_data;
             $active_session_data['user_username'] = $api_auth_user->username;
-            $response['active_session_data'] = (new _SessionController)->_signUserIn( new Request( $active_session_data ), session()->get('active_session_token') );
+            $response['active_session_data'] = (new _SessionController)->_signUserIn(new Request($active_session_data), session()->get('active_session_token'));
             // End _Session Handling
 
             $response['auth_token'] = $api_auth_user->createToken('auth_token')->accessToken;
-            $response['sysconfig_params_data'] = ( new __AuxController )->sysconfig_params()->getData()->data;
-            $response['auth_user_data'] = new _UserResource( $api_auth_user );
+            $response['sysconfig_params_data'] = (new __AuxController)->sysconfig_params()->getData()->data;
+            $response['auth_user_data'] = new _UserResource($api_auth_user);
         }
 
-        if ($request->expectsJson()) return response()->json( $response );
+        if ($request->expectsJson()) return response()->json($response);
     }
 
     /**
@@ -165,7 +165,7 @@ class _UserController extends Controller
     public function show(string $username)
     {
         $element = _User::where('username',$username)->first();
-        return $element ? response()->json( new _UserResource( $element ) ) : null;
+        return $element ? response()->json(new _UserResource($element)) : null;
     }
 
     public function signIn(Request $request)
@@ -183,7 +183,7 @@ class _UserController extends Controller
 
         // Response Structure
         $response = [
-            'sysconfig_params_data' => ( new __AuxController )->sysconfig_params()->getData()->data,
+            'sysconfig_params_data' => (new __AuxController)->sysconfig_params()->getData()->data,
             'active_session_data' => null,
             'auth_user_data' => null,
         ];
@@ -192,37 +192,37 @@ class _UserController extends Controller
         // Handle _Session
         $active_session_data = $request->active_session_data;
         $active_session_data['user_username'] = $api_auth_user->username;
-        $response['active_session_data'] = (new _SessionController)->_signUserIn( new Request( $active_session_data ), $active_session_data['token'] );
+        $response['active_session_data'] = (new _SessionController)->_signUserIn(new Request($active_session_data), $active_session_data['token']);
         // End _Session
 
         $response['auth_token'] = $api_auth_user->createToken('auth_token')->accessToken;
-        $response['auth_user_data'] = new _UserResource( $api_auth_user );
+        $response['auth_user_data'] = new _UserResource($api_auth_user);
 
-        return response()->json( $response );
+        return response()->json($response);
     }
 
     public function signOut(Request $request)
     {
         // Response Structure
         $response = [
-            'sysconfig_params_data' => ( new __AuxController )->sysconfig_params()->getData()->data,
+            'sysconfig_params_data' => (new __AuxController)->sysconfig_params()->getData()->data,
             'active_session_data' => null,
             'auth_user_data' => null,
         ];
 
         // Handle Old _Session
         $active_session_data = $request->active_session_data;
-        (new _SessionController)->_signUserOut( new Request( $active_session_data ), $active_session_data['token'] );
+        (new _SessionController)->_signUserOut(new Request($active_session_data), $active_session_data['token']);
         // End Old _Session
         
         // Handle New _Session
-        $response['active_session_data'] = (new _SessionController)->store( new Request( [
+        $response['active_session_data'] = (new _SessionController)->store(new Request([
             'device_info' => $active_session_data['device_info'],
             'agent_app_info' => $active_session_data['agent_app_info'],
         ]))->getData();
         // End New _Session
 
-        return response()->json( $response );
+        return response()->json($response);
     }
 
     /**
@@ -262,12 +262,12 @@ class _UserController extends Controller
 
         $should_update_customer = false;
 
-        if ( isset($validated_data['username']) && $validated_data['username'] !== $element->username ){
+        if (isset($validated_data['username']) && $validated_data['username'] !== $element->username){
             // update all appearances of username;
             $should_update_customer = true;
         }
 
-        if ( $should_update_customer && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+        if ($should_update_customer && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()){
             $ttm_customer_id = $element->ttm_customer_id;
             if (!$ttm_customer_id){
                 try {
@@ -275,7 +275,7 @@ class _UserController extends Controller
                     $ttm_customer_id = $ttm_customer->id;
                 } catch (\Throwable $th) {}
             }
-            if ( $ttm_customer_id ){
+            if ($ttm_customer_id){
                 $ttm_customer_update_data = [ 'id' => $ttm_customer_id ];
                 if (isset($validated_data['username'])){
                     $ttm_customer_update_data['externalId'] = $validated_data['username'];
@@ -286,9 +286,9 @@ class _UserController extends Controller
 
         // Handle _Log
         $log_entry_update_result = [];
-        foreach ( $validated_data as $key => $value ) {
-            if ( in_array( $key, $element->getFillable() ) && $element->{$key} != $value ){
-                array_push( $log_entry_update_result, [
+        foreach ($validated_data as $key => $value) {
+            if (in_array($key, $element->getFillable()) && $element->{$key} != $value){
+                array_push($log_entry_update_result, [
                     'field_name' => $key,
                     'old_value' => $element->{$key},
                     'new_value' => $value,
@@ -296,7 +296,7 @@ class _UserController extends Controller
             }
         }
         if (!count($log_entry_update_result)) return abort(422, 'No values were updated');
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => 'Updating of _User entry in database.',
             'action_type' => 'entry_update',
             'entry_table' => $element->getTable(),
@@ -306,7 +306,7 @@ class _UserController extends Controller
         ]));
         // End _Log Handling
         $element->update($validated_data);
-        if ($request->expectsJson()) return response()->json( (new _UserResource( $element )) );
+        if ($request->expectsJson()) return response()->json((new _UserResource($element)));
     }
 
     /**

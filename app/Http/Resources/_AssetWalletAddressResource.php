@@ -24,7 +24,7 @@ class _AssetWalletAddressResource extends JsonResource
         return array_filter(array_merge(
             parent::toArray($request), [
                 'balance' => $this->with_balance ? $this->balance_f() : null,
-                'user_username' => ( $this->xpub_derivation_key === 0 ) ? 'reserves/gaspump' : $this->user_username,
-            ]), static function($var){ return $var !== null; } );
+                'user_username' => ($this->xpub_derivation_key === 0) ? 'reserves/gaspump' : $this->user_username,
+            ]), static function($var){ return $var !== null; });
     }
 }

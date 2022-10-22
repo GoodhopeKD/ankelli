@@ -23,27 +23,27 @@ class _DepositTokenController extends Controller
     {
         $result = null;
 
-        if ( $result === null && request()->get_as_addon_prop && request()->get_as_addon_prop == true ){
+        if ($result === null && request()->get_as_addon_prop && request()->get_as_addon_prop == true){
             $result = _DepositToken::where(['_status'=>'active'])
             ->orderByRaw('ifnull(used_datetime, created_datetime) DESC')->paginate(request()->per_page)->withQueryString(); 
         }
         
-        if ( $result === null ){
+        if ($result === null){
             $simple_query_args = [];
 
-            if ( request()->currency_code ){ $simple_query_args = array_merge( $simple_query_args, [ 'currency_code' => request()->currency_code ]); }
-            if ( request()->asset_code ){ $simple_query_args = array_merge( $simple_query_args, [ 'asset_code' => request()->asset_code ]); }
-            if ( request()->creator_username ){ $simple_query_args = array_merge( $simple_query_args, [ 'creator_username' => request()->creator_username ]); }
+            if (request()->currency_code){ $simple_query_args = array_merge($simple_query_args, [ 'currency_code' => request()->currency_code ]); }
+            if (request()->asset_code){ $simple_query_args = array_merge($simple_query_args, [ 'asset_code' => request()->asset_code ]); }
+            if (request()->creator_username){ $simple_query_args = array_merge($simple_query_args, [ 'creator_username' => request()->creator_username ]); }
 
             $eloquent_query = _DepositToken::where($simple_query_args);
 
-            if ( request()->_status && request()->_status == 'unused' ){ $eloquent_query->whereNull('used_datetime'); }
-            if ( request()->_status && request()->_status == 'used' ){ $eloquent_query->whereNotNull('used_datetime'); }
+            if (request()->_status && request()->_status == 'unused'){ $eloquent_query->whereNull('used_datetime'); }
+            if (request()->_status && request()->_status == 'used'){ $eloquent_query->whereNotNull('used_datetime'); }
 
             $result = $eloquent_query->orderByRaw('ifnull(used_datetime, created_datetime) DESC')->paginate(request()->per_page)->withQueryString();
         }
 
-        return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _DepositTokenResource::collection( $result ) : new _DepositTokenResourceCollection( $result ) ) : null;
+        return $result ? (request()->get_with_meta && request()->get_with_meta == true ? _DepositTokenResource::collection($result) : new _DepositTokenResourceCollection($result)) : null;
     }
 
     /**
@@ -61,11 +61,11 @@ class _DepositTokenController extends Controller
             'currency_amount' => ['required', 'integer'],
         ]);
         $validated_data['token'] = random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
-        $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
 
         $element = _DepositToken::create($validated_data);
         // Handle _Log
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => 'Addition of _DepositToken entry to database.',
             'action_type' => 'entry_create',
             'entry_table' => $element->getTable(),
@@ -73,7 +73,7 @@ class _DepositTokenController extends Controller
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        if ($request->expectsJson()) return response()->json( new _DepositTokenResource( $element ) );
+        if ($request->expectsJson()) return response()->json(new _DepositTokenResource($element));
     }
 
     /**
@@ -116,10 +116,10 @@ class _DepositTokenController extends Controller
             return abort(422,"Token already used.");
         }
 
-        $validated_data['user_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $validated_data['user_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
         $validated_data['used_datetime'] = now()->toDateTimeString();
 
-        (new _TransactionController)->process_token_deposit( new Request([
+        (new _TransactionController)->process_token_deposit(new Request([
             'recipient_username' => $validated_data['user_username'],
             'deposit_token' => $token,
             'asset_code' => $element->asset_code,
@@ -128,9 +128,9 @@ class _DepositTokenController extends Controller
 
         // Handle _Log
         $log_entry_update_result = [];
-        foreach ( $validated_data as $key => $value ) {
-            if ( in_array( $key, $element->getFillable() ) && $element->{$key} != $value ){
-                array_push( $log_entry_update_result, [
+        foreach ($validated_data as $key => $value) {
+            if (in_array($key, $element->getFillable()) && $element->{$key} != $value){
+                array_push($log_entry_update_result, [
                     'field_name' => $key,
                     'old_value' => $element->{$key},
                     'new_value' => $value,
@@ -138,7 +138,7 @@ class _DepositTokenController extends Controller
             }
         }
         if (!count($log_entry_update_result)) return abort(422, 'No values were updated');
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => 'Updating of _DepositToken entry in database.',
             'action_type' => 'entry_update',
             'entry_table' => $element->getTable(),
@@ -147,7 +147,7 @@ class _DepositTokenController extends Controller
         ]));
         // End _Log Handling
         $element->update($validated_data);
-        return response()->json( new _DepositTokenResource( $element ) );
+        return response()->json(new _DepositTokenResource($element));
     }
 
     /**

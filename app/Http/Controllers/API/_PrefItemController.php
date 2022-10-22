@@ -20,18 +20,18 @@ class _PrefItemController extends Controller
     {
         $result = null;
 
-        if ( $result === null ){
+        if ($result === null){
             $simple_query_args = [];
 
-            if ( request()->parent_table ){ $simple_query_args = array_merge( $simple_query_args, [ 'parent_table' => request()->parent_table ]); }
-            if ( request()->parent_uid ){ $simple_query_args = array_merge( $simple_query_args, [ 'parent_uid' => request()->parent_uid ]); }
+            if (request()->parent_table){ $simple_query_args = array_merge($simple_query_args, [ 'parent_table' => request()->parent_table ]); }
+            if (request()->parent_uid){ $simple_query_args = array_merge($simple_query_args, [ 'parent_uid' => request()->parent_uid ]); }
 
             $eloquent_query = _PrefItem::where($simple_query_args);
 
             $result = $eloquent_query->orderByDesc('created_datetime')->get(); 
         }
 
-        return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _PrefItemResource::collection( $result ) : new _PrefItemResourceCollection( $result ) ) : null;
+        return $result ? (request()->get_with_meta && request()->get_with_meta == true ? _PrefItemResource::collection($result) : new _PrefItemResourceCollection($result)) : null;
     }
 
     /**
@@ -78,9 +78,9 @@ class _PrefItemController extends Controller
 
         // Handle _Log
         $log_entry_update_result = [];
-        foreach ( $validated_data as $key => $value ) {
-            if ( in_array( $key, $element->getFillable() ) && $element->{$key} != $value ){
-                array_push( $log_entry_update_result, [
+        foreach ($validated_data as $key => $value) {
+            if (in_array($key, $element->getFillable()) && $element->{$key} != $value){
+                array_push($log_entry_update_result, [
                     'field_name' => $key,
                     'old_value' => $element->{$key},
                     'new_value' => $value,
@@ -88,7 +88,7 @@ class _PrefItemController extends Controller
             }
         }
         if (!count($log_entry_update_result)) return abort(422, 'No values were updated');
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => $request->update_note,
             'action_type' => 'entry_update',
             'entry_table' => $element->getTable(),
@@ -98,7 +98,7 @@ class _PrefItemController extends Controller
         ]));
         // End _Log Handling
         $element->update($validated_data);
-        if ($request->expectsJson()) return response()->json( new _PrefItemResource( $element ) );
+        if ($request->expectsJson()) return response()->json(new _PrefItemResource($element));
     }
 
     /**

@@ -30,6 +30,6 @@ class _BuyerExtension extends Model
      */
     public function logs()
     {
-        return $this->hasMany( _Log::class, 'entry_uid', 'user_username' )->where('entry_table', '__buyer_extensions');
+        return $this->hasMany(_Log::class, 'entry_uid', 'user_username')->where('entry_table', '__buyer_extensions');
     }
 }

@@ -21,7 +21,7 @@ class _UserResourceCollection extends ResourceCollection
                     'active_user_group_membership_slugs' => $_this->active_user_group_membership_slugs_f(),
                     'created_datetime' => null,
                     'updated_datetime' => null,
-                ]), static function($var){ return $var !== null; } );
+                ]), static function($var){ return $var !== null; });
             }),
         ];
     }

@@ -23,18 +23,18 @@ class _AssetController extends Controller
     {
         $result = null;
 
-        if ( $result === null ){
+        if ($result === null){
             $simple_query_args = [];
 
-            if ( request()->_status && request()->_status !== 'all' ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => request()->_status ]); }
-            if ( !isset(request()->_status) ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => 'active' ]); }
+            if (request()->_status && request()->_status !== 'all'){ $simple_query_args = array_merge($simple_query_args, [ '_status' => request()->_status ]); }
+            if (!isset(request()->_status)){ $simple_query_args = array_merge($simple_query_args, [ '_status' => 'active' ]); }
 
             $eloquent_query = _Asset::where($simple_query_args);
 
             $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->paginate(request()->per_page ?? count($eloquent_query->get()))->withQueryString();
         }
 
-        return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _AssetResource::collection( $result ) : new _AssetResourceCollection( $result ) ) : null;
+        return $result ? (request()->get_with_meta && request()->get_with_meta == true ? _AssetResource::collection($result) : new _AssetResourceCollection($result)) : null;
     }
 
     /**
@@ -57,45 +57,39 @@ class _AssetController extends Controller
             'usd_asset_exchange_rate' => ['sometimes', 'numeric', 'min:0'],
             'bc_txn_id_scan_url' => ['required', 'string', 'max:255'],
             'onchain_disclaimer' => ['required', 'string'],
-            'mnemonic' => ['required_without:gp_owner_bc_address', 'string', 'max:500'],
-            'gp_owner_bc_address' => ['required_without:mnemonic', 'string', 'max:128'],
+            'xpub' => ['required', 'string', 'max:255'],
+            'gp_owner_bc_address' => ['required_without:xpub', 'string', 'max:128'],
             'ttm_gp_last_activated_index' => ['sometimes', 'integer'],
         ]);
 
-        $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
         
-        if ( !isset($validated_data['gp_owner_bc_address']) && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+        if (!isset($validated_data['gp_owner_bc_address']) && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()){
             switch ($validated_data['chain']) {
                 case 'ETH':
-                    $validated_data['xpub'] = (new Tatum\Blockchain\EthereumController)->EthGenerateWallet(new Request(['mnemonic' => $validated_data['mnemonic']]))->getData()->xpub;
                     $validated_data['gp_owner_bc_address'] = (new Tatum\Blockchain\EthereumController)->EthGenerateAddress(new Request(['xpub' => $validated_data['xpub'], 'index' => 0]))->getData()->address;
-                    //$validated_data['gp_owner_bc_address_pkey'] = (new Tatum\Blockchain\EthereumController)->EthGenerateAddressPrivateKey(new Request(['mnemonic' => $validated_data['mnemonic'], 'index' => 0]))->getData()->key;
                     break;
                 case 'MATIC':
-                    $validated_data['xpub'] = (new Tatum\Blockchain\PolygonController)->PolygonGenerateWallet(new Request(['mnemonic' => $validated_data['mnemonic']]))->getData()->xpub;
                     $validated_data['gp_owner_bc_address'] = (new Tatum\Blockchain\PolygonController)->PolygonGenerateAddress(new Request(['xpub' => $validated_data['xpub'], 'index' => 0]))->getData()->address;
-                    //$validated_data['gp_owner_bc_address_pkey'] = (new Tatum\Blockchain\PolygonController)->PolygonGenerateAddressPrivateKey(new Request(['mnemonic' => $validated_data['mnemonic'], 'index' => 0]))->getData()->key;
                     break;
                 case 'TRON':
-                    $validated_data['xpub'] = (new Tatum\Blockchain\TronController)->GenerateTronwallet(new Request(['mnemonic' => $validated_data['mnemonic']]))->getData()->xpub;
                     $validated_data['gp_owner_bc_address'] = (new Tatum\Blockchain\TronController)->TronGenerateAddress(new Request(['xpub' => $validated_data['xpub'], 'index' => 0]))->getData()->address;
-                    //$validated_data['gp_owner_bc_address_pkey'] = (new Tatum\Blockchain\TronController)->TronGenerateAddressPrivateKey(new Request(['mnemonic' => $validated_data['mnemonic'], 'index' => 0]))->getData()->key;
                     break;
             }
         }
         
-        if ( !_Asset::where(['chain' => $validated_data['chain']])->exists() ){
+        if (!_Asset::where(['chain' => $validated_data['chain']])->exists()){
             $validated_data['ttm_gp_chain_addresses_storage'] = true;
         }
 
-        if ( !isset($validated_data['usd_asset_exchange_rate']) && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+        if (!isset($validated_data['usd_asset_exchange_rate']) && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()){
             $validated_data['usd_asset_exchange_rate'] = 1/((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => $validated_data['code'], 'basePair' => 'USD']))->getData()->value);
         }
 
         $element = _Asset::create($validated_data);
         
         // Handle _Log
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => 'Addition of _Asset entry to database.',
             'action_type' => 'entry_create',
             'entry_table' => $element->getTable(),
@@ -104,9 +98,11 @@ class _AssetController extends Controller
         ]));
         // End _Log Handling
 
-        (new _AssetController)->calculate_next_gp_addresses_batch( $element->id );
+        if (_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()){
+            (new _AssetController)->calculate_next_gp_addresses_batch($element->id);
+        }
 
-        if ($request->expectsJson()) return response()->json( new _AssetResource( $element ) );
+        if ($request->expectsJson()) return response()->json(new _AssetResource($element));
     }
 
     /**
@@ -131,7 +127,7 @@ class _AssetController extends Controller
         $element = _Asset::findOrFail($id);
         $ttm_element = (new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => $element->code, 'basePair' => 'USD']))->getData();
         try {
-            (new _AssetController)->update( new Request(['usd_asset_exchange_rate' => (1/$ttm_element->value)]), $element->id );
+            (new _AssetController)->update(new Request(['usd_asset_exchange_rate' => (1/$ttm_element->value)]), $element->id);
         } catch (\Throwable $th) {}
     }
 
@@ -160,9 +156,9 @@ class _AssetController extends Controller
 
         // Handle _Log
         $log_entry_update_result = [];
-        foreach ( $validated_data as $key => $value ) {
-            if ( in_array( $key, $element->getFillable() ) && $element->{$key} != $value ){
-                array_push( $log_entry_update_result, [
+        foreach ($validated_data as $key => $value) {
+            if (in_array($key, $element->getFillable()) && $element->{$key} != $value){
+                array_push($log_entry_update_result, [
                     'field_name' => $key,
                     'old_value' => $element->{$key},
                     'new_value' => $value,
@@ -170,7 +166,7 @@ class _AssetController extends Controller
             }
         }
         if (!count($log_entry_update_result)) return abort(422, 'No values were updated');
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => 'Updating of _Asset entry in database.',
             'action_type' => 'entry_update',
             'entry_table' => $element->getTable(),
@@ -180,7 +176,7 @@ class _AssetController extends Controller
         ]));
         // End _Log Handling
         $element->update($validated_data);
-        if ($request->expectsJson()) return response()->json( new _AssetResource( $element ) );
+        if ($request->expectsJson()) return response()->json(new _AssetResource($element));
     }
 
     /**
@@ -238,18 +234,12 @@ class _AssetController extends Controller
             return abort(422, 'Asset not storage for gaspump addresses');
         }
         // Activate
-        $from = ($element->ttm_gp_last_activated_index ?? -1) + 1;
-        $validated_data['ttm_gp_last_activated_index'] = $from + $validated_data['activation_batch_size'] - 1;
-        (new Tatum\SmartContracts\GasPumpController)->ActivateGasPumpAddresses(new Request(array_filter([
-            'chain' => $element->chain,
-            'owner' => $element->gp_owner_bc_address,
-            'from' => $from,
-            'to' => $to,
-            'feeLimit' => ($element->chain === 'TRON' ? 30 * $validated_data['activation_batch_size'] : null),
-            'signatureId' => env('TATUM_KMS_'.$element->chain.'_WALLET_SIGNATURE_ID'),
-            'index' => 0,
-        ], static function($var){ return $var !== null; } )));
+        $validated_data['ttm_gp_last_activated_index'] = ($element->ttm_gp_last_activated_index ?? -1) + $validated_data['activation_batch_size'];
+        (new _TransactionController)->process_gp_addresses_activation(new Request([
+            'asset_code' => $element->code,
+            'activation_batch_size' => $validated_data['activation_batch_size'],
+        ]));
         $element->update($validated_data);
-        if ($request->expectsJson()) return response()->json( new _AssetResource( $element ) );
+        if ($request->expectsJson()) return response()->json(new _AssetResource($element));
     }
 }

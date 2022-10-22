@@ -69,7 +69,7 @@ class _User extends Authenticatable
      */
     public function reviews()
     {
-        return $this->hasMany( _Review::class, 'parent_uid', 'username' )->where(['parent_table' => '__users']);
+        return $this->hasMany(_Review::class, 'parent_uid', 'username')->where(['parent_table' => '__users']);
     }
 
     /**
@@ -77,7 +77,7 @@ class _User extends Authenticatable
      */
     public function email_addresses()
     {
-        return $this->hasMany( _EmailAddress::class, 'user_username', 'username' );
+        return $this->hasMany(_EmailAddress::class, 'user_username', 'username');
     }
 
     /**
@@ -85,7 +85,7 @@ class _User extends Authenticatable
      */
     public function phone_nos()
     {
-        return $this->hasMany( _PhoneNo::class, 'parent_uid', 'username' )->where(['parent_table' => '__users']);
+        return $this->hasMany(_PhoneNo::class, 'parent_uid', 'username')->where(['parent_table' => '__users']);
     }
 
     /**
@@ -93,7 +93,7 @@ class _User extends Authenticatable
      */
     public function admin_extension()
     {
-        return $this->hasOne( _AdminExtension::class, 'user_username', 'username' );
+        return $this->hasOne(_AdminExtension::class, 'user_username', 'username');
     }
 
     /**
@@ -101,14 +101,14 @@ class _User extends Authenticatable
      */
     public function buyer_extension()
     {
-        return $this->hasOne( _BuyerExtension::class, 'user_username', 'username' );
+        return $this->hasOne(_BuyerExtension::class, 'user_username', 'username');
     }
     /**
      * Get the seller_extension associated with the user.
      */
     public function seller_extension()
     {
-        return $this->hasOne( _SellerExtension::class, 'user_username', 'username' );
+        return $this->hasOne(_SellerExtension::class, 'user_username', 'username');
     }
 
     /**
@@ -116,7 +116,7 @@ class _User extends Authenticatable
      */
     public function pinnings()
     {
-        return $this->hasMany( _Pinning::class, 'user_username', 'username' );
+        return $this->hasMany(_Pinning::class, 'user_username', 'username');
     }
 
     /**
@@ -124,7 +124,7 @@ class _User extends Authenticatable
      */
     public function notifications()
     {
-        return $this->hasMany( _Notification::class , 'user_username', 'username' );
+        return $this->hasMany(_Notification::class , 'user_username', 'username');
     }
 
     /**
@@ -132,7 +132,7 @@ class _User extends Authenticatable
      */
     public function user_group_memberships()
     {
-        return $this->hasMany( _UserGroupMembership::class , 'user_username', 'username' );
+        return $this->hasMany(_UserGroupMembership::class , 'user_username', 'username');
     }
 
     /**
@@ -140,7 +140,7 @@ class _User extends Authenticatable
      */
     public function pref_items()
     {
-        return $this->hasMany( _PrefItem::class , 'parent_uid', 'username' )->where('parent_table', '__users');
+        return $this->hasMany(_PrefItem::class , 'parent_uid', 'username')->where('parent_table', '__users');
     }
 
     /**
@@ -148,7 +148,7 @@ class _User extends Authenticatable
      */
     public function sessions()
     {
-        return $this->hasMany( _Session::class, 'user_username', 'username');
+        return $this->hasMany(_Session::class, 'user_username', 'username');
     }
 
     /**
@@ -156,7 +156,7 @@ class _User extends Authenticatable
      */
     public function asset_wallets()
     {
-        return $this->hasMany( _AssetWallet::class, 'user_username', 'username');
+        return $this->hasMany(_AssetWallet::class, 'user_username', 'username');
     }
 
     /**
@@ -164,7 +164,7 @@ class _User extends Authenticatable
      */
     public function logs()
     {
-        return $this->hasMany( _Log::class, 'entry_uid', 'username' )->where('entry_table', '__users');
+        return $this->hasMany(_Log::class, 'entry_uid', 'username')->where('entry_table', '__users');
     }
     
     /**
@@ -172,7 +172,7 @@ class _User extends Authenticatable
      */
     public function logs_by_model()
     {
-        return $this->hasMany( _Log::class, 'action_user_username', 'username' );
+        return $this->hasMany(_Log::class, 'action_user_username', 'username');
     }
 
     public function referral_code_f()
@@ -187,7 +187,7 @@ class _User extends Authenticatable
 
     public function reviews_f()
     {
-        return count($this->reviews) ? json_decode(( new _ReviewResourceCollection( $this->reviews ))->toJson(),true)['data'] : null;
+        return count($this->reviews) ? json_decode((new _ReviewResourceCollection($this->reviews))->toJson(),true)['data'] : null;
     }
 
     public function rating_f()
@@ -206,7 +206,7 @@ class _User extends Authenticatable
         $trades = array_merge(
             _Trade::where(['was_offer_to' => 'buy', 'offer_creator_username' => $this->username])->whereIn('_status', ['completed', 'cancelled'])->get()->all(),
             _Trade::where(['was_offer_to' => 'sell', 'creator_username' => $this->username])->whereIn('_status', ['completed', 'cancelled'])->get()->all()
-        );
+       );
         $total_rating = 0;
         foreach ($trades as $trade) {
             if ($trade->_status == 'completed')
@@ -221,7 +221,7 @@ class _User extends Authenticatable
         $trades = array_merge(
             _Trade::where(['was_offer_to' => 'buy', 'offer_creator_username' => $this->username])->whereIn('_status', ['completed', 'cancelled'])->get()->all(),
             _Trade::where(['was_offer_to' => 'sell', 'creator_username' => $this->username])->whereIn('_status', ['completed', 'cancelled'])->get()->all()
-        );
+       );
         $completed = 0;
         foreach ($trades as $trade) {
             if ($trade->_status == 'completed')
@@ -232,12 +232,12 @@ class _User extends Authenticatable
 
     public function email_addresses_f()
     {
-        return count($this->email_addresses) ? json_decode(( new _EmailAddressResourceCollection( $this->email_addresses ))->toJson(),true)['data'] : null;
+        return count($this->email_addresses) ? json_decode((new _EmailAddressResourceCollection($this->email_addresses))->toJson(),true)['data'] : null;
     }
 
     public function phone_nos_f()
     {
-        return count($this->phone_nos) ? json_decode(( new _PhoneNoResourceCollection( $this->phone_nos ))->toJson(),true)['data'] : null;
+        return count($this->phone_nos) ? json_decode((new _PhoneNoResourceCollection($this->phone_nos))->toJson(),true)['data'] : null;
     }
 
     // Permissions
@@ -259,27 +259,27 @@ class _User extends Authenticatable
     // Extensions
     public function admin_extension_f()
     {
-        return $this->admin_extension ? json_decode(( new _AdminExtensionResourceCollection( [$this->admin_extension] ))->toJson(),true)['data'][0] : null;
+        return $this->admin_extension ? json_decode((new _AdminExtensionResourceCollection([$this->admin_extension]))->toJson(),true)['data'][0] : null;
     }
 
     public function seller_extension_f()
     {
-        return $this->seller_extension ? json_decode(( new _SellerExtensionResourceCollection( [$this->seller_extension] ))->toJson(),true)['data'][0] : null;
+        return $this->seller_extension ? json_decode((new _SellerExtensionResourceCollection([$this->seller_extension]))->toJson(),true)['data'][0] : null;
     }
     
     public function buyer_extension_f()
     {
-        return $this->buyer_extension ? json_decode(( new _BuyerExtensionResourceCollection( [$this->buyer_extension] ))->toJson(),true)['data'][0] : null;
+        return $this->buyer_extension ? json_decode((new _BuyerExtensionResourceCollection([$this->buyer_extension]))->toJson(),true)['data'][0] : null;
     }
 
     public function pref_items_f()
     {
-        return count($this->pref_items) ? json_decode(( new _PrefItemResourceCollection( $this->pref_items ))->toJson(),true)['data']: [];
+        return count($this->pref_items) ? json_decode((new _PrefItemResourceCollection($this->pref_items))->toJson(),true)['data']: [];
     }
 
     public function asset_wallets_f()
     {
-        return count($this->asset_wallets) ? json_decode(( new _AssetWalletResourceCollection( $this->asset_wallets ))->toJson(),true)['data']: [];
+        return count($this->asset_wallets) ? json_decode((new _AssetWalletResourceCollection($this->asset_wallets))->toJson(),true)['data']: [];
     }
 
     private function _set_user_group_memberships_info()
@@ -291,13 +291,13 @@ class _User extends Authenticatable
         $active_user_group_membership_slugs = [];
 
         foreach ($this->user_group_memberships()->get() as $key => $user_group_membership) {
-            if ( $user_group_membership->_status === 'active' && $user_group_membership->user_group->_status==='active' ){ array_push( $active_user_group_membership_slugs, $user_group_membership->user_group_slug ); }
+            if ($user_group_membership->_status === 'active' && $user_group_membership->user_group->_status==='active'){ array_push($active_user_group_membership_slugs, $user_group_membership->user_group_slug); }
         }
 
         $admin_extension = $this->admin_extension;
         if (isset($admin_extension) && !(array_search('administrators', array_column($user_group_memberships, "user_group_slug")) !== false)){
             $_status = $admin_extension->_status === 'active' && _UserGroup::firstWhere('slug', 'administrators')->_status === 'active' ? 'active' : 'revoked';
-            array_push( $user_group_memberships, new Request([ 
+            array_push($user_group_memberships, new Request([ 
                 'id'                    => null,
                 'user_username'         => $this->username,
                 'user_group_slug'       => 'administrators',
@@ -306,13 +306,13 @@ class _User extends Authenticatable
                 'created_datetime'      => $admin_extension->created_datetime,
                 'updated_datetime'      => $admin_extension->updated_datetime,
             ]));
-            if ( $_status === 'active' ){ array_push( $active_user_group_membership_slugs, 'administrators' ); }
+            if ($_status === 'active'){ array_push($active_user_group_membership_slugs, 'administrators'); }
         }
 
         $seller_extension = $this->seller_extension;
-        if ( $seller_extension && !(array_search('sellers', array_column($user_group_memberships, "user_group_slug")) !== false)){
+        if ($seller_extension && !(array_search('sellers', array_column($user_group_memberships, "user_group_slug")) !== false)){
             $_status = $seller_extension->_status === 'active' && _UserGroup::firstWhere('slug', 'sellers')->_status === 'active' ? 'active' : 'revoked';
-            array_push( $user_group_memberships, new Request([ 
+            array_push($user_group_memberships, new Request([ 
                 'id'                    => null,
                 'user_username'         => $this->username,
                 'user_group_slug'       => 'sellers',
@@ -321,13 +321,13 @@ class _User extends Authenticatable
                 'created_datetime'      => $seller_extension->created_datetime,
                 'updated_datetime'      => $seller_extension->updated_datetime,
             ]));
-            if ( $_status === 'active' ){ array_push( $active_user_group_membership_slugs, 'sellers' ); }
+            if ($_status === 'active'){ array_push($active_user_group_membership_slugs, 'sellers'); }
         }
 
         $buyer_extension = $this->buyer_extension;
-        if ( $buyer_extension && !(array_search('buyers', array_column($user_group_memberships, "user_group_slug")) !== false)){
+        if ($buyer_extension && !(array_search('buyers', array_column($user_group_memberships, "user_group_slug")) !== false)){
             $_status = $buyer_extension->_status === 'active' && _UserGroup::firstWhere('slug', 'buyers')->_status === 'active' ? 'active' : 'revoked';
-            array_push( $user_group_memberships, new Request([ 
+            array_push($user_group_memberships, new Request([ 
                 'id'                    => null,
                 'user_username'         => $this->username,
                 'user_group_slug'       => 'buyers',
@@ -336,11 +336,11 @@ class _User extends Authenticatable
                 'created_datetime'      => $buyer_extension->created_datetime,
                 'updated_datetime'      => $buyer_extension->updated_datetime,
             ]));
-            if ( $_status === 'active' ){ array_push( $active_user_group_membership_slugs, 'buyers' ); }
+            if ($_status === 'active'){ array_push($active_user_group_membership_slugs, 'buyers'); }
         }
 
         $this->_set_user_group_memberships_info_done = true;
-        $this->user_group_memberships_f = count($user_group_memberships) ? json_decode(( new _UserGroupMembershipResourceCollection( $user_group_memberships ))->toJson(),true)['data']: null;
+        $this->user_group_memberships_f = count($user_group_memberships) ? json_decode((new _UserGroupMembershipResourceCollection($user_group_memberships))->toJson(),true)['data']: null;
         $this->active_user_group_membership_slugs_f = $active_user_group_membership_slugs;
     }
 

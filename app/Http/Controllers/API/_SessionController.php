@@ -40,10 +40,10 @@ class _SessionController extends Controller
         ]);
 
         function generate_session_token(){
-            return substr(preg_replace('/[^a-zA-Z0-9\']/', '', Hash::make(Str::random(32)) ),6,16);
+            return substr(preg_replace('/[^a-zA-Z0-9\']/', '', Hash::make(Str::random(32))),6,16);
         }
         $session_token = generate_session_token();
-        while ( _Session::where( 'token', $session_token )->exists() ){
+        while (_Session::where('token', $session_token)->exists()){
             $session_token = generate_session_token();
         }
 
@@ -53,8 +53,8 @@ class _SessionController extends Controller
         $active_session_data = $validated_data;
         $active_session_data['token'] = $session_token;
         $active_session_data['user_username'] = null;
-        $active_session_data['device_info'] = $encrypt( json_encode( $validated_data['device_info'] ));
-        $active_session_data['agent_app_info'] = $encrypt( json_encode( $validated_data['agent_app_info'] ));
+        $active_session_data['device_info'] = $encrypt(json_encode($validated_data['device_info']));
+        $active_session_data['agent_app_info'] = $encrypt(json_encode($validated_data['agent_app_info']));
         $active_session_data['_status'] = 'empty';
         $active_session_data['signin_datetime'] = null;
         $active_session_data['signout_datetime'] = null;
@@ -62,7 +62,7 @@ class _SessionController extends Controller
         $element = _Session::create($active_session_data);
         session()->put('active_session_token', $session_token);
         // Handle _Log
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => 'Addition of _Session entry to database.',
             'action_type' => 'entry_create',
             'entry_table' => $element->getTable(),
@@ -70,7 +70,7 @@ class _SessionController extends Controller
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        return response()->json( new _SessionResource( $element ) );
+        return response()->json(new _SessionResource($element));
     }
 
     public function _signUserIn(Request $request)
@@ -87,10 +87,10 @@ class _SessionController extends Controller
         $active_session_data['signin_datetime'] = now()->toDateTimeString();
         $active_session_data['signout_datetime'] = null;
 
-        $element = (new _SessionController)->update( new Request( $active_session_data ), $active_session_data['token'] )->getData();
+        $element = (new _SessionController)->update(new Request($active_session_data), $active_session_data['token'])->getData();
 
         // Handle _Log
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'session_token' => $element->token,
             'action_note' => 'User signin.',
             'action_type' => 'entry_update',
@@ -105,7 +105,7 @@ class _SessionController extends Controller
             ],
         ]));
         // End _Log Handling
-        return response()->json( new _SessionResource( _Session::find( $element->token ) ) );
+        return response()->json(new _SessionResource(_Session::find($element->token)));
     }
 
     public function _signUserOut(Request $request)
@@ -120,10 +120,10 @@ class _SessionController extends Controller
         $active_session_data['_status'] = 'ended';
         $active_session_data['signout_datetime'] = now()->toDateTimeString();
 
-        $element = (new _SessionController)->update( new Request( $active_session_data ), $active_session_data['token'] )->getData();
+        $element = (new _SessionController)->update(new Request($active_session_data), $active_session_data['token'])->getData();
 
         // Handle _Log
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'session_token' => $element->token,
             'action_note' => 'User signout.',
             'action_type' => 'entry_update',
@@ -141,8 +141,8 @@ class _SessionController extends Controller
         $utc_offset = session()->get('utc_offset');
         Auth::user()->token()->revoke();
         session()->flush();
-        session()->put( 'utc_offset', $utc_offset );
-        return response()->json( new _SessionResource( _Session::find( $element->token )  ) );
+        session()->put('utc_offset', $utc_offset);
+        return response()->json(new _SessionResource(_Session::find($element->token) ));
     }
 
     public function _end(Request $request)
@@ -157,10 +157,10 @@ class _SessionController extends Controller
         $active_session_data['_status'] = 'ended';
         $active_session_data['signout_datetime'] = now()->toDateTimeString();
 
-        $element = (new _SessionController)->update( new Request( $active_session_data ), $active_session_data['token'] )->getData();
+        $element = (new _SessionController)->update(new Request($active_session_data), $active_session_data['token'])->getData();
 
         // Handle _Log
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'session_token' => $element->token,
             'action_note' => 'Ending of active _Session',
             'action_type' => 'entry_update',
@@ -175,7 +175,7 @@ class _SessionController extends Controller
             ],
         ]));
         // End _Log Handling
-        return response()->json( new _SessionResource( _Session::find( $element->token ) ) );
+        return response()->json(new _SessionResource(_Session::find($element->token)));
     }
 
     /**
@@ -230,18 +230,18 @@ class _SessionController extends Controller
             return abort(422, 'Session props mismatch');
         }*/
 
-        if ( $api_auth_user_username){
+        if ($api_auth_user_username){
             session()->put('api_auth_user_username', $api_auth_user_username);
         }
 
         //$encrypt = Crypt::encryptString;
         $encrypt = function ($in) { return $in; };
 
-        $validated_data['device_info'] = $encrypt( json_encode( $validated_data['device_info'] ));
-        $validated_data['agent_app_info'] = $encrypt( json_encode( $validated_data['agent_app_info'] ));
+        $validated_data['device_info'] = $encrypt(json_encode($validated_data['device_info']));
+        $validated_data['agent_app_info'] = $encrypt(json_encode($validated_data['agent_app_info']));
 
         $element->update($validated_data);
 
-        return response()->json( new _SessionResource( $element ) );
+        return response()->json(new _SessionResource($element));
     }
 }

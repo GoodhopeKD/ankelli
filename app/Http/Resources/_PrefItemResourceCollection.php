@@ -31,7 +31,7 @@ class _PrefItemResourceCollection extends ResourceCollection
                     //'creator_username'      => $_this->creator_username,
                     //'created_datetime'      => $_this->created_datetime,
                     //'updated_datetime'      => $_this->updated_datetime,
-                ], static function($var){ return $var !== null; } );
+                ], static function($var){ return $var !== null; });
             }),
         ];
 

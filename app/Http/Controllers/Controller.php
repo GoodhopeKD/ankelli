@@ -19,7 +19,7 @@ class Controller extends BaseController
         if ($error_message) $error_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
         curl_close($curl);
         $decoded_response = ($error_message) ? (object)['statusCode' => $error_code !== 0 ? $error_code : 422, 'message' => $error_message ] : json_decode($response);
-        if ( $abort_on_fail && isset($decoded_response->statusCode) && $decoded_response->statusCode !== 200 ) return abort($decoded_response->statusCode, $decoded_response->message);
-        return \Response::json( $decoded_response, isset($decoded_response->statusCode) && $decoded_response->statusCode !== 200 ? $decoded_response->statusCode : 200 );
+        if ($abort_on_fail && isset($decoded_response->statusCode) && $decoded_response->statusCode !== 200) return abort($decoded_response->statusCode, $decoded_response->message);
+        return \Response::json($decoded_response, isset($decoded_response->statusCode) && $decoded_response->statusCode !== 200 ? $decoded_response->statusCode : 200);
     }
 }

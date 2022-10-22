@@ -45,12 +45,12 @@ class _PymtMethod extends Model
      */
     public function icon()
     {
-        return $this->hasOne( _File::class, 'parent_uid', 'slug' )->where(['parent_table' => '__pymt_methods', 'tag' => 'pymt_method_icon']);
+        return $this->hasOne(_File::class, 'parent_uid', 'slug')->where(['parent_table' => '__pymt_methods', 'tag' => 'pymt_method_icon']);
     }
 
     public function icon_f()
     {
-        return $this->icon ? json_decode(( new _FileResourceCollection( [$this->icon] ))->toJson(),true)['data'][0] : null;
+        return $this->icon ? json_decode((new _FileResourceCollection([$this->icon]))->toJson(),true)['data'][0] : null;
     }
 
 

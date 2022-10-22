@@ -9,35 +9,6 @@ use Illuminate\Validation\Rule;
 class EthereumController extends Controller
 {
     /**
-     * Generate Polygon wallet
-     * https://apidoc.tatum.io/tag/Polygon#operation/PolygonGenerateWallet
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function PolygonGenerateWallet(Request $request)
-    {
-        $validated_data = $request->validate([
-            'mnemonic' => ['required', 'string', 'max:500'],
-        ]);
-
-        $query_params = [
-            'mnemonic' => $validated_data['mnemonic'],
-        ];
-
-        $curl = curl_init();
-        curl_setopt_array($curl, [
-            CURLOPT_HTTPHEADER => [
-                "x-api-key: ".env('TATUM_'.env('BC_ENV').'_API_KEY'),
-            ],
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/polygon/wallet?".http_build_query($query_params),
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_CUSTOMREQUEST => "GET",
-        ]);
-        return $this->ttm_cURL_call_tail($curl);
-    }
-
-    /**
      * Generate Polygon account address from Extended public key
      * https://apidoc.tatum.io/tag/Polygon#operation/PolygonGenerateAddress
      *

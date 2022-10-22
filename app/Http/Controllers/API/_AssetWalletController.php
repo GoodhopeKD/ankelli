@@ -61,36 +61,9 @@ class _AssetWalletController extends Controller
             'duration' => 3,
             'resource' => 'ENERGY',
             'amount' => '5',
-            'signatureId' => env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID'),
+            'signatureId' => env('TATUM_KMS_TRON_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
             'index' => 0,
         ]))->getData();
-    }
-
-    // tempFunction
-    public function sffsff()
-    {
-        $factory_assets = [
-            ['chain' => 'TRON', 'code' => 'TRON', 'unit' => 'USDT', 'mnemonic' => 'entry width slam speak thumb road olive ability input salute oxygen slot blur imitate reject force web dove ball lady lion stock input video'],
-            ['chain' => 'ETH', 'code' => 'ETH', 'unit' => 'USDT', 'mnemonic' => 'again gospel obtain verify purchase insane hazard invest chicken lemon mother spring move tackle meat novel silk attack desk item anger scatter beef talent'],
-        ];
-
-        $factory_addresses = [];
-        
-        foreach ($factory_assets as $factory_asset) {
-            switch ($factory_asset['chain']) {
-                case 'ETH':
-                    $pkey = (new Tatum\Blockchain\EthereumController)->EthGenerateAddressPrivateKey(new Request(['mnemonic' => $factory_asset['mnemonic'], 'index' => 0]))->getData()->key;
-                    break;
-                case 'TRON':
-                    $pkey = (new Tatum\Blockchain\TronController)->TronGenerateAddressPrivateKey(new Request(['mnemonic' => $factory_asset['mnemonic'], 'index' => 0]))->getData()->key;
-                    break;
-            }
-            array_push( $factory_addresses, [
-                'chain' => $factory_asset['chain'],
-                'pkey' => $pkey,
-            ]);
-        }
-        return $factory_addresses;
     }
 
     // tempFunction
@@ -107,7 +80,7 @@ class _AssetWalletController extends Controller
                 'index' => $address['xpub_derivation_key'],
             ]))->getData()->address;
             $address['balance'] = (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => $address['address']]))->getData()->balance;
-            if ( $address['balance'] > 0 ) {
+            if ($address['balance'] > 0) {
                 $estimated_fee =  (new Tatum\FeeEstimation\EstimateEthereumTransactionFeeController)->EthEstimateGas(new Request([
                     'from' => $address['address'],
                     'to' => '0x0688af85d9fc2805151f5ffa66b7b505a59cc732',
@@ -115,13 +88,13 @@ class _AssetWalletController extends Controller
                 ]))->getData();
                 $address['estimated_fee'] = ['gasLimit' => $estimated_fee->gasLimit, 'gasPrice' => ((float)$estimated_fee->gasPrice / pow(10,9)).'' ];
                 $address['transferrable'] = ($address['balance'] - (float)$address['estimated_fee']['gasLimit'] * ((float)$address['estimated_fee']['gasPrice']) / pow(10,9)).'';
-                if ( $transfer )
+                if ($transfer)
                 $address['transfer_signatureId'] = (new Tatum\Blockchain\EthereumController)->EthBlockchainTransfer(new Request([
                     'to' => '0x0688af85d9fc2805151f5ffa66b7b505a59cc732',
                     'currency' => 'ETH',
                     'amount' => $address['transferrable'].'',
                     'fee' => $address['estimated_fee'],
-                    'signatureId' => env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID'),
+                    'signatureId' => env('TATUM_KMS_ETH_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
                     'index' => $address['xpub_derivation_key'],
                 ]))->getData()->signatureId;
                 array_push($addresses, $address);
@@ -154,7 +127,7 @@ class _AssetWalletController extends Controller
             'currency' => 'ETH',
             'amount' => ($amount - (float)$estimated_fee->gasLimit * ((float)$estimated_fee->gasPrice) / pow(10,18)).'',
             'fee' => ['gasLimit' => $estimated_fee->gasLimit, 'gasPrice' => ((float)$estimated_fee->gasPrice / pow(10,9)).'' ],
-            'signatureId' => env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID'),
+            'signatureId' => env('TATUM_KMS_ETH_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
             'index' => 1,
         ]));*/
     }
@@ -202,7 +175,7 @@ class _AssetWalletController extends Controller
             'owner' => '0x4e9470217400b27ccdb64237e6776abcda535956',
             'from' => 16,
             'to' => 16,
-            'signatureId' => env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID'),
+            'signatureId' => env('TATUM_KMS_ETH_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
             'index' => 0,
         ]));
     }
@@ -252,7 +225,7 @@ class _AssetWalletController extends Controller
         $customers = [];
         foreach ((new Tatum\VirtualAccounts\CustomerController)->findAllCustomers(new Request())->getData() as $_customer) {
 
-            if ( str_contains($_customer->externalId, '_')){ continue; }
+            if (str_contains($_customer->externalId, '_')){ continue; }
 
             $customer = ['data' => $_customer, 'accounts' => []];
             try {
@@ -268,12 +241,12 @@ class _AssetWalletController extends Controller
                     ]));*/
                     foreach ((new Tatum\VirtualAccounts\BCAddressController)->getAllDepositAddresses(new Request(['id' => $_acct->id]))->getData() as $_address) {
                         //(new Tatum\VirtualAccounts\BCAddressController)->removeAddress(new Request(['id' => $_acct->id, 'address' => $_address->address]));
-                        array_push( $customer_acct['addresses'] , $_address );
+                        array_push($customer_acct['addresses'] , $_address);
                     }
-                    array_push( $customer['accounts'] , $customer_acct );
+                    array_push($customer['accounts'] , $customer_acct);
                 }
             } catch (\Throwable $th) {}
-            array_push( $customers , $customer );
+            array_push($customers , $customer);
         };
 
         return $customers;
@@ -315,7 +288,7 @@ class _AssetWalletController extends Controller
         $transactions = [];
         $offset = 0;
         while (count((new Tatum\VirtualAccounts\TransactionController)->getTransactions(new Request(['offset' => $offset]))->getData())) {
-            $transactions = array_merge( $transactions, ((new Tatum\VirtualAccounts\TransactionController)->getTransactions(new Request(['offset' => $offset]))->getData() ) );
+            $transactions = array_merge($transactions, ((new Tatum\VirtualAccounts\TransactionController)->getTransactions(new Request(['offset' => $offset]))->getData()));
             $offset += 50;
         }
         return $transactions;
@@ -342,30 +315,30 @@ class _AssetWalletController extends Controller
         $fetched_transactions = [];
         $offset = 0;
         while (count((new Tatum\VirtualAccounts\TransactionController)->getTransactions(new Request(['offset' => $offset]))->getData())) {
-            $fetched_transactions = array_merge( $fetched_transactions, ((new Tatum\VirtualAccounts\TransactionController)->getTransactions(new Request(['offset' => $offset]))->getData() ) );
+            $fetched_transactions = array_merge($fetched_transactions, ((new Tatum\VirtualAccounts\TransactionController)->getTransactions(new Request(['offset' => $offset]))->getData()));
             $offset += 50;
         }
         /*$transactions = [];
         foreach ($fetched_transactions as $transaction) {
-            if (!( ($transaction->transactionType == 'DEBIT_WITHDRAWAL' && count(array_filter($fetched_transactions, function($item) use ($transaction) {
+            if (!(($transaction->transactionType == 'DEBIT_WITHDRAWAL' && count(array_filter($fetched_transactions, function($item) use ($transaction) {
                 return ($item->reference == $transaction->reference && $item->transactionType == 'CANCEL_WITHDRAWAL');
             }))) || ($transaction->transactionType == 'CANCEL_WITHDRAWAL' && count(array_filter($fetched_transactions, function($item) use ($transaction) {
                 return ($item->reference == $transaction->reference && $item->transactionType == 'DEBIT_WITHDRAWAL');
-            })))) ) {
+            }))))) {
                 array_push($transactions, $transaction);
             }
         }*/
-        foreach ( array_reverse( $fetched_transactions ) as $transaction) {
-            (new _TransactionController)->ttm_txn_recon(new Request( json_decode(json_encode($transaction), true) ));
+        foreach (array_reverse($fetched_transactions) as $transaction) {
+            (new _TransactionController)->ttm_txn_recon(new Request(json_decode(json_encode($transaction), true)));
             usleep(500);
         }
     }
 
     public function redo_tatum_subscription_webhook_txn_recon_requests()
     {
-        foreach ( array_reverse((new Tatum\Subscriptions\NotificationSubscriptionController)->getAllWebhooks(new Request())->getData()) as $request) {
+        foreach (array_reverse((new Tatum\Subscriptions\NotificationSubscriptionController)->getAllWebhooks(new Request())->getData()) as $request) {
             if (!isset($request->retryCount)){
-                (new _TransactionController)->ttm_recon_for_incoming_bc_txn(new Request( json_decode(json_encode($request->data), true) ));
+                (new _TransactionController)->ttm_recon_for_incoming_bc_txn(new Request(json_decode(json_encode($request->data), true)));
                 usleep(500);
             }
         }
@@ -397,7 +370,7 @@ class _AssetWalletController extends Controller
         $validated_data['usable_balance_asset_value'] = 0;
         $validated_data['total_balance_asset_value'] = 0;
 
-        if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+        if (_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()){
             $asset = _Asset::firstWhere(['code' => $validated_data['asset_code']]);
             $ttm_element = null;
             try {
@@ -452,7 +425,7 @@ class _AssetWalletController extends Controller
         $element = _AssetWallet::create($validated_data);
 
         // Handle _Log
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => 'Addition of _AssetWallet entry to database.',
             'action_type' => 'entry_create',
             'entry_table' => $element->getTable(),
@@ -460,7 +433,7 @@ class _AssetWalletController extends Controller
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        if ($request->expectsJson()) return response()->json( new _AssetWalletResource( $element ) );
+        if ($request->expectsJson()) return response()->json(new _AssetWalletResource($element));
     }
 
     /**
@@ -473,7 +446,7 @@ class _AssetWalletController extends Controller
     {
         $element = _AssetWallet::find($id);
         if (!$element) return abort(404, 'Asset account with specified id not found');
-        return response()->json( new _AssetWalletResource( $element ) );
+        return response()->json(new _AssetWalletResource($element));
     }
     
     /**
@@ -490,14 +463,14 @@ class _AssetWalletController extends Controller
             'blockage_type_slug' => ['required', 'string'],
         ]);
         $element = _AssetWallet::findOrFail($id);
-        $update = (new _AssetWalletController)->update( new Request([
+        $update = (new _AssetWalletController)->update(new Request([
             'action_note' => 'Block an asset value',
             'usable_balance_asset_value' => $element->usable_balance_asset_value - $validated_data['asset_value'],
-        ]), $id );
-        if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+        ]), $id);
+        if (_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()){
             $asset = _Asset::firstWhere('code', $element->asset_code);
-            if ( $asset->chain === 'ETH' && $asset->code === 'ETH' && $asset->unit === 'USDT' ) $validated_data['asset_value'] /= $this->ETH_USDT_FCTR;
-            if ( $asset->chain === 'TRON' && $asset->code === 'TRON' && $asset->unit === 'USDT' ) $validated_data['asset_value'] /= $this->TRX_USDT_FCTR;
+            if ($asset->chain === 'ETH' && $asset->code === 'ETH' && $asset->unit === 'USDT') $validated_data['asset_value'] /= $this->ETH_USDT_FCTR;
+            if ($asset->chain === 'TRON' && $asset->code === 'TRON' && $asset->unit === 'USDT') $validated_data['asset_value'] /= $this->TRX_USDT_FCTR;
             return (new Tatum\VirtualAccounts\AccountController)->blockAmount(new Request([
                 'id' => $element->ttm_virtual_account_id,
                 'amount' => $validated_data['asset_value'].'',
@@ -523,11 +496,11 @@ class _AssetWalletController extends Controller
             'ttm_amount_blockage_id' => [ ($use_ttm_api ? 'required' : 'nullable'), 'string'],
         ]);
         $element = _AssetWallet::findOrFail($id);
-        $update = (new _AssetWalletController)->update( new Request([
+        $update = (new _AssetWalletController)->update(new Request([
             'action_note' => 'Unblock an asset value',
             'usable_balance_asset_value' => $element->usable_balance_asset_value + $validated_data['asset_value'],
-        ]), $id );
-        if ( $use_ttm_api ){
+        ]), $id);
+        if ($use_ttm_api){
             return (new Tatum\VirtualAccounts\AccountController)->deleteBlockAmount(new Request([ 'id' => $validated_data['ttm_amount_blockage_id'] ]));
         } else {
             return $update;
@@ -553,9 +526,9 @@ class _AssetWalletController extends Controller
 
         // Handle _Log
         $log_entry_update_result = [];
-        foreach ( $validated_data as $key => $value ) {
-            if ( in_array( $key, $element->getFillable() ) && $element->{$key} != $value ){
-                array_push( $log_entry_update_result, [
+        foreach ($validated_data as $key => $value) {
+            if (in_array($key, $element->getFillable()) && $element->{$key} != $value){
+                array_push($log_entry_update_result, [
                     'field_name' => $key,
                     'old_value' => $element->{$key},
                     'new_value' => $value,
@@ -563,7 +536,7 @@ class _AssetWalletController extends Controller
             }
         }
         if (!count($log_entry_update_result)) return abort(422, 'No values were updated');
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => 'Updating of _AssetWallet entry in database.',
             'action_type' => 'entry_update',
             'entry_table' => $element->getTable(),
@@ -573,7 +546,7 @@ class _AssetWalletController extends Controller
         ]));
         // End _Log Handling
         $element->update($validated_data);
-        if ($request->expectsJson()) return response()->json( new _AssetWalletResource( $element ) );
+        if ($request->expectsJson()) return response()->json(new _AssetWalletResource($element));
     }
 
     /**

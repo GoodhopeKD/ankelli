@@ -43,11 +43,11 @@ class _Message extends Model
 
     public function attachment()
     {
-        return $this->hasOne( _File::class, 'parent_uid' )->where(['parent_table' => '__messages', 'tag' => 'message_attachment']);
+        return $this->hasOne(_File::class, 'parent_uid')->where(['parent_table' => '__messages', 'tag' => 'message_attachment']);
     }
 
     public function attachment_f()
     {
-        return $this->attachment ? json_decode(( new _FileResourceCollection( [$this->attachment] ))->toJson(),true)['data'][0] : null;
+        return $this->attachment ? json_decode((new _FileResourceCollection([$this->attachment]))->toJson(),true)['data'][0] : null;
     }
 }

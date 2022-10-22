@@ -30,25 +30,25 @@ class _TradeController extends Controller
     {
         $result = null;
 
-        if ( $result === null && request()->get_as_addon_prop && request()->get_as_addon_prop == true ){
+        if ($result === null && request()->get_as_addon_prop && request()->get_as_addon_prop == true){
             $result = _Trade::where(['_status'=>'active'])
             ->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->paginate(request()->per_page)->withQueryString(); 
         }
         
-        if ( $result === null ){
+        if ($result === null){
             $simple_query_args = [];
 
-            if ( request()->was_offer_to ){ $simple_query_args = array_merge( $simple_query_args, [ 'was_offer_to' => request()->was_offer_to ]); }
-            if ( request()->country_name ){ $simple_query_args = array_merge( $simple_query_args, [ 'country_name' => request()->country_name ]); }
-            if ( request()->currency_code ){ $simple_query_args = array_merge( $simple_query_args, [ 'currency_code' => request()->currency_code ]); }
-            if ( request()->asset_code ){ $simple_query_args = array_merge( $simple_query_args, [ 'asset_code' => request()->asset_code ]); }
-            if ( request()->pymt_method_slug ){ $simple_query_args = array_merge( $simple_query_args, [ 'pymt_method_slug' => request()->pymt_method_slug ]); }
-            if ( request()->_status && request()->_status !== 'all' ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => request()->_status ]); }
-            if ( !isset(request()->_status) ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => 'active' ]); }
+            if (request()->was_offer_to){ $simple_query_args = array_merge($simple_query_args, [ 'was_offer_to' => request()->was_offer_to ]); }
+            if (request()->country_name){ $simple_query_args = array_merge($simple_query_args, [ 'country_name' => request()->country_name ]); }
+            if (request()->currency_code){ $simple_query_args = array_merge($simple_query_args, [ 'currency_code' => request()->currency_code ]); }
+            if (request()->asset_code){ $simple_query_args = array_merge($simple_query_args, [ 'asset_code' => request()->asset_code ]); }
+            if (request()->pymt_method_slug){ $simple_query_args = array_merge($simple_query_args, [ 'pymt_method_slug' => request()->pymt_method_slug ]); }
+            if (request()->_status && request()->_status !== 'all'){ $simple_query_args = array_merge($simple_query_args, [ '_status' => request()->_status ]); }
+            if (!isset(request()->_status)){ $simple_query_args = array_merge($simple_query_args, [ '_status' => 'active' ]); }
 
             $eloquent_query = _Trade::where($simple_query_args);
 
-            if ( request()->user_username && is_string( request()->user_username ) ){
+            if (request()->user_username && is_string(request()->user_username)){
                 $eloquent_query = $eloquent_query
                 ->where(['creator_username' => request()->user_username, 'visible_to_creator' => true])
                 ->orWhere(function($query) { $query->where(['offer_creator_username' => request()->user_username, 'visible_to_offer_creator' => true]); });
@@ -57,7 +57,7 @@ class _TradeController extends Controller
             $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->paginate(request()->per_page)->withQueryString();
         }
 
-        return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _TradeResource::collection( $result ) : new _TradeResourceCollection( $result ) ) : null;
+        return $result ? (request()->get_with_meta && request()->get_with_meta == true ? _TradeResource::collection($result) : new _TradeResourceCollection($result)) : null;
     }
 
     /**
@@ -88,7 +88,7 @@ class _TradeController extends Controller
             return abort(422, 'Offer is offline and trade cannot be created');
         }
 
-        $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
 
         $validated_data['trade_txn_fee_fctr'] = $offer->trade_txn_fee_fctr ?? _PrefItem::firstWhere('key_slug', 'trade_txn_fee_fctr')->value_f();
         $validated_data['asset_value'] = $validated_data['currency_amount'] / $offer->offer_price;
@@ -110,10 +110,10 @@ class _TradeController extends Controller
                 return abort(422, 'Asset Value not within limits.');
             }
         }
-        $validated_data = array_filter( array_merge( $offer->toArray() , [ '_status' => null ], $validated_data ) );
+        $validated_data = array_filter(array_merge($offer->toArray() , [ '_status' => null ], $validated_data));
         $validated_data['creator_username'] = $api_auth_user_username;
 
-        if ( $validated_data['creator_username'] == $offer->creator_username ){
+        if ($validated_data['creator_username'] == $offer->creator_username){
             return abort(422, 'Cannot trade with self.');
         }
         $seller_username = $offer->offer_to == 'buy' ? $validated_data['creator_username'] : $offer->creator_username;
@@ -127,12 +127,12 @@ class _TradeController extends Controller
                 (new _OfferController)->update(new Request([
                     '_status' => 'offline', 
                     'update_note' => 'Set offline by the system because _SellerExtension is '.$seller_seller_extension->_status
-                ]), $offer->ref_code );
+                ]), $offer->ref_code);
                 session()->put('api_auth_user_username', $api_auth_user_username);
                 return abort(422,"Selected seller cannot sell because _SellerExtension is ".$seller_seller_extension->_status);
             }
         } else {
-            (new _SellerExtensionController)->store( new Request([ 'user_username' => $seller_username ]));
+            (new _SellerExtensionController)->store(new Request([ 'user_username' => $seller_username ]));
         }
 
         // Check if buyer is allowed to buy
@@ -143,12 +143,12 @@ class _TradeController extends Controller
                 (new _OfferController)->update(new Request([
                     '_status' => 'offline', 
                     'update_note' => 'Set offline by the system because _BuyerExtension is '.$buyer_buyer_extension->_status
-                ]), $offer->ref_code );
+                ]), $offer->ref_code);
                 session()->put('api_auth_user_username', $api_auth_user_username);
                 return abort(422,"Selected buyer cannot buy because _BuyerExtension is ".$buyer_buyer_extension->_status);
             }
         } else {
-            (new _BuyerExtensionController)->store( new Request([ 'user_username' => $buyer_username ]));
+            (new _BuyerExtensionController)->store(new Request([ 'user_username' => $buyer_username ]));
         }
 
         // Lock seller asset in escrow
@@ -157,20 +157,20 @@ class _TradeController extends Controller
             'asset_code' => $offer->asset_code
         ]);
 
-        if ( !$seller_asset_wallet ){ return abort(422, 'Current '.$offer->asset_code.' balance insufficient for transaction.'); }
-        if ( $seller_asset_wallet->_status == 'frozen' ){ return abort(422, 'Selected asset is frozen.'); }
+        if (!$seller_asset_wallet){ return abort(422, 'Current '.$offer->asset_code.' balance insufficient for transaction.'); }
+        if ($seller_asset_wallet->_status == 'frozen'){ return abort(422, 'Selected asset is frozen.'); }
 
         $validated_data['was_offer_to'] = $offer->offer_to;
         $validated_data['offer_creator_username'] = $offer->creator_username;
         $validated_data['ref_code'] = random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
         $seller_new_usable_balance_asset_value = $seller_asset_wallet->usable_balance_asset_value - $validated_data['asset_value_escrowed'];
 
-        if ( $seller_new_usable_balance_asset_value < 0 ){ return abort(422, 'Current '.$offer->asset_code.' balance insufficient for transaction.'); }
-        $ttm_response = (new _AssetWalletController)->blockAssetValue( new Request([
+        if ($seller_new_usable_balance_asset_value < 0){ return abort(422, 'Current '.$offer->asset_code.' balance insufficient for transaction.'); }
+        $ttm_response = (new _AssetWalletController)->blockAssetValue(new Request([
             'asset_value' => $validated_data['asset_value_escrowed'],
             'blockage_type_slug' => 'trade_escrow',
-        ]), $seller_asset_wallet->id );
-        if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+        ]), $seller_asset_wallet->id);
+        if (_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()){
             $validated_data['ttm_amount_blockage_id'] = $ttm_response->getData()->id;
         }
         // End lock in escrow
@@ -203,14 +203,14 @@ class _TradeController extends Controller
             }
         }
         if ($update_limits){
-            (new _OfferController)->update(new Request($offer_update_data), $offer->ref_code );
+            (new _OfferController)->update(new Request($offer_update_data), $offer->ref_code);
         } else {
-            (new _OfferController)->update(new Request( array_filter( array_merge($offer_update_data, [
+            (new _OfferController)->update(new Request(array_filter(array_merge($offer_update_data, [
                 'max_trade_purchase_amount' => null,
                 'max_trade_sell_value' => null,
                 '_status' => 'offline', 
                 'update_note' => 'Set offline by the system because maximum per trade is now less than minimum',
-            ]))), $offer->ref_code );
+            ]))), $offer->ref_code);
         }
         session()->put('api_auth_user_username', $api_auth_user_username);
         // End Update fill
@@ -218,7 +218,7 @@ class _TradeController extends Controller
         $element = _Trade::create($validated_data);
 
         // Create notification
-        (new _NotificationController)->store( new Request([
+        (new _NotificationController)->store(new Request([
             'user_username' => $validated_data['offer_creator_username'],
             'content' => [
                 'title' => 'Trade created',
@@ -230,7 +230,7 @@ class _TradeController extends Controller
 
         // Create message
         session()->put('api_auth_user_username', 'system');
-        (new _MessageController)->store( new Request([
+        (new _MessageController)->store(new Request([
             'parent_table' => '__trades',
             'parent_uid' => $element->ref_code,
             'body' => 'Trade has been created. Use this chat space to communicate with trade peer.'
@@ -239,7 +239,7 @@ class _TradeController extends Controller
         // End Create message
         
         // Handle _Log
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => 'Addition of _Trade entry to database.',
             'action_type' => 'entry_create',
             'entry_table' => $element->getTable(),
@@ -247,7 +247,7 @@ class _TradeController extends Controller
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        if ($request->expectsJson()) return response()->json( new _TradeResource( $element ) );
+        if ($request->expectsJson()) return response()->json(new _TradeResource($element));
     }
 
     /**
@@ -261,13 +261,13 @@ class _TradeController extends Controller
         $element = _Trade::find($ref_code);
         if (!$element) return abort(404, 'Trade with specified reference code not found');
         if (!$element->buyer_opened_datetime){
-            $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+            $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
             if (($element->was_offer_to === 'buy' && $api_auth_user_username == $element->offer_creator_username) || ($element->was_offer_to === 'sell' && $api_auth_user_username == $element->creator_username)){
                 $validated_data['buyer_opened_datetime'] = now()->toDateTimeString();
                 $element->update($validated_data);
             }
         }
-        return response()->json( new _TradeResource( $element ) );
+        return response()->json(new _TradeResource($element));
     }
 
     /**
@@ -291,7 +291,7 @@ class _TradeController extends Controller
         $element = _Trade::findOrFail($ref_code);
         $trade_was_cancelled = $element->_status == 'cancelled';
 
-        if ( $trade_was_cancelled ){
+        if ($trade_was_cancelled){
             $new_validated_data = [];
             if (isset($validated_data['visible_to_creator'])) $new_validated_data['visible_to_creator'] = $validated_data['visible_to_creator'];
             if (isset($validated_data['visible_to_offer_creator'])) $new_validated_data['visible_to_offer_creator'] = $validated_data['visible_to_offer_creator'];
@@ -299,13 +299,13 @@ class _TradeController extends Controller
             $validated_data = $new_validated_data;
         }
 
-        $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
         $validated_data['updater_username'] = $api_auth_user_username;
         
         if (isset($validated_data['pymt_declared']) && $validated_data['pymt_declared'] == true){
             $validated_data['pymt_declared_datetime'] = now()->toDateTimeString();
             session()->put('api_auth_user_username', 'system');
-            (new _MessageController)->store( new Request([
+            (new _MessageController)->store(new Request([
                 'parent_table' => '__trades',
                 'parent_uid' => $element->ref_code,
                 'body' => 'Asset buyer just declared their payment.'
@@ -316,10 +316,10 @@ class _TradeController extends Controller
         $seller_username = $element->was_offer_to == 'buy' ? $element->creator_username : $element->offer_creator_username;
         $buyer_username = $element->was_offer_to == 'sell' ? $element->creator_username : $element->offer_creator_username;
 
-        if ( isset($validated_data['_status']) && $validated_data['_status'] === 'flagged' ){
+        if (isset($validated_data['_status']) && $validated_data['_status'] === 'flagged'){
             $validated_data['flag_raiser_username'] = $validated_data['updater_username'];
             session()->put('api_auth_user_username', 'system');
-            (new _MessageController)->store( new Request([
+            (new _MessageController)->store(new Request([
                 'parent_table' => '__trades',
                 'parent_uid' => $element->ref_code,
                 'body' => 'Trade has been flagged by the '.($validated_data['flag_raiser_username']==$seller_username ? 'seller' : 'buyer').'. Moderators will respond shortly.'
@@ -327,9 +327,9 @@ class _TradeController extends Controller
             session()->put('api_auth_user_username', $api_auth_user_username);
         }
 
-        if ( isset($validated_data['_status']) && $validated_data['_status'] === 'active' && $element->_status == 'flagged' ){
+        if (isset($validated_data['_status']) && $validated_data['_status'] === 'active' && $element->_status == 'flagged'){
             session()->put('api_auth_user_username', 'system');
-            (new _MessageController)->store( new Request([
+            (new _MessageController)->store(new Request([
                 'parent_table' => '__trades',
                 'parent_uid' => $element->ref_code,
                 'body' => 'Trade has been unflagged. We hope the problem has been resolved.'
@@ -337,9 +337,9 @@ class _TradeController extends Controller
             session()->put('api_auth_user_username', $api_auth_user_username);
         }
 
-        if ( isset($validated_data['_status']) && $validated_data['_status'] === 'flagged' ){
+        if (isset($validated_data['_status']) && $validated_data['_status'] === 'flagged'){
             session()->put('api_auth_user_username', 'system');
-            (new _MessageController)->store( new Request([
+            (new _MessageController)->store(new Request([
                 'parent_table' => '__trades',
                 'parent_uid' => $element->ref_code,
                 'body' => 'Trade has been flagged. Moderators will respond shortly'
@@ -347,15 +347,15 @@ class _TradeController extends Controller
             session()->put('api_auth_user_username', $api_auth_user_username);
         }
 
-        if ( isset($validated_data['_status']) && $validated_data['_status'] === 'cancelled' ){
-            if ( $seller_username === $validated_data['updater_username']){
+        if (isset($validated_data['_status']) && $validated_data['_status'] === 'cancelled'){
+            if ($seller_username === $validated_data['updater_username']){
                 $buyer_open_trade_min_mins_tmt = _PrefItem::firstWhere('key_slug', 'buyer_open_trade_min_mins_tmt')->value_f();
-                if ( $element->buyer_opened_datetime !== null || ((new Carbon($element->created_datetime))->addMinutes($buyer_open_trade_min_mins_tmt))->gt(now()->toDateTimeString()) ){
+                if ($element->buyer_opened_datetime !== null || ((new Carbon($element->created_datetime))->addMinutes($buyer_open_trade_min_mins_tmt))->gt(now()->toDateTimeString())){
                     return abort(422, 'Seller not allowed to cancel trade if buyer has opened it before the elapse of '.$buyer_open_trade_min_mins_tmt.' minutes.');
                 }
             }
             
-            if ( in_array($validated_data['updater_username'], [$buyer_username, $seller_username, 'system']) ){
+            if (in_array($validated_data['updater_username'], [$buyer_username, $seller_username, 'system'])){
                 $trade_was_cancelled = true;
                 $validated_data['closed_datetime'] = now()->toDateTimeString();
                 // Unlock asset from escrow
@@ -363,10 +363,10 @@ class _TradeController extends Controller
                     'user_username' => $seller_username,
                     'asset_code' => $element->asset_code,
                 ]);
-                (new _AssetWalletController)->unblockAssetValue( new Request([
+                (new _AssetWalletController)->unblockAssetValue(new Request([
                     'asset_value' => $element->asset_value_escrowed,
                     'ttm_amount_blockage_id' => $element->ttm_amount_blockage_id,
-                ]), $seller_asset_wallet->id );
+                ]), $seller_asset_wallet->id);
                 // End unlock asset from escrow
 
                 // Update fill
@@ -380,7 +380,7 @@ class _TradeController extends Controller
                 } else {
                     $offer_update_data['filled_value'] = $offer->filled_value - $element->asset_value;
                 }
-                (new _OfferController)->update(new Request($offer_update_data), $offer->ref_code );
+                (new _OfferController)->update(new Request($offer_update_data), $offer->ref_code);
                 session()->put('api_auth_user_username', $api_auth_user_username);
                 // End Update fill
 
@@ -389,10 +389,10 @@ class _TradeController extends Controller
             }
         }
 
-        if ( !$trade_was_cancelled && isset($validated_data['pymt_confirmed']) && $validated_data['pymt_confirmed'] == true){
+        if (!$trade_was_cancelled && isset($validated_data['pymt_confirmed']) && $validated_data['pymt_confirmed'] == true){
 
             if (isset($validated_data['sender_password'])){
-                if (!Hash::check($validated_data['sender_password'], _User::firstWhere('username', session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null ))->makeVisible(['password'])->password)) {
+                if (!Hash::check($validated_data['sender_password'], _User::firstWhere('username', session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null))->makeVisible(['password'])->password)) {
                     return abort(422, 'Password incorrect');
                 }
             } else {
@@ -402,7 +402,7 @@ class _TradeController extends Controller
             $validated_data['pymt_confirmed_datetime'] = now()->toDateTimeString();
             $validated_data['_status'] = 'active';
             session()->put('api_auth_user_username', 'system');
-            (new _MessageController)->store( new Request([
+            (new _MessageController)->store(new Request([
                 'parent_table' => '__trades',
                 'parent_uid' => $element->ref_code,
                 'body' => 'Asset seller just confirmed receiving payment.'
@@ -414,14 +414,14 @@ class _TradeController extends Controller
                 'user_username' => $seller_username,
                 'asset_code' => $element->asset_code,
             ]);
-            (new _AssetWalletController)->unblockAssetValue( new Request([
+            (new _AssetWalletController)->unblockAssetValue(new Request([
                 'asset_value' => $element->asset_value_escrowed,
                 'ttm_amount_blockage_id' => $element->ttm_amount_blockage_id,
-            ]), $seller_asset_wallet->id );
+            ]), $seller_asset_wallet->id);
             usleep(500);
             // End unlock asset from escrow
             
-            (new _TransactionController)->process_trade_asset_release( new Request([
+            (new _TransactionController)->process_trade_asset_release(new Request([
                 'ref_code' => $ref_code,
                 'sender_username' => $seller_username, 
                 'sender_password' => $validated_data['sender_password'],
@@ -432,14 +432,14 @@ class _TradeController extends Controller
             ]));
         }
 
-        if ( ($element->_status == 'active' || ($element->_status == 'flagged' && isset($validated_data['_status']) && $validated_data['_status'] === 'active' && in_array($validated_data['updater_username'], [$element->flag_raiser_username]) )) && ( isset($validated_data['pymt_declared_datetime']) || isset($element->pymt_declared_datetime) ) && ( isset($validated_data['pymt_confirmed_datetime']) || isset($element->pymt_confirmed_datetime) )){
+        if (($element->_status == 'active' || ($element->_status == 'flagged' && isset($validated_data['_status']) && $validated_data['_status'] === 'active' && in_array($validated_data['updater_username'], [$element->flag_raiser_username]))) && (isset($validated_data['pymt_declared_datetime']) || isset($element->pymt_declared_datetime)) && (isset($validated_data['pymt_confirmed_datetime']) || isset($element->pymt_confirmed_datetime))){
             $validated_data['_status'] = 'completed';
             $validated_data['closed_datetime'] = now()->toDateTimeString();
         }
         
-        if ( $element->_status == 'active' && ( isset($validated_data['pymt_declared_datetime']) || isset($element->pymt_declared_datetime) ) && ( isset($validated_data['pymt_confirmed_datetime']) || isset($element->pymt_confirmed_datetime) )){
+        if ($element->_status == 'active' && (isset($validated_data['pymt_declared_datetime']) || isset($element->pymt_declared_datetime)) && (isset($validated_data['pymt_confirmed_datetime']) || isset($element->pymt_confirmed_datetime))){
             session()->put('api_auth_user_username', 'system');
-            (new _MessageController)->store( new Request([
+            (new _MessageController)->store(new Request([
                 'parent_table' => '__trades',
                 'parent_uid' => $element->ref_code,
                 'body' => 'Trade has been marked as completed. Thank you for using our service.'
@@ -449,9 +449,9 @@ class _TradeController extends Controller
 
         // Handle _Log
         $log_entry_update_result = [];
-        foreach ( $validated_data as $key => $value ) {
-            if ( in_array( $key, $element->getFillable() ) && $element->{$key} != $value ){
-                array_push( $log_entry_update_result, [
+        foreach ($validated_data as $key => $value) {
+            if (in_array($key, $element->getFillable()) && $element->{$key} != $value){
+                array_push($log_entry_update_result, [
                     'field_name' => $key,
                     'old_value' => $element->{$key},
                     'new_value' => $value,
@@ -459,7 +459,7 @@ class _TradeController extends Controller
             }
         }
         if (!count($log_entry_update_result)) return abort(422, 'No values were updated');
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => 'Updating of _Trade entry in database.',
             'action_type' => 'entry_update',
             'entry_table' => $element->getTable(),
@@ -471,7 +471,7 @@ class _TradeController extends Controller
 
         $element->update($validated_data);
 
-        if ($request->expectsJson()) return response()->json( new _TradeResource( $element ) );
+        if ($request->expectsJson()) return response()->json(new _TradeResource($element));
     }
 
     /**

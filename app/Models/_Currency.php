@@ -42,6 +42,6 @@ class _Currency extends Model
      */
     public function logs()
     {
-        return $this->hasMany( _Log::class, 'entry_uid' )->where('entry_table', '__currencies');
+        return $this->hasMany(_Log::class, 'entry_uid')->where('entry_table', '__currencies');
     }
 }

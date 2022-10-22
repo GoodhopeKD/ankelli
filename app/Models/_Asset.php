@@ -71,6 +71,6 @@ class _Asset extends Model
      */
     public function logs()
     {
-        return $this->hasMany( _Log::class, 'entry_uid' )->where('entry_table', '__assets');
+        return $this->hasMany(_Log::class, 'entry_uid')->where('entry_table', '__assets');
     }
 }

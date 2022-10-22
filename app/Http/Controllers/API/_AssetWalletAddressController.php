@@ -24,11 +24,11 @@ class _AssetWalletAddressController extends Controller
     {
         $result = null;
         
-        if ( $result === null ){
+        if ($result === null){
             $simple_query_args = [];
 
-            if ( request()->user_username && request()->user_username !== 'platform_wallet_users' ){ $simple_query_args = array_merge( $simple_query_args, [ 'user_username' => request()->user_username ]); }
-            if ( request()->asset_code ){ $simple_query_args = array_merge( $simple_query_args, [ 'asset_code' => request()->asset_code ]); }
+            if (request()->user_username && request()->user_username !== 'platform_wallet_users'){ $simple_query_args = array_merge($simple_query_args, [ 'user_username' => request()->user_username ]); }
+            if (request()->asset_code){ $simple_query_args = array_merge($simple_query_args, [ 'asset_code' => request()->asset_code ]); }
 
             $eloquent_query = _AssetWalletAddress::where($simple_query_args);
             
@@ -38,7 +38,7 @@ class _AssetWalletAddressController extends Controller
             $result = $eloquent_query->paginate(request()->per_page)->withQueryString();
         }
 
-        /*if ( request()->user_username === 'platform_wallet_users' && isset( request()->asset_code ) ){
+        /*if (request()->user_username === 'platform_wallet_users' && isset(request()->asset_code)){
             $result->push(new _AssetWalletAddress([
                 'user_username' => 'gaspump',
                 'bc_address' => _Asset::firstWhere(['code' => request()->asset_code ])->gp_owner_bc_address,
@@ -46,7 +46,7 @@ class _AssetWalletAddressController extends Controller
             ]));
         }*/
 
-        return $result ? (new _AssetWalletAddressResourceCollection( $result ))->with_balance( request()->user_username === 'platform_wallet_users' ) : null;
+        return $result ? (new _AssetWalletAddressResourceCollection($result))->with_balance(request()->user_username === 'platform_wallet_users') : null;
     }
 
     /**
@@ -67,34 +67,34 @@ class _AssetWalletAddressController extends Controller
 
         if (!(isset($validated_data['bypass_max_per_user_per_asset_code']) && $validated_data['bypass_max_per_user_per_asset_code'])){
             $max_per_user_per_asset_code = 1;
-            //if ( $validated_data['user_username'] === 'reserves' ) $max_per_user_per_asset_code = 2;
-            if ( _AssetWalletAddress::where(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']])->get()->count() >= $max_per_user_per_asset_code ){
+            //if ($validated_data['user_username'] === 'reserves') $max_per_user_per_asset_code = 2;
+            if (_AssetWalletAddress::where(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']])->get()->count() >= $max_per_user_per_asset_code){
                 return abort(422, 'Max number of addresses per crypto asset for this user reached');
             }
         }
 
-        if ( _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() && !isset($validated_data['bc_address']) ){
+        if (_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() && !isset($validated_data['bc_address'])){
             $asset_wallet = _AssetWallet::firstWhere(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']])->makeVisible(['ttm_virtual_account_id']);
             $ttm_elements = (new Tatum\VirtualAccounts\BCAddressController)->getAllDepositAddresses(new Request(['id' => $asset_wallet->ttm_virtual_account_id]))->getData();
             if (count($ttm_elements)){
                 $xpub_derivation_key = 0;
                 foreach ($ttm_elements as $ttm_element) {
-                    if ( $validated_data['asset_code'] === $ttm_element->currency ){
+                    if ($validated_data['asset_code'] === $ttm_element->currency){
                         $asset_wallet_address_params = array_filter([
                             'user_username' => $validated_data['user_username'],
                             'asset_code' => $validated_data['asset_code'],
                             'bc_address' => $ttm_element->address,
                             'xpub_derivation_key' => $xpub_derivation_key,
-                        ], static function($var){ return $var !== null; } );
-                        if ( !_AssetWalletAddress::where($asset_wallet_address_params)->exists() ){
-                            return (new _AssetWalletAddressController)->store(new Request( array_merge( $asset_wallet_address_params, ['bypass_max_per_user_per_asset_code' => true]) ));
+                        ], static function($var){ return $var !== null; });
+                        if (!_AssetWalletAddress::where($asset_wallet_address_params)->exists()){
+                            return (new _AssetWalletAddressController)->store(new Request(array_merge($asset_wallet_address_params, ['bypass_max_per_user_per_asset_code' => true])));
                         }
                         $xpub_derivation_key++;
                     }
                 }
             }
 
-            if ( false ){
+            if (false){
                 $ttm_element = (new Tatum\VirtualAccounts\BCAddressController)->generateDepositAddress(new Request(['id' => $asset_wallet->ttm_virtual_account_id]))->getData();
                 $validated_data['xpub_derivation_key'] = $ttm_element->derivationKey;
                 $validated_data['bc_address'] = $ttm_element->address;
@@ -104,7 +104,7 @@ class _AssetWalletAddressController extends Controller
                 while ($address_picked === false) {
                     $asset = _Asset::firstWhere(['chain' => $asset_wallet->asset_chain, 'ttm_gp_chain_addresses_storage' => true])->makeVisible(['ttm_gp_calculated_batch_addresses', 'xpub']);
                     $chosen_address = null;
-                    if ( $validated_data['user_username'] === 'reserves' ){
+                    if ($validated_data['user_username'] === 'reserves'){
                         switch ($asset->chain) {
                             case 'ETH':
                                 $ttm_element = (new Tatum\Blockchain\EthereumController)->EthGenerateAddress(new Request(['xpub' => $asset->xpub, 'index' => $xpub_derivation_key]))->getData();
@@ -127,13 +127,13 @@ class _AssetWalletAddressController extends Controller
                     }
                     $address_usable = false;
                     try {
-                        if ((new Tatum\VirtualAccounts\BCAddressController)->addressExists(new Request(['address' => strtolower( $chosen_address ), 'currency' => $asset_wallet->asset_code]))->getData()){ $address_usable = false; }
+                        if ((new Tatum\VirtualAccounts\BCAddressController)->addressExists(new Request(['address' => strtolower($chosen_address), 'currency' => $asset_wallet->asset_code]))->getData()){ $address_usable = false; }
                     } catch (\Throwable $th) {
                         $message = $th->getMessage();
                         if (str_contains($message, 'The combination of address')){ $address_usable = true; }
                         if (str_contains($message, 'Unable to find sender account')){ $address_usable = false; }
                     }
-                    if ( $address_usable ){
+                    if ($address_usable){
                         $ttm_element = (new Tatum\VirtualAccounts\BCAddressController)->assignAddress(new Request(['id' => $asset_wallet->ttm_virtual_account_id, 'address' => $chosen_address ]))->getData();
                         $validated_data['bc_address'] = $ttm_element->address;
                         $address_picked = true;
@@ -144,7 +144,7 @@ class _AssetWalletAddressController extends Controller
 
         $element = _AssetWalletAddress::create($validated_data);
         // Handle _Log
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => 'Addition of _AssetWalletAddress entry to database.',
             'action_type' => 'entry_create',
             'entry_table' => $element->getTable(),
@@ -152,7 +152,7 @@ class _AssetWalletAddressController extends Controller
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        if ($request->expectsJson()) return response()->json( new _AssetWalletAddressResource( $element ) );
+        if ($request->expectsJson()) return response()->json(new _AssetWalletAddressResource($element));
     }
 
     /**
@@ -165,7 +165,7 @@ class _AssetWalletAddressController extends Controller
     {
         $element = _AssetWalletAddress::find($id);
         if (!$element) return abort(404, '_AssetWalletAddress with specified reference code not found');
-        return response()->json( (new _AssetWalletAddressResource( $element ))->with_balance(true) );
+        return response()->json((new _AssetWalletAddressResource($element))->with_balance(true));
     }
 
     /**

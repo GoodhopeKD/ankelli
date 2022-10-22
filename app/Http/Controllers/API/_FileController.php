@@ -43,17 +43,17 @@ class _FileController extends Controller
 
         $response = ['files' => []];
 
-        foreach( $request->file('files') as $file ) {
+        foreach($request->file('files') as $file) {
             $filegroup = $request->filegroup;
             $parent_table = $request->parent_table;
             $filename = substr(md5(microtime()),rand(0,9),20).'.'.$file->extension();
-            $upload_dir_path = 'public/'.$filegroup.'/'.ltrim( $parent_table, '__' );
-            $path = $file->storeAs( $upload_dir_path , $filename );
+            $upload_dir_path = 'public/'.$filegroup.'/'.ltrim($parent_table, '__');
+            $path = $file->storeAs($upload_dir_path , $filename);
             $file_data = [];
             $file_data['filesize'] = $file->getSize();
             $file_data['original_filename'] = $file->getClientOriginalName();
-            $file_data['uri'] = env('APP_URL').Storage::url( $upload_dir_path.'/'.$filename );
-            array_push( $response['files'], $file_data );
+            $file_data['uri'] = env('APP_URL').Storage::url($upload_dir_path.'/'.$filename);
+            array_push($response['files'], $file_data);
         }
         $response["success"] = true;
         $response["message"] = "Success! file(s) uploaded";
@@ -82,11 +82,11 @@ class _FileController extends Controller
             'original_filename' => ['required', 'string', 'max:255'],
             'order_index'       => ['integer', 'nullable'],
         ]);
-        $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
 
         $element = _File::create($validated_data);
         // Handle _Log
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => 'Addition of _File entry to database.',
             'action_type' => 'entry_create',
             'entry_table' => $element->getTable(),
@@ -94,7 +94,7 @@ class _FileController extends Controller
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        if ($request->expectsJson()) return response()->json( new _FileResource( $element ) );
+        if ($request->expectsJson()) return response()->json(new _FileResource($element));
     }
 
     /**
@@ -125,7 +125,7 @@ class _FileController extends Controller
 
         $element = _File::findOrFail($id);
         $element->update($validated_data);
-        if ($request->expectsJson()) return response()->json( (new _FileResource( _File::find( $id ) )) );
+        if ($request->expectsJson()) return response()->json((new _FileResource(_File::find($id))));
     }
 
     /**
@@ -137,8 +137,8 @@ class _FileController extends Controller
     public function destroy(int $id)
     {
         $element = _File::findOrFail($id);
-        if (in_array( auth('api')->user()->username, [$element->creator_username, $element->upater_username] )){
-            Storage::delete( 'public/'.$element->filegroup.'/'.ltrim( $element->parent_table, '__' ).'/'.$element->filename );
+        if (in_array(auth('api')->user()->username, [$element->creator_username, $element->upater_username])){
+            Storage::delete('public/'.$element->filegroup.'/'.ltrim($element->parent_table, '__').'/'.$element->filename);
             $element->delete();
             return response()->json(['success' => 'success'], 200);
         } else {

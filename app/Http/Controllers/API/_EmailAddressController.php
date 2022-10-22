@@ -35,7 +35,7 @@ class _EmailAddressController extends Controller
         ]);
         $element = _EmailAddress::create($validated_data);
         // Handle _Log
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => 'Addition of _EmailAddress entry to database.',
             'action_type' => 'entry_create',
             'entry_table' => $element->getTable(),
@@ -43,7 +43,7 @@ class _EmailAddressController extends Controller
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        if ($request->expectsJson()) return response()->json( new _EmailAddressResource( $element ) );
+        if ($request->expectsJson()) return response()->json(new _EmailAddressResource($element));
     }
 
     /**

@@ -23,19 +23,19 @@ class _UserGroupMembershipController extends Controller
     {
         $result = null;
 
-        if ( $result === null ){
+        if ($result === null){
             $simple_query_args = [];
 
-            if ( request()->user_group_slug ){ $simple_query_args = array_merge( $simple_query_args, [ 'user_group_slug' => request()->user_group_slug ]); }
-            if ( request()->_status && request()->_status !== 'all' ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => request()->_status ]); }
-            if ( !isset(request()->_status) ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => 'active' ]); }
+            if (request()->user_group_slug){ $simple_query_args = array_merge($simple_query_args, [ 'user_group_slug' => request()->user_group_slug ]); }
+            if (request()->_status && request()->_status !== 'all'){ $simple_query_args = array_merge($simple_query_args, [ '_status' => request()->_status ]); }
+            if (!isset(request()->_status)){ $simple_query_args = array_merge($simple_query_args, [ '_status' => 'active' ]); }
 
             $eloquent_query = _UserGroupMembership::where($simple_query_args);
 
             $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) ASC')->paginate(request()->per_page)->withQueryString();
         }
 
-        return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _UserGroupMembershipResource::collection( $result ) : new _UserGroupMembershipResourceCollection( $result ) ) : null;
+        return $result ? (request()->get_with_meta && request()->get_with_meta == true ? _UserGroupMembershipResource::collection($result) : new _UserGroupMembershipResourceCollection($result)) : null;
     }
 
     /**
@@ -52,7 +52,7 @@ class _UserGroupMembershipController extends Controller
             '_status' => ['sometimes', 'string', Rule::in(['active', 'deactivated'])],
         ]);
 
-        $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
 
         $creator_admin_extension = _AdminExtension::firstWhere([ 'user_username' => $validated_data['creator_username'] ]);
         if ($creator_admin_extension){
@@ -88,7 +88,7 @@ class _UserGroupMembershipController extends Controller
 
         $element = _UserGroupMembership::create($validated_data);
         // Handle _Log
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => 'Addition of _UserGroupMembership entry to database.',
             'action_type' => 'entry_create',
             'entry_table' => $element->getTable(),
@@ -96,7 +96,7 @@ class _UserGroupMembershipController extends Controller
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        if ($request->expectsJson()) return response()->json( new _UserGroupMembershipResource( $element ) );
+        if ($request->expectsJson()) return response()->json(new _UserGroupMembershipResource($element));
     }
 
     /**

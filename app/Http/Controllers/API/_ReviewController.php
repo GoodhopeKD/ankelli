@@ -21,21 +21,21 @@ class _ReviewController extends Controller
     {
         $result = null;
 
-        if ( $result === null ){
+        if ($result === null){
             $simple_query_args = [];
 
-            if ( request()->parent_table ){ $simple_query_args = array_merge( $simple_query_args, [ 'parent_table' => request()->parent_table ]); }
-            if ( request()->parent_uid ){ $simple_query_args = array_merge( $simple_query_args, [ 'parent_uid' => request()->parent_uid ]); }
-            if ( request()->pivot_parent_table ){ $simple_query_args = array_merge( $simple_query_args, [ 'pivot_parent_table' => request()->pivot_parent_table ]); }
-            if ( request()->pivot_parent_uid ){ $simple_query_args = array_merge( $simple_query_args, [ 'pivot_parent_uid' => request()->pivot_parent_uid ]); }
-            if ( request()->creator_username ){ $simple_query_args = array_merge( $simple_query_args, [ 'creator_username' => request()->creator_username ]); }
+            if (request()->parent_table){ $simple_query_args = array_merge($simple_query_args, [ 'parent_table' => request()->parent_table ]); }
+            if (request()->parent_uid){ $simple_query_args = array_merge($simple_query_args, [ 'parent_uid' => request()->parent_uid ]); }
+            if (request()->pivot_parent_table){ $simple_query_args = array_merge($simple_query_args, [ 'pivot_parent_table' => request()->pivot_parent_table ]); }
+            if (request()->pivot_parent_uid){ $simple_query_args = array_merge($simple_query_args, [ 'pivot_parent_uid' => request()->pivot_parent_uid ]); }
+            if (request()->creator_username){ $simple_query_args = array_merge($simple_query_args, [ 'creator_username' => request()->creator_username ]); }
 
             $eloquent_query = _Review::where($simple_query_args);
 
             $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->paginate(request()->per_page)->withQueryString();
         }
 
-        return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _ReviewResource::collection( $result ) : new _ReviewResourceCollection( $result ) ) : null;
+        return $result ? (request()->get_with_meta && request()->get_with_meta == true ? _ReviewResource::collection($result) : new _ReviewResourceCollection($result)) : null;
     }
 
     /**
@@ -54,11 +54,11 @@ class _ReviewController extends Controller
             'rating' => ['required', 'integer', 'between:1,5'],
             'comment' => ['sometimes', 'nullable', 'string', 'max:255'],
         ]);
-        $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
 
         $element = _Review::create($validated_data);
         // Handle _Log
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => 'Addition of _Review entry to database.',
             'action_type' => 'entry_create',
             'entry_table' => $element->getTable(),
@@ -66,7 +66,7 @@ class _ReviewController extends Controller
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        if ($request->expectsJson()) return response()->json( new _ReviewResource( $element ) );
+        if ($request->expectsJson()) return response()->json(new _ReviewResource($element));
     }
 
     /**
@@ -79,7 +79,7 @@ class _ReviewController extends Controller
     {
         $element = _Review::find($id);
         if (!$element) return abort(404, 'Review with specified id not found');
-        return response()->json( new _ReviewResource( $element ) );
+        return response()->json(new _ReviewResource($element));
     }
 
     /**
@@ -101,9 +101,9 @@ class _ReviewController extends Controller
 
         // Handle _Log
         $log_entry_update_result = [];
-        foreach ( $validated_data as $key => $value ) {
-            if ( in_array( $key, $element->getFillable() ) && $element->{$key} != $value ){
-                array_push( $log_entry_update_result, [
+        foreach ($validated_data as $key => $value) {
+            if (in_array($key, $element->getFillable()) && $element->{$key} != $value){
+                array_push($log_entry_update_result, [
                     'field_name' => $key,
                     'old_value' => $element->{$key},
                     'new_value' => $value,
@@ -111,7 +111,7 @@ class _ReviewController extends Controller
             }
         }
         if (!count($log_entry_update_result)) return abort(422, 'No values were updated');
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => $request->update_note,
             'action_type' => 'entry_update',
             'entry_table' => $element->getTable(),
@@ -121,7 +121,7 @@ class _ReviewController extends Controller
         ]));
         // End _Log Handling
         $element->update($validated_data);
-        if ($request->expectsJson()) return response()->json( new _ReviewResource( $element ) );
+        if ($request->expectsJson()) return response()->json(new _ReviewResource($element));
     }
 
     /**

@@ -14,14 +14,15 @@ ini_set('precision', 16);
 ini_set('serialize_precision', 16);
 
 // linking storage path to url path
-if (!File::exists( public_path('storage') )){
-    File::link( storage_path('app/public'), public_path('storage') );
+if (!File::exists(public_path('storage'))){
+    File::link(storage_path('app/public'), public_path('storage'));
 }
 
 // Default Route
 Route::post('accounts', '__AuxController@default_route')->name('default_route');
 
 // Tx recon
+Route::post('webhooks/tatum/validate-signature', '_TransactionController@validate_signature')->name('tatum.validate_signature');
 Route::post('webhooks/tatum/nofitications/incoming-blockchain-transaction', '_TransactionController@ttm_recon_for_incoming_bc_txn_notification')->name('tatum.ttm_recon_for_incoming_bc_txn_notification');
 Route::post('webhooks/tatum/nofitications/completed-kms-transaction', '_TransactionController@ttm_recon_for_completed_kms_txn_notification')->name('tatum.ttm_recon_for_completed_kms_txn_notification');
 Route::post('webhooks/tatum/nofitications/failed-kms-transaction', '_TransactionController@ttm_recon_for_failed_kms_txn_notification')->name('tatum.ttm_recon_for_failed_kms_txn_notification');
@@ -37,7 +38,7 @@ Route::get('ReceivePendingTransactionsToSign', '_AssetWalletController@ReceivePe
 Route::get('DeletePendingTransactionsToSign', '_AssetWalletController@DeletePendingTransactionsToSign')->name('DeletePendingTransactionsToSign');
 Route::get('findAllCustomers', '_AssetWalletController@findAllCustomers')->name('findAllCustomers');
 Route::get('getAccounts', '_AssetWalletController@getAccounts')->name('getAccounts');
-Route::get('get_addresses', '_AssetWalletController@get_addresses')->name('get_addresses');
+Route::get('getAllWebhooks', '_AssetWalletController@getAllWebhooks')->name('getAllWebhooks');
 Route::get('get_transactions', '_AssetWalletController@get_transactions')->name('get_transactions');
 Route::get('get_subscriptions', '_AssetWalletController@get_subscriptions')->name('get_subscriptions');
 Route::get('get_subscription_notifications', '_AssetWalletController@get_subscription_notifications')->name('get_subscription_notifications');

@@ -68,7 +68,7 @@ class TransactionsViewSingleScreen extends React.Component {
                             {(debit && this.focused_transaction.recipient_bc_address) && <p>Recipient address: {this.focused_transaction.recipient_bc_address}</p>}
                             {(!debit && this.focused_transaction.sender_username && !['busops', 'reserves'].includes(this.focused_transaction.sender_username)) && <p>Sender username: {this.focused_transaction.sender_username}</p>}
                             {(debit && this.focused_transaction.recipient_username && !['busops', 'reserves'].includes(this.focused_transaction.recipient_username)) && <p>Recipient username: {this.focused_transaction.recipient_username}</p>}
-                            {this.focused_transaction.bc_txn_id && <p>Transaction hash: <Link to={asset.bc_txn_id_scan_url.replace('{bc_txn_id}', this.focused_transaction.bc_txn_id)} style={{ textDecoration: 'none' }} target='_blank'>{this.focused_transaction.bc_txn_id}</Link></p>}
+                            {this.focused_transaction.bc_txn_id && <p>Transaction hash: <a href={asset.bc_txn_id_scan_url.replace('{bc_txn_id}', this.focused_transaction.bc_txn_id)} style={{ textDecoration: 'none' }} target='_blank'>{this.focused_transaction.bc_txn_id}</a></p>}
                         </div>
                     </div>
                 </> :

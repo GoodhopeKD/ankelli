@@ -31,11 +31,11 @@ class _UserGroup extends Model
      */
     public function profile_image()
     {
-        return $this->hasOne( _File::class, 'parent_uid', 'slug' )->where('parent_table', '__user_groups');
+        return $this->hasOne(_File::class, 'parent_uid', 'slug')->where('parent_table', '__user_groups');
     }
 
     public function profile_image_f()
     {
-        return $this->profile_image ? json_decode(( new _FileResourceCollection( [$this->profile_image] ))->toJson(),true)['data'][0] : null;
+        return $this->profile_image ? json_decode((new _FileResourceCollection([$this->profile_image]))->toJson(),true)['data'][0] : null;
     }
 }

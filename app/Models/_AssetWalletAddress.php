@@ -38,18 +38,18 @@ class _AssetWalletAddress extends Model
     public function balance_f()
     {
         $balance = null;
-        if (  $this->user_username === 'reserves' && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
+        if ($this->user_username === 'reserves' && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()){
             switch ($this->asset_code) {
                 case 'ETH':
                     $balance = (new \App\Http\Controllers\API\Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => $this->bc_address]))->getData()->balance;
                     $asset = _Asset::firstWhere('code', $this->asset_code);
-                    if ( $asset->chain === 'ETH' && $asset->code === 'ETH' && $asset->unit === 'USDT' ) $balance *= $this->ETH_USDT_FCTR;
+                    if ($asset->chain === 'ETH' && $asset->code === 'ETH' && $asset->unit === 'USDT') $balance *= $this->ETH_USDT_FCTR;
                     break;
                 case 'TRON':
                     try {
                         $balance = (new \App\Http\Controllers\API\Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => $this->bc_address]))->getData()->balance/1000000;
                         $asset = _Asset::firstWhere('code', $this->asset_code);
-                        if ( $asset->chain === 'TRON' && $asset->code === 'TRON' && $asset->unit === 'USDT' ) $balance *= $this->TRX_USDT_FCTR;
+                        if ($asset->chain === 'TRON' && $asset->code === 'TRON' && $asset->unit === 'USDT') $balance *= $this->TRX_USDT_FCTR;
                     } catch (\Throwable $th) {}
                     break;
             }

@@ -19,20 +19,20 @@ class _NotificationController extends Controller
     {
         $result = null;
       
-        if ( $result === null ){
+        if ($result === null){
             $simple_query_args = [];
 
-            if ( request()->user_username ){ $simple_query_args = array_merge( $simple_query_args, [ 'user_username' => request()->user_username ]); }
+            if (request()->user_username){ $simple_query_args = array_merge($simple_query_args, [ 'user_username' => request()->user_username ]); }
 
             $eloquent_query = _Notification::where($simple_query_args);
 
-            if ( request()->_status && request()->_status == 'unread' ){ $eloquent_query->whereNull('read_datetime'); }
-            if ( request()->_status && request()->_status == 'read' ){ $eloquent_query->whereNotNull('read_datetime'); }
+            if (request()->_status && request()->_status == 'unread'){ $eloquent_query->whereNull('read_datetime'); }
+            if (request()->_status && request()->_status == 'read'){ $eloquent_query->whereNotNull('read_datetime'); }
           
             $result = $eloquent_query->orderByDesc('created_datetime')->paginate(request()->per_page)->withQueryString();
         }
 
-        return $result ? _NotificationResource::collection( $result ) : null;
+        return $result ? _NotificationResource::collection($result) : null;
     }
 
     /**
@@ -52,7 +52,7 @@ class _NotificationController extends Controller
 
         $element = _Notification::create($validated_data);
         // Handle _Log
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => 'Addition of _Notification entry to database.',
             'action_type' => 'entry_create',
             'entry_table' => $element->getTable(),
@@ -60,7 +60,7 @@ class _NotificationController extends Controller
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        if ($request->expectsJson()) return response()->json( new _NotificationResource( $element ) );
+        if ($request->expectsJson()) return response()->json(new _NotificationResource($element));
     }
 
     /**
@@ -76,7 +76,7 @@ class _NotificationController extends Controller
         if (!$element->read_datetime){
             $element->update(['read_datetime' => now()->toDateTimeString()]);
         }
-        return response()->json( new _NotificationResource( $element ) );
+        return response()->json(new _NotificationResource($element));
     }
 
     /**

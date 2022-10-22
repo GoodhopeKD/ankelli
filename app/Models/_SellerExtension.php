@@ -29,7 +29,7 @@ class _SellerExtension extends Model
      */
     public function listings_posted()
     {
-        return $this->hasMany( _Listing::class, 'seller_username', 'user_username')->where('seller_table', '__users');
+        return $this->hasMany(_Listing::class, 'seller_username', 'user_username')->where('seller_table', '__users');
     }
 
     /**
@@ -37,11 +37,11 @@ class _SellerExtension extends Model
      */
     public function orders_received()
     {
-        return $this->hasMany( _Order::class, 'seller_username', 'user_username')->where('seller_table', '__users');
+        return $this->hasMany(_Order::class, 'seller_username', 'user_username')->where('seller_table', '__users');
     }
 
     public function complete_purchases_count_f()
     {
-        return count( $this->orders_received()->where( "_status", "complete" )->get() );
+        return count($this->orders_received()->where("_status", "complete")->get());
     }
 }

@@ -14,7 +14,7 @@ use Stevebauman\Location\Facades\Location;
 use App\Models\_Log;
 
 function generate_log_id(){
-    return substr(preg_replace('/[^a-zA-Z0-9\']/', '', Hash::make(Str::random(32)) ),6,16);
+    return substr(preg_replace('/[^a-zA-Z0-9\']/', '', Hash::make(Str::random(32))),6,16);
 }
 
 class _LogController extends Controller
@@ -48,7 +48,7 @@ class _LogController extends Controller
             ]);
 
             $log_id = generate_log_id();
-            while ( _Log::where( 'id', $log_id )->exists() ){
+            while (_Log::where('id', $log_id)->exists()){
                 $log_id = generate_log_id();
             }
             $validated_data['id'] = $log_id;
@@ -56,11 +56,11 @@ class _LogController extends Controller
             if (!isset($validated_data['batch_code']) || (isset($validated_data['batch_code']) && $validated_data['action_type'] == 'batch_init')){
                 //$encrypt = Crypt::encryptString;
                 $encrypt = function ($in) { return $in; };
-                $validated_data['request_location'] = $encrypt( json_encode( Location::get() ? (array)(Location::get()) : [ 'ip' => request()->ip() ] ));
+                $validated_data['request_location'] = $encrypt(json_encode(Location::get() ? (array)(Location::get()) : [ 'ip' => request()->ip() ]));
                 $validated_data['utc_offset'] = session()->get('utc_offset');
             }
             $validated_data['session_token'] = session()->get('active_session_token');
-            $validated_data['action_user_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+            $validated_data['action_user_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
 
             _Log::create($validated_data);
         }

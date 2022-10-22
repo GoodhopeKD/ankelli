@@ -28,32 +28,32 @@ class _OfferController extends Controller
     {
         $result = null;
 
-        if ( $result === null && request()->get_as_addon_prop && request()->get_as_addon_prop == true ){
+        if ($result === null && request()->get_as_addon_prop && request()->get_as_addon_prop == true){
             $result = _Offer::where(['_status'=>'online'])
             ->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->paginate(request()->per_page)->withQueryString(); 
         }
         
-        if ( $result === null ){
+        if ($result === null){
             $simple_query_args = [];
 
-            if ( request()->offer_to ){ $simple_query_args = array_merge( $simple_query_args, [ 'offer_to' => request()->offer_to ]); }
-            if ( request()->country_name ){ $simple_query_args = array_merge( $simple_query_args, [ 'country_name' => request()->country_name ]); }
-            if ( request()->currency_code ){ $simple_query_args = array_merge( $simple_query_args, [ 'currency_code' => request()->currency_code ]); }
-            if ( request()->asset_code ){ $simple_query_args = array_merge( $simple_query_args, [ 'asset_code' => request()->asset_code ]); }
-            if ( request()->pymt_method_slug ){ $simple_query_args = array_merge( $simple_query_args, [ 'pymt_method_slug' => request()->pymt_method_slug ]); }
-            if ( request()->_status && request()->_status !== 'all' ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => request()->_status ]); }
-            if ( !isset(request()->_status) ){ $simple_query_args = array_merge( $simple_query_args, [ '_status' => 'online' ]); }
-            if ( request()->creator_username ){ $simple_query_args = array_merge( $simple_query_args, [ 'creator_username' => request()->creator_username ]); }
+            if (request()->offer_to){ $simple_query_args = array_merge($simple_query_args, [ 'offer_to' => request()->offer_to ]); }
+            if (request()->country_name){ $simple_query_args = array_merge($simple_query_args, [ 'country_name' => request()->country_name ]); }
+            if (request()->currency_code){ $simple_query_args = array_merge($simple_query_args, [ 'currency_code' => request()->currency_code ]); }
+            if (request()->asset_code){ $simple_query_args = array_merge($simple_query_args, [ 'asset_code' => request()->asset_code ]); }
+            if (request()->pymt_method_slug){ $simple_query_args = array_merge($simple_query_args, [ 'pymt_method_slug' => request()->pymt_method_slug ]); }
+            if (request()->_status && request()->_status !== 'all'){ $simple_query_args = array_merge($simple_query_args, [ '_status' => request()->_status ]); }
+            if (!isset(request()->_status)){ $simple_query_args = array_merge($simple_query_args, [ '_status' => 'online' ]); }
+            if (request()->creator_username){ $simple_query_args = array_merge($simple_query_args, [ 'creator_username' => request()->creator_username ]); }
 
             $eloquent_query = _Offer::where($simple_query_args);
 
-            if ( _PrefItem::firstWhere('key_slug', 'offer_to_buy_enabled')->value_f() == false ){ $eloquent_query = $eloquent_query->whereNotIn('offer_to',['buy']); }
-            if ( _PrefItem::firstWhere('key_slug', 'offer_to_sell_enabled')->value_f() == false ){ $eloquent_query = $eloquent_query->whereNotIn('offer_to',['sell']); }
+            if (_PrefItem::firstWhere('key_slug', 'offer_to_buy_enabled')->value_f() == false){ $eloquent_query = $eloquent_query->whereNotIn('offer_to',['buy']); }
+            if (_PrefItem::firstWhere('key_slug', 'offer_to_sell_enabled')->value_f() == false){ $eloquent_query = $eloquent_query->whereNotIn('offer_to',['sell']); }
 
             $result = $eloquent_query->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->paginate(request()->per_page)->withQueryString();
         }
 
-        return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _OfferResource::collection( $result ) : new _OfferResourceCollection( $result ) ) : null;
+        return $result ? (request()->get_with_meta && request()->get_with_meta == true ? _OfferResource::collection($result) : new _OfferResourceCollection($result)) : null;
     }
 
     /**
@@ -67,7 +67,7 @@ class _OfferController extends Controller
         if (!($request->asset_code && _Asset::where(['code' => $request->asset_code])->exists())){
             return abort(422, "Asset with provided code doesn't exist");
         }
-        $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
         $asset_wallet = (object)['usable_balance_asset_value' => 0];
         if($request->offer_to == 'sell'){
             $asset_wallet = _AssetWallet::firstWhere(['user_username' => $api_auth_user_username, 'asset_code' => $request->asset_code]);
@@ -121,7 +121,7 @@ class _OfferController extends Controller
 
         $element = _Offer::create($validated_data);
         // Handle _Log
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => 'Addition of _Offer entry to database.',
             'action_type' => 'entry_create',
             'entry_table' => $element->getTable(),
@@ -129,7 +129,7 @@ class _OfferController extends Controller
             'batch_code' => $request->batch_code,
         ]));
         // End _Log Handling
-        if ($request->expectsJson()) return response()->json( new _OfferResource( $element ) );
+        if ($request->expectsJson()) return response()->json(new _OfferResource($element));
     }
 
     /**
@@ -142,7 +142,7 @@ class _OfferController extends Controller
     {
         $element = _Offer::find($ref_code);
         if (!$element) return abort(404, 'Offer with specified reference code not found');
-        return response()->json( new _OfferResource( $element ) );
+        return response()->json(new _OfferResource($element));
     }
 
     /**
@@ -212,9 +212,9 @@ class _OfferController extends Controller
 
         // Handle _Log
         $log_entry_update_result = [];
-        foreach ( $validated_data as $key => $value ) {
-            if ( in_array( $key, $element->getFillable() ) && $element->{$key} != $value ){
-                array_push( $log_entry_update_result, [
+        foreach ($validated_data as $key => $value) {
+            if (in_array($key, $element->getFillable()) && $element->{$key} != $value){
+                array_push($log_entry_update_result, [
                     'field_name' => $key,
                     'old_value' => $element->{$key},
                     'new_value' => $value,
@@ -222,7 +222,7 @@ class _OfferController extends Controller
             }
         }
         if (!count($log_entry_update_result)) return abort(422, 'No values were updated');
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => $request->update_note,
             'action_type' => 'entry_update',
             'entry_table' => $element->getTable(),
@@ -232,7 +232,7 @@ class _OfferController extends Controller
         ]));
         // End _Log Handling
         $element->update($validated_data);
-        if ($request->expectsJson()) return response()->json( new _OfferResource( $element ) );
+        if ($request->expectsJson()) return response()->json(new _OfferResource($element));
     }
 
     /**

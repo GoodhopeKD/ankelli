@@ -22,7 +22,7 @@ class _MessageResourceCollection extends ResourceCollection
                     'attachment' => $_this->attachment_f(),
                     'parent_table' => null,
                     'parent_uid' => null,
-                ]), static function($var){ return $var !== null; } );
+                ]), static function($var){ return $var !== null; });
             }),
         ];
     }

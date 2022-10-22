@@ -29,20 +29,20 @@ class _TransactionController extends Controller
     {
         $result = null;
 
-        if ( $result === null && request()->get_as_addon_prop && request()->get_as_addon_prop == true ){
+        if ($result === null && request()->get_as_addon_prop && request()->get_as_addon_prop == true){
             $result = _Transaction::where(['_status'=>'active'])
             ->orderByDesc('transfer_datetime')->paginate(request()->per_page)->withQueryString(); 
         }
         
-        if ( $result === null ){
+        if ($result === null){
             $simple_query_args = [];
 
-            if ( request()->sender_username ){ $simple_query_args = array_merge( $simple_query_args, [ 'sender_username' => request()->sender_username ]); }
-            if ( request()->recipient_username ){ $simple_query_args = array_merge( $simple_query_args, [ 'recipient_username' => request()->recipient_username ]); }
+            if (request()->sender_username){ $simple_query_args = array_merge($simple_query_args, [ 'sender_username' => request()->sender_username ]); }
+            if (request()->recipient_username){ $simple_query_args = array_merge($simple_query_args, [ 'recipient_username' => request()->recipient_username ]); }
 
             $eloquent_query = _Transaction::where($simple_query_args);
 
-            if ( request()->user_username && is_string( request()->user_username ) ){
+            if (request()->user_username && is_string(request()->user_username)){
                 $eloquent_query = $eloquent_query
                 ->where(['sender_username' => request()->user_username ])
                 ->orWhere(function($query) { $query->where(['recipient_username' => request()->user_username ]); });
@@ -51,7 +51,7 @@ class _TransactionController extends Controller
             $result = $eloquent_query->orderByDesc('transfer_datetime')->paginate(request()->per_page)->withQueryString();
         }
 
-        return $result ? ( request()->get_with_meta && request()->get_with_meta == true ? _TransactionResource::collection( $result ) : new _TransactionResourceCollection( $result ) ) : null;
+        return $result ? (request()->get_with_meta && request()->get_with_meta == true ? _TransactionResource::collection($result) : new _TransactionResourceCollection($result)) : null;
     }
 
     /**
@@ -92,7 +92,7 @@ class _TransactionController extends Controller
         $validated_data['session_token'] = session()->get('active_session_token');
 
         if (isset($validated_data['sender_username'])){
-            if ( isset($validated_data['recipient_username']) && $validated_data['sender_username'] == $validated_data['recipient_username']){
+            if (isset($validated_data['recipient_username']) && $validated_data['sender_username'] == $validated_data['recipient_username']){
                 return abort(422, 'Cannot transact to self.');
             }
             $sender_asset_wallet = _AssetWallet::firstWhere([
@@ -100,13 +100,13 @@ class _TransactionController extends Controller
                 'asset_code' => $validated_data['asset_code']
             ]);
 
-            if ( $sender_asset_wallet->_status == 'frozen' ){ return abort(422, 'Selected asset wallet is frozen.'); }
-            if ( !$sender_asset_wallet ){ return abort(422, 'Current '.$validated_data['asset_code'].' balance insufficient for transaction.'); }
+            if ($sender_asset_wallet->_status == 'frozen'){ return abort(422, 'Selected asset wallet is frozen.'); }
+            if (!$sender_asset_wallet){ return abort(422, 'Current '.$validated_data['asset_code'].' balance insufficient for transaction.'); }
             
             $old_usable_balance_asset_value = $sender_asset_wallet->usable_balance_asset_value;
             $new_usable_balance_asset_value = $old_usable_balance_asset_value - $validated_data['asset_value'];
 
-            if ( $new_usable_balance_asset_value < 0 ){ return abort(422, 'Current '.$validated_data['asset_code'].' balance insufficient for transaction.'); }
+            if ($new_usable_balance_asset_value < 0){ return abort(422, 'Current '.$validated_data['asset_code'].' balance insufficient for transaction.'); }
         }
 
         if (isset($validated_data['recipient_username'])){
@@ -115,7 +115,7 @@ class _TransactionController extends Controller
                 'asset_code' => $validated_data['asset_code']
             ]);
             if (!$recipient_asset_wallet){
-                (new _AssetWalletController)->store( new Request([
+                (new _AssetWalletController)->store(new Request([
                     'user_username' => $validated_data['recipient_username'], 
                     'asset_code' => $validated_data['asset_code'],
                     'asset_chain' => _Asset::firstWhere(['code' => $validated_data['asset_code']])->chain,
@@ -125,7 +125,7 @@ class _TransactionController extends Controller
         }
 
         $element = _Transaction::create($validated_data);
-        return response()->json( [ 'ref_code' => $element->ref_code ] );
+        return response()->json([ 'ref_code' => $element->ref_code ]);
     }
 
     /**
@@ -138,7 +138,7 @@ class _TransactionController extends Controller
     {
         $element = _Transaction::find($ref_code);
         if (!$element) return abort(404, 'Transaction with specified reference code not found');
-        return response()->json( new _TransactionResource( $element ) );
+        return response()->json(new _TransactionResource($element));
     }
 
     /**
@@ -160,7 +160,7 @@ class _TransactionController extends Controller
         ]);
         $element = _Transaction::findOrFail($ref_code);
         $element->update($validated_data);
-        return response()->json( [ 'ref_code' => $element->ref_code ] );
+        return response()->json([ 'ref_code' => $element->ref_code ]);
     }
 
     public function update_local_wallets(string $ref_code)
@@ -168,12 +168,12 @@ class _TransactionController extends Controller
         $element = _Transaction::findOrFail($ref_code);
 
         if ($element->transfer_result){
-            return response()->json( [ 'ref_code' => $element->ref_code ] );
+            return response()->json([ 'ref_code' => $element->ref_code ]);
         }
 
         $validated_data['transfer_result'] = [];
         if (isset($element->sender_username)){
-            if ( isset($element->recipient_username) && $element->sender_username == $element->recipient_username){
+            if (isset($element->recipient_username) && $element->sender_username == $element->recipient_username){
                 return abort(422, 'Cannot transact to self.');
             }
             $sender_asset_wallet = _AssetWallet::firstWhere([
@@ -181,18 +181,18 @@ class _TransactionController extends Controller
                 'asset_code' => $element->asset_code
             ]);
 
-            if ( $sender_asset_wallet->_status == 'frozen' ){ return abort(422, 'Selected asset is frozen.'); }
-            if ( !$sender_asset_wallet ){ return abort(422, 'Current '.$element->asset_code.' balance insufficient for transaction.'); }
+            if ($sender_asset_wallet->_status == 'frozen'){ return abort(422, 'Selected asset is frozen.'); }
+            if (!$sender_asset_wallet){ return abort(422, 'Current '.$element->asset_code.' balance insufficient for transaction.'); }
             
             $old_usable_balance_asset_value = $sender_asset_wallet->usable_balance_asset_value;
             $new_usable_balance_asset_value = $old_usable_balance_asset_value - $element->asset_value;
 
-            if ( $new_usable_balance_asset_value < 0 ){ return abort(422, 'Current '.$element->asset_code.' balance insufficient for transaction.'); }
+            if ($new_usable_balance_asset_value < 0){ return abort(422, 'Current '.$element->asset_code.' balance insufficient for transaction.'); }
 
             $old_total_balance_asset_value = $sender_asset_wallet->total_balance_asset_value;
             $new_total_balance_asset_value = $old_total_balance_asset_value - $element->asset_value;
 
-            array_push( $validated_data['transfer_result'], [
+            array_push($validated_data['transfer_result'], [
                 'user_username' => $element->sender_username,
                 'old_usable_balance_asset_value' => $old_usable_balance_asset_value,
                 'new_usable_balance_asset_value' => $new_usable_balance_asset_value,
@@ -200,14 +200,14 @@ class _TransactionController extends Controller
                 'new_total_balance_asset_value' => $new_total_balance_asset_value,
             ]);
 
-            (new _AssetWalletController)->update( new Request([
+            (new _AssetWalletController)->update(new Request([
                 'usable_balance_asset_value' => $new_usable_balance_asset_value,
                 'total_balance_asset_value' => $new_total_balance_asset_value,
-            ]), $sender_asset_wallet->id );
+            ]), $sender_asset_wallet->id);
 
-            if ( !in_array($element->sender_username, ['busops', 'reserves']) ){
+            if (!in_array($element->sender_username, ['busops', 'reserves'])){
                 // Create notification
-                (new _NotificationController)->store( new Request([
+                (new _NotificationController)->store(new Request([
                     'user_username' => $element->sender_username,
                     'content' => [
                         'title' => 'Debit Transaction',
@@ -231,7 +231,7 @@ class _TransactionController extends Controller
             $old_total_balance_asset_value = $recipient_asset_wallet->total_balance_asset_value;
             $new_total_balance_asset_value = $old_total_balance_asset_value + $element->asset_value;
 
-            array_push( $validated_data['transfer_result'], [
+            array_push($validated_data['transfer_result'], [
                 'user_username' => $element->recipient_username,
                 'old_usable_balance_asset_value' => $old_usable_balance_asset_value,
                 'new_usable_balance_asset_value' => $new_usable_balance_asset_value,
@@ -239,14 +239,14 @@ class _TransactionController extends Controller
                 'new_total_balance_asset_value' => $new_total_balance_asset_value,
             ]);
 
-            (new _AssetWalletController)->update( new Request([
+            (new _AssetWalletController)->update(new Request([
                 'usable_balance_asset_value' => $new_usable_balance_asset_value,
                 'total_balance_asset_value' => $new_total_balance_asset_value,
-            ]), $recipient_asset_wallet->id );
+            ]), $recipient_asset_wallet->id);
 
-            if ( !in_array($element->recipient_username, ['busops', 'reserves']) ){
+            if (!in_array($element->recipient_username, ['busops', 'reserves'])){
                 // Create notification
-                (new _NotificationController)->store( new Request([
+                (new _NotificationController)->store(new Request([
                     'user_username' => $element->recipient_username,
                     'content' => [
                         'title' => 'Credit Transaction',
@@ -258,8 +258,8 @@ class _TransactionController extends Controller
             }
         }
 
-        (new _TransactionController)->update( new Request($validated_data), $ref_code );
-        return response()->json( [ 'ref_code' => $element->ref_code ] );
+        (new _TransactionController)->update(new Request($validated_data), $ref_code);
+        return response()->json([ 'ref_code' => $element->ref_code ]);
     }
 
     public function centralize_assets(string $ref_code)
@@ -267,12 +267,16 @@ class _TransactionController extends Controller
         $element = _Transaction::findOrFail($ref_code);
 
         if ($element->recipient_username == 'reserves'){
-            return response()->json( [ 'ref_code' => $element->ref_code ] );
+            return response()->json([ 'ref_code' => $element->ref_code ]);
         }
 
-        $validated_data = [];
+        $validated_data = [
+            'operation_slug' => 'CENTRALIZE_ASSETS',
+            '_status' => 'pending',
+            'asset_code' => $element->asset_code,
+        ];
 
-        $asset = _Asset::firstWhere('code', $element->asset_code );
+        $asset = _Asset::firstWhere('code', $element->asset_code);
 
         $reserves_addresses = _AssetWalletAddress::where(['user_username' => 'reserves', 'asset_code' => $element->asset_code])->inRandomOrder()->get();
         $reserves_address = null;
@@ -289,24 +293,26 @@ class _TransactionController extends Controller
                     }
                 }
                 $balance = (new Tatum\Blockchain\EthereumController)->EthGetBalance(new Request(['address' => $focused_address->bc_address]))->getData()->balance;
-                if ( $balance > 0 ) {
+                if ($balance > 0) {
+                    $validated_data['asset_value'] = $balance;
                     $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
                         'chain' => 'ETH',
                         'custodialAddress' => $focused_address->bc_address,
                         'recipient' => $reserves_address->bc_address,
                         'contractType' => 3,
                         'amount' => $balance.'',
-                        'signatureId' => env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID'),
+                        'signatureId' => env('TATUM_KMS_ETH_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
                         'index' => 0,
                     ]))->getData()->signatureId;
-                    (new _TransactionController)->update( new Request($validated_data), $ref_code );
+                    (new _TransactionController)->store(new Request($validated_data));
                 }
-                return response()->json( [ 'ref_code' => $element->ref_code ] );
+                return response()->json([ 'ref_code' => $element->ref_code ]);
 
             case 'USDT':
                 $reserves_address = $reserves_addresses[0];
                 $balance = $element->asset_value;
-                if ( $balance > 0 ) {
+                if ($balance > 0) {
+                    $validated_data['asset_value'] = $balance;
                     $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
                         'chain' => 'ETH',
                         'custodialAddress' => $focused_address->bc_address,
@@ -314,12 +320,12 @@ class _TransactionController extends Controller
                         'contractType' => 0,
                         'tokenAddress' => env('ETH_USDT_TOKEN_ADDRESS'),
                         'amount' => $balance.'', // in ETH
-                        'signatureId' => env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID'),
+                        'signatureId' => env('TATUM_KMS_ETH_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
                         'index' => 0,
                     ]))->getData()->signatureId;
-                    (new _TransactionController)->update( new Request($validated_data), $ref_code );
+                    (new _TransactionController)->store(new Request($validated_data));
                 }
-                return response()->json( [ 'ref_code' => $element->ref_code ] );
+                return response()->json([ 'ref_code' => $element->ref_code ]);
 
             case 'TRON':
                 foreach ($reserves_addresses as $_reserves_address) {
@@ -333,7 +339,8 @@ class _TransactionController extends Controller
                     }
                 }
                 $balance = (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => $focused_address->bc_address]))->getData()->balance/1000000;
-                if ( $balance > 0 ) {
+                if ($balance > 0) {
+                    $validated_data['asset_value'] = $balance;
                     $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
                         'chain' => 'TRON',
                         'custodialAddress' => $focused_address->bc_address,
@@ -342,12 +349,12 @@ class _TransactionController extends Controller
                         'contractType' => 3,
                         'amount' => $balance.'',
                         'feeLimit' => round(pow((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => 'TRON', 'basePair' => 'USD']))->getData()->value, -1) / 3),
-                        'signatureId' => env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID'),
+                        'signatureId' => env('TATUM_KMS_TRON_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
                         'index' => 0,
                     ]))->getData()->signatureId;
-                    (new _TransactionController)->update( new Request($validated_data), $ref_code );
+                    (new _TransactionController)->store(new Request($validated_data));
                 }
-                return response()->json( [ 'ref_code' => $element->ref_code ] );
+                return response()->json([ 'ref_code' => $element->ref_code ]);
 
             case 'USDT_TRON':
                 foreach ($reserves_addresses as $_reserves_address) {
@@ -365,7 +372,8 @@ class _TransactionController extends Controller
                 $balance = 0;
                 $tron_acct = (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => $focused_address->bc_address]))->getData();
                 if (count($tron_acct->trc20) && isset($tron_acct->trc20[env('TRON_USDT_TOKEN_ADDRESS')])) $balance = $tron_acct->trc20[env('TRON_USDT_TOKEN_ADDRESS')];
-                if ( $balance > 0 ) {
+                if ($balance > 0) {
+                    $validated_data['asset_value'] = $balance;
                     $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
                         'chain' => 'TRON',
                         'custodialAddress' => $focused_address->bc_address,
@@ -375,37 +383,36 @@ class _TransactionController extends Controller
                         'tokenAddress' => env('TRON_USDT_TOKEN_ADDRESS'),
                         'amount' => $balance.'',
                         'feeLimit' => round(pow((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => 'TRON', 'basePair' => 'USD']))->getData()->value, -1) / 3), // in TRX
-                        'signatureId' => env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID'),
+                        'signatureId' => env('TATUM_KMS_TRON_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
                         'index' => 0,
                     ]))->getData()->signatureId;
-                    (new _TransactionController)->update( new Request($validated_data), $ref_code );
+                    (new _TransactionController)->store(new Request($validated_data));
                 }
-                return response()->json( [ 'ref_code' => $element->ref_code ] );
+                return response()->json([ 'ref_code' => $element->ref_code ]);
         }
     }
 
-    public function centralize_assets_completed(string $ref_code)
+    public function generic_signing_completed(string $ref_code, string $bc_txn_id)
     {
-        $element = _Transaction::findOrFail($ref_code);
-        $validated_data = [
-            'ttm_bc_txn_signature_id' => null,
-            //'ttm_centralization_factor' => null,
-        ];
-        (new _TransactionController)->update( new Request($validated_data), $ref_code );
-        return response()->json( [ 'ref_code' => $element->ref_code ] );
+        (new _TransactionController)->update(new Request(['bc_txn_id' => $bc_txn_id, '_status' => 'completed', 'ttm_bc_txn_signature_id' => null]), $ref_code);
+        return response()->json([ 'ref_code' => $ref_code ]);
     }
 
-    public function centralize_assets_failed(string $ref_code)
+    public function generic_signing_failed(string $ref_code, string $_status_note)
     {
         $element = _Transaction::findOrFail($ref_code);
         (new Tatum\Security\KMSController)->DeletePendingTransactionToSign(new Request(['id' => $element->ttm_bc_txn_signature_id]));
-        $validated_data = [
-            'ttm_bc_txn_signature_id' => null,
-            //'ttm_centralization_factor' => $element->ttm_centralization_factor + 0.005,
-        ];
-        (new _TransactionController)->update( new Request($validated_data), $ref_code );
-        (new _TransactionController)->centralize_assets( $ref_code );
-        return response()->json( [ 'ref_code' => $element->ref_code ] );
+        (new _TransactionController)->update(new Request(['_status' => 'failed', '_status_note' => $_status_note, 'ttm_bc_txn_signature_id' => null]), $ref_code);
+        return response()->json([ 'ref_code' => $element->ref_code ]);
+    }
+
+    public function centralize_assets_failed(string $ref_code, string $_status_note)
+    {
+        $element = _Transaction::findOrFail($ref_code);
+        (new Tatum\Security\KMSController)->DeletePendingTransactionToSign(new Request(['id' => $element->ttm_bc_txn_signature_id]));
+        (new _TransactionController)->update(new Request(['_status' => 'aborted', '_status_note' => $_status_note, 'ttm_bc_txn_signature_id' => null]), $ref_code);
+        //(new _TransactionController)->centralize_assets($ref_code);
+        return response()->json([ 'ref_code' => $element->ref_code ]);
     }
 
     private $ETH_USDT_FCTR = 1000;
@@ -421,12 +428,12 @@ class _TransactionController extends Controller
             'sender_username' => ['required', 'nullable', 'string', 'exists:__users,username'],
             'sender_note' => ['required', 'string', 'max:255'],
         ]);
-        if ( !_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f() ){
-            return response()->json( [ 'reference' => 'placeholder_'.random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7)) ] );
+        if (!_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()){
+            return response()->json([ 'reference' => 'placeholder_'.random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7)) ]);
         }
         $asset = _Asset::firstWhere('code', $validated_data['asset_code']);
-        if ( $asset->chain === 'ETH' && $asset->code === 'ETH' && $asset->unit === 'USDT' ) $validated_data['asset_value'] = $validated_data['asset_value'] / $this->ETH_USDT_FCTR;
-        if ( $asset->chain === 'TRON' && $asset->code === 'TRON' && $asset->unit === 'USDT' ) $validated_data['asset_value'] = $validated_data['asset_value'] / $this->TRX_USDT_FCTR;
+        if ($asset->chain === 'ETH' && $asset->code === 'ETH' && $asset->unit === 'USDT') $validated_data['asset_value'] = $validated_data['asset_value'] / $this->ETH_USDT_FCTR;
+        if ($asset->chain === 'TRON' && $asset->code === 'TRON' && $asset->unit === 'USDT') $validated_data['asset_value'] = $validated_data['asset_value'] / $this->TRX_USDT_FCTR;
         return (new Tatum\VirtualAccounts\TransactionController)->sendTransaction(new Request([
             'curency' => $validated_data['asset_code'],
             'amount' => $validated_data['asset_value'].'',
@@ -446,7 +453,7 @@ class _TransactionController extends Controller
         $element = _Transaction::findOrFail($ref_code);
 
         if (!in_array($element->operation_slug,['PAYMENT', 'WITHDRAWAL', 'TRADE_ASSET_RELEASE'])){
-            return response()->json( [ 'ref_code' => $element->ref_code ] );
+            return response()->json([ 'ref_code' => $element->ref_code ]);
         }
 
         $validated_data['operation_slug'] = 'TRANSACTION_CHARGE';
@@ -458,9 +465,9 @@ class _TransactionController extends Controller
         $validated_data['ttm_reference'] = (new _TransactionController)->transfer_account_to_account(new Request($validated_data))->getData()->reference;
         $validated_data['_status'] = 'completed';
 
-        $element = (new _TransactionController)->store( new Request($validated_data), $ref_code )->getData();
-        (new _TransactionController)->update_local_wallets( $element->ref_code );
-        return response()->json( [ 'ref_code' => $element->ref_code ] );
+        $element = (new _TransactionController)->store(new Request($validated_data))->getData();
+        (new _TransactionController)->update_local_wallets($element->ref_code);
+        return response()->json([ 'ref_code' => $element->ref_code ]);
     }
 
     public function process_token_deposit(Request $request)
@@ -477,12 +484,12 @@ class _TransactionController extends Controller
         $validated_data['recipient_note'] = 'Wallet topup using deposit token '.$validated_data['deposit_token'];
         $validated_data['sender_note'] = $validated_data['recipient_note'];
         $validated_data['_status'] = 'pending';
-        $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
+        $element = (new _TransactionController)->store(new Request($validated_data))->getData();
         $validated_data['ttm_reference'] = (new _TransactionController)->transfer_account_to_account(new Request($validated_data))->getData()->reference;
         $validated_data['_status'] = 'completed';
-        (new _TransactionController)->update( new Request($validated_data), $element->ref_code );;
-        (new _TransactionController)->update_local_wallets( $element->ref_code );
-        return response()->json( [ 'ref_code' => $element->ref_code ] );
+        (new _TransactionController)->update(new Request($validated_data), $element->ref_code);;
+        (new _TransactionController)->update_local_wallets($element->ref_code);
+        return response()->json([ 'ref_code' => $element->ref_code ]);
     }
 
     public function process_trade_asset_release(Request $request)
@@ -505,14 +512,14 @@ class _TransactionController extends Controller
         $validated_data['recipient_note'] = 'Inbound asset release for trade '.$validated_data['ref_code'];
         $validated_data['sender_note'] = 'Outbound asset release for trade '.$validated_data['ref_code'];
         $validated_data['_status'] = 'pending';
-        $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
+        $element = (new _TransactionController)->store(new Request($validated_data))->getData();
         $validated_data['ttm_reference'] = (new _TransactionController)->transfer_account_to_account(new Request($validated_data))->getData()->reference;
         $validated_data['_status'] = 'completed';
-        (new _TransactionController)->update( new Request($validated_data), $element->ref_code );
-        (new _TransactionController)->update_local_wallets( $element->ref_code );
+        (new _TransactionController)->update(new Request($validated_data), $element->ref_code);
+        (new _TransactionController)->update_local_wallets($element->ref_code);
         usleep(500);
         (new _TransactionController)->process_platform_charge(new Request([ 'asset_value' => $validated_data['txn_fee_asset_value']]), $element->ref_code);
-        return response()->json( [ 'ref_code' => $element->ref_code ] );
+        return response()->json([ 'ref_code' => $element->ref_code ]);
     }
 
     public function process_payment(Request $request)
@@ -529,7 +536,7 @@ class _TransactionController extends Controller
             'sender_note' => ['required', 'string', 'max:255'],
         ]);
 
-        $validated_data['sender_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $validated_data['sender_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
         if (!Hash::check($validated_data['sender_password'], _User::firstWhere('username', $validated_data['sender_username'])->makeVisible(['password'])->password)) {
             return abort(422, 'Sender password incorrect');
         }
@@ -544,16 +551,42 @@ class _TransactionController extends Controller
         }
         $validated_data['operation_slug'] = 'PAYMENT';
         $validated_data['_status'] = 'pending';
-        $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
+        $element = (new _TransactionController)->store(new Request($validated_data))->getData();
         $validated_data['ttm_reference'] = (new _TransactionController)->transfer_account_to_account(new Request($validated_data))->getData()->reference;
         $validated_data['_status'] = 'completed';
-        (new _TransactionController)->update( new Request($validated_data), $element->ref_code );
-        (new _TransactionController)->update_local_wallets( $element->ref_code );
+        (new _TransactionController)->update(new Request($validated_data), $element->ref_code);
+        (new _TransactionController)->update_local_wallets($element->ref_code);
         usleep(500);
         $asset = _Asset::firstWhere('code', $validated_data['asset_code']);
         (new _TransactionController)->process_platform_charge(new Request([ 'asset_value' => $validated_data['asset_value'] * _PrefItem::firstWhere('key_slug', 'pymt_txn_fee_fctr')->value_f() ]), $element->ref_code);
 
-        return response()->json( [ 'ref_code' => $element->ref_code ] );
+        return response()->json([ 'ref_code' => $element->ref_code ]);
+    }
+
+    public function process_gp_addresses_activation(Request $request)
+    {
+        $validated_data = $request->validate([
+            'asset_code' => ['required', 'string', 'exists:__assets,code'],
+            'activation_batch_size' => ['required', 'integer', 'between:1,270'],
+        ]);
+        $element = _Asset::firstWhere(['code' => $validated_data['asset_code']])->makeVisible(['ttm_gp_last_activated_index']);
+
+        $validated_data['operation_slug'] = 'GP_ADDRESSES_ACTIVATION';
+        $validated_data['_status'] = 'pending';
+        $validated_data['asset_value'] = 0;
+
+        $from = ($element->ttm_gp_last_activated_index ?? -1) + 1;
+        $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->ActivateGasPumpAddresses(new Request(array_filter([
+            'chain' => $element->chain,
+            'owner' => $element->gp_owner_bc_address,
+            'from' => $from,
+            'to' => $from + $validated_data['activation_batch_size'] - 1,
+            'feeLimit' => ($element->chain === 'TRON' ? 30 * $validated_data['activation_batch_size'] : null),
+            'signatureId' => env('TATUM_KMS_'.$element->chain.'_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
+            'index' => 0,
+        ], static function($var){ return $var !== null; })))->getData();
+        $element = (new _TransactionController)->store(new Request($validated_data))->getData();
+        return response()->json([ 'ref_code' => $element->ref_code ]);
     }
     
     /**
@@ -572,7 +605,7 @@ class _TransactionController extends Controller
             'sender_note' => ['required', 'string', 'max:255'],
         ]);
 
-        $validated_data['sender_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $validated_data['sender_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
         if (!Hash::check($validated_data['sender_password'], _User::firstWhere('username', $validated_data['sender_username'])->makeVisible(['password'])->password)) {
             return abort(422, 'Sender password incorrect');
         }
@@ -582,12 +615,12 @@ class _TransactionController extends Controller
 
         $asset = _Asset::firstWhere('code', $validated_data['asset_code']);
         $validated_data['asset_value_escrowed'] = $validated_data['asset_value'] + $asset->usd_asset_exchange_rate * $asset->withdrawal_txn_fee_usd_fctr;
-        $validated_data['ttm_amount_blockage_id'] = (new _AssetWalletController)->blockAssetValue( new Request([
+        $validated_data['ttm_amount_blockage_id'] = (new _AssetWalletController)->blockAssetValue(new Request([
             'asset_value' => $validated_data['asset_value_escrowed'],
             'blockage_type_slug' => 'withdrawal_escrow',
-        ]), _AssetWallet::firstWhere(['user_username' => $validated_data['sender_username'], 'asset_code' => $validated_data['asset_code']])->id )->getData()->id;
+        ]), _AssetWallet::firstWhere(['user_username' => $validated_data['sender_username'], 'asset_code' => $validated_data['asset_code']])->id)->getData()->id;
 
-        $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
+        $element = (new _TransactionController)->store(new Request($validated_data))->getData();
         unset($validated_data['ttm_amount_blockage_id']);
 
         $reserves_wallet = _AssetWallet::firstWhere(['user_username' => 'reserves', 'asset_code' => $validated_data['asset_code']]);
@@ -595,8 +628,7 @@ class _TransactionController extends Controller
    
         switch ($asset->chain) {
             case 'ETH':
-                $mainnet = false;
-                if ( $mainnet ){
+                if (env('BC_ENV') === 'MAINNET'){
                     $reserves_address = null;
                     if ($asset->code === 'ETH'){
                         foreach ($reserves_addresses as $_reserves_address) {
@@ -610,14 +642,14 @@ class _TransactionController extends Controller
                         $reserves_address = $reserves_addresses[0];
                     }
                     if ($reserves_address === null){
-                        (new _TransactionController)->process_withdrawal_failed( $element->ref_code, 'Traffic issues', 'aborted' );
+                        (new _TransactionController)->process_withdrawal_failed($element->ref_code, 'Traffic issues', 'aborted');
                         return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
                     }
                     $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\EthereumController)->EthBlockchainTransfer(new Request([
                         'to' => $validated_data['recipient_bc_address'],
                         'currency' => $asset->code,
                         'amount' => $validated_data['asset_value'].'',
-                        'signatureId' => env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID'),
+                        'signatureId' => env('TATUM_KMS_ETH_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
                         'index' => $reserves_address->xpub_derivation_key,
                     ]))->getData()->signatureId;
                 } else {
@@ -631,22 +663,21 @@ class _TransactionController extends Controller
                         }
                     }
                     if ($reserves_address === null){
-                        (new _TransactionController)->process_withdrawal_failed( $element->ref_code, 'Traffic issues', 'aborted' );
+                        (new _TransactionController)->process_withdrawal_failed($element->ref_code, 'Traffic issues', 'aborted');
                         return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
                     }
                     $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\EthereumController)->EthBlockchainTransfer(new Request([
                         'to' => $validated_data['recipient_bc_address'],
                         'currency' => 'ETH',
                         'amount' => $amount.'',
-                        'signatureId' => env('TATUM_KMS_ETH_WALLET_SIGNATURE_ID'),
+                        'signatureId' => env('TATUM_KMS_ETH_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
                         'index' => $reserves_address->xpub_derivation_key,
                     ]))->getData()->signatureId;
                 }
                 break;
 
             case 'TRON':
-                $mainnet = false;
-                if ( $mainnet ){
+                if (env('BC_ENV') === 'MAINNET'){
                     $reserves_address = null;                
                     foreach ($reserves_addresses as $_reserves_address) {
                         $tron_acct = (object)['balance' => 0, 'trc20' => []];
@@ -662,7 +693,7 @@ class _TransactionController extends Controller
                         }
                     }
                     if ($reserves_address === null){
-                        (new _TransactionController)->process_withdrawal_failed( $element->ref_code, 'Traffic issues', 'aborted' );
+                        (new _TransactionController)->process_withdrawal_failed($element->ref_code, 'Traffic issues', 'aborted');
                         return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
                     }
                     switch ($asset->code) {
@@ -671,7 +702,7 @@ class _TransactionController extends Controller
                                 'from' => $reserves_address->bc_address,
                                 'to' => $validated_data['recipient_bc_address'],
                                 'amount' => $validated_data['asset_value'].'',
-                                'signatureId' => env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID'),
+                                'signatureId' => env('TATUM_KMS_TRON_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
                                 'index' => $reserves_address->xpub_derivation_key,
                             ]))->getData()->signatureId;
                             break;
@@ -683,7 +714,7 @@ class _TransactionController extends Controller
                                 'tokenAddress' => env('TRON_USDT_TOKEN_ADDRESS'),
                                 'amount' => ($validated_data['asset_value'] * pow((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => 'TRON', 'basePair' => 'USD']))->getData()->value)).'', // in TRX
                                 'feeLimit' => round(pow((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => 'TRON', 'basePair' => 'USD']))->getData()->value, -1) / 3), // in TRX
-                                'signatureId' => env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID'),
+                                'signatureId' => env('TATUM_KMS_TRON_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
                                 'index' => $reserves_address->xpub_derivation_key,
                             ]))->getData()->signatureId;
                             break;
@@ -702,31 +733,31 @@ class _TransactionController extends Controller
                         }
                     }
                     if ($reserves_address === null){
-                        (new _TransactionController)->process_withdrawal_failed( $element->ref_code, 'Traffic issues', 'aborted' );
+                        (new _TransactionController)->process_withdrawal_failed($element->ref_code, 'Traffic issues', 'aborted');
                         return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
                     }
                     $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\TronController)->TronTransfer(new Request([
                         'from' => $reserves_address->bc_address,
                         'to' => $validated_data['recipient_bc_address'],
                         'amount' => $amount.'',
-                        'signatureId' => env('TATUM_KMS_TRON_WALLET_SIGNATURE_ID'),
+                        'signatureId' => env('TATUM_KMS_TRON_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
                         'index' => $reserves_address->xpub_derivation_key,
                     ]))->getData()->signatureId;
                 }
                 break;
         }
 
-        (new _TransactionController)->update( new Request($validated_data), $element->ref_code );
-        return response()->json( [ 'ref_code' => $element->ref_code ] );
+        (new _TransactionController)->update(new Request($validated_data), $element->ref_code);
+        return response()->json([ 'ref_code' => $element->ref_code ]);
     }
 
     public function process_withdrawal_completed(string $ref_code, string $bc_txn_id)
     {
         $element = _Transaction::findOrFail($ref_code);
-        (new _AssetWalletController)->unblockAssetValue( new Request([
+        (new _AssetWalletController)->unblockAssetValue(new Request([
             'asset_value' => $element->asset_value_escrowed,
             'ttm_amount_blockage_id' => $element->ttm_amount_blockage_id,
-        ]), _AssetWallet::firstWhere(['user_username' => $element->sender_username, 'asset_code' => $element->asset_code])->id );
+        ]), _AssetWallet::firstWhere(['user_username' => $element->sender_username, 'asset_code' => $element->asset_code])->id);
         (new _TransactionController)->transfer_account_to_account(new Request([
             'asset_code' => $element->asset_code,
             'asset_value' => $element->asset_value,
@@ -741,11 +772,11 @@ class _TransactionController extends Controller
             'ttm_amount_blockage_id' => null,
             '_status' => 'completed',
         ];
-        (new _TransactionController)->update( new Request($validated_data), $element->ref_code );
-        (new _TransactionController)->update_local_wallets( $element->ref_code );
+        (new _TransactionController)->update(new Request($validated_data), $element->ref_code);
+        (new _TransactionController)->update_local_wallets($element->ref_code);
         usleep(500);
         (new _TransactionController)->process_platform_charge(new Request([ 'asset_value' => $element->asset_value_escrowed - $element->asset_value]), $element->ref_code);
-        return response()->json( [ 'ref_code' => $element->ref_code ] );
+        return response()->json([ 'ref_code' => $element->ref_code ]);
     }
 
     public function process_withdrawal_failed(string $ref_code, string $_status_note, $_status = 'failed')
@@ -754,18 +785,18 @@ class _TransactionController extends Controller
         if ($element->ttm_bc_txn_signature_id){
             (new Tatum\Security\KMSController)->DeletePendingTransactionToSign(new Request(['id' => $element->ttm_bc_txn_signature_id]));
         }
-        (new _AssetWalletController)->unblockAssetValue( new Request([
+        (new _AssetWalletController)->unblockAssetValue(new Request([
             'asset_value' => $element->asset_value_escrowed,
             'ttm_amount_blockage_id' => $element->ttm_amount_blockage_id,
-        ]), _AssetWallet::firstWhere(['user_username' => $element->sender_username, 'asset_code' => $element->asset_code])->id );
+        ]), _AssetWallet::firstWhere(['user_username' => $element->sender_username, 'asset_code' => $element->asset_code])->id);
         $validated_data = [
             'ttm_bc_txn_signature_id' => null,
             'ttm_amount_blockage_id' => null,
             '_status' => $_status,
             '_status_note' => $_status_note,
         ];
-        (new _TransactionController)->update( new Request($validated_data), $ref_code );
-        return response()->json( [ 'ref_code' => $element->ref_code ] );
+        (new _TransactionController)->update(new Request($validated_data), $ref_code);
+        return response()->json([ 'ref_code' => $element->ref_code ]);
     }
 
     /**
@@ -794,9 +825,9 @@ class _TransactionController extends Controller
 
         $transactions = (new Tatum\VirtualAccounts\TransactionController)->getTransactionsByAccountId(new Request(['id' => $validated_data['accountId'], 'currency' => $validated_data['currency']]))->getData();
         $actual_transaction = null;
-        if ( count($transactions) ){
-            $found_key = array_search( $validated_data['txId'], array_column($transactions, 'txId') );
-            $actual_transaction = is_numeric( $found_key ) ? $transactions[$found_key] : null;
+        if (count($transactions)){
+            $found_key = array_search($validated_data['txId'], array_column($transactions, 'txId'));
+            $actual_transaction = is_numeric($found_key) ? $transactions[$found_key] : null;
         }
 
         if ($actual_transaction){
@@ -805,14 +836,14 @@ class _TransactionController extends Controller
             $validated_data['reference'] = $actual_transaction->reference;
             $validated_data['to'] = $actual_transaction->address;
         } else {
-            return abort( 404, 'Actual transaction not found');
+            return abort(404, 'Actual transaction not found');
         }
 
         $recipient_asset_wallet = _AssetWallet::firstWhere(['ttm_virtual_account_id' => $validated_data['accountId']]);
         $asset = _Asset::firstWhere('code', $recipient_asset_wallet->asset_code);
 
-        $validated_data['amount'] *= ( ($asset->chain === 'ETH' && $asset->code === 'ETH' && $asset->unit === 'USDT') ? $this->ETH_USDT_FCTR : 1 );
-        $validated_data['amount'] *= ( ($asset->chain === 'TRON' && $asset->code === 'TRON' && $asset->unit === 'USDT') ? $this->TRX_USDT_FCTR : 1 );
+        $validated_data['amount'] *= (($asset->chain === 'ETH' && $asset->code === 'ETH' && $asset->unit === 'USDT') ? $this->ETH_USDT_FCTR : 1);
+        $validated_data['amount'] *= (($asset->chain === 'TRON' && $asset->code === 'TRON' && $asset->unit === 'USDT') ? $this->TRX_USDT_FCTR : 1);
 
         $txn_recon_data = [
             //'ttm_centralization_factor' => 1,
@@ -830,8 +861,8 @@ class _TransactionController extends Controller
         ];
 
         $element = (new _TransactionController)->store(new Request($txn_recon_data))->getData();
-        (new _TransactionController)->update_local_wallets( $element->ref_code );
-        return (new _TransactionController)->centralize_assets( $element->ref_code );
+        (new _TransactionController)->update_local_wallets($element->ref_code);
+        return (new _TransactionController)->centralize_assets($element->ref_code);
     }
 
     /**
@@ -857,12 +888,10 @@ class _TransactionController extends Controller
         }
 
         switch ($element->operation_slug) {
-            case 'DEPOSIT':
-                return (new _TransactionController)->centralize_assets_completed( $element->ref_code );
             case 'WITHDRAWAL':
-                return (new _TransactionController)->process_withdrawal_completed( $element->ref_code, $validated_data['txId'] );
+                return (new _TransactionController)->process_withdrawal_completed($element->ref_code, $validated_data['txId']);
             default:
-                return response()->json( [ 'ref_code' => $element->ref_code ] );
+                return (new _TransactionController)->generic_signing_completed($element->ref_code, $validated_data['txId']);
         }
     }
 
@@ -885,18 +914,24 @@ class _TransactionController extends Controller
         $element = _Transaction::firstWhere(['ttm_bc_txn_signature_id' => $validated_data['signatureId']]);
 
         if (!$element){
-            (new Tatum\Security\KMSController)->DeletePendingTransactionToSign(new Request(['id' => $validated_data['signatureId']]));
             return;
         }
 
         switch ($element->operation_slug) {
-            case 'DEPOSIT':
-                return (new _TransactionController)->centralize_assets_failed( $element->ref_code );
             case 'WITHDRAWAL':
-                return (new _TransactionController)->process_withdrawal_failed( $element->ref_code, $validated_data['error'] );
+                return (new _TransactionController)->process_withdrawal_failed($element->ref_code, $validated_data['error']);
+            case 'CENTRALIZE_ASSETS':
+                return (new _TransactionController)->centralize_assets_failed($element->ref_code, $validated_data['error']);
             default:
-                return response()->json( [ 'ref_code' => $element->ref_code ] );
+                return (new _TransactionController)->generic_signing_failed($element->ref_code, $validated_data['error']);
         }
+    }
+
+    public function validate_signature(string $transaction_id)
+    {
+        $element = _Transaction::firstWhere(['ttm_bc_txn_signature_id' => $transaction_id]);
+        if (!$element) return abort(404, 'Transaction with specified signature id not found');
+        return response()->json([ 'ref_code' => $element->ref_code ]);
     }
 
     public function test_transfer(Request $request)
@@ -910,7 +945,7 @@ class _TransactionController extends Controller
         $validated_data['_status'] = 'completed';
         $validated_data['operation_slug'] = 'DEPOSIT';
         $element = (new _TransactionController)->store(new Request($validated_data))->getData();
-        (new _TransactionController)->update_local_wallets( $element->ref_code );
-        return response()->json( [ 'ref_code' => $element->ref_code ] );
+        (new _TransactionController)->update_local_wallets($element->ref_code);
+        return response()->json([ 'ref_code' => $element->ref_code ]);
     }
 }

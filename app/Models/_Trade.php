@@ -78,7 +78,7 @@ class _Trade extends Model
      */
     public function messages()
     {
-        return $this->hasMany( _Message::class, 'parent_uid', 'ref_code')->where('parent_table', '__trades');
+        return $this->hasMany(_Message::class, 'parent_uid', 'ref_code')->where('parent_table', '__trades');
     }
 
     /**
@@ -86,7 +86,7 @@ class _Trade extends Model
      */
     public function completion_review_on_trade_creator()
     {
-        return $this->hasOne( _Review::class, 'parent_uid', 'creator_username' )->where(['parent_table' => '__users', 'pivot_parent_table' => '__trades', 'pivot_parent_uid' => $this->ref_code]);
+        return $this->hasOne(_Review::class, 'parent_uid', 'creator_username')->where(['parent_table' => '__users', 'pivot_parent_table' => '__trades', 'pivot_parent_uid' => $this->ref_code]);
     }
 
     /**
@@ -94,7 +94,7 @@ class _Trade extends Model
      */
     public function completion_review_on_offer_creator()
     {
-        return $this->hasOne( _Review::class, 'parent_uid', 'offer_creator_username' )->where(['parent_table' => '__users', 'pivot_parent_table' => '__trades', 'pivot_parent_uid' => $this->ref_code]);
+        return $this->hasOne(_Review::class, 'parent_uid', 'offer_creator_username')->where(['parent_table' => '__users', 'pivot_parent_table' => '__trades', 'pivot_parent_uid' => $this->ref_code]);
     }
 
     /**
@@ -102,22 +102,22 @@ class _Trade extends Model
      */
     public function logs()
     {
-        return $this->hasMany( _Log::class, 'entry_uid' )->where('entry_table', '__trades');
+        return $this->hasMany(_Log::class, 'entry_uid')->where('entry_table', '__trades');
     }
 
     public function messages_f()
     {
-        return count($this->messages) ? json_decode(( new _MessageResourceCollection( $this->messages()->orderBy('created_datetime')->get() ))->toJson(),true)['data']: null;
+        return count($this->messages) ? json_decode((new _MessageResourceCollection($this->messages()->orderBy('created_datetime')->get()))->toJson(),true)['data']: null;
     }
 
     public function completion_review_on_trade_creator_f()
     {
-        return $this->completion_review_on_trade_creator ? json_decode(( new _ReviewResourceCollection( [$this->completion_review_on_trade_creator] ))->toJson(),true)['data'][0] : null;
+        return $this->completion_review_on_trade_creator ? json_decode((new _ReviewResourceCollection([$this->completion_review_on_trade_creator]))->toJson(),true)['data'][0] : null;
     }
 
     public function completion_review_on_offer_creator_f()
     {
-        return $this->completion_review_on_offer_creator ? json_decode(( new _ReviewResourceCollection( [$this->completion_review_on_offer_creator] ))->toJson(),true)['data'][0] : null;
+        return $this->completion_review_on_offer_creator ? json_decode((new _ReviewResourceCollection([$this->completion_review_on_offer_creator]))->toJson(),true)['data'][0] : null;
     }
 
     public function last_activity_datetime_f()
@@ -150,19 +150,19 @@ class _Trade extends Model
 
     public function mins_remaining_f()
     {
-        return round((( (new Carbon($this->created_datetime))->timestamp + ($this->buyer_cmplt_trade_mins_tmt * 60) ) - time()) / 60);
+        return round((((new Carbon($this->created_datetime))->timestamp + ($this->buyer_cmplt_trade_mins_tmt * 60)) - time()) / 60);
     }
     
     public function peer_rating_f()
     {
-        $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
         $peer_username = $api_auth_user_username == $this->creator_username ? $this->offer_creator_username : $this->creator_username;
         return _User::firstWhere('username', $peer_username)->rating_f();
     }
 
     public function peer_trades_as_buyer_stats_f()
     {
-        $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
         $peer_username = $api_auth_user_username == $this->creator_username ? $this->offer_creator_username : $this->creator_username;
         return _User::firstWhere('username', $peer_username)->trades_as_buyer_stats_f();
     }

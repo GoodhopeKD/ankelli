@@ -38,11 +38,11 @@ class _MessageController extends Controller
         ]);
 
         $validated_data['id'] = random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
-        $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
 
         $element = _Message::create($validated_data);
         // Handle _Log
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => 'Addition of _Message entry to database.',
             'action_type' => 'entry_create',
             'entry_table' => $element->getTable(),
@@ -51,7 +51,7 @@ class _MessageController extends Controller
         ]));
         // End _Log Handling
 
-        if ($request->expectsJson()) return response()->json( new _MessageResource( $element ) );
+        if ($request->expectsJson()) return response()->json(new _MessageResource($element));
     }
 
     /**

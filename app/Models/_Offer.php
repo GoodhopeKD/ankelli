@@ -78,7 +78,7 @@ class _Offer extends Model
      */
     public function logs()
     {
-        return $this->hasMany( _Log::class, 'entry_uid' )->where('entry_table', '__offers');
+        return $this->hasMany(_Log::class, 'entry_uid')->where('entry_table', '__offers');
     }
 
     public function creator_rating_f()

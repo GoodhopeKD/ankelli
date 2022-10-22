@@ -42,7 +42,7 @@ class _Session extends Model
      */
     public function logs()
     {
-        return $this->hasMany( _Log::class, 'entry_uid', 'token' )->where('entry_table', '__sessions');
+        return $this->hasMany(_Log::class, 'entry_uid', 'token')->where('entry_table', '__sessions');
     }
 
     /**
@@ -50,7 +50,7 @@ class _Session extends Model
      */
     public function logs_in_session()
     {
-        return $this->hasMany( _Log::class, 'session_token', 'token' );
+        return $this->hasMany(_Log::class, 'session_token', 'token');
     }
     
     public function last_active_datetime_f()

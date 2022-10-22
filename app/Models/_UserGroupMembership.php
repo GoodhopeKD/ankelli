@@ -26,7 +26,7 @@ class _UserGroupMembership extends Model
      */
     public function user_group()
     {
-        return $this->belongsTo( _UserGroup::class , 'user_group_slug', 'slug' );
+        return $this->belongsTo(_UserGroup::class , 'user_group_slug', 'slug');
     }
 
     /**
@@ -34,7 +34,7 @@ class _UserGroupMembership extends Model
      */
     public function admin_extension()
     {
-        return $this->belongsTo( _AdminExtension::class , 'user_username', 'user_username' );
+        return $this->belongsTo(_AdminExtension::class , 'user_username', 'user_username');
     }
 
     public function post_title_f()

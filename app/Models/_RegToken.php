@@ -28,7 +28,7 @@ class _RegToken extends Model
      */
     public function logs()
     {
-        return $this->hasMany( _Log::class, 'entry_uid' )->where('entry_table', '__trades');
+        return $this->hasMany(_Log::class, 'entry_uid')->where('entry_table', '__trades');
     }
 
     /**
@@ -36,6 +36,6 @@ class _RegToken extends Model
      */
     public function users()
     {
-        return $this->hasMany( _User::class, 'reg_token' );
+        return $this->hasMany(_User::class, 'reg_token');
     }
 }

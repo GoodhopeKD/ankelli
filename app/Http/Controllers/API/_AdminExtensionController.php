@@ -36,11 +36,11 @@ class _AdminExtensionController extends Controller
             '_status' => ['sometimes', 'string', Rule::in(['active', 'suspended', 'deactivated'])],
         ]);
 
-        $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null );
+        $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
 
         $element = _AdminExtension::create($validated_data);
         // Handle _Log
-        (new _LogController)->store( new Request([
+        (new _LogController)->store(new Request([
             'action_note' => 'Addition of _AdminExtension entry to database.',
             'action_type' => 'entry_create',
             'entry_table' => $element->getTable(),
@@ -49,7 +49,7 @@ class _AdminExtensionController extends Controller
         ]));
         // End _Log Handling
 
-        if ($request->expectsJson()) return response()->json( new _AdminExtensionResource( $element ) );
+        if ($request->expectsJson()) return response()->json(new _AdminExtensionResource($element));
     }
 
     /**
