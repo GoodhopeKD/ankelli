@@ -30,7 +30,7 @@ class EstimateEthereumTransactionFeeController extends Controller
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
-                "x-api-key: ".env('TATUM_X_API_KEY'),
+                "x-api-key: ".env('TATUM_'.env('BC_ENV').'_API_KEY'),
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/ethereum/gas",

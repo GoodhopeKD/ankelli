@@ -102,7 +102,7 @@ class _AssetWalletAddressController extends Controller
                 $address_picked = false;
                 $xpub_derivation_key = 0;
                 while ($address_picked === false) {
-                    $asset = _Asset::firstWhere(['chain' => $asset_wallet->asset_chain, 'ttm_gp_chain_addresses_storage' => true])->makeVisible(['ttm_gp_activated_batch_addresses', 'xpub']);
+                    $asset = _Asset::firstWhere(['chain' => $asset_wallet->asset_chain, 'ttm_gp_chain_addresses_storage' => true])->makeVisible(['ttm_gp_calculated_batch_addresses', 'xpub']);
                     $chosen_address = null;
                     if ( $validated_data['user_username'] === 'reserves' ){
                         switch ($asset->chain) {
@@ -117,13 +117,13 @@ class _AssetWalletAddressController extends Controller
                         $validated_data['xpub_derivation_key'] = $xpub_derivation_key;
                         $xpub_derivation_key++;
                     } else {
-                        if (!count($asset->ttm_gp_activated_batch_addresses)){
-                            (new _AssetController)->activate_next_gp_addresses_batch($asset->id);
-                            $asset = _Asset::firstWhere(['chain' => $asset_wallet->asset_chain, 'ttm_gp_chain_addresses_storage' => true])->makeVisible(['ttm_gp_activated_batch_addresses']);
+                        if (!count($asset->ttm_gp_calculated_batch_addresses)){
+                            (new _AssetController)->calculate_next_gp_addresses_batch($asset->id);
+                            $asset = _Asset::firstWhere(['chain' => $asset_wallet->asset_chain, 'ttm_gp_chain_addresses_storage' => true])->makeVisible(['ttm_gp_calculated_batch_addresses']);
                         }
-                        $ttm_gp_activated_batch_addresses = $asset->ttm_gp_activated_batch_addresses;
-                        $chosen_address = array_shift($ttm_gp_activated_batch_addresses);
-                        (new _AssetController)->update(new Request(['ttm_gp_activated_batch_addresses' => $ttm_gp_activated_batch_addresses]), $asset->id);
+                        $ttm_gp_calculated_batch_addresses = $asset->ttm_gp_calculated_batch_addresses;
+                        $chosen_address = array_shift($ttm_gp_calculated_batch_addresses);
+                        (new _AssetController)->update(new Request(['ttm_gp_calculated_batch_addresses' => $ttm_gp_calculated_batch_addresses]), $asset->id);
                     }
                     $address_usable = false;
                     try {

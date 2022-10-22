@@ -103,7 +103,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::post('content/files/upload', '_FileController@upload')->name('files.upload');
     Route::apiResource('content/files', '_FileController')->except(['index'])->parameter('files', 'id');
 
-    Route::get('funds/transactions', '_TransactionController@index')->name('funds.transactions.index');
+    Route::apiResource('funds/transactions', '_TransactionController')->only(['index', 'show'])->parameter('transactions', 'ref_code');
     Route::post('funds/transactions/process-payment', '_TransactionController@process_payment')->name('process_payment_transaction');
     Route::post('funds/transactions/process-withdrawal', '_TransactionController@process_withdrawal')->name('process_withdrawal_transaction');
 

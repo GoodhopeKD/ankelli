@@ -7,6 +7,7 @@ import BCWithdrawScreen from "app/views/screens/funds_menu/BCWithdraw.screen"
 import PlatformSendPaymentScreen from "app/views/screens/pay_menu/PlatformSendPayment.screen"
 import DepositTokenTopupScreen from 'app/views/screens/funds_menu/DepositTokenTopup.screen'
 import TransactionsViewListScreen from 'app/views/screens/funds_menu/TransactionsViewList.screen'
+import TransactionsViewSingleScreen from 'app/views/screens/funds_menu/TransactionsViewSingle.screen'
 
 import SideBar from 'app/views/components/SideBar'
 
@@ -72,6 +73,12 @@ export const funds_menu = {
             title: 'Transactions',
             path: '/transactions',
             element: (props) => <TransactionsViewListScreen {...props} />,
+        },
+        {
+            title: 'Transaction',
+            path: '/transactions/:ref_code',
+            show_in_menu: false,
+            element: (props) => <TransactionsViewSingleScreen {...props} />,
         },
         {
             title: 'Ankelli Pay',

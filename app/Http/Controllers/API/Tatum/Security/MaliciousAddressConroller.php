@@ -24,7 +24,7 @@ class MaliciousAddressConroller extends Controller
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
-                "x-api-key: ".env('TATUM_X_API_KEY'),
+                "x-api-key: ".env('TATUM_'.env('BC_ENV').'_API_KEY'),
             ],
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/security/address/".$validated_data['address'],
             CURLOPT_RETURNTRANSFER => true,

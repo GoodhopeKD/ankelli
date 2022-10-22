@@ -25,7 +25,7 @@ class _FileResourceCollection extends ResourceCollection
                     'title'                 => $_this->title,
                     'width'                 => $_this->width,
                     'height'                => $_this->height,
-                    'uri'                   => str_replace( "ankelli.com", env('MIX_DOMAIN_NAME') ,$_this->uri ),
+                    'uri'                   => str_replace( "ankelli.com", env('APP_DOMAIN_NAME') ,$_this->uri ),
                     //'type'                  => $_this->type,
                     //'filesize'              => $_this->filesize,
                     //'original_filename'     => $_this->original_filename,

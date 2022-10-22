@@ -32,7 +32,7 @@ class AccountController extends Controller
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
-                "x-api-key: ".env('TATUM_X_API_KEY'),
+                "x-api-key: ".env('TATUM_'.env('BC_ENV').'_API_KEY'),
             ],
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account?".http_build_query($query_params),
             CURLOPT_RETURNTRANSFER => true,
@@ -65,7 +65,7 @@ class AccountController extends Controller
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
-                "x-api-key: ".env('TATUM_X_API_KEY'),
+                "x-api-key: ".env('TATUM_'.env('BC_ENV').'_API_KEY'),
             ],
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/customer/".$validated_data['id']."?".http_build_query($query_params),
             CURLOPT_RETURNTRANSFER => true,
@@ -105,7 +105,7 @@ class AccountController extends Controller
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
-                "x-api-key: ".env('TATUM_X_API_KEY'),
+                "x-api-key: ".env('TATUM_'.env('BC_ENV').'_API_KEY'),
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account",
@@ -132,7 +132,7 @@ class AccountController extends Controller
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
-                "x-api-key: ".env('TATUM_X_API_KEY'),
+                "x-api-key: ".env('TATUM_'.env('BC_ENV').'_API_KEY'),
             ],
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/".$validated_data['id'],
             CURLOPT_RETURNTRANSFER => true,
@@ -158,7 +158,7 @@ class AccountController extends Controller
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
-                "x-api-key: ".env('TATUM_X_API_KEY'),
+                "x-api-key: ".env('TATUM_'.env('BC_ENV').'_API_KEY'),
             ],
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/".$validated_data['id']."/deactivate",
             CURLOPT_RETURNTRANSFER => true,
@@ -189,7 +189,7 @@ class AccountController extends Controller
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
-                "x-api-key: ".env('TATUM_X_API_KEY'),
+                "x-api-key: ".env('TATUM_'.env('BC_ENV').'_API_KEY'),
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/block/".$validated_data['id'],
@@ -216,7 +216,7 @@ class AccountController extends Controller
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
-                "x-api-key: ".env('TATUM_X_API_KEY'),
+                "x-api-key: ".env('TATUM_'.env('BC_ENV').'_API_KEY'),
             ],
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/block/".$validated_data['id'],
             CURLOPT_RETURNTRANSFER => true,
@@ -249,7 +249,7 @@ class AccountController extends Controller
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
-                "x-api-key: ".env('TATUM_X_API_KEY'),
+                "x-api-key: ".env('TATUM_'.env('BC_ENV').'_API_KEY'),
             ],
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/block/".$validated_data['id']."?".http_build_query($query_params),
             CURLOPT_RETURNTRANSFER => true,
@@ -275,7 +275,7 @@ class AccountController extends Controller
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
-                "x-api-key: ".env('TATUM_X_API_KEY'),
+                "x-api-key: ".env('TATUM_'.env('BC_ENV').'_API_KEY'),
             ],
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/ledger/account/block/account/".$validated_data['id'],
             CURLOPT_RETURNTRANSFER => true,

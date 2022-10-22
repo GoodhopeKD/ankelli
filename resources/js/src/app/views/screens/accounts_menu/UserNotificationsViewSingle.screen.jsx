@@ -14,7 +14,7 @@ export default withRouter(class NotificationsViewSingleScreen extends React.Comp
     focused_notification = null
 
     componentDidMount = () => {
-        _Notification.getOne({ id: this.props.params.notification_id })
+        _Notification.getOne({ id: this.props.params.id })
             .then(notification => {
                 this.focused_notification = new _Notification(notification)
                 this.setState({ focused_notification_loaded: true, })

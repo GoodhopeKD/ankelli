@@ -26,8 +26,8 @@ class _Transaction extends Model
 
         'session_token',
         'operation_slug',
-        'failure_note',
         '_status',
+        '_status_note',
 
         'sender_bc_address',
         'sender_username',

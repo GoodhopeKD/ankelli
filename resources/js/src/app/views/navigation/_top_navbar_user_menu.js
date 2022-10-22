@@ -15,7 +15,7 @@ export const _top_navbar_user_menu = {
         },
         {
             title: 'View notification',
-            path: '/notifications/:notification_id',
+            path: '/notifications/:id',
             show_in_menu: false,
             element: (props) => <UserNotificationsViewSingleScreen {...props} />,
         },

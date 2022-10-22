@@ -62,7 +62,7 @@ class OffersViewSingleScreen extends React.Component {
     }
 
     componentDidMount = () => {
-        _Offer.getOne({ ref_code: this.props.params.ref_code })
+        _Offer.getOne({ ref_code: this.props.params.offer_ref_code })
             .then(offer => {
                 this.focused_offer = new _Offer(offer)
                 this.currencyToAsset(this.props.params.currency_amount ?? (offer.offer_to == 'buy' ? offer.min_trade_purchase_amount : offer.offer_price * offer.min_trade_sell_value))

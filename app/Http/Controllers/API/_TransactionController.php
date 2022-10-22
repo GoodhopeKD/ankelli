@@ -71,7 +71,7 @@ class _TransactionController extends Controller
             'bc_txn_id' => ['nullable', 'string', 'unique:__transactions,bc_txn_id'],
 
             'operation_slug' => ['required', 'string'],
-            '_status' => ['required', 'string', Rule::in(['pending', 'failed', 'completed'])],
+            '_status' => ['required', 'string', Rule::in(['pending', 'completed'])],
 
             'sender_bc_address' => ['sometimes', 'string', 'between:13,128'],
             'sender_username' => ['sometimes', 'string', 'exists:__users,username'],
@@ -155,7 +155,7 @@ class _TransactionController extends Controller
             'ttm_amount_blockage_id' => ['nullable', 'string', 'unique:__transactions,ttm_amount_blockage_id'],
             //'ttm_centralization_factor' => ['nullable', 'numeric', 'between:1,2'],
             'bc_txn_id' => ['sometimes', 'string', 'unique:__transactions,bc_txn_id'],    
-            '_status' => ['sometimes', 'string', Rule::in(['pending', 'failed', 'completed'])],
+            '_status' => ['sometimes', 'string', Rule::in(['pending', 'failed', 'aborted', 'completed'])],
             'transfer_result' => ['sometimes', 'array'],
         ]);
         $element = _Transaction::findOrFail($ref_code);
@@ -488,7 +488,7 @@ class _TransactionController extends Controller
     public function process_trade_asset_release(Request $request)
     {
         $validated_data = $request->validate([
-            'trade_ref_code' => ['required', 'string', 'exists:__trades,ref_code'],
+            'ref_code' => ['required', 'string', 'exists:__trades,ref_code'],
             'sender_username' => ['required', 'string', 'exists:__users,username'],
             'sender_password' => ['required', 'string', 'between:8,32'],
             'recipient_username' => ['required', 'string', 'exists:__users,username'],
@@ -502,8 +502,8 @@ class _TransactionController extends Controller
         }
 
         $validated_data['operation_slug'] = 'TRADE_ASSET_RELEASE';
-        $validated_data['recipient_note'] = 'Inbound asset release for trade '.$validated_data['trade_ref_code'];
-        $validated_data['sender_note'] = 'Outbound asset release for trade '.$validated_data['trade_ref_code'];
+        $validated_data['recipient_note'] = 'Inbound asset release for trade '.$validated_data['ref_code'];
+        $validated_data['sender_note'] = 'Outbound asset release for trade '.$validated_data['ref_code'];
         $validated_data['_status'] = 'pending';
         $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
         $validated_data['ttm_reference'] = (new _TransactionController)->transfer_account_to_account(new Request($validated_data))->getData()->reference;
@@ -547,7 +547,7 @@ class _TransactionController extends Controller
         $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
         $validated_data['ttm_reference'] = (new _TransactionController)->transfer_account_to_account(new Request($validated_data))->getData()->reference;
         $validated_data['_status'] = 'completed';
-        (new _TransactionController)->update( new Request($validated_data), $element->ref_code );;
+        (new _TransactionController)->update( new Request($validated_data), $element->ref_code );
         (new _TransactionController)->update_local_wallets( $element->ref_code );
         usleep(500);
         $asset = _Asset::firstWhere('code', $validated_data['asset_code']);
@@ -587,6 +587,9 @@ class _TransactionController extends Controller
             'blockage_type_slug' => 'withdrawal_escrow',
         ]), _AssetWallet::firstWhere(['user_username' => $validated_data['sender_username'], 'asset_code' => $validated_data['asset_code']])->id )->getData()->id;
 
+        $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
+        unset($validated_data['ttm_amount_blockage_id']);
+
         $reserves_wallet = _AssetWallet::firstWhere(['user_username' => 'reserves', 'asset_code' => $validated_data['asset_code']]);
         $reserves_addresses = _AssetWalletAddress::where(['user_username' => 'reserves', 'asset_code' => $validated_data['asset_code']])->inRandomOrder()->get()->makeVisible(['xpub_derivation_key']);
    
@@ -607,6 +610,7 @@ class _TransactionController extends Controller
                         $reserves_address = $reserves_addresses[0];
                     }
                     if ($reserves_address === null){
+                        (new _TransactionController)->process_withdrawal_failed( $element->ref_code, 'Traffic issues', 'aborted' );
                         return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
                     }
                     $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\EthereumController)->EthBlockchainTransfer(new Request([
@@ -627,6 +631,7 @@ class _TransactionController extends Controller
                         }
                     }
                     if ($reserves_address === null){
+                        (new _TransactionController)->process_withdrawal_failed( $element->ref_code, 'Traffic issues', 'aborted' );
                         return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
                     }
                     $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\EthereumController)->EthBlockchainTransfer(new Request([
@@ -657,6 +662,7 @@ class _TransactionController extends Controller
                         }
                     }
                     if ($reserves_address === null){
+                        (new _TransactionController)->process_withdrawal_failed( $element->ref_code, 'Traffic issues', 'aborted' );
                         return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
                     }
                     switch ($asset->code) {
@@ -696,6 +702,7 @@ class _TransactionController extends Controller
                         }
                     }
                     if ($reserves_address === null){
+                        (new _TransactionController)->process_withdrawal_failed( $element->ref_code, 'Traffic issues', 'aborted' );
                         return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
                     }
                     $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\TronController)->TronTransfer(new Request([
@@ -709,19 +716,13 @@ class _TransactionController extends Controller
                 break;
         }
 
-        $element = (new _TransactionController)->store( new Request($validated_data) )->getData();
+        (new _TransactionController)->update( new Request($validated_data), $element->ref_code );
         return response()->json( [ 'ref_code' => $element->ref_code ] );
     }
 
     public function process_withdrawal_completed(string $ref_code, string $bc_txn_id)
     {
         $element = _Transaction::findOrFail($ref_code);
-        $validated_data = [
-            'bc_txn_id' => $bc_txn_id,
-            'ttm_bc_txn_signature_id' => null,
-            'ttm_amount_blockage_id' => null,
-            '_status' => 'completed',
-        ];
         (new _AssetWalletController)->unblockAssetValue( new Request([
             'asset_value' => $element->asset_value_escrowed,
             'ttm_amount_blockage_id' => $element->ttm_amount_blockage_id,
@@ -734,6 +735,12 @@ class _TransactionController extends Controller
             'sender_username' => $element->sender_username,
             'sender_note' => 'Transfer for processing of withdrawal '.$element->ref_code,
         ]));
+        $validated_data = [
+            'bc_txn_id' => $bc_txn_id,
+            'ttm_bc_txn_signature_id' => null,
+            'ttm_amount_blockage_id' => null,
+            '_status' => 'completed',
+        ];
         (new _TransactionController)->update( new Request($validated_data), $element->ref_code );
         (new _TransactionController)->update_local_wallets( $element->ref_code );
         usleep(500);
@@ -741,20 +748,22 @@ class _TransactionController extends Controller
         return response()->json( [ 'ref_code' => $element->ref_code ] );
     }
 
-    public function process_withdrawal_failed(string $ref_code, string $failure_note)
+    public function process_withdrawal_failed(string $ref_code, string $_status_note, $_status = 'failed')
     {
         $element = _Transaction::findOrFail($ref_code);
-        (new Tatum\Security\KMSController)->DeletePendingTransactionToSign(new Request(['id' => $element->ttm_bc_txn_signature_id]));
-        $validated_data = [
-            'ttm_bc_txn_signature_id' => null,
-            'ttm_amount_blockage_id' => null,
-            '_status' => 'failed',
-            'failure_note' => $failure_note,
-        ];
+        if ($element->ttm_bc_txn_signature_id){
+            (new Tatum\Security\KMSController)->DeletePendingTransactionToSign(new Request(['id' => $element->ttm_bc_txn_signature_id]));
+        }
         (new _AssetWalletController)->unblockAssetValue( new Request([
             'asset_value' => $element->asset_value_escrowed,
             'ttm_amount_blockage_id' => $element->ttm_amount_blockage_id,
         ]), _AssetWallet::firstWhere(['user_username' => $element->sender_username, 'asset_code' => $element->asset_code])->id );
+        $validated_data = [
+            'ttm_bc_txn_signature_id' => null,
+            'ttm_amount_blockage_id' => null,
+            '_status' => $_status,
+            '_status_note' => $_status_note,
+        ];
         (new _TransactionController)->update( new Request($validated_data), $ref_code );
         return response()->json( [ 'ref_code' => $element->ref_code ] );
     }

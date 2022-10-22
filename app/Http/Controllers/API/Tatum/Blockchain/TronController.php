@@ -28,7 +28,7 @@ class TronController extends Controller
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
-                "x-api-key: ".env('TATUM_X_API_KEY'),
+                "x-api-key: ".env('TATUM_'.env('BC_ENV').'_API_KEY'),
             ],
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/tron/wallet?".http_build_query($query_params),
             CURLOPT_RETURNTRANSFER => true,
@@ -54,7 +54,7 @@ class TronController extends Controller
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
-                "x-api-key: ".env('TATUM_X_API_KEY'),
+                "x-api-key: ".env('TATUM_'.env('BC_ENV').'_API_KEY'),
             ],
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/tron/address/".$validated_data['xpub']."/".$validated_data['index'],
             CURLOPT_RETURNTRANSFER => true,
@@ -83,7 +83,7 @@ class TronController extends Controller
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
-                "x-api-key: ".env('TATUM_X_API_KEY'),
+                "x-api-key: ".env('TATUM_'.env('BC_ENV').'_API_KEY'),
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/tron/wallet/priv",
@@ -109,7 +109,7 @@ class TronController extends Controller
         $curl = curl_init();
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
-                "x-api-key: ".env('TATUM_X_API_KEY'),
+                "x-api-key: ".env('TATUM_'.env('BC_ENV').'_API_KEY'),
             ],
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/tron/account/".$validated_data['address'],
             CURLOPT_RETURNTRANSFER => true,
@@ -143,7 +143,7 @@ class TronController extends Controller
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
-                "x-api-key: ".env('TATUM_X_API_KEY'),
+                "x-api-key: ".env('TATUM_'.env('BC_ENV').'_API_KEY'),
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/tron/freezeBalance",
@@ -176,7 +176,7 @@ class TronController extends Controller
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
-                "x-api-key: ".env('TATUM_X_API_KEY'),
+                "x-api-key: ".env('TATUM_'.env('BC_ENV').'_API_KEY'),
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/tron/transaction",
@@ -211,7 +211,7 @@ class TronController extends Controller
         curl_setopt_array($curl, [
             CURLOPT_HTTPHEADER => [
                 "Content-Type: application/json",
-                "x-api-key: ".env('TATUM_X_API_KEY'),
+                "x-api-key: ".env('TATUM_'.env('BC_ENV').'_API_KEY'),
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
             CURLOPT_URL => "https://api-eu1.tatum.io/v3/tron/transaction",

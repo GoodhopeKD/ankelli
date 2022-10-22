@@ -59,6 +59,10 @@ export default class _Transaction extends _Wrapper_ implements Omit<typeof _Tran
         this.transfer_datetime = new _DateTime(args.transfer_datetime)
     }
 
+    public static async getOne(params: { ref_code: string }) {
+        return this._mainLaravelDBAPIGetOne('funds/transactions/{ref_code}', params)
+    }
+
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
         return this._mainLaravelDBAPIGetCollection('funds/transactions', params, page_select, per_page)
     }

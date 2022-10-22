@@ -1,6 +1,7 @@
 import React from "react"
 import { connect } from 'react-redux'
 import _ from 'lodash'
+import { Link } from "react-router-dom";
 
 import SideBar from 'app/views/components/SideBar'
 
@@ -183,11 +184,11 @@ class TransactionsViewListScreen extends React.Component {
                                         <tr>
                                             <th scope="col">Ref Code</th>
                                             <th scope="col">Type</th>
+                                            <th scope="col" style={{ minWidth: 140 }}>Asset Name</th>
                                             <th scope="col" style={{ minWidth: 140 }}>Asset Value</th>
                                             <th scope="col" style={{ minWidth: 300 }}>Note</th>
                                             <th scope="col" style={{ minWidth: 200 }}>Datetime</th>
-                                            <th scope="col" style={{ minWidth: 140 }}>New balance</th>
-                                            <th scope="col" style={{ minWidth: 100 }}>Hash</th>
+                                            <th scope="col" style={{ minWidth: 100 }}>Action</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -195,14 +196,14 @@ class TransactionsViewListScreen extends React.Component {
                                             this.state.list.map((transaction, index) => {
                                                 const asset = this.props.datalists.active_assets[transaction.asset_code]
                                                 const debit = transaction.sender_username == this.props.auth_user.username
-                                                const tr_group = debit ? 'Debit' : 'Credit'
                                                 return <tr key={index} >
                                                     <td className="align-middle small">{transaction.ref_code}</td>
-                                                    <td className="align-middle small">{tr_group}</td>
+                                                    <td className="align-middle small">{debit ? 'Debit' : 'Credit'}</td>
+                                                    <td className="align-middle small">{asset.name}</td>
                                                     <td className="align-middle small">{window.assetValueString(transaction.asset_value, asset)}</td>
                                                     <td className="align-middle small">{debit ? transaction.sender_note : transaction.recipient_note}</td>
                                                     <td className="align-middle small">{window.ucfirst(new _DateTime(transaction.transfer_datetime).prettyDatetime())}</td>
-                                                    <td className="align-middle small">{transaction._status === 'completed' ? window.assetValueString(transaction.transfer_result.find(tr => tr.user_username == this.props.auth_user.username).new_total_balance_asset_value, asset) : <span className={"text-" + (transaction._status === 'pending' ? "warning" : "danger")}>Transfer {transaction._status}</span>}</td>
+                                                    {/*<td className="align-middle small">{transaction._status === 'completed' ? window.assetValueString(transaction.transfer_result.find(tr => tr.user_username == this.props.auth_user.username).new_total_balance_asset_value, asset) : <span className={"text-" + (transaction._status === 'pending' ? "warning" : "danger")}>Transfer {transaction._status}</span>}</td>
                                                     <td className="align-middle small">
                                                         {window.isset(transaction.bc_txn_id) ? <>
                                                             <div className="input-group input-group-sm">
@@ -212,6 +213,13 @@ class TransactionsViewListScreen extends React.Component {
                                                                 </span>
                                                             </div>
                                                         </> : <>-</>}
+                                                    </td>
+                                                    */}
+                                                    <td className="align-middle small">
+                                                        <div className="btn-group">
+                                                            {/*<button type="button" className="btn btn-sm btn-outline-secondary">•••</button>*/}
+                                                            <Link to={'/funds/transactions/' + transaction.ref_code} className='btn btn-sm btn-primary' >Open</Link>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             })

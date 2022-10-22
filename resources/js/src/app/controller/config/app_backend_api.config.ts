@@ -42,7 +42,7 @@ const config = {
         strictly_auth_clear_endpoints,
         auth_clear_on_GET_endpoints
     },
-    API_URL: process.env.MIX_API_URL as string,
+    API_URL: document.getElementById('app-api-url')?.getAttribute('content') as string,
 }
 
 export const app_backend_api = {

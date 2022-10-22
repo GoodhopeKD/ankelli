@@ -316,8 +316,8 @@ class __AuxController extends Controller
                         'withdrawal_txn_fee_usd_fctr' => 3.5,
                         'withdrawal_min_limit' => 0.0005,
                         'withdrawal_max_limit' => 1,
-                        'onchain_disclaimer' => "",
-                        'ttm_gp_activation_batch_size' => 5,
+                        'onchain_disclaimer' => "Ethereum network.",
+                        'bc_txn_id_scan_url' => 'https://sepolia.etherscan.io/tx/{bc_txn_id}',
                     ],[],[],['HTTP_accept'=>'application/json']))->getData();
                     if ( $use_ttm_api ){
                         (new _AssetController)->updateUSDRate($created_asset->id);
@@ -337,7 +337,7 @@ class __AuxController extends Controller
                         'withdrawal_max_limit' => 1000,
                         'usd_asset_exchange_rate' => 1,
                         'onchain_disclaimer' => "This Tether USD asset is a token on the Ethereum network.",
-                        'ttm_gp_activation_batch_size' => 5,
+                        'bc_txn_id_scan_url' => 'https://etherscan.io/tx/{bc_txn_id}',
                     ]));
                 }
 
@@ -352,8 +352,8 @@ class __AuxController extends Controller
                         'withdrawal_txn_fee_usd_fctr' => 1,
                         'withdrawal_min_limit' => 10,
                         'withdrawal_max_limit' => 15000,
-                        'onchain_disclaimer' => "",
-                        'ttm_gp_activation_batch_size' => 5,
+                        'onchain_disclaimer' => "Tron network.",
+                        'bc_txn_id_scan_url' => 'https://tronscan.org/#/transaction/{bc_txn_id}',
                     ],[],[],['HTTP_accept'=>'application/json']))->getData();
                     if ( $use_ttm_api ){
                         (new _AssetController)->updateUSDRate($created_asset->id);
@@ -373,7 +373,7 @@ class __AuxController extends Controller
                         'withdrawal_max_limit' => 1000,
                         'usd_asset_exchange_rate' => 1,
                         'onchain_disclaimer' => "This Tether USD asset is a token on the Tron network.",
-                        'ttm_gp_activation_batch_size' => 5,
+                        'bc_txn_id_scan_url' => 'https://tronscan.org/#/transaction/{bc_txn_id}',
                     ]));
                 }
             }
@@ -394,7 +394,8 @@ class __AuxController extends Controller
                         'withdrawal_max_limit' => 1,
                         'onchain_disclaimer' => "This platform is still in test mode on the sepolia testnet chain.
 Onchain transactions should be handled accordingly.",
-                        'ttm_gp_activation_batch_size' => 20,
+                        'ttm_gp_last_activated_index' => 15,
+                        'bc_txn_id_scan_url' => 'https://sepolia.etherscan.io/tx/{bc_txn_id}',
                     ],[],[],['HTTP_accept'=>'application/json']))->getData();
     
                     if ( $use_ttm_api ){
@@ -418,7 +419,8 @@ Onchain transactions should be handled accordingly.",
 USDT doesn't exist on testnet so we're using ETH but referring to it here as USDT.
 The system does an internal conversion such that 1 ETH = 1000 USDT.
 Handle all platform transactions normally but know that these values will be reflected differently outside this platform.",
-                        'ttm_gp_activation_batch_size' => 5,
+                        'ttm_gp_last_activated_index' => 19,
+                        'bc_txn_id_scan_url' => 'https://sepolia.etherscan.io/tx/{bc_txn_id}',
                     ]));
                 }
 
@@ -435,7 +437,8 @@ Handle all platform transactions normally but know that these values will be ref
                         'withdrawal_max_limit' => 15000,
                         'onchain_disclaimer' => "This platform is still in test mode on the shasta testnet chain.
 Onchain transactions should be handled accordingly.",
-                        'ttm_gp_activation_batch_size' => 5,
+                        'ttm_gp_last_activated_index' => 4,
+                        'bc_txn_id_scan_url' => 'https://shasta.tronscan.org/#/transaction/{bc_txn_id}',
                     ],[],[],['HTTP_accept'=>'application/json']))->getData();
     
                     if ( $use_ttm_api ){
@@ -459,7 +462,8 @@ Onchain transactions should be handled accordingly.",
 USDT doesn't exist on testnet so we're using TRX but referring to it here as USDT.
 The system does an internal conversion such that 1 TRX = 10 USDT.
 Handle all internal transactions normally but know that these values will be reflected differently outside this platform.",
-                        'ttm_gp_activation_batch_size' => 5,
+                        'ttm_gp_last_activated_index' => 4,
+                        'bc_txn_id_scan_url' => 'https://shasta.tronscan.org/#/transaction/{bc_txn_id}',
                     ]));
                 }
             }

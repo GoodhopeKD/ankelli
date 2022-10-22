@@ -30,8 +30,8 @@ return new class extends Migration
                     ->onUpdate('cascade')
                     ->onDelete('set null');
             $table->string('operation_slug', 64);
-            $table->string('failure_note', 255)->nullable();
-            $table->enum('_status', ['pending', 'failed', 'completed']);
+            $table->enum('_status', ['pending', 'failed', 'aborted', 'completed']);
+            $table->string('_status_note', 255)->nullable();
 
             $table->string('sender_bc_address', 128)->nullable(); 
             $table->string('sender_username', 64)->nullable(); 

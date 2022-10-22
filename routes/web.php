@@ -71,6 +71,7 @@ $valid_paths = [
     "/funds/deposit/token-topup",
     "/funds/withdraw",
     "/funds/transactions",
+    "/funds/transactions/{ref_code}",
     "/funds/crypto-conversion",
     "/funds/platform-payments/receive",
     "/funds/platform-payments/send",
@@ -99,7 +100,7 @@ $valid_paths = [
     "/accounts/recovery/reset_lost_password/{username}/{password_reset_token}",
     "/accounts/recovery/get_lost_username",
     "/accounts/notifications",
-    "/accounts/notifications/{notification_id}",
+    "/accounts/notifications/{id}",
 
     // admin
     "/admin/dashboard",

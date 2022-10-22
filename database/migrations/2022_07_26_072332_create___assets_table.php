@@ -24,9 +24,9 @@ return new class extends Migration
 
             $table->string('gp_owner_bc_address', 128)->nullable();
             $table->boolean('ttm_gp_chain_addresses_storage')->default(false);
-            $table->unsignedTinyInteger('ttm_gp_activation_batch_size')->nullable();
-            $table->unsignedInteger('ttm_gp_activation_offset_index')->nullable();
-            $table->mediumText('ttm_gp_activated_batch_addresses')->nullable();
+            $table->text('ttm_gp_calculated_batch_addresses')->nullable();
+            $table->unsignedBigInteger('ttm_gp_last_calculated_index')->nullable();
+            $table->unsignedBigInteger('ttm_gp_last_activated_index')->nullable();
 
             $table->string('smallest_display_unit', 38); // unsignedDecimal
             $table->unsignedDecimal('withdrawal_txn_fee_usd_fctr', $precision = 8, $scale = 4);
@@ -34,6 +34,7 @@ return new class extends Migration
             $table->string('withdrawal_max_limit', 38);
             $table->string('usd_asset_exchange_rate', 38)->nullable(); // unsignedDecimal
             $table->text('onchain_disclaimer');
+            $table->string('bc_txn_id_scan_url', 255);
             $table->enum('_status', ['active', 'deactivated'])->default('active');
 
             $table->string('creator_username', 64)->nullable();

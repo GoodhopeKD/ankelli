@@ -16,6 +16,8 @@
   <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     <link rel="icon" href="{{ asset('images/logo.jpeg') }}" />
     <link rel="apple-touch-icon" href="{{ asset('images/logo.jpeg') }}" />
+    <meta name="app-api-url" id="app-api-url" content="{{ env('APP_API_URL') }}" />
+    <meta name="test" content="{{ env('TEST_VAR') }}" />
     <meta name="application-name"         content="Ankelli" />
     <meta name="msapplication-TileColor"  content="#f8f9fa" />
     <meta name="msapplication-TileImage"  content="{{ asset('images/logo.jpeg') }}" />

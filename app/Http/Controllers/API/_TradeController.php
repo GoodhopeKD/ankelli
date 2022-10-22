@@ -422,7 +422,7 @@ class _TradeController extends Controller
             // End unlock asset from escrow
             
             (new _TransactionController)->process_trade_asset_release( new Request([
-                'trade_ref_code' => $ref_code,
+                'ref_code' => $ref_code,
                 'sender_username' => $seller_username, 
                 'sender_password' => $validated_data['sender_password'],
                 'recipient_username' => $buyer_username,
