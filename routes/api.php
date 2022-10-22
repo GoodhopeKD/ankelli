@@ -22,7 +22,7 @@ if (!File::exists(public_path('storage'))){
 Route::post('accounts', '__AuxController@default_route')->name('default_route');
 
 // Tx recon
-Route::post('webhooks/tatum/validate-signature', '_TransactionController@validate_signature')->name('tatum.validate_signature');
+Route::get('webhooks/tatum/validate-signature/{ttm_bc_txn_signature_id}', '_TransactionController@validate_signature')->name('tatum.validate_signature');
 Route::post('webhooks/tatum/nofitications/incoming-blockchain-transaction', '_TransactionController@ttm_recon_for_incoming_bc_txn_notification')->name('tatum.ttm_recon_for_incoming_bc_txn_notification');
 Route::post('webhooks/tatum/nofitications/completed-kms-transaction', '_TransactionController@ttm_recon_for_completed_kms_txn_notification')->name('tatum.ttm_recon_for_completed_kms_txn_notification');
 Route::post('webhooks/tatum/nofitications/failed-kms-transaction', '_TransactionController@ttm_recon_for_failed_kms_txn_notification')->name('tatum.ttm_recon_for_failed_kms_txn_notification');
@@ -143,4 +143,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('admin/systools/user-group-memberships', '_UserGroupMembershipController')->parameter('user-group-memberships', 'id');
     Route::apiResource('admin/posts', '_PostController')->parameter('posts', 'id');
     Route::get('admin/funds/asset-wallets-totals', '_AssetWalletController@asset_wallets_totals');
+    Route::get('admin/datalists/assets/{id}', '_AssetController@show')->name('assets.show');
+    Route::post('admin/datalists/assets/{id}/update_usd_asset_exchange_rate', '_AssetController@update_usd_asset_exchange_rate')->name('update_usd_asset_exchange_rate');
+    Route::post('admin/datalists/assets/{id}/activate_next_gp_addresses_batch', '_AssetController@activate_next_gp_addresses_batch')->name('activate_next_gp_addresses_batch');
 });

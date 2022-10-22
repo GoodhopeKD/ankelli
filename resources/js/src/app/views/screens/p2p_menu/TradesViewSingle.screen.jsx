@@ -8,7 +8,7 @@ import withRouter from 'app/views/navigation/withRouter'
 class TradesViewSingleScreen extends React.Component {
 
     default_input = {
-        sender_password: new _Input('Def-Pass#123'),
+        sender_password: new _Input(),
         message_body: new _Input(),
         message_attachment: undefined,
 

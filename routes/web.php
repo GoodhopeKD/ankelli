@@ -138,6 +138,7 @@ $valid_paths = [
     "/admin/helper_modules/posts/new",
     "/admin/helper_modules/log_viewer",
     "/admin/datalists/assets",
+    "/admin/datalists/assets/{id}",
     "/admin/datalists/currencies",
     "/admin/datalists/payment_methods",
     "/admin/datalists/countries",

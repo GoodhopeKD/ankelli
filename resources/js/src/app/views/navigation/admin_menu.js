@@ -4,6 +4,7 @@ import DepositTokensViewListScreen from 'app/views/screens/admin_menu/funds-admi
 import DepositTokensCreateNewScreen from 'app/views/screens/admin_menu/funds-admin/DepositTokensCreateNew.screen'
 import RegTokensViewListScreen from 'app/views/screens/admin_menu/accounts-admin/RegTokensViewList.screen'
 import DatalistViewListScreen from "app/views/screens/admin_menu/datalists/DatalistViewList.screen"
+import AssetsViewSingleScreen from "app/views/screens/admin_menu/datalists/AssetsViewSingle.screen"
 import SysToolsViewListScreen from "app/views/screens/admin_menu/systools/SysToolsViewList.screen"
 
 import EditSysConfigParamsScreen from "app/views/screens/admin_menu/sysconfig/EditSysConfigParams.screen"
@@ -292,6 +293,12 @@ export const admin_menu = {
                     path: '/datalists/assets',
                     element: (props) => <DatalistViewListScreen {...props} />,
                     show_in_menu: true,
+                },
+                {
+                    title: 'Assets List',
+                    path: '/datalists/assets/:id',
+                    element: (props) => <AssetsViewSingleScreen {...props} />,
+                    show_in_menu: false,
                 },
                 {
                     title: 'Currencies List',

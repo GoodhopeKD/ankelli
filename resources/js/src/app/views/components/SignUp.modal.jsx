@@ -5,8 +5,6 @@ import { Link } from "react-router-dom";
 import { _User, _Input, _Notification } from 'app/controller';
 import withRouter from 'app/views/navigation/withRouter'
 
-const DEBUG = true
-
 class SignUpModal extends React.Component {
 
     id_prefix = 'signup_modal_'
@@ -14,11 +12,11 @@ class SignUpModal extends React.Component {
     state = {
         btn_signup_working: false,
         input: {
-            reg_token: (this.props.sysconfig_params_data.token_reg_enabled) ? new _Input(_Input.debug_form_autofill(DEBUG, '1234567890')) : null,
-            username: new _Input(_Input.debug_form_autofill(DEBUG, 'john')),
-            email_address: new _Input(_Input.debug_form_autofill(DEBUG, 'john@ankelli.com')),
-            password: new _Input(_Input.debug_form_autofill(DEBUG, 'Def-Pass#123')),
-            password_confirmation: new _Input(_Input.debug_form_autofill(DEBUG, 'Def-Pass#123')),
+            reg_token: (this.props.sysconfig_params_data.token_reg_enabled) ? new _Input() : null,
+            username: new _Input(),
+            email_address: new _Input(),
+            password: new _Input(),
+            password_confirmation: new _Input(),
         },
         errors: [],
     };

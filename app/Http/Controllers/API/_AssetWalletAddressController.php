@@ -84,7 +84,7 @@ class _AssetWalletAddressController extends Controller
                             'user_username' => $validated_data['user_username'],
                             'asset_code' => $validated_data['asset_code'],
                             'bc_address' => $ttm_element->address,
-                            'xpub_derivation_key' => $xpub_derivation_key,
+                            'xpub_derivation_key' => $validated_data['user_username'] === 'reserves' ? $xpub_derivation_key : null,
                         ], static function($var){ return $var !== null; });
                         if (!_AssetWalletAddress::where($asset_wallet_address_params)->exists()){
                             return (new _AssetWalletAddressController)->store(new Request(array_merge($asset_wallet_address_params, ['bypass_max_per_user_per_asset_code' => true])));

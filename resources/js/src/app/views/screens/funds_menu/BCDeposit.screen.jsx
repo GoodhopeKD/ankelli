@@ -29,6 +29,14 @@ class BCDepositScreen extends React.Component {
         this.setState({ input })
     }
 
+    generateNewAddress = async () => {
+        this.setState({ btn_generating_address_working: true })
+        await _AssetWalletAddress.create({ user_username: this.props.auth_user.username, asset_code: this.state.input.asset_code })
+            .then(() => this.componentDidMount())
+            .catch(e => _Notification.flash({ message: e.message, duration: 4000 }))
+        this.setState({ btn_generating_address_working: false })
+    }
+
     componentDidMount = () => {
         _Session.refresh()
     }
@@ -49,6 +57,8 @@ class BCDepositScreen extends React.Component {
 
         const asset = this.props.datalists.active_assets[this.state.input.asset_code]
 
+        const asset_wallet_addresses = this.props.auth_user.asset_wallets.length !== 0 ? ((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code === asset.code).asset_wallet_addresses) ?? []) : []
+
         return <this.props.PageWrapper title={this.props.title} path={this.props.path}>
             <div className="container-xl py-3">
                 <div className="row">
@@ -66,7 +76,7 @@ class BCDepositScreen extends React.Component {
                                         has_none_option={false}
                                         max_shown_options_count={5}
                                         selected_option_value={this.state.input.asset_code}
-                                        onChange={asset_code => this.handleInputChange('asset_code', asset_code, true) }
+                                        onChange={asset_code => this.handleInputChange('asset_code', asset_code, true)}
                                     />
                                 </div>
                                 <div className="col">
@@ -77,7 +87,7 @@ class BCDepositScreen extends React.Component {
 
                             <p className="text-center" style={{ whiteSpace: 'pre-wrap' }}><b><i>{asset.onchain_disclaimer}</i></b></p>
 
-                            {((this.props.auth_user.asset_wallets.find(aacc => aacc.asset_code === asset.code).asset_wallet_addresses) ?? []).map((asset_wallet_address, index) => {
+                            {asset_wallet_addresses.map((asset_wallet_address, index) => {
                                 return <div key={index} className="text-center" >
                                     <div className="row justify-content-center">
                                         <div className="col-12 col-md-10 col-lg-8 col-xl-6">
@@ -92,6 +102,13 @@ class BCDepositScreen extends React.Component {
                                     </div>
                                 </div>
                             })}
+
+
+                            {asset_wallet_addresses.length === 0 && <div className="text-center" >
+                                <button type="button" className='btn btn-primary' onClick={this.generateNewAddress} disabled={this.state.btn_generating_address_working}>
+                                    {this.state.btn_generating_address_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 20, height: 20 }}></div> : <>Generate deposit address</>}
+                                </button>
+                            </div>}
 
                             <hr />
                         </>}

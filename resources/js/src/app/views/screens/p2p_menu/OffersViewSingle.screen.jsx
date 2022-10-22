@@ -21,7 +21,7 @@ class OffersViewSingleScreen extends React.Component {
         max_currency_amount: 0,
 
         input: {
-            sender_password: new _Input('Def-Pass#123'),
+            sender_password: new _Input(),
             pymt_details: {}
         },
         errors: [],
@@ -71,7 +71,7 @@ class OffersViewSingleScreen extends React.Component {
                 const returnObj = (arr) => { const obj = {}; arr.forEach(arr_i => obj[arr_i] = ''); return obj; }
                 this.setState({
                     focused_offer_loaded: true,
-                    input: { sender_password: new _Input('Def-Pass#123'), pymt_details: offer.offer_to == 'buy' ? returnObj(this.props.datalists.active_pymt_methods[offer.pymt_method_slug].details_required) : {} }
+                    input: { sender_password: new _Input(), pymt_details: offer.offer_to == 'buy' ? returnObj(this.props.datalists.active_pymt_methods[offer.pymt_method_slug].details_required) : {} }
                 })
             })
             .catch(e => {

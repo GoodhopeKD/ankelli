@@ -8,9 +8,10 @@ import { _User, _PrefItem, _Input, _Notification } from 'app/controller'
 class EditSysConfigParamsScreen extends React.Component {
 
     default_input = {
-        password: new _Input('Def-Pass#123'),
+        password: new _Input(),
         update_note: new _Input(),
     }
+    
     state = {
         sysconfig_params: [],
         sysconfig_params_enum_options: [],

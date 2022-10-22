@@ -13,7 +13,7 @@ class BCWithdrawScreen extends React.Component {
         asset_code: this.props.sysconfig_params.default_crypto_asset_code,
         asset_value: new _Input(),
         recipient_bc_address: new _Input(),
-        sender_password: new _Input('Def-Pass#123'),
+        sender_password: new _Input(),
         sender_note: new _Input(),
     }
 

@@ -574,6 +574,7 @@ class _TransactionController extends Controller
         $validated_data['operation_slug'] = 'GP_ADDRESSES_ACTIVATION';
         $validated_data['_status'] = 'pending';
         $validated_data['asset_value'] = 0;
+        $validated_data['sender_note'] = 'activation_batch_size:'.$validated_data['activation_batch_size'];
 
         $from = ($element->ttm_gp_last_activated_index ?? -1) + 1;
         $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->ActivateGasPumpAddresses(new Request(array_filter([
@@ -584,8 +585,21 @@ class _TransactionController extends Controller
             'feeLimit' => ($element->chain === 'TRON' ? 30 * $validated_data['activation_batch_size'] : null),
             'signatureId' => env('TATUM_KMS_'.$element->chain.'_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
             'index' => 0,
-        ], static function($var){ return $var !== null; })))->getData();
+        ], static function($var){ return $var !== null; })))->getData()->signatureId;
         $element = (new _TransactionController)->store(new Request($validated_data))->getData();
+        return response()->json([ 'ref_code' => $element->ref_code ]);
+    }
+
+    public function process_gp_addresses_activation_failed(string $ref_code, string $_status_note)
+    {
+        $element = _Transaction::findOrFail($ref_code);
+        (new Tatum\Security\KMSController)->DeletePendingTransactionToSign(new Request(['id' => $element->ttm_bc_txn_signature_id]));
+        (new _TransactionController)->update(new Request(['_status' => 'aborted', '_status_note' => $_status_note, 'ttm_bc_txn_signature_id' => null]), $ref_code);
+        $activation_batch_size = explode(':', $element->sender_note)[1];
+        $asset = _Asset::firstWhere(['code' => $element->asset_code])->makeVisible(['ttm_gp_last_activated_index']);
+        $ttm_gp_last_activated_index = $asset->ttm_gp_last_activated_index - $activation_batch_size;
+        $ttm_gp_last_activated_index = $ttm_gp_last_activated_index < 0 ? null: $ttm_gp_last_activated_index;
+        $asset->update(['ttm_gp_last_activated_index' => $ttm_gp_last_activated_index]);
         return response()->json([ 'ref_code' => $element->ref_code ]);
     }
     
@@ -922,14 +936,16 @@ class _TransactionController extends Controller
                 return (new _TransactionController)->process_withdrawal_failed($element->ref_code, $validated_data['error']);
             case 'CENTRALIZE_ASSETS':
                 return (new _TransactionController)->centralize_assets_failed($element->ref_code, $validated_data['error']);
+            case 'GP_ADDRESSES_ACTIVATION':
+                return (new _TransactionController)->process_gp_addresses_activation_failed($element->ref_code, $validated_data['error']);
             default:
                 return (new _TransactionController)->generic_signing_failed($element->ref_code, $validated_data['error']);
         }
     }
 
-    public function validate_signature(string $transaction_id)
+    public function validate_signature(string $ttm_bc_txn_signature_id)
     {
-        $element = _Transaction::firstWhere(['ttm_bc_txn_signature_id' => $transaction_id]);
+        $element = _Transaction::firstWhere(['ttm_bc_txn_signature_id' => $ttm_bc_txn_signature_id]);
         if (!$element) return abort(404, 'Transaction with specified signature id not found');
         return response()->json([ 'ref_code' => $element->ref_code ]);
     }

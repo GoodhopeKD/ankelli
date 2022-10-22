@@ -254,15 +254,15 @@ class __AuxController extends Controller
     private $factory_assets = [
         
         // Testnet normal
-        ['chain' => 'TRON', 'code' => 'TRON', 'unit' => 'TRX', 'xpub' => 'xpub6DeqaexdQMHHYA4zrs6LeUE5A5UEbuhLUSxEchGvRia9VkmoPiAhc5mYd8PuC3A37N4AiVdS6NVozpUtACyJES6vsY4tN3ZWuovwLkMN97a'],
-        ['chain' => 'ETH', 'code' => 'ETH', 'unit' => 'ETH', 'xpub' => 'xpub6ERKWaEy6mLBzYWoo5P19QTexUufpijY5qod5xaH2ksiYtekeFYAoT3JoK87XKULgG7g3yvvxKwsGEVdkTqcC3BFjthMtJendsN1WH9nHoX'],
+        //['chain' => 'TRON', 'code' => 'TRON', 'unit' => 'TRX', 'xpub' => 'xpub6DeqaexdQMHHYA4zrs6LeUE5A5UEbuhLUSxEchGvRia9VkmoPiAhc5mYd8PuC3A37N4AiVdS6NVozpUtACyJES6vsY4tN3ZWuovwLkMN97a'],
+        //['chain' => 'ETH', 'code' => 'ETH', 'unit' => 'ETH', 'xpub' => 'xpub6ERKWaEy6mLBzYWoo5P19QTexUufpijY5qod5xaH2ksiYtekeFYAoT3JoK87XKULgG7g3yvvxKwsGEVdkTqcC3BFjthMtJendsN1WH9nHoX'],
         
         // Testnet inflated
         //['chain' => 'TRON', 'code' => 'TRON', 'unit' => 'USDT', 'xpub' => 'xpub6DeqaexdQMHHYA4zrs6LeUE5A5UEbuhLUSxEchGvRia9VkmoPiAhc5mYd8PuC3A37N4AiVdS6NVozpUtACyJES6vsY4tN3ZWuovwLkMN97a'],
         //['chain' => 'ETH', 'code' => 'ETH', 'unit' => 'USDT', 'xpub' => 'xpub6ERKWaEy6mLBzYWoo5P19QTexUufpijY5qod5xaH2ksiYtekeFYAoT3JoK87XKULgG7g3yvvxKwsGEVdkTqcC3BFjthMtJendsN1WH9nHoX'],
 
         // Mainnet
-        //['chain' => 'TRON', 'code' => 'USDT_TRON', 'unit' => 'USDT', 'xpub' => 'xpub6DeqaexdQMHHYA4zrs6LeUE5A5UEbuhLUSxEchGvRia9VkmoPiAhc5mYd8PuC3A37N4AiVdS6NVozpUtACyJES6vsY4tN3ZWuovwLkMN97a'],
+        ['chain' => 'TRON', 'code' => 'USDT_TRON', 'unit' => 'USDT', 'xpub' => 'xpub6FFGQ1GzANQv5mdUn2xm2JSfg7JMQeNZ2Qi1koYeYiZdawuAY8VVgChuoyeqLaN7nbsdrQ3e8NWz6CeNaWNZbbQnDrEcZQLeRvHvaLoaoci'],
         //['chain' => 'ETH', 'code' => 'USDT', 'unit' => 'USDT', 'xpub' => 'xpub6ERKWaEy6mLBzYWoo5P19QTexUufpijY5qod5xaH2ksiYtekeFYAoT3JoK87XKULgG7g3yvvxKwsGEVdkTqcC3BFjthMtJendsN1WH9nHoX'],
     ];
 
@@ -313,7 +313,7 @@ class __AuxController extends Controller
         if (env('BC_ENV') === 'MAINNET'){
             foreach ($this->factory_assets as $factory_asset) {
                 if ($factory_asset['code'] === 'ETH'){
-                    $created_asset = (new _AssetController)->store(Request::create('','',[
+                    (new _AssetController)->store(new Request([
                         'name' => 'Ethereum',
                         'code' => 'ETH',
                         'unit' => 'ETH',
@@ -325,10 +325,7 @@ class __AuxController extends Controller
                         'withdrawal_max_limit' => 1,
                         'onchain_disclaimer' => "Ethereum network.",
                         'bc_txn_id_scan_url' => 'https://sepolia.etherscan.io/tx/{bc_txn_id}',
-                    ],[],[],['HTTP_accept'=>'application/json']))->getData();
-                    if ($use_ttm_api){
-                        (new _AssetController)->updateUSDRate($created_asset->id);
-                    }
+                    ]));
                 }
                 
                 if ($factory_asset['code'] === 'USDT'){
@@ -349,7 +346,7 @@ class __AuxController extends Controller
                 }
 
                 if ($factory_asset['code'] === 'TRON'){
-                    $created_asset = (new _AssetController)->store(Request::create('','',[
+                    (new _AssetController)->store(new Request([
                         'name' => 'Tron',
                         'code' => 'TRON',
                         'unit' => 'TRX',
@@ -361,10 +358,7 @@ class __AuxController extends Controller
                         'withdrawal_max_limit' => 15000,
                         'onchain_disclaimer' => "Tron network.",
                         'bc_txn_id_scan_url' => 'https://tronscan.org/#/transaction/{bc_txn_id}',
-                    ],[],[],['HTTP_accept'=>'application/json']))->getData();
-                    if ($use_ttm_api){
-                        (new _AssetController)->updateUSDRate($created_asset->id);
-                    }
+                    ]));
                 }
                 
                 if ($factory_asset['code'] === 'USDT_TRON'){
@@ -389,7 +383,7 @@ class __AuxController extends Controller
 
             foreach ($this->factory_assets as $factory_asset) {
                 if ($factory_asset['chain'] === 'ETH' && $factory_asset['unit'] === 'ETH'){
-                    $created_asset = (new _AssetController)->store(Request::create('','',[
+                    $created_asset = (new _AssetController)->store(new Request([
                         'name' => 'Ethereum',
                         'code' => 'ETH',
                         'unit' => 'ETH',
@@ -403,11 +397,7 @@ class __AuxController extends Controller
 Onchain transactions should be handled accordingly.",
                         'ttm_gp_last_activated_index' => 15,
                         'bc_txn_id_scan_url' => 'https://sepolia.etherscan.io/tx/{bc_txn_id}',
-                    ],[],[],['HTTP_accept'=>'application/json']))->getData();
-    
-                    if ($use_ttm_api){
-                        (new _AssetController)->updateUSDRate($created_asset->id);
-                    }
+                    ]));
                 }
 
                 if ($factory_asset['chain'] === 'ETH' && $factory_asset['unit'] === 'USDT'){
@@ -432,7 +422,7 @@ Handle all platform transactions normally but know that these values will be ref
                 }
 
                 if ($factory_asset['chain'] === 'TRON' && $factory_asset['unit'] === 'TRX'){
-                    $created_asset = (new _AssetController)->store(Request::create('','',[
+                    $created_asset = (new _AssetController)->store(new Request([
                         'name' => 'Tron',
                         'code' => 'TRON',
                         'unit' => 'TRX',
@@ -446,11 +436,7 @@ Handle all platform transactions normally but know that these values will be ref
 Onchain transactions should be handled accordingly.",
                         'ttm_gp_last_activated_index' => 4,
                         'bc_txn_id_scan_url' => 'https://shasta.tronscan.org/#/transaction/{bc_txn_id}',
-                    ],[],[],['HTTP_accept'=>'application/json']))->getData();
-    
-                    if ($use_ttm_api){
-                        (new _AssetController)->updateUSDRate($created_asset->id);
-                    }
+                    ]));
                 }
 
                 if ($factory_asset['chain'] === 'TRON' && $factory_asset['unit'] === 'USDT'){
@@ -616,16 +602,18 @@ Handle all internal transactions normally but know that these values will be ref
             'username' => 'guddaz', 'email_address' => 'goodhopedhliwayo@gmail.com',
             'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
         ]));
-        foreach ($this->factory_assets as $factory_asset) {
-            (new _AssetWalletController)->store(new Request([
-                'asset_code' => $factory_asset['code'],
-                'asset_chain' => $factory_asset['chain'],
-                'user_username' => 'guddaz',
-            ]));
-            (new _AssetWalletAddressController)->store(new Request([
-                'asset_code' => $factory_asset['code'],
-                'user_username' => 'guddaz',
-            ]));
+        if (false) {
+            foreach ($this->factory_assets as $factory_asset) {
+                (new _AssetWalletController)->store(new Request([
+                    'asset_code' => $factory_asset['code'],
+                    'asset_chain' => $factory_asset['chain'],
+                    'user_username' => 'guddaz',
+                ]));
+                (new _AssetWalletAddressController)->store(new Request([
+                    'asset_code' => $factory_asset['code'],
+                    'user_username' => 'guddaz',
+                ]));
+            }
         }
         (new _AdminExtensionController)->store(new Request([
             'user_username' => 'guddaz', 'post_title' => 'Head System Developer',

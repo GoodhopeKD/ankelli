@@ -4,6 +4,7 @@ import _DateTime from 'app/controller/wrappers/auxilliary/_DateTime'
 import _Wrapper_ from 'app/controller/wrappers/_Wrapper_'
 /* Actions, Configs imports */
 import { laravel_api_page_selection_t } from 'app/controller/actions/app_backend_api.actions'
+import { mainLaravelDBRestAPICallWrapper } from 'app/controller/actions/rest_api.actions'
 
 /*
     Type Definitions
@@ -60,7 +61,24 @@ export default class _Asset extends _Wrapper_ implements Omit<typeof _AssetRespO
 
     /* Readers */
 
+    public static async getOne(params: { id: string }) {
+        return this._mainLaravelDBAPIGetOne('admin/datalists/assets/' + params.id)
+    }
+
     public static async getCollection(params: get_collection_params | null = null, page_select?: laravel_api_page_selection_t, per_page?: number) {
         return this._mainLaravelDBAPIGetCollection('content/datalists/assets', params, page_select, per_page)
+    }
+
+    /* Updaters */
+    public async activate_next_gp_addresses_batch(activation_batch_size: number) {
+        return await mainLaravelDBRestAPICallWrapper
+            .dispatch({
+                type: 'APP_BACKEND_API_CALL',
+                method: 'POST',
+                endpoint: 'admin/datalists/assets/' + this.id + '/activate_next_gp_addresses_batch',
+                data: { activation_batch_size }
+            })
+            .then((resp: any) => { return Promise.resolve(resp) })
+            .catch((e: any) => { return Promise.reject(e) })
     }
 }

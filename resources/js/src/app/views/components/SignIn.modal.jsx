@@ -4,8 +4,6 @@ import { Link } from "react-router-dom";
 
 import withRouter from 'app/views/navigation/withRouter'
 
-const DEBUG = true
-
 export default withRouter(class SignInModal extends React.Component {
 
     id_prefix = 'signin_modal_'
@@ -14,7 +12,7 @@ export default withRouter(class SignInModal extends React.Component {
         btn_signin_working: false,
         input: {
             username: new _Input(),
-            password: new _Input(_Input.debug_form_autofill(DEBUG, 'Def-Pass#123')),
+            password: new _Input(),
         },
         errors: [],
     };

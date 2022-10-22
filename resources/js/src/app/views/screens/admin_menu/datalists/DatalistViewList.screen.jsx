@@ -144,8 +144,8 @@ export default class DatalistViewListScreen extends React.Component {
                                                 <th scope="col" className="align-middle small" style={{ minWidth: 140 }}>Widthrawal Limits</th>
                                                 <th scope="col" className="align-middle small" style={{ minWidth: 80 }}>USD rate</th>
                                                 <th scope="col" className="align-middle small" style={{ minWidth: 85 }}>Smallest Display Unit</th>
-                                                <th scope="col" className="align-middle small" style={{ minWidth: 300 }}>Onchain Disclaimer</th>
                                                 <th scope="col" className="align-middle small">Status</th>
+                                                <th scope="col" className="align-middle small">Action</th>
                                             </>}
                                             {this.props.title == 'Currencies List' && <>
                                                 <th scope="col" className="align-middle small">Name</th>
@@ -189,8 +189,13 @@ export default class DatalistViewListScreen extends React.Component {
                                                         <td className="align-middle small">{datalist_item.withdrawal_min_limit} - {datalist_item.withdrawal_max_limit} {datalist_item.unit}</td>
                                                         <td className="align-middle small">{window.assetValueString(datalist_item.usd_asset_exchange_rate, datalist_item)}</td>
                                                         <td className="align-middle small">{datalist_item.smallest_display_unit}</td>
-                                                        <td className="align-middle small" style={{ whiteSpace: 'pre-wrap' }}>{datalist_item.onchain_disclaimer}</td>
                                                         <td className="align-middle small">{datalist_item._status}</td>
+                                                        <td className="align-middle small">
+                                                        <div className="btn-group">
+                                                            {/*<button type="button" className="btn btn-sm btn-outline-secondary">•••</button>*/}
+                                                            <Link to={'/admin/datalists/assets/' + datalist_item.id} className='btn btn-sm btn-primary' >Open</Link>
+                                                        </div>
+                                                    </td>
                                                     </>}
                                                     {this.props.title == 'Currencies List' && <>
                                                         <td className="align-middle small">{datalist_item.name}</td>

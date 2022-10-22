@@ -17,7 +17,7 @@ class PlatformSendPaymentScreen extends React.Component {
         recipient_email_address: new _Input(),
         recipient_ankelli_pay_id: new _Input(),
         recipient_note: new _Input(),
-        sender_password: new _Input('Def-Pass#123'),
+        sender_password: new _Input(),
         sender_note: new _Input(),
     }
 

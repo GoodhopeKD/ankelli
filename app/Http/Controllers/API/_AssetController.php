@@ -58,13 +58,12 @@ class _AssetController extends Controller
             'bc_txn_id_scan_url' => ['required', 'string', 'max:255'],
             'onchain_disclaimer' => ['required', 'string'],
             'xpub' => ['required', 'string', 'max:255'],
-            'gp_owner_bc_address' => ['required_without:xpub', 'string', 'max:128'],
             'ttm_gp_last_activated_index' => ['sometimes', 'integer'],
         ]);
 
         $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
         
-        if (!isset($validated_data['gp_owner_bc_address']) && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()){
+        if (_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()){
             switch ($validated_data['chain']) {
                 case 'ETH':
                     $validated_data['gp_owner_bc_address'] = (new Tatum\Blockchain\EthereumController)->EthGenerateAddress(new Request(['xpub' => $validated_data['xpub'], 'index' => 0]))->getData()->address;
@@ -108,27 +107,14 @@ class _AssetController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int  $code
      * @return \Illuminate\Http\Response
      */
     public function show(int $id)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function updateUSDRate(int $id)
-    {
-        $element = _Asset::findOrFail($id);
-        $ttm_element = (new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => $element->code, 'basePair' => 'USD']))->getData();
-        try {
-            (new _AssetController)->update(new Request(['usd_asset_exchange_rate' => (1/$ttm_element->value)]), $element->id);
-        } catch (\Throwable $th) {}
+        $element = _Asset::find($id);
+        if (!$element) return abort(404, 'Asset with specified reference id not found');
+        return response()->json(new _AssetResource($element));
     }
 
     /**
@@ -190,6 +176,22 @@ class _AssetController extends Controller
         //
     }
 
+    
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update_usd_asset_exchange_rate(int $id)
+    {
+        $element = _Asset::findOrFail($id);
+        $ttm_element = (new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => $element->code, 'basePair' => 'USD']))->getData();
+        try {
+            (new _AssetController)->update(new Request(['usd_asset_exchange_rate' => (1/$ttm_element->value)]), $element->id);
+        } catch (\Throwable $th) {}
+    }
+
     /**
      * Update the specified resource in storage.
      *
@@ -206,13 +208,12 @@ class _AssetController extends Controller
         // Calculate
         $from = ($element->ttm_gp_last_calculated_index ?? -1) + 1;
         $validated_data['ttm_gp_last_calculated_index'] = $from + $validated_data['calculation_batch_size'] - 1;
-        $ttm_element = (new Tatum\SmartContracts\GasPumpController)->PrecalculateGasPumpAddresses(new Request([
+        $validated_data['ttm_gp_calculated_batch_addresses'] = (new Tatum\SmartContracts\GasPumpController)->PrecalculateGasPumpAddresses(new Request([
             'chain' => $element->chain,
             'owner' => $element->gp_owner_bc_address,
             'from' => $from,
             'to' => $validated_data['ttm_gp_last_calculated_index'],
         ]))->getData();
-        $validated_data['ttm_gp_calculated_batch_addresses'] = $ttm_element;
         $element->update($validated_data);
     }
 

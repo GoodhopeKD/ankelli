@@ -6,7 +6,7 @@ cd /Applications/XAMPP/xamppfiles/htdocs/ankelli && find.-name ".DS_Store" -type
 
 Run the signing daemon
 ```properties
-tatum-kms daemon --path=/Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/wallet.dat --api-key=18f7cff7-3990-4ce7-b504-d67143bc9832 --testnet --chain=ETH,TRON
+tatum-kms daemon --path=/Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/wallet.dat --api-key=18f7cff7-3990-4ce7-b504-d67143bc9832 --chain=ETH,TRON --externalUrl=https://api.ankelli.com/webhooks/tatum/validate-signature --testnet
 
 tatum-kms daemon --path=/Applications/XAMPP/xamppfiles/htdocs/ankelli/.crt/wallet.dat --api-key=3eb010e4-b965-487c-b875-7dab48ec3e6e --chain=TRON --externalUrl=https://api.ankelli.com/webhooks/tatum/validate-signature
 ```
