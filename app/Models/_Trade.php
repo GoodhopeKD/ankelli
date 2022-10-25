@@ -124,7 +124,7 @@ class _Trade extends Model
     {
         $last_message_datetime = null;
         $last_message = $this->messages()->orderByRaw('ifnull(read_datetime, created_datetime) DESC')->first();
-        if ($last_message){
+        if ($last_message) {
             $last_message_datetime = $last_message->read_datetime ?? $last_message->created_datetime;
         }
         $all_datetimes = array_filter([$last_message_datetime, $this->created_datetime, $this->updated_datetime]);

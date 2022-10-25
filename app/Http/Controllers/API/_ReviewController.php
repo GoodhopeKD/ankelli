@@ -21,14 +21,14 @@ class _ReviewController extends Controller
     {
         $result = null;
 
-        if ($result === null){
+        if ($result === null) {
             $simple_query_args = [];
 
-            if (request()->parent_table){ $simple_query_args = array_merge($simple_query_args, [ 'parent_table' => request()->parent_table ]); }
-            if (request()->parent_uid){ $simple_query_args = array_merge($simple_query_args, [ 'parent_uid' => request()->parent_uid ]); }
-            if (request()->pivot_parent_table){ $simple_query_args = array_merge($simple_query_args, [ 'pivot_parent_table' => request()->pivot_parent_table ]); }
-            if (request()->pivot_parent_uid){ $simple_query_args = array_merge($simple_query_args, [ 'pivot_parent_uid' => request()->pivot_parent_uid ]); }
-            if (request()->creator_username){ $simple_query_args = array_merge($simple_query_args, [ 'creator_username' => request()->creator_username ]); }
+            if (request()->parent_table) { $simple_query_args = array_merge($simple_query_args, [ 'parent_table' => request()->parent_table ]); }
+            if (request()->parent_uid) { $simple_query_args = array_merge($simple_query_args, [ 'parent_uid' => request()->parent_uid ]); }
+            if (request()->pivot_parent_table) { $simple_query_args = array_merge($simple_query_args, [ 'pivot_parent_table' => request()->pivot_parent_table ]); }
+            if (request()->pivot_parent_uid) { $simple_query_args = array_merge($simple_query_args, [ 'pivot_parent_uid' => request()->pivot_parent_uid ]); }
+            if (request()->creator_username) { $simple_query_args = array_merge($simple_query_args, [ 'creator_username' => request()->creator_username ]); }
 
             $eloquent_query = _Review::where($simple_query_args);
 
@@ -102,7 +102,7 @@ class _ReviewController extends Controller
         // Handle _Log
         $log_entry_update_result = [];
         foreach ($validated_data as $key => $value) {
-            if (in_array($key, $element->getFillable()) && $element->{$key} != $value){
+            if (in_array($key, $element->getFillable()) && $element->{$key} != $value) {
                 array_push($log_entry_update_result, [
                     'field_name' => $key,
                     'old_value' => $element->{$key},

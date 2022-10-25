@@ -8,7 +8,7 @@ class _AssetWalletAddressResource extends JsonResource
 {
     protected $with_balance = null;
 
-    public function with_balance(bool $value){
+    public function with_balance(bool $value) {
         $this->with_balance = $value;
         return $this;
     }
@@ -25,6 +25,6 @@ class _AssetWalletAddressResource extends JsonResource
             parent::toArray($request), [
                 'balance' => $this->with_balance ? $this->balance_f() : null,
                 'user_username' => ($this->xpub_derivation_key === 0) ? 'reserves/gaspump' : $this->user_username,
-            ]), static function($var){ return $var !== null; });
+            ]), static function($var) { return $var !== null; });
     }
 }

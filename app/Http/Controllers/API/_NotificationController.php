@@ -19,15 +19,15 @@ class _NotificationController extends Controller
     {
         $result = null;
       
-        if ($result === null){
+        if ($result === null) {
             $simple_query_args = [];
 
-            if (request()->user_username){ $simple_query_args = array_merge($simple_query_args, [ 'user_username' => request()->user_username ]); }
+            if (request()->user_username) { $simple_query_args = array_merge($simple_query_args, [ 'user_username' => request()->user_username ]); }
 
             $eloquent_query = _Notification::where($simple_query_args);
 
-            if (request()->_status && request()->_status == 'unread'){ $eloquent_query->whereNull('read_datetime'); }
-            if (request()->_status && request()->_status == 'read'){ $eloquent_query->whereNotNull('read_datetime'); }
+            if (request()->_status && request()->_status == 'unread') { $eloquent_query->whereNull('read_datetime'); }
+            if (request()->_status && request()->_status == 'read') { $eloquent_query->whereNotNull('read_datetime'); }
           
             $result = $eloquent_query->orderByDesc('created_datetime')->paginate(request()->per_page)->withQueryString();
         }
@@ -73,7 +73,7 @@ class _NotificationController extends Controller
     {
         $element = _Notification::find($id);
         if (!$element) return abort(404, 'Notification with specified id not found');
-        if (!$element->read_datetime){
+        if (!$element->read_datetime) {
             $element->update(['read_datetime' => now()->toDateTimeString()]);
         }
         return response()->json(new _NotificationResource($element));

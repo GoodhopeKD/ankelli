@@ -20,6 +20,6 @@ class _TradeResource extends JsonResource
             'completion_review_on_trade_creator' => $this->completion_review_on_trade_creator_f(),
             'completion_review_on_offer_creator' => $this->completion_review_on_offer_creator_f(),
             'last_activity_datetime' => $this->last_activity_datetime_f(),
-        ]), static function($var){ return $var !== null; });
+        ]), static function($var) { return $var !== null; });
     }
 }

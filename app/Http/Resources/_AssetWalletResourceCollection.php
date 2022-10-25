@@ -15,7 +15,7 @@ class _AssetWalletResourceCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
-            'data' => $this->collection->transform(function($_this){
+            'data' => $this->collection->transform(function($_this) {
                 return array_filter([
                     'id' => $_this->id,
                     'user_username' => $_this->user_username,
@@ -27,7 +27,7 @@ class _AssetWalletResourceCollection extends ResourceCollection
                     
                     //'created_datetime'      => $_this->created_datetime,
                     //'updated_datetime'      => $_this->updated_datetime,
-                ], static function($var){ return $var !== null; });
+                ], static function($var) { return $var !== null; });
             }),
         ];
     }

@@ -32,7 +32,7 @@ class _FileController extends Controller
      */
     public function upload(Request $request)
     {
-        if (!isset($request->filegroup) || !isset($request->parent_table)){
+        if (!isset($request->filegroup) || !isset($request->parent_table)) {
             return abort(422,"Filegroup or Parent Table missing");
         }
 
@@ -137,7 +137,7 @@ class _FileController extends Controller
     public function destroy(int $id)
     {
         $element = _File::findOrFail($id);
-        if (in_array(auth('api')->user()->username, [$element->creator_username, $element->upater_username])){
+        if (in_array(auth('api')->user()->username, [$element->creator_username, $element->upater_username])) {
             Storage::delete('public/'.$element->filegroup.'/'.ltrim($element->parent_table, '__').'/'.$element->filename);
             $element->delete();
             return response()->json(['success' => 'success'], 200);

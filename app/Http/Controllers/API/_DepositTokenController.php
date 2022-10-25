@@ -23,22 +23,22 @@ class _DepositTokenController extends Controller
     {
         $result = null;
 
-        if ($result === null && request()->get_as_addon_prop && request()->get_as_addon_prop == true){
+        if ($result === null && request()->get_as_addon_prop && request()->get_as_addon_prop == true) {
             $result = _DepositToken::where(['_status'=>'active'])
             ->orderByRaw('ifnull(used_datetime, created_datetime) DESC')->paginate(request()->per_page)->withQueryString(); 
         }
         
-        if ($result === null){
+        if ($result === null) {
             $simple_query_args = [];
 
-            if (request()->currency_code){ $simple_query_args = array_merge($simple_query_args, [ 'currency_code' => request()->currency_code ]); }
-            if (request()->asset_code){ $simple_query_args = array_merge($simple_query_args, [ 'asset_code' => request()->asset_code ]); }
-            if (request()->creator_username){ $simple_query_args = array_merge($simple_query_args, [ 'creator_username' => request()->creator_username ]); }
+            if (request()->currency_code) { $simple_query_args = array_merge($simple_query_args, [ 'currency_code' => request()->currency_code ]); }
+            if (request()->asset_code) { $simple_query_args = array_merge($simple_query_args, [ 'asset_code' => request()->asset_code ]); }
+            if (request()->creator_username) { $simple_query_args = array_merge($simple_query_args, [ 'creator_username' => request()->creator_username ]); }
 
             $eloquent_query = _DepositToken::where($simple_query_args);
 
-            if (request()->_status && request()->_status == 'unused'){ $eloquent_query->whereNull('used_datetime'); }
-            if (request()->_status && request()->_status == 'used'){ $eloquent_query->whereNotNull('used_datetime'); }
+            if (request()->_status && request()->_status == 'unused') { $eloquent_query->whereNull('used_datetime'); }
+            if (request()->_status && request()->_status == 'used') { $eloquent_query->whereNotNull('used_datetime'); }
 
             $result = $eloquent_query->orderByRaw('ifnull(used_datetime, created_datetime) DESC')->paginate(request()->per_page)->withQueryString();
         }
@@ -97,22 +97,22 @@ class _DepositTokenController extends Controller
     public function use(string $token, string $asset_code)
     {
         $asset = _Asset::firstWhere(['code' => $asset_code]);
-        if (!$asset){
+        if (!$asset) {
             return abort(422,"Asset not valid.");
         }
         $validated_data['asset_code'] = $asset_code;
 
         $element = _DepositToken::find($token);
 
-        if (!$element){
+        if (!$element) {
             return abort(422,"Token not valid.");
         }
 
-        if ($element->asset_code != $validated_data['asset_code']){
+        if ($element->asset_code != $validated_data['asset_code']) {
             return abort(422,"Token not valid for selected asset.");
         }
 
-        if ($element->used_datetime){
+        if ($element->used_datetime) {
             return abort(422,"Token already used.");
         }
 
@@ -129,7 +129,7 @@ class _DepositTokenController extends Controller
         // Handle _Log
         $log_entry_update_result = [];
         foreach ($validated_data as $key => $value) {
-            if (in_array($key, $element->getFillable()) && $element->{$key} != $value){
+            if (in_array($key, $element->getFillable()) && $element->{$key} != $value) {
                 array_push($log_entry_update_result, [
                     'field_name' => $key,
                     'old_value' => $element->{$key},

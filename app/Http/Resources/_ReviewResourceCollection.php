@@ -15,7 +15,7 @@ class _ReviewResourceCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
-            'data' => $this->collection->transform(function($_this){
+            'data' => $this->collection->transform(function($_this) {
                 return array_filter(array_merge(
                     is_array($_this->resource) ? $_this->resource: $_this->resource->toArray(), [
                     'parent_table' => null,
@@ -25,7 +25,7 @@ class _ReviewResourceCollection extends ResourceCollection
                     'creator_username' => null,
                     'created_datetime' => null,
                     'updated_datetime' => null,
-                ]), static function($var){ return $var !== null; });
+                ]), static function($var) { return $var !== null; });
             }),
         ];
     }

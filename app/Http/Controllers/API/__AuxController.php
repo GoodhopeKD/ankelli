@@ -25,7 +25,7 @@ class __AuxController extends Controller
      */
     public function default_route(Request $request)
     {
-        if (_PrefItem::firstWhere('key_slug', 'scaffolding_app_enabled')->value_f()){
+        if (_PrefItem::firstWhere('key_slug', 'scaffolding_app_enabled')->value_f()) {
             $request->validate([
                 'active_session_data.token' => ['sometimes', 'string', 'size:16' ],
                 'active_session_data.device_info' => ['required', 'array'],
@@ -45,16 +45,16 @@ class __AuxController extends Controller
         
             // Auth user
             $api_auth_user = auth('api')->user();
-            if ($api_auth_user){
+            if ($api_auth_user) {
                 $response['auth_user_data'] = new _UserResource($api_auth_user);
                 session()->put('api_auth_user_username', $api_auth_user->username);
             }
         
             // Active session
             $active_session_data = $request->active_session_data;
-            if ($active_session_data){
+            if ($active_session_data) {
                 $active_session_data['request_location'] = Location::get() ? (array)(Location::get()) : [ 'ip' => $request->ip() ];
-                if (isset($active_session_data['token']) && _Session::where('token', $active_session_data['token'])->exists() && _Session::find($active_session_data['token'])['_status'] !== 'ended'){
+                if (isset($active_session_data['token']) && _Session::where('token', $active_session_data['token'])->exists() && _Session::find($active_session_data['token'])['_status'] !== 'ended') {
                     $active_session_data['default_route'] = true;
                     $response['active_session_data'] = (new _SessionController)->update(new Request(array_filter($active_session_data)), $active_session_data['token'])->getData();
                 } else {
@@ -270,7 +270,7 @@ class __AuxController extends Controller
     {
         $use_ttm_api = _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f();
         $clear_unsigned_transactions = true;
-        if ($clear_unsigned_transactions && $use_ttm_api){
+        if ($clear_unsigned_transactions && $use_ttm_api) {
             $chains = ['TRON', 'ETH'];
             $txns = [];
             foreach ($chains as $chain) {
@@ -282,14 +282,14 @@ class __AuxController extends Controller
         }
 
         $clear_virtual_accounts = false;
-        if ($clear_virtual_accounts && $use_ttm_api){
+        if ($clear_virtual_accounts && $use_ttm_api) {
             foreach ((new Tatum\VirtualAccounts\AccountController)->getAccounts(new Request())->getData() as $account) {
                 try { (new Tatum\VirtualAccounts\AccountController)->deactivateAccount(new Request(['id' => $account->id])); } catch (\Throwable $th) {}
             }
         }
 
-        $clear_notification_webhook_subscriptions = true;
-        if ($clear_notification_webhook_subscriptions && $use_ttm_api){
+        $clear_notification_webhook_subscriptions = false;
+        if ($clear_notification_webhook_subscriptions && $use_ttm_api) {
             foreach ((new Tatum\Subscriptions\NotificationSubscriptionController)->getSubscriptions(new Request())->getData() as $subscription) {
                 (new Tatum\Subscriptions\NotificationSubscriptionController)->deleteSubscription(new Request(['id' => $subscription->id]));
             }
@@ -310,9 +310,9 @@ class __AuxController extends Controller
         session()->put('active_session_token', 'FACTORY_SSN');
         session()->put('api_auth_user_username', 'system');
 
-        if (env('BC_ENV') === 'MAINNET'){
+        if (env('BC_ENV') === 'MAINNET') {
             foreach ($this->factory_assets as $factory_asset) {
-                if ($factory_asset['code'] === 'ETH'){
+                if ($factory_asset['code'] === 'ETH') {
                     (new _AssetController)->store(new Request([
                         'name' => 'Ethereum',
                         'code' => 'ETH',
@@ -323,12 +323,13 @@ class __AuxController extends Controller
                         'withdrawal_txn_fee_usd_fctr' => 3.5,
                         'withdrawal_min_limit' => 0.0005,
                         'withdrawal_max_limit' => 1,
+                        'centralization_threshold' => 0.05,
                         'onchain_disclaimer' => "Ethereum network.",
                         'bc_txn_id_scan_url' => 'https://sepolia.etherscan.io/tx/{bc_txn_id}',
                     ]));
                 }
                 
-                if ($factory_asset['code'] === 'USDT'){
+                if ($factory_asset['code'] === 'USDT') {
                     (new _AssetController)->store(new Request([
                         'name' => 'Tether USD',
                         'code' => 'USDT',
@@ -340,12 +341,13 @@ class __AuxController extends Controller
                         'withdrawal_min_limit' => 1,
                         'withdrawal_max_limit' => 1000,
                         'usd_asset_exchange_rate' => 1,
+                        'centralization_threshold' => 100,
                         'onchain_disclaimer' => "This Tether USD asset is a token on the Ethereum network.",
                         'bc_txn_id_scan_url' => 'https://etherscan.io/tx/{bc_txn_id}',
                     ]));
                 }
 
-                if ($factory_asset['code'] === 'TRON'){
+                if ($factory_asset['code'] === 'TRON') {
                     (new _AssetController)->store(new Request([
                         'name' => 'Tron',
                         'code' => 'TRON',
@@ -356,12 +358,13 @@ class __AuxController extends Controller
                         'withdrawal_txn_fee_usd_fctr' => 1,
                         'withdrawal_min_limit' => 10,
                         'withdrawal_max_limit' => 15000,
+                        'centralization_threshold' => 1500,
                         'onchain_disclaimer' => "Tron network.",
                         'bc_txn_id_scan_url' => 'https://tronscan.org/#/transaction/{bc_txn_id}',
                     ]));
                 }
                 
-                if ($factory_asset['code'] === 'USDT_TRON'){
+                if ($factory_asset['code'] === 'USDT_TRON') {
                     (new _AssetController)->store(new Request([
                         'name' => 'Tether USD (Tron)',
                         'code' => 'USDT_TRON',
@@ -373,6 +376,7 @@ class __AuxController extends Controller
                         'withdrawal_min_limit' => 1,
                         'withdrawal_max_limit' => 1000,
                         'usd_asset_exchange_rate' => 1,
+                        'centralization_threshold' => 100,
                         'onchain_disclaimer' => "This Tether USD asset is a token on the Tron network.",
                         'bc_txn_id_scan_url' => 'https://tronscan.org/#/transaction/{bc_txn_id}',
                     ]));
@@ -382,7 +386,7 @@ class __AuxController extends Controller
         } else {
 
             foreach ($this->factory_assets as $factory_asset) {
-                if ($factory_asset['chain'] === 'ETH' && $factory_asset['unit'] === 'ETH'){
+                if ($factory_asset['chain'] === 'ETH' && $factory_asset['unit'] === 'ETH') {
                     $created_asset = (new _AssetController)->store(new Request([
                         'name' => 'Ethereum',
                         'code' => 'ETH',
@@ -393,6 +397,7 @@ class __AuxController extends Controller
                         'withdrawal_txn_fee_usd_fctr' => 3.5,
                         'withdrawal_min_limit' => 0.0005,
                         'withdrawal_max_limit' => 1,
+                        'centralization_threshold' => 0.05,
                         'onchain_disclaimer' => "This platform is still in test mode on the sepolia testnet chain.
 Onchain transactions should be handled accordingly.",
                         'ttm_gp_last_activated_index' => 15,
@@ -400,7 +405,7 @@ Onchain transactions should be handled accordingly.",
                     ]));
                 }
 
-                if ($factory_asset['chain'] === 'ETH' && $factory_asset['unit'] === 'USDT'){
+                if ($factory_asset['chain'] === 'ETH' && $factory_asset['unit'] === 'USDT') {
                     (new _AssetController)->store(new Request([
                         'name' => 'Tether USD',
                         'code' => 'ETH',
@@ -412,6 +417,7 @@ Onchain transactions should be handled accordingly.",
                         'withdrawal_min_limit' => 1,
                         'withdrawal_max_limit' => 1000,
                         'usd_asset_exchange_rate' => 1,
+                        'centralization_threshold' => 100,
                         'onchain_disclaimer' => "This platform is still in test mode using the sepolia testnet chain.
 USDT doesn't exist on testnet so we're using ETH but referring to it here as USDT.
 The system does an internal conversion such that 1 ETH = 1000 USDT.
@@ -421,7 +427,7 @@ Handle all platform transactions normally but know that these values will be ref
                     ]));
                 }
 
-                if ($factory_asset['chain'] === 'TRON' && $factory_asset['unit'] === 'TRX'){
+                if ($factory_asset['chain'] === 'TRON' && $factory_asset['unit'] === 'TRX') {
                     $created_asset = (new _AssetController)->store(new Request([
                         'name' => 'Tron',
                         'code' => 'TRON',
@@ -432,6 +438,7 @@ Handle all platform transactions normally but know that these values will be ref
                         'withdrawal_txn_fee_usd_fctr' => 1,
                         'withdrawal_min_limit' => 10,
                         'withdrawal_max_limit' => 15000,
+                        'centralization_threshold' => 1500,
                         'onchain_disclaimer' => "This platform is still in test mode on the shasta testnet chain.
 Onchain transactions should be handled accordingly.",
                         'ttm_gp_last_activated_index' => 4,
@@ -439,7 +446,7 @@ Onchain transactions should be handled accordingly.",
                     ]));
                 }
 
-                if ($factory_asset['chain'] === 'TRON' && $factory_asset['unit'] === 'USDT'){
+                if ($factory_asset['chain'] === 'TRON' && $factory_asset['unit'] === 'USDT') {
                     (new _AssetController)->store(new Request([
                         'name' => 'Tether USD (Tron)',
                         'code' => 'TRON',
@@ -451,6 +458,7 @@ Onchain transactions should be handled accordingly.",
                         'withdrawal_min_limit' => 1,
                         'withdrawal_max_limit' => 1000,
                         'usd_asset_exchange_rate' => 1,
+                        'centralization_threshold' => 100,
                         'onchain_disclaimer' => "This platform is still in test mode using the shasta testnet chain.
 USDT doesn't exist on testnet so we're using TRX but referring to it here as USDT.
 The system does an internal conversion such that 1 TRX = 10 USDT.
@@ -464,7 +472,7 @@ Handle all internal transactions normally but know that these values will be ref
 
         $token_reg_changed = false;
         $token_reg_enabled_pref_item = _PrefItem::firstWhere('key_slug', 'token_reg_enabled');
-        if ($token_reg_enabled_pref_item->value_f()){
+        if ($token_reg_enabled_pref_item->value_f()) {
             (new _PrefItemController)->update(new Request([
                 'update_note' => 'Temporarily disabling for factory users.',
                 'value' => false,
@@ -669,7 +677,7 @@ Handle all internal transactions normally but know that these values will be ref
             ]));
         }*/
 
-        if ($token_reg_changed){
+        if ($token_reg_changed) {
             (new _PrefItemController)->update(new Request([
                 'update_note' => 'Resetting to default value.',
                 'value' => $token_reg_enabled_pref_item->value_f(),
@@ -685,7 +693,7 @@ Handle all internal transactions normally but know that these values will be ref
 
     public function load_test_data()
     {
-        if (_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()){
+        if (_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()) {
             return;
         }
 
@@ -694,7 +702,7 @@ Handle all internal transactions normally but know that these values will be ref
 
         $token_reg_changed = false;
         $token_reg_enabled_pref_item = _PrefItem::firstWhere('key_slug', 'token_reg_enabled');
-        if ($token_reg_enabled_pref_item->value_f()){
+        if ($token_reg_enabled_pref_item->value_f()) {
             (new _PrefItemController)->update(new Request([
                 'update_note' => 'Temporarily disabling for test users.',
                 'value' => false,
@@ -1440,7 +1448,7 @@ Handle all internal transactions normally but know that these values will be ref
         (new _TradeController)->update(new Request([ 'pymt_declared' => true, ]), $trade->ref_code);
         sleep(3);
 
-        if ($token_reg_changed){
+        if ($token_reg_changed) {
             (new _PrefItemController)->update(new Request([
                 'update_note' => 'Resetting to default value.',
                 'value' => $token_reg_enabled_pref_item->value_f(),

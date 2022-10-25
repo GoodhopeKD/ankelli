@@ -33,20 +33,20 @@ class _UserController extends Controller
     {
         $result = null;
 
-        if ($result === null && request()->get_as_addon_prop && request()->get_as_addon_prop == true){
+        if ($result === null && request()->get_as_addon_prop && request()->get_as_addon_prop == true) {
             $result = _User::where(['_status'=>'active'])
             ->orderByRaw('ifnull(updated_datetime, created_datetime) DESC')->paginate(request()->per_page)->withQueryString(); 
         }
         
-        if ($result === null){
+        if ($result === null) {
             $simple_query_args = [];
 
-            if (request()->_status && request()->_status !== 'all'){ $simple_query_args = array_merge($simple_query_args, [ '_status' => request()->_status ]); }
-            if (!isset(request()->_status)){ $simple_query_args = array_merge($simple_query_args, [ '_status' => 'active' ]); }
+            if (request()->_status && request()->_status !== 'all') { $simple_query_args = array_merge($simple_query_args, [ '_status' => request()->_status ]); }
+            if (!isset(request()->_status)) { $simple_query_args = array_merge($simple_query_args, [ '_status' => 'active' ]); }
 
             $eloquent_query = _User::where($simple_query_args);
 
-            if (request()->user_username && is_string(request()->user_username)){
+            if (request()->user_username && is_string(request()->user_username)) {
                 $eloquent_query = $eloquent_query
                 ->where(['creator_username' => request()->user_username, 'visible_to_creator' => true])
                 ->orWhere(function($query) { $query->where(['offer_creator_username' => request()->user_username, 'visible_to_offer_creator' => true]); });
@@ -75,20 +75,20 @@ class _UserController extends Controller
             'password' => ['required', 'string', 'between:8,32', 'confirmed'],
         ]);
 
-        if ($token_reg_enabled){
+        if ($token_reg_enabled) {
             $reg_token_check = (array)(new __AuxController)->usability_check(new Request([ 'param_name' => 'reg_token', 'param_value' => $validated_data['reg_token'] ]))->getData();
-            if (!$reg_token_check['usable']){
+            if (!$reg_token_check['usable']) {
                 return abort(422, $reg_token_check['message']);
             }
         }
 
         $username_check = (array)(new __AuxController)->availability_check(new Request([ 'param_name' => 'username', 'param_value' => $validated_data['username'] ]))->getData();
-        if (!$username_check['available']){
+        if (!$username_check['available']) {
             return abort(422, $username_check['message']);
         }
 
         $email_address_check = (array)(new __AuxController)->availability_check(new Request([ 'param_name' => 'email_address', 'param_value' => $validated_data['email_address'] ]))->getData();
-        if (!$email_address_check['available']){
+        if (!$email_address_check['available']) {
             return abort(422, $email_address_check['message']);
         }
 
@@ -141,7 +141,7 @@ class _UserController extends Controller
         ]));
         // End Create notification to verify email
 
-        if (!(session()->get('active_session_token') && in_array(session()->get('active_session_token'), ['FACTORY_SSN', 'TEST_SSN']))){
+        if (!(session()->get('active_session_token') && in_array(session()->get('active_session_token'), ['FACTORY_SSN', 'TEST_SSN']))) {
             // Handle _Session
             $active_session_data = $request->active_session_data;
             $active_session_data['user_username'] = $api_auth_user->username;
@@ -177,7 +177,7 @@ class _UserController extends Controller
         ]);
 
         // Login attempt
-        if (!auth()->attempt($validated_data)){
+        if (!auth()->attempt($validated_data)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
@@ -244,7 +244,7 @@ class _UserController extends Controller
         $ttm_customer = (new Tatum\VirtualAccounts\CustomerController)->getCustomerByExternalOrInternalId(new Request(['id' => $username]))->getData();
         $ttm_customer_id = $ttm_customer->id;
         $ttm_customer_update_data = [ 'id' => $ttm_customer_id ];
-        if (isset($validated_data['username'])){
+        if (isset($validated_data['username'])) {
             $ttm_customer_update_data['externalId'] = $validated_data['username'];
         }
         (new Tatum\VirtualAccounts\CustomerController)->updateCustomer(new Request($ttm_customer_update_data));
@@ -262,22 +262,22 @@ class _UserController extends Controller
 
         $should_update_customer = false;
 
-        if (isset($validated_data['username']) && $validated_data['username'] !== $element->username){
+        if (isset($validated_data['username']) && $validated_data['username'] !== $element->username) {
             // update all appearances of username;
             $should_update_customer = true;
         }
 
-        if ($should_update_customer && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()){
+        if ($should_update_customer && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()) {
             $ttm_customer_id = $element->ttm_customer_id;
-            if (!$ttm_customer_id){
+            if (!$ttm_customer_id) {
                 try {
                     $ttm_customer = (new Tatum\VirtualAccounts\CustomerController)->getCustomerByExternalOrInternalId(new Request(['id' => $element->username]))->getData();
                     $ttm_customer_id = $ttm_customer->id;
                 } catch (\Throwable $th) {}
             }
-            if ($ttm_customer_id){
+            if ($ttm_customer_id) {
                 $ttm_customer_update_data = [ 'id' => $ttm_customer_id ];
-                if (isset($validated_data['username'])){
+                if (isset($validated_data['username'])) {
                     $ttm_customer_update_data['externalId'] = $validated_data['username'];
                 }
                 (new Tatum\VirtualAccounts\CustomerController)->updateCustomer(new Request($ttm_customer_update_data));
@@ -287,7 +287,7 @@ class _UserController extends Controller
         // Handle _Log
         $log_entry_update_result = [];
         foreach ($validated_data as $key => $value) {
-            if (in_array($key, $element->getFillable()) && $element->{$key} != $value){
+            if (in_array($key, $element->getFillable()) && $element->{$key} != $value) {
                 array_push($log_entry_update_result, [
                     'field_name' => $key,
                     'old_value' => $element->{$key},

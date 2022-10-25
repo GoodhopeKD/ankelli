@@ -85,7 +85,7 @@ class _PinningController extends Controller
     {
         $api_auth_user = auth('api')->user();
         $element = _Pinning::findOrFail($id);
-        if ($api_auth_user && $api_auth_user->username === $element->user_username){
+        if ($api_auth_user && $api_auth_user->username === $element->user_username) {
             $element->delete();
             return response()->json(['success' => 'success'], 200);
         } else {

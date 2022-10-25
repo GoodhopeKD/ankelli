@@ -8,7 +8,7 @@ class _AssetWalletAddressResourceCollection extends ResourceCollection
 {
     protected $with_balance = null;
 
-    public function with_balance(bool $value){
+    public function with_balance(bool $value) {
         $this->with_balance = $value;
         return $this;
     }
@@ -22,12 +22,12 @@ class _AssetWalletAddressResourceCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
-            'data' => $this->collection->transform(function($_this){
+            'data' => $this->collection->transform(function($_this) {
                 return array_filter(array_merge(
                     is_array($_this->resource) ? $_this->resource: $_this->resource->toArray(), [
                     'balance' => $this->with_balance ? $_this->balance_f() : null,
                     'user_username' => ($_this->xpub_derivation_key === 0) ? 'reserves/gaspump' : $_this->user_username,
-                ]), static function($var){ return $var !== null; });
+                ]), static function($var) { return $var !== null; });
             }),
         ];
     }

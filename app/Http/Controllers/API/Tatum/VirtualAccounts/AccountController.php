@@ -99,7 +99,7 @@ class AccountController extends Controller
                 "accountingCurrency" => $validated_data['accountingCurrency'] ?? "USD",
             ],
             "accountingCurrency" => $validated_data['accountingCurrency'] ?? "USD",
-        ], static function($var){ return $var !== null; });
+        ], static function($var) { return $var !== null; });
 
         $curl = curl_init();
         curl_setopt_array($curl, [

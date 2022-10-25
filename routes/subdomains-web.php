@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::group(['domain' => 'https://www.'.env('APP_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://www.'.env('APP_DOMAIN_NAME')], function() {
     Route::view('/', 'scaffolding_app');
     Route::view('/about', 'main/about');
     Route::view('/contact', 'main/contact');
@@ -13,7 +13,7 @@ Route::group(['domain' => 'https://www.'.env('APP_DOMAIN_NAME')], function(){
     Route::view('/blog_posts/{id}', 'main/blog');
 });
 
-Route::group(['domain' => 'https://p2p.'.env('APP_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://p2p.'.env('APP_DOMAIN_NAME')], function() {
     $p2p_scaffolding_app_paths = [
         '/',
         '/offers',
@@ -30,7 +30,7 @@ Route::group(['domain' => 'https://p2p.'.env('APP_DOMAIN_NAME')], function(){
     }
 });
 
-Route::group(['domain' => 'https://pay.'.env('APP_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://pay.'.env('APP_DOMAIN_NAME')], function() {
     $pay_scaffolding_app_paths = [
         '/',
         '/merchants',
@@ -45,7 +45,7 @@ Route::group(['domain' => 'https://pay.'.env('APP_DOMAIN_NAME')], function(){
     }
 });
 
-Route::group(['domain' => 'https://admin.'.env('APP_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://admin.'.env('APP_DOMAIN_NAME')], function() {
     $admin_scaffolding_app_paths = [
         '/',
         '/analytics/users',
@@ -71,7 +71,7 @@ Route::group(['domain' => 'https://admin.'.env('APP_DOMAIN_NAME')], function(){
     }
 });
 
-Route::group(['domain' => 'https://funds.'.env('APP_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://funds.'.env('APP_DOMAIN_NAME')], function() {
     $funds_scaffolding_app_paths = [
         '/',
         '/my-crypto-wallets',
@@ -87,7 +87,7 @@ Route::group(['domain' => 'https://funds.'.env('APP_DOMAIN_NAME')], function(){
     }
 });
 
-Route::group(['domain' => 'https://support.'.env('APP_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://support.'.env('APP_DOMAIN_NAME')], function() {
     $support_scaffolding_app_paths = [
         '/',
         '/flagged-elements/users',
@@ -104,7 +104,7 @@ Route::group(['domain' => 'https://support.'.env('APP_DOMAIN_NAME')], function()
     }
 });
 
-Route::group(['domain' => 'https://accounts.'.env('APP_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://accounts.'.env('APP_DOMAIN_NAME')], function() {
     $support_scaffolding_app_paths = [
         '/auth/signup',
         '/auth/signin',

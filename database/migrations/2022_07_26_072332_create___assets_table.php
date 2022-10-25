@@ -19,9 +19,7 @@ return new class extends Migration
             $table->string('code', 64)->unique();
             $table->string('unit', 64);
             $table->string('chain', 64);
-
             $table->string('xpub', 255)->nullable();
-
             $table->string('gp_owner_bc_address', 128)->nullable();
             $table->boolean('ttm_gp_chain_addresses_storage')->default(false);
             $table->text('ttm_gp_calculated_batch_addresses')->nullable();
@@ -32,7 +30,8 @@ return new class extends Migration
             $table->unsignedDecimal('withdrawal_txn_fee_usd_fctr', $precision = 8, $scale = 4);
             $table->string('withdrawal_min_limit', 38);
             $table->string('withdrawal_max_limit', 38);
-            $table->string('usd_asset_exchange_rate', 38)->nullable(); // unsignedDecimal
+            $table->string('usd_asset_exchange_rate', 38); // unsignedDecimal
+            $table->string('centralization_threshold', 38); // unsignedDecimal
             $table->text('onchain_disclaimer');
             $table->string('bc_txn_id_scan_url', 255);
             $table->enum('_status', ['active', 'deactivated'])->default('active');

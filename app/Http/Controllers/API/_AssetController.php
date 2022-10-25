@@ -23,11 +23,11 @@ class _AssetController extends Controller
     {
         $result = null;
 
-        if ($result === null){
+        if ($result === null) {
             $simple_query_args = [];
 
-            if (request()->_status && request()->_status !== 'all'){ $simple_query_args = array_merge($simple_query_args, [ '_status' => request()->_status ]); }
-            if (!isset(request()->_status)){ $simple_query_args = array_merge($simple_query_args, [ '_status' => 'active' ]); }
+            if (request()->_status && request()->_status !== 'all') { $simple_query_args = array_merge($simple_query_args, [ '_status' => request()->_status ]); }
+            if (!isset(request()->_status)) { $simple_query_args = array_merge($simple_query_args, [ '_status' => 'active' ]); }
 
             $eloquent_query = _Asset::where($simple_query_args);
 
@@ -55,6 +55,7 @@ class _AssetController extends Controller
             'withdrawal_min_limit' => ['required', 'numeric', 'min:0'],
             'withdrawal_max_limit' => ['required', 'numeric', 'min:0'],
             'usd_asset_exchange_rate' => ['sometimes', 'numeric', 'min:0'],
+            'centralization_threshold' => ['required', 'numeric', 'min:0'],
             'bc_txn_id_scan_url' => ['required', 'string', 'max:255'],
             'onchain_disclaimer' => ['required', 'string'],
             'xpub' => ['required', 'string', 'max:255'],
@@ -63,7 +64,7 @@ class _AssetController extends Controller
 
         $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
         
-        if (_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()){
+        if (_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()) {
             switch ($validated_data['chain']) {
                 case 'ETH':
                     $validated_data['gp_owner_bc_address'] = (new Tatum\Blockchain\EthereumController)->EthGenerateAddress(new Request(['xpub' => $validated_data['xpub'], 'index' => 0]))->getData()->address;
@@ -77,11 +78,11 @@ class _AssetController extends Controller
             }
         }
         
-        if (!_Asset::where(['chain' => $validated_data['chain']])->exists()){
+        if (!_Asset::where(['chain' => $validated_data['chain']])->exists()) {
             $validated_data['ttm_gp_chain_addresses_storage'] = true;
         }
 
-        if (!isset($validated_data['usd_asset_exchange_rate']) && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()){
+        if (!isset($validated_data['usd_asset_exchange_rate']) && _PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()) {
             $validated_data['usd_asset_exchange_rate'] = 1/((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => $validated_data['code'], 'basePair' => 'USD']))->getData()->value);
         }
 
@@ -97,7 +98,7 @@ class _AssetController extends Controller
         ]));
         // End _Log Handling
 
-        if (_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()){
+        if (_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()) {
             (new _AssetController)->calculate_next_gp_addresses_batch($element->id);
         }
 
@@ -134,6 +135,7 @@ class _AssetController extends Controller
             'withdrawal_min_limit' => ['sometimes', 'integer', 'min:0'],
             'withdrawal_max_limit' => ['sometimes', 'integer', 'min:0'],
             'usd_asset_exchange_rate' => ['sometimes', 'numeric', 'min:0'],
+            'centralization_threshold' => ['sometimes', 'numeric', 'min:0'],
             'onchain_disclaimer' => ['sometimes', 'string'],
             '_status' => ['sometimes', 'string', Rule::in(['active', 'deactivated'])],
         ]);
@@ -143,7 +145,7 @@ class _AssetController extends Controller
         // Handle _Log
         $log_entry_update_result = [];
         foreach ($validated_data as $key => $value) {
-            if (in_array($key, $element->getFillable()) && $element->{$key} != $value){
+            if (in_array($key, $element->getFillable()) && $element->{$key} != $value) {
                 array_push($log_entry_update_result, [
                     'field_name' => $key,
                     'old_value' => $element->{$key},
@@ -202,7 +204,7 @@ class _AssetController extends Controller
     {
         $validated_data = ['calculation_batch_size' => 500];
         $element = _Asset::findOrFail($id)->makeVisible(['ttm_gp_last_calculated_index']);
-        if (!$element->ttm_gp_chain_addresses_storage){
+        if (!$element->ttm_gp_chain_addresses_storage) {
             return abort(422, 'Asset not storage for gaspump addresses');
         }
         // Calculate
@@ -231,7 +233,7 @@ class _AssetController extends Controller
         ]);
 
         $element = _Asset::findOrFail($id)->makeVisible(['ttm_gp_last_activated_index']);
-        if (!$element->ttm_gp_chain_addresses_storage){
+        if (!$element->ttm_gp_chain_addresses_storage) {
             return abort(422, 'Asset not storage for gaspump addresses');
         }
         // Activate

@@ -23,12 +23,12 @@ class _UserGroupMembershipController extends Controller
     {
         $result = null;
 
-        if ($result === null){
+        if ($result === null) {
             $simple_query_args = [];
 
-            if (request()->user_group_slug){ $simple_query_args = array_merge($simple_query_args, [ 'user_group_slug' => request()->user_group_slug ]); }
-            if (request()->_status && request()->_status !== 'all'){ $simple_query_args = array_merge($simple_query_args, [ '_status' => request()->_status ]); }
-            if (!isset(request()->_status)){ $simple_query_args = array_merge($simple_query_args, [ '_status' => 'active' ]); }
+            if (request()->user_group_slug) { $simple_query_args = array_merge($simple_query_args, [ 'user_group_slug' => request()->user_group_slug ]); }
+            if (request()->_status && request()->_status !== 'all') { $simple_query_args = array_merge($simple_query_args, [ '_status' => request()->_status ]); }
+            if (!isset(request()->_status)) { $simple_query_args = array_merge($simple_query_args, [ '_status' => 'active' ]); }
 
             $eloquent_query = _UserGroupMembership::where($simple_query_args);
 
@@ -55,8 +55,8 @@ class _UserGroupMembershipController extends Controller
         $validated_data['creator_username'] = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
 
         $creator_admin_extension = _AdminExtension::firstWhere([ 'user_username' => $validated_data['creator_username'] ]);
-        if ($creator_admin_extension){
-            if ($creator_admin_extension->_status!='active'){
+        if ($creator_admin_extension) {
+            if ($creator_admin_extension->_status!='active') {
                 return abort(422,"Current user cannot add member to any group because _AdminExtension is ".$creator_admin_extension->_status);
             }
         } else {
@@ -70,15 +70,15 @@ class _UserGroupMembershipController extends Controller
         ];
         
         foreach ($protected_user_groups as $user_group_slug => $permitted_adders) {
-            if ($validated_data['user_group_slug'] == $user_group_slug && !in_array($validated_data['creator_username'], $permitted_adders)){
+            if ($validated_data['user_group_slug'] == $user_group_slug && !in_array($validated_data['creator_username'], $permitted_adders)) {
                 return abort(403,"Current user cannot add member to selected group");
             }
         }
 
-        if (in_array($validated_data['user_group_slug'], ['user_administrator', ...array_keys($protected_user_groups)])){
+        if (in_array($validated_data['user_group_slug'], ['user_administrator', ...array_keys($protected_user_groups)])) {
             $new_member_admin_extension = _AdminExtension::firstWhere([ 'user_username' => $validated_data['user_username'] ]);
-            if ($new_member_admin_extension){
-                if ($new_member_admin_extension->_status!='active'){
+            if ($new_member_admin_extension) {
+                if ($new_member_admin_extension->_status!='active') {
                     return abort(422,"User cannot be added to group because _AdminExtension is ".$new_member_admin_extension->_status);
                 }
             } else {

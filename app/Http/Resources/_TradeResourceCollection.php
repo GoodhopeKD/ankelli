@@ -15,7 +15,7 @@ class _TradeResourceCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
-            'data' => $this->collection->transform(function($_this){
+            'data' => $this->collection->transform(function($_this) {
                 return array_filter([
                     'ref_code' => $_this->ref_code,
                     'country_name' => $_this->country_name,
@@ -42,7 +42,7 @@ class _TradeResourceCollection extends ResourceCollection
                     'completion_review_on_trade_creator' => $_this->completion_review_on_trade_creator_f(),
                     'completion_review_on_offer_creator' => $_this->completion_review_on_offer_creator_f(),
                     'last_activity_datetime' => $_this->last_activity_datetime_f(),
-                ], static function($var){ return $var !== null; });
+                ], static function($var) { return $var !== null; });
             }),
         ];
     }

@@ -35,13 +35,21 @@ class _AssetWalletController extends Controller
     }
 
     // tempFunction
-    public function TronGetAccount()
+    public function tempFunction()
     {
-        return (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => 'TNajmLQSwa12CbmSnDrUNUBeoUDprHaPV8']))->getData();
+        return (new Tatum\Blockchain\TronController)->TronGetTransaction(new Request(['hash' => 'b0504a7474f770cdb79b5b46daefee0793b179fee5c075028b817c20112762bd']))->getData();
+        $balance = 0;
+        $tron_acct = (object)['trc20' => []];
+        try {
+            $tron_acct = (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => 'TLJiK2dtqvWNkwPdrWkZDRYidoend8tM7c']))->getData();
+            if (count($tron_acct->trc20)) { foreach ($tron_acct->trc20 as $token) { if (isset($token->{env('TRON_USDT_TOKEN_ADDRESS')})) { $balance = $token->{env('TRON_USDT_TOKEN_ADDRESS')}/1000000; break; }}}
+        } catch (\Throwable $th) {}
+        return $balance;
+
     }
 
     // tempFunction
-    public function tempFunction()
+    public function sdsds()
     {
         $addresses = [];
         for ($i=6; $i <= 34; $i++) {
@@ -225,7 +233,7 @@ class _AssetWalletController extends Controller
         $customers = [];
         foreach ((new Tatum\VirtualAccounts\CustomerController)->findAllCustomers(new Request())->getData() as $_customer) {
 
-            if (str_contains($_customer->externalId, '_')){ continue; }
+            if (str_contains($_customer->externalId, '_')) { continue; }
 
             $customer = ['data' => $_customer, 'accounts' => []];
             try {
@@ -337,7 +345,7 @@ class _AssetWalletController extends Controller
     public function redo_tatum_subscription_webhook_txn_recon_requests()
     {
         foreach (array_reverse((new Tatum\Subscriptions\NotificationSubscriptionController)->getAllWebhooks(new Request())->getData()) as $request) {
-            if (!isset($request->retryCount)){
+            if (!isset($request->retryCount)) {
                 (new _TransactionController)->ttm_recon_for_incoming_bc_txn(new Request(json_decode(json_encode($request->data), true)));
                 usleep(500);
             }
@@ -361,7 +369,7 @@ class _AssetWalletController extends Controller
             '_status' => ['sometimes', 'string', Rule::in(['active', 'frozen'])],
         ]);
 
-        if (_AssetWallet::where(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']])->exists()){
+        if (_AssetWallet::where(['user_username' => $validated_data['user_username'], 'asset_code' => $validated_data['asset_code']])->exists()) {
             return abort(422, 'Account with given params already exists');
         }
 
@@ -370,15 +378,15 @@ class _AssetWalletController extends Controller
         $validated_data['usable_balance_asset_value'] = 0;
         $validated_data['total_balance_asset_value'] = 0;
 
-        if (_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()){
+        if (_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()) {
             $asset = _Asset::firstWhere(['code' => $validated_data['asset_code']]);
             $ttm_element = null;
             try {
                 $ttm_customer = (new Tatum\VirtualAccounts\CustomerController)->getCustomerByExternalOrInternalId(new Request(['id' => $validated_data['user_username']]))->getData();
                 $ttm_customer_virt_accts = (new Tatum\VirtualAccounts\AccountController)->getAccountsByCustomerId(new Request(['id' => $ttm_customer->id]))->getData();
-                if (count($ttm_customer_virt_accts)){
+                if (count($ttm_customer_virt_accts)) {
                     foreach ($ttm_customer_virt_accts as $ttm_customer_virt_acct) {
-                        if ($ttm_customer_virt_acct->currency == $validated_data['asset_code']){ $ttm_element = $ttm_customer_virt_acct; break; }
+                        if ($ttm_customer_virt_acct->currency == $validated_data['asset_code']) { $ttm_element = $ttm_customer_virt_acct; break; }
                     }
                 }
             } catch (\Throwable $th) {}
@@ -392,34 +400,50 @@ class _AssetWalletController extends Controller
             $validated_data['ttm_virtual_account_id'] = $ttm_element->id;
             $validated_data['usable_balance_asset_value'] = $ttm_element->balance->availableBalance;
             $validated_data['total_balance_asset_value'] = $ttm_element->balance->accountBalance;
-            if ($asset->chain === 'ETH' && $asset->code === 'ETH' && $asset->unit === 'USDT'){
+            if ($asset->chain === 'ETH' && $asset->code === 'ETH' && $asset->unit === 'USDT') {
                 $validated_data['usable_balance_asset_value'] *= $this->ETH_USDT_FCTR;
                 $validated_data['total_balance_asset_value'] *= $this->ETH_USDT_FCTR;
             }
-            if ($asset->chain === 'TRON' && $asset->code === 'TRON' && $asset->unit === 'USDT'){
+            if ($asset->chain === 'TRON' && $asset->code === 'TRON' && $asset->unit === 'USDT') {
                 $validated_data['usable_balance_asset_value'] *= $this->TRX_USDT_FCTR;
                 $validated_data['total_balance_asset_value'] *= $this->TRX_USDT_FCTR;
             }
-            if ($validated_data['total_balance_asset_value'] !== $validated_data['usable_balance_asset_value']){
+            if ($validated_data['total_balance_asset_value'] !== $validated_data['usable_balance_asset_value']) {
                 (new Tatum\VirtualAccounts\AccountController)->deleteAllBlockAmount(new Request(['id' => $ttm_element->id]));
                 $validated_data['usable_balance_asset_value'] = $validated_data['total_balance_asset_value'];
             }
             
             $user = _User::firstWhere('username', $validated_data['user_username']);
-            if (!$user->ttm_customer_id){
+            if (!$user->ttm_customer_id) {
                 (new _UserController)->update(new Request(['ttm_customer_id' => $ttm_element->customerId]), $validated_data['user_username']);
             }
 
-            try {
-                $ttm_element = (new Tatum\Subscriptions\NotificationSubscriptionController)->createSubscription(new Request([
-                    'type' => 'ACCOUNT_INCOMING_BLOCKCHAIN_TRANSACTION',
-                    'attr' => [
-                        'id' => $validated_data['ttm_virtual_account_id'],
-                        'url' => "https://api.ankelli.com/webhooks/tatum/nofitications/incoming-blockchain-transaction",
-                    ],
-                ]))->getData();
-                $validated_data['ttm_subscription_id'] = $ttm_element->id;
-            } catch (\Throwable $th) {}
+            $subscription_created = false;
+            while ($subscription_created === false) {
+                try {
+                    $validated_data['ttm_subscription_id'] = (new Tatum\Subscriptions\NotificationSubscriptionController)->createSubscription(new Request([
+                        'type' => 'ACCOUNT_INCOMING_BLOCKCHAIN_TRANSACTION',
+                        'attr' => [
+                            'id' => $validated_data['ttm_virtual_account_id'],
+                            'url' => "https://api.ankelli.com/webhooks/tatum/nofitications/incoming-blockchain-transaction",
+                        ],
+                    ]))->getData()->id;
+                    $subscription_created = true;
+                } catch (\Throwable $th) {
+                    $subscriptions = [];
+                    $offset = 0;
+                    while (count((new Tatum\Subscriptions\NotificationSubscriptionController)->getSubscriptions(new Request(['offset' => $offset]))->getData())) {
+                        $subscriptions = array_merge($subscriptions, ((new Tatum\Subscriptions\NotificationSubscriptionController)->getSubscriptions(new Request(['offset' => $offset]))->getData()));
+                        $offset += 50;
+                    }
+                    foreach ($subscriptions as $subscription) {
+                        if ($subscription->attr->id == $validated_data['ttm_virtual_account_id']) {
+                            (new Tatum\Subscriptions\NotificationSubscriptionController)->deleteSubscription(new Request(['id' => $subscription->id]));
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         $element = _AssetWallet::create($validated_data);
@@ -448,6 +472,31 @@ class _AssetWalletController extends Controller
         if (!$element) return abort(404, 'Asset account with specified id not found');
         return response()->json(new _AssetWalletResource($element));
     }
+
+    public function refreshAssetValues($id)
+    {
+        if (_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()) {
+            $element = _AssetWallet::findOrFail($id);
+            $ttm_elements = (new Tatum\VirtualAccounts\AccountController)->getAccountsByCustomerId(new Request(['id' => $element->ttm_virtual_account_id ]))->getData();
+            foreach ($ttm_elements as $ttm_element) {
+                if($ttm_element->currency == $element->asset_code) {
+                    $asset = _Asset::firstWhere(['code' => $element->asset_code]);
+                    $validated_data['usable_balance_asset_value'] = $ttm_element->balance->availableBalance;
+                    $validated_data['total_balance_asset_value'] = $ttm_element->balance->accountBalance;
+                    if ($asset->chain === 'ETH' && $asset->code === 'ETH' && $asset->unit === 'USDT') {
+                        $validated_data['usable_balance_asset_value'] *= $this->ETH_USDT_FCTR;
+                        $validated_data['total_balance_asset_value'] *= $this->ETH_USDT_FCTR;
+                    }
+                    if ($asset->chain === 'TRON' && $asset->code === 'TRON' && $asset->unit === 'USDT') {
+                        $validated_data['usable_balance_asset_value'] *= $this->TRX_USDT_FCTR;
+                        $validated_data['total_balance_asset_value'] *= $this->TRX_USDT_FCTR;
+                    }
+                    $element->update($validated_data);
+                    break;
+                }
+            }
+        }
+    }
     
     /**
      * Update the specified resource in storage.
@@ -467,7 +516,7 @@ class _AssetWalletController extends Controller
             'action_note' => 'Block an asset value',
             'usable_balance_asset_value' => $element->usable_balance_asset_value - $validated_data['asset_value'],
         ]), $id);
-        if (_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()){
+        if (_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()) {
             $asset = _Asset::firstWhere('code', $element->asset_code);
             if ($asset->chain === 'ETH' && $asset->code === 'ETH' && $asset->unit === 'USDT') $validated_data['asset_value'] /= $this->ETH_USDT_FCTR;
             if ($asset->chain === 'TRON' && $asset->code === 'TRON' && $asset->unit === 'USDT') $validated_data['asset_value'] /= $this->TRX_USDT_FCTR;
@@ -500,7 +549,7 @@ class _AssetWalletController extends Controller
             'action_note' => 'Unblock an asset value',
             'usable_balance_asset_value' => $element->usable_balance_asset_value + $validated_data['asset_value'],
         ]), $id);
-        if ($use_ttm_api){
+        if ($use_ttm_api) {
             return (new Tatum\VirtualAccounts\AccountController)->deleteBlockAmount(new Request([ 'id' => $validated_data['ttm_amount_blockage_id'] ]));
         } else {
             return $update;
@@ -527,7 +576,7 @@ class _AssetWalletController extends Controller
         // Handle _Log
         $log_entry_update_result = [];
         foreach ($validated_data as $key => $value) {
-            if (in_array($key, $element->getFillable()) && $element->{$key} != $value){
+            if (in_array($key, $element->getFillable()) && $element->{$key} != $value) {
                 array_push($log_entry_update_result, [
                     'field_name' => $key,
                     'old_value' => $element->{$key},

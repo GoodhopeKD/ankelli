@@ -39,11 +39,11 @@ class _SessionController extends Controller
             'agent_app_info'    => ['required', 'array'],
         ]);
 
-        function generate_session_token(){
+        function generate_session_token() {
             return substr(preg_replace('/[^a-zA-Z0-9\']/', '', Hash::make(Str::random(32))),6,16);
         }
         $session_token = generate_session_token();
-        while (_Session::where('token', $session_token)->exists()){
+        while (_Session::where('token', $session_token)->exists()) {
             $session_token = generate_session_token();
         }
 
@@ -216,21 +216,21 @@ class _SessionController extends Controller
         $element = _Session::findOrFail($token);
         /*$check_array = ['token' => $token];
 
-        if (isset($validated_data['remote_end']) && $validated_data['remote_end']){
+        if (isset($validated_data['remote_end']) && $validated_data['remote_end']) {
             $check_array['user_username'] = $element->user_username;
             $check_array['_status'] = 'active';
         } else {
-            if (!(isset($validated_data['default_route']) && $validated_data['default_route'])){
+            if (!(isset($validated_data['default_route']) && $validated_data['default_route'])) {
                 $check_array['token'] = request()->header('x-session-token');
             }
             $check_array['user_username'] = $element->user_username ? $api_auth_user_username : null;
         }
 
-        if (!_Session::where($check_array)->exists()){
+        if (!_Session::where($check_array)->exists()) {
             return abort(422, 'Session props mismatch');
         }*/
 
-        if ($api_auth_user_username){
+        if ($api_auth_user_username) {
             session()->put('api_auth_user_username', $api_auth_user_username);
         }
 

@@ -20,11 +20,11 @@ class _PrefItemController extends Controller
     {
         $result = null;
 
-        if ($result === null){
+        if ($result === null) {
             $simple_query_args = [];
 
-            if (request()->parent_table){ $simple_query_args = array_merge($simple_query_args, [ 'parent_table' => request()->parent_table ]); }
-            if (request()->parent_uid){ $simple_query_args = array_merge($simple_query_args, [ 'parent_uid' => request()->parent_uid ]); }
+            if (request()->parent_table) { $simple_query_args = array_merge($simple_query_args, [ 'parent_table' => request()->parent_table ]); }
+            if (request()->parent_uid) { $simple_query_args = array_merge($simple_query_args, [ 'parent_uid' => request()->parent_uid ]); }
 
             $eloquent_query = _PrefItem::where($simple_query_args);
 
@@ -72,14 +72,14 @@ class _PrefItemController extends Controller
         ]);
 
         $element = _PrefItem::findOrFail($id);
-        if ($element->value_type !== $validated_data['value_type']){
+        if ($element->value_type !== $validated_data['value_type']) {
             abort(422, 'Value type mismatch');
         }
 
         // Handle _Log
         $log_entry_update_result = [];
         foreach ($validated_data as $key => $value) {
-            if (in_array($key, $element->getFillable()) && $element->{$key} != $value){
+            if (in_array($key, $element->getFillable()) && $element->{$key} != $value) {
                 array_push($log_entry_update_result, [
                     'field_name' => $key,
                     'old_value' => $element->{$key},

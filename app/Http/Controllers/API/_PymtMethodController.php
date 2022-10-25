@@ -20,11 +20,11 @@ class _PymtMethodController extends Controller
     {
         $result = null;
 
-        if ($result === null){
+        if ($result === null) {
             $simple_query_args = [];
 
-            if (request()->_status && request()->_status !== 'all'){ $simple_query_args = array_merge($simple_query_args, [ '_status' => request()->_status ]); }
-            if (!isset(request()->_status)){ $simple_query_args = array_merge($simple_query_args, [ '_status' => 'active' ]); }
+            if (request()->_status && request()->_status !== 'all') { $simple_query_args = array_merge($simple_query_args, [ '_status' => request()->_status ]); }
+            if (!isset(request()->_status)) { $simple_query_args = array_merge($simple_query_args, [ '_status' => 'active' ]); }
 
             $eloquent_query = _PymtMethod::where($simple_query_args);
 

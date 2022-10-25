@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::group(['domain' => 'https://content.'.env('APP_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://content.'.env('APP_DOMAIN_NAME')], function() {
     Route::get('param_checks/availability/{param_name}/{param_value}', '__AuxController@availability_check')->name('availability_check');
     Route::get('param_checks/usability/{param_name}/{param_value}', '__AuxController@usability_check')->name('usability_check');
     Route::get('sysconfig_params', '__AuxController@sysconfig_params')->name('sysconfig_params');
@@ -15,11 +15,11 @@ Route::group(['domain' => 'https://content.'.env('APP_DOMAIN_NAME')], function()
     Route::apiResource('datalists/pymt_methods', '_PymtMethodController')->only(['index'])->parameter('pymt_methods', 'id');
 });
 
-Route::group(['domain' => 'https://webhooks.'.env('APP_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://webhooks.'.env('APP_DOMAIN_NAME')], function() {
     Route::post('tatum/nofitications', '_TransactionController@ttm_recon_for_incoming_bc_txn_notification')->name('tatum.subscription_txn_recon');
 });
 
-Route::group(['domain' => 'https://p2p.'.env('APP_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://p2p.'.env('APP_DOMAIN_NAME')], function() {
     Route::apiResource('offers', '_OfferController')->only(['show', 'index'])->parameter('offers', 'ref_code');
     Route::group(['middleware' => 'auth:accounts'], function () {
         Route::apiResource('offers', '_OfferController')->only(['store', 'update', 'destroy'])->parameter('offers', 'ref_code');
@@ -27,7 +27,7 @@ Route::group(['domain' => 'https://p2p.'.env('APP_DOMAIN_NAME')], function(){
     });
 });
 
-Route::group(['domain' => 'https://pay.'.env('APP_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://pay.'.env('APP_DOMAIN_NAME')], function() {
     $pay_scaffolding_app_paths = [
         '/',
         '/merchants',
@@ -42,7 +42,7 @@ Route::group(['domain' => 'https://pay.'.env('APP_DOMAIN_NAME')], function(){
     }
 });
 
-Route::group(['domain' => 'https://admin.'.env('APP_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://admin.'.env('APP_DOMAIN_NAME')], function() {
     $admin_scaffolding_app_paths = [
         '/',
         '/analytics/users',
@@ -68,7 +68,7 @@ Route::group(['domain' => 'https://admin.'.env('APP_DOMAIN_NAME')], function(){
     }
 });
 
-Route::group(['domain' => 'https://funds.'.env('APP_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://funds.'.env('APP_DOMAIN_NAME')], function() {
     $funds_scaffolding_app_paths = [
         '/',
         '/my-crypto-wallets',
@@ -83,7 +83,7 @@ Route::group(['domain' => 'https://funds.'.env('APP_DOMAIN_NAME')], function(){
     }
 });
 
-Route::group(['domain' => 'https://support.'.env('APP_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://support.'.env('APP_DOMAIN_NAME')], function() {
     $support_scaffolding_app_paths = [
         '/',
         '/flagged-elements/users',
@@ -102,7 +102,7 @@ Route::group(['domain' => 'https://support.'.env('APP_DOMAIN_NAME')], function()
     }
 });
 
-Route::group(['domain' => 'https://accounts.'.env('APP_DOMAIN_NAME')], function(){
+Route::group(['domain' => 'https://accounts.'.env('APP_DOMAIN_NAME')], function() {
     Route::post('auth/signup', '_UserController@store')->name('accounts.auth.signup');
     Route::post('auth/signin', '_UserController@signin')->name('accounts.auth.signin');
 

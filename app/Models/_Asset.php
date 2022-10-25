@@ -32,6 +32,7 @@ class _Asset extends Model
         'withdrawal_min_limit',
         'withdrawal_max_limit',
         'usd_asset_exchange_rate',
+        'centralization_threshold',
         'onchain_disclaimer',
         'bc_txn_id_scan_url',
         '_status',
@@ -64,6 +65,7 @@ class _Asset extends Model
         //'withdrawal_min_limit' => 'float',
         //'withdrawal_max_limit' => 'float',
         //'usd_asset_exchange_rate' => 'float',
+        //'centralization_threshold' => 'float',
     ];
 
     /**

@@ -14,7 +14,7 @@ ini_set('precision', 16);
 ini_set('serialize_precision', 16);
 
 // linking storage path to url path
-if (!File::exists(public_path('storage'))){
+if (!File::exists(public_path('storage'))) {
     File::link(storage_path('app/public'), public_path('storage'));
 }
 

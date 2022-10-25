@@ -17,6 +17,6 @@ class _UserGroupMembershipResource extends JsonResource
         return array_filter(array_merge(
             parent::toArray($request), [
                 'post_title' => $this->post_title_f(),
-            ]), static function($var){ return $var !== null; });
+            ]), static function($var) { return $var !== null; });
     }
 }
