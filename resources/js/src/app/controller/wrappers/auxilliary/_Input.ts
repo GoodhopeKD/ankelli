@@ -322,6 +322,13 @@ export default class _Input {
 		})
 	}
 
+	differsFrom(test_input: any): boolean {
+		let result = test_input !== this._input
+		this._failed_validation = !result
+		this._passed_validation = !this._failed_validation
+		return result
+	}
+
 	matches(test_input: any): boolean {
 		let result = test_input === this._input
 		this._failed_validation = !result

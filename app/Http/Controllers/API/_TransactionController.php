@@ -152,6 +152,7 @@ class _TransactionController extends Controller
         $validated_data = $request->validate([
             'ttm_bc_txn_signature_id' => ['nullable', 'string', 'unique:__transactions,ttm_bc_txn_signature_id'],
             'ttm_amount_blockage_id' => ['nullable', 'string', 'unique:__transactions,ttm_amount_blockage_id'],
+            'asset_value_escrowed' => ['sometimes', 'numeric', 'min:0'],
             'bc_txn_id' => ['sometimes', 'string', 'unique:__transactions,bc_txn_id'],    
             'bc_txn_fee_asset_unit' => ['sometimes', 'string', 'max:64'],    
             'bc_txn_fee_asset_value' => ['sometimes', 'numeric'],
@@ -175,6 +176,8 @@ class _TransactionController extends Controller
         if ($element->transfer_result) {
             return response()->json([ 'ref_code' => $element->ref_code ]);
         }
+
+        $asset = _Asset::firstWhere('code', $element->asset_code);
 
         $validated_data['transfer_result'] = [];
         if (isset($element->sender_username)) {
@@ -216,8 +219,8 @@ class _TransactionController extends Controller
                     'user_username' => $element->sender_username,
                     'content' => [
                         'title' => 'Debit Transaction',
-                        'subtitle' => $element->asset_value.' '.$element->asset_code.' has been debited from your account.',
-                        'body' => $element->asset_value." ".$element->asset_code." has been debited from your account.\nTxn ref: ".$element->ref_code.".\nDescription: ".$element->sender_note."\nNew balances: Usable : ".$new_usable_balance_asset_value ." ".$element->asset_code.", Total : ".$new_total_balance_asset_value ." ".$element->asset_code,
+                        'subtitle' => $element->asset_value.' '.$asset->unit.' has been debited from your "'.$asset->name.'" account.',
+                        'body' => $element->asset_value." ".$asset->unit." has been debited from your ".$asset->name." account.\nTxn ref: ".$element->ref_code.".\nDescription: ".$element->sender_note."\nNew balances: Usable : ".$new_usable_balance_asset_value." ".$asset->unit.", Total : ".$new_total_balance_asset_value." ".$asset->unit,
                     ],
                 ]));
                 // End Create notification
@@ -255,8 +258,8 @@ class _TransactionController extends Controller
                     'user_username' => $element->recipient_username,
                     'content' => [
                         'title' => 'Credit Transaction',
-                        'subtitle' => $element->asset_value.' '.$element->asset_code.' has been credited into your account.',
-                        'body' => $element->asset_value." ".$element->asset_code." has been credited into your account.\nTxn ref: ".$element->ref_code.".\nDescription: ".$element->recipient_note."\nNew balances: Usable : ".$new_usable_balance_asset_value ." ".$element->asset_code.", Total : ".$new_total_balance_asset_value ." ".$element->asset_code,
+                        'subtitle' => $element->asset_value.' '.$asset->unit.' has been credited into your "'.$asset->name.'" account.',
+                        'body' => $element->asset_value." ".$asset->unit." has been credited into your ".$asset->name." account.\nTxn ref: ".$element->ref_code.".\nDescription: ".$element->recipient_note."\nNew balances: Usable : ".$new_usable_balance_asset_value." ".$asset->unit.", Total : ".$new_total_balance_asset_value." ".$asset->unit,
                     ],
                 ]));
                 // End Create notification
@@ -323,8 +326,8 @@ class _TransactionController extends Controller
                         'custodialAddress' => $focused_address->bc_address,
                         'recipient' => $reserves_address->bc_address,
                         'contractType' => 0,
-                        'tokenAddress' => env('ETH_USDT_TOKEN_ADDRESS'),
-                        'amount' => $balance.'', // in ETH
+                        'tokenAddress' => env('USDT_TOKEN_ADDRESS'),
+                        'amount' => $balance.'',
                         'signatureId' => env('TATUM_KMS_ETH_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
                         'index' => 0,
                     ]))->getData()->signatureId;
@@ -368,7 +371,7 @@ class _TransactionController extends Controller
                     try {
                         $tron_acct = (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => $_reserves_address->bc_address]))->getData();
                     } catch (\Throwable $th) {}
-                    if (count($tron_acct->trc20)) { foreach ($tron_acct->trc20 as $token) { if (isset($token->{env('TRON_USDT_TOKEN_ADDRESS')})) { $balance = $token->{env('TRON_USDT_TOKEN_ADDRESS')}/1000000; break; }}}
+                    if (count($tron_acct->trc20)) { foreach ($tron_acct->trc20 as $token) { if (isset($token->{env('USDT_TRON_TOKEN_ADDRESS')})) { $balance = $token->{env('USDT_TRON_TOKEN_ADDRESS')}/1000000; break; }}}
                     if ($lowest_balance === null) $lowest_balance = $balance;
                     if ($balance <= $lowest_balance) {
                         $reserves_address = $_reserves_address;
@@ -376,7 +379,7 @@ class _TransactionController extends Controller
                 }
                 $balance = 0;
                 $tron_acct = (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => $focused_address->bc_address]))->getData();
-                if (count($tron_acct->trc20)) { foreach ($tron_acct->trc20 as $token) { if (isset($token->{env('TRON_USDT_TOKEN_ADDRESS')})) { $balance = $token->{env('TRON_USDT_TOKEN_ADDRESS')}/1000000; break; }}}
+                if (count($tron_acct->trc20)) { foreach ($tron_acct->trc20 as $token) { if (isset($token->{env('USDT_TRON_TOKEN_ADDRESS')})) { $balance = $token->{env('USDT_TRON_TOKEN_ADDRESS')}/1000000; break; }}}
                 if ($balance >= $asset->centralization_threshold) {
                     $validated_data['asset_value'] = $balance;
                     $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
@@ -385,9 +388,9 @@ class _TransactionController extends Controller
                         'from' => $asset->gp_owner_bc_address,
                         'recipient' => $reserves_address->bc_address,
                         'contractType' => 0,
-                        'tokenAddress' => env('TRON_USDT_TOKEN_ADDRESS'),
+                        'tokenAddress' => env('USDT_TRON_TOKEN_ADDRESS'),
                         'amount' => $balance.'',
-                        'feeLimit' => round(pow((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => 'TRON', 'basePair' => 'USD']))->getData()->value, -1)), // in TRX
+                        'feeLimit' => round(pow((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => 'TRON', 'basePair' => 'USD']))->getData()->value, -1)),
                         'signatureId' => env('TATUM_KMS_TRON_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
                         'index' => 0,
                     ]))->getData()->signatureId;
@@ -460,6 +463,10 @@ class _TransactionController extends Controller
         $validated_data = $request->validate([
             'asset_value' => ['required', 'numeric', 'min:0'],
         ]);
+
+        if ($validated_data['asset_value']<=0){
+            return;
+        }
 
         $element = _Transaction::findOrFail($ref_code);
 
@@ -640,13 +647,12 @@ class _TransactionController extends Controller
 
         $asset = _Asset::firstWhere('code', $validated_data['asset_code']);
         $validated_data['asset_value_escrowed'] = $validated_data['asset_value'] + $asset->usd_asset_exchange_rate * $asset->withdrawal_txn_fee_usd_fctr;
+        
+        $element = (new _TransactionController)->store(new Request($validated_data))->getData();
         $validated_data['ttm_amount_blockage_id'] = (new _AssetWalletController)->blockAssetValue(new Request([
             'asset_value' => $validated_data['asset_value_escrowed'],
             'blockage_type_slug' => 'withdrawal_escrow',
         ]), _AssetWallet::firstWhere(['user_username' => $validated_data['sender_username'], 'asset_code' => $validated_data['asset_code']])->id)->getData()->id;
-
-        $element = (new _TransactionController)->store(new Request($validated_data))->getData();
-        unset($validated_data['ttm_amount_blockage_id']);
 
         $reserves_wallet = _AssetWallet::firstWhere(['user_username' => 'reserves', 'asset_code' => $validated_data['asset_code']]);
         $reserves_addresses = _AssetWalletAddress::where(['user_username' => 'reserves', 'asset_code' => $validated_data['asset_code']])->inRandomOrder()->get()->makeVisible(['xpub_derivation_key']);
@@ -711,7 +717,7 @@ class _TransactionController extends Controller
                         } catch (\Throwable $th) {}
                         $balance = 0;
                         if ($asset->code === 'TRON') $balance = $tron_acct->balance/1000000;
-                        if ($asset->code === 'USDT_TRON' && count($tron_acct->trc20) && isset($tron_acct->trc20[env('TRON_USDT_TOKEN_ADDRESS')])) $balance = $tron_acct->trc20[env('TRON_USDT_TOKEN_ADDRESS')];
+                        if ($asset->code === 'USDT_TRON' && count($tron_acct->trc20)) { foreach ($tron_acct->trc20 as $token) { if (isset($token->{env('USDT_TRON_TOKEN_ADDRESS')})) { $balance = $token->{env('USDT_TRON_TOKEN_ADDRESS')}/1000000; break; }}}
                         if ($balance > $validated_data['asset_value']) {
                             $reserves_address = $_reserves_address;
                             break;
@@ -736,9 +742,9 @@ class _TransactionController extends Controller
                             $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\TronController)->TronTransferTrc20(new Request([
                                 'from' => $reserves_address->bc_address,
                                 'to' => $validated_data['recipient_bc_address'],
-                                'tokenAddress' => env('TRON_USDT_TOKEN_ADDRESS'),
-                                'amount' => ($validated_data['asset_value'] * pow((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => 'TRON', 'basePair' => 'USD']))->getData()->value)).'', // in TRX
-                                'feeLimit' => round(pow((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => 'TRON', 'basePair' => 'USD']))->getData()->value, -1)), // in TRX
+                                'tokenAddress' => env('USDT_TRON_TOKEN_ADDRESS'),
+                                'amount' => $validated_data['asset_value'].'',
+                                'feeLimit' => round(pow((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => 'TRON', 'basePair' => 'USD']))->getData()->value, -1)),
                                 'signatureId' => env('TATUM_KMS_TRON_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
                                 'index' => $reserves_address->xpub_derivation_key,
                             ]))->getData()->signatureId;
@@ -902,37 +908,38 @@ class _TransactionController extends Controller
 
         $validated_data = $request->validate([
             'subscriptionType' => ['required', 'string', Rule::in(['KMS_COMPLETED_TX'])],
-            'txId' => ['required', 'string', 'unique:__transactions,bc_txn_id'],
+            'txId' => ['required', 'string', /*'unique:__transactions,bc_txn_id'*/],
             'signatureId' => ['required', 'string'],
         ]);
 
         $element = _Transaction::firstWhere(['ttm_bc_txn_signature_id' => $validated_data['signatureId']]);
 
-        if (!$element) {
-            return;
-        }
+        if (!$element) { return; }
 
         $transaction_succeded = true;
 
-        switch (_Asset::firstWhere('code', $element->asset_code)->chain) {
-            case 'ETH':
-                $ttm_element = (new Tatum\Blockchain\EthereumController)->EthGetTransaction(new Request(['hash' => $bc_txn_id]));
-                $validated_data['bc_txn_fee_asset_unit'] = 'ETH';
-                $validated_data['bc_txn_fee_asset_value'] = (float)$ttm_element->gas * ((float)$ttm_element->gasPrice) / pow(10,18);
-                break;
-            case 'TRON':
-                $ttm_element = (new Tatum\Blockchain\EthereumController)->EthGetTransaction(new Request(['hash' => $bc_txn_id]));
-                $validated_data['bc_txn_fee_asset_unit'] = 'TRX';
-                $validated_data['bc_txn_fee_asset_value'] = $ttm_element->fee/1000000;
-                foreach ($ttm_element->ret as $ret) {
-                    if ($ret->contractRet !== 'SUCCESS') {
-                        $transaction_succeded = false;
-                        $validated_data['error'] = $ret->contractRet;
-                        $validated_data['subscriptionType'] = 'KMS_FAILED_TX';
-                        break;
+        if (in_array($element->operation_slug, ['WITHDRAWAL', 'CENTRALIZE_ASSETS', 'GP_ADDRESSES_ACTIVATION'])) {
+            usleep(5000);
+            switch (_Asset::firstWhere('code', $element->asset_code)->chain) {
+                case 'ETH':
+                    $ttm_element = (new Tatum\Blockchain\EthereumController)->EthGetTransaction(new Request(['hash' => $validated_data['txId']]))->getData();
+                    $validated_data['bc_txn_fee_asset_unit'] = 'ETH';
+                    $validated_data['bc_txn_fee_asset_value'] = (float)$ttm_element->gas * ((float)$ttm_element->gasPrice) / pow(10,18);
+                    break;
+                case 'TRON':
+                    $ttm_element = (new Tatum\Blockchain\TronController)->TronGetTransaction(new Request(['hash' => $validated_data['txId']]))->getData();
+                    $validated_data['bc_txn_fee_asset_unit'] = 'TRX';
+                    $validated_data['bc_txn_fee_asset_value'] = $ttm_element->fee/1000000;
+                    foreach ($ttm_element->ret as $ret) {
+                        if ($ret->contractRet !== 'SUCCESS') {
+                            $transaction_succeded = false;
+                            $validated_data['error'] = $ret->contractRet;
+                            $validated_data['subscriptionType'] = 'KMS_FAILED_TX';
+                            break;
+                        }
                     }
-                }
-                break;
+                    break;
+            }
         }
 
         try {
@@ -969,9 +976,7 @@ class _TransactionController extends Controller
 
         $element = _Transaction::firstWhere(['ttm_bc_txn_signature_id' => $validated_data['signatureId']]);
 
-        if (!$element) {
-            return;
-        }
+        if (!$element) { return; }
 
         switch ($element->operation_slug) {
             case 'WITHDRAWAL':

@@ -110,7 +110,7 @@ return new class extends Migration
                 'name' => 'World Remit',
                 'slug' => 'world_remit',
                 'hex_color' => '604684',
-                'details_required' => json_encode(['fullname', 'email_address' ]),
+                'details_required' => json_encode(['fullname', 'phone_no' ]),
                 'choice_currency_codes' => null,
                 'creator_username' => 'system',
             ],

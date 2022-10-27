@@ -212,7 +212,7 @@ export default class DatalistViewListScreen extends React.Component {
                                                         <td className="align-middle small">{datalist_item.slug}</td>
                                                         <td className="align-middle small">{JSON.stringify(datalist_item.choice_currency_codes, null, 2)}</td>
                                                         <td className="align-middle small">{JSON.stringify(datalist_item.details_required, null, 2)}</td>
-                                                        <td className="align-middle small"><button className="btn btn-sm" style={{ backgroundColor: '#' + datalist_item.hex_color }}>{datalist_item.hex_color}</button></td>
+                                                        <td className="align-middle small"><button className="btn btn-sm text-light" style={{ backgroundColor: '#' + datalist_item.hex_color }}>{datalist_item.hex_color}</button></td>
                                                         <td className="align-middle small"><img src={datalist_item.icon.uri} alt={datalist_item.name + " icon"} width="40" height="40" className="rounded-1 me-2" /></td>
                                                         <td className="align-middle small">{datalist_item._status}</td>
                                                     </>}
@@ -249,12 +249,12 @@ export default class DatalistViewListScreen extends React.Component {
                                     <div className="d-flex gap-1">
                                         <label htmlFor="input_per_page" className="align-self-center">Items</label>
                                         <select className="form-select" id="input_per_page" value={this.state.per_page} onChange={element => this.setState({ per_page: parseInt(element.target.value) }, () => { this.should_load_items = true; this.populateScreenWithItems() })} >
-                                            {[5, 10, 25, 50, 100].map((per_page, index) => <option key={index} value={per_page} >{per_page}</option>)}
+                                            {[10, 25, 50].map((per_page, index) => <option key={index} value={per_page} >{per_page}</option>)}
                                         </select>
                                     </div>
                                 </div>
 
-                                <div>
+                                {pagination_pages.length > 1 && <div>
                                     <nav>
                                         <ul className="pagination">
                                             <li className={"page-item" + ((this.state._collecion.meta.current_page == 1 || !this.state.list_loaded) ? ' disabled' : '')}>
@@ -266,7 +266,7 @@ export default class DatalistViewListScreen extends React.Component {
                                             </li>
                                         </ul>
                                     </nav>
-                                </div>
+                                </div>}
 
                             </div>
 

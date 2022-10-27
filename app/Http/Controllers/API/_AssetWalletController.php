@@ -37,12 +37,19 @@ class _AssetWalletController extends Controller
     // tempFunction
     public function tempFunction()
     {
+        $ttm_element = (new Tatum\Blockchain\TronController)->TronGetTransaction(new Request(['hash' => '3fb3ef9e1a2dbd496b95757d726ed67e91d9f652cc3c12a69d6f2d99ff3c4db6']))->getData();
+                $validated_data['bc_txn_fee_asset_unit'] = 'TRX';
+                $validated_data['bc_txn_fee_asset_value'] = $ttm_element->fee/1000000;
+
+                return $validated_data;
+
+        return json_decode(stripslashes('{\"visible\":false,\"txID\":\"0ecad4db1049652344482d7292b6b48c5c9ca6b118f5efa6fe03d24981205317\",\"raw_data\":{\"contract\":[{\"parameter\":{\"value\":{\"amount\":61390,\"owner_address\":\"417161a0b2868c0279331b22b77f0c5025b4f2c2b8\",\"to_address\":\"41f311077fa1ba4faece334588f351511352a2cca9\"},\"type_url\":\"type.googleapis.com/protocol.TransferContract\"},\"type\":\"TransferContract\"}],\"ref_block_bytes\":\"4ea9\",\"ref_block_hash\":\"894dcccaf51b8a77\",\"expiration\":1666694460000,\"timestamp\":1666694402805},\"raw_data_hex\":\"0a024ea92208894dcccaf51b8a7740e0e4ecf5c0305a67080112630a2d747970652e676f6f676c65617069732e636f6d2f70726f746f636f6c2e5472616e73666572436f6e747261637412320a15417161a0b2868c0279331b22b77f0c5025b4f2c2b8121541f311077fa1ba4faece334588f351511352a2cca918cedf0370f5a5e9f5c030\"}'));
         return (new Tatum\Blockchain\TronController)->TronGetTransaction(new Request(['hash' => 'b0504a7474f770cdb79b5b46daefee0793b179fee5c075028b817c20112762bd']))->getData();
         $balance = 0;
         $tron_acct = (object)['trc20' => []];
         try {
             $tron_acct = (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => 'TLJiK2dtqvWNkwPdrWkZDRYidoend8tM7c']))->getData();
-            if (count($tron_acct->trc20)) { foreach ($tron_acct->trc20 as $token) { if (isset($token->{env('TRON_USDT_TOKEN_ADDRESS')})) { $balance = $token->{env('TRON_USDT_TOKEN_ADDRESS')}/1000000; break; }}}
+            if (count($tron_acct->trc20)) { foreach ($tron_acct->trc20 as $token) { if (isset($token->{env('USDT_TRON_TOKEN_ADDRESS')})) { $balance = $token->{env('USDT_TRON_TOKEN_ADDRESS')}/1000000; break; }}}
         } catch (\Throwable $th) {}
         return $balance;
 
@@ -477,23 +484,20 @@ class _AssetWalletController extends Controller
     {
         if (_PrefItem::firstWhere('key_slug', 'use_ttm_api')->value_f()) {
             $element = _AssetWallet::findOrFail($id);
-            $ttm_elements = (new Tatum\VirtualAccounts\AccountController)->getAccountsByCustomerId(new Request(['id' => $element->ttm_virtual_account_id ]))->getData();
-            foreach ($ttm_elements as $ttm_element) {
-                if($ttm_element->currency == $element->asset_code) {
-                    $asset = _Asset::firstWhere(['code' => $element->asset_code]);
-                    $validated_data['usable_balance_asset_value'] = $ttm_element->balance->availableBalance;
-                    $validated_data['total_balance_asset_value'] = $ttm_element->balance->accountBalance;
-                    if ($asset->chain === 'ETH' && $asset->code === 'ETH' && $asset->unit === 'USDT') {
-                        $validated_data['usable_balance_asset_value'] *= $this->ETH_USDT_FCTR;
-                        $validated_data['total_balance_asset_value'] *= $this->ETH_USDT_FCTR;
-                    }
-                    if ($asset->chain === 'TRON' && $asset->code === 'TRON' && $asset->unit === 'USDT') {
-                        $validated_data['usable_balance_asset_value'] *= $this->TRX_USDT_FCTR;
-                        $validated_data['total_balance_asset_value'] *= $this->TRX_USDT_FCTR;
-                    }
-                    $element->update($validated_data);
-                    break;
+            $ttm_element = (new Tatum\VirtualAccounts\AccountController)->getAccountByAccountId(new Request(['id' => $element->ttm_virtual_account_id ]))->getData();
+            if($ttm_element->currency == $element->asset_code) {
+                $asset = _Asset::firstWhere(['code' => $element->asset_code]);
+                $validated_data['usable_balance_asset_value'] = $ttm_element->balance->availableBalance;
+                $validated_data['total_balance_asset_value'] = $ttm_element->balance->accountBalance;
+                if ($asset->chain === 'ETH' && $asset->code === 'ETH' && $asset->unit === 'USDT') {
+                    $validated_data['usable_balance_asset_value'] *= $this->ETH_USDT_FCTR;
+                    $validated_data['total_balance_asset_value'] *= $this->ETH_USDT_FCTR;
                 }
+                if ($asset->chain === 'TRON' && $asset->code === 'TRON' && $asset->unit === 'USDT') {
+                    $validated_data['usable_balance_asset_value'] *= $this->TRX_USDT_FCTR;
+                    $validated_data['total_balance_asset_value'] *= $this->TRX_USDT_FCTR;
+                }
+                $element->update($validated_data);
             }
         }
     }

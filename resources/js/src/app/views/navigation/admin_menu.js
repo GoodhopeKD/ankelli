@@ -182,37 +182,37 @@ export const admin_menu = {
                 // User Groups
                 {
                     title: 'User Groups',
-                    path: '/systools/user_groups',
+                    path: '/systools/user-groups',
                     element: (props) => <SysToolsViewListScreen {...props} />,
                     show_in_menu: true,
                 },
                 {
                     title: 'View User Group',
-                    path: '/systools/user_groups/:user_group_slug',
+                    path: '/systools/user-groups/:slug',
                     element: (props) => <ExampleElement {...props} />,
                     show_in_menu: false,
                 },
                 {
                     title: 'Edit User Group',
-                    path: '/systools/user_groups/:user_group_slug/edit',
+                    path: '/systools/user-groups/:slug/edit',
                     element: (props) => <ExampleElement {...props} />,
                     show_in_menu: false,
                 },
                 {
                     title: 'New User Group',
-                    path: '/systools/user_groups/new',
+                    path: '/systools/user-groups/new',
                     element: (props) => <ExampleElement {...props} />,
                     show_in_menu: false,
                 },
                 {
                     title: 'View User Group Members',
-                    path: '/systools/user_groups/:user_group_slug/user-group-memberships',
+                    path: '/systools/user-groups/:slug/user-group-memberships',
                     element: (props) => <SysToolsViewListScreen {...props} />,
                     show_in_menu: false,
                 },
                 {
                     title: 'Add User Group Member',
-                    path: '/systools/user_groups/:user_group_slug/user-group-memberships/new',
+                    path: '/systools/user-groups/:slug/user-group-memberships/new',
                     element: (props) => <ExampleElement {...props} />,
                     show_in_menu: false,
                 },

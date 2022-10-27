@@ -37,10 +37,10 @@ export default class CustomSelect extends React.Component {
 
         return <>
             <div className="dropdown">
-                <a disabled={disabled} href="#" style={{ backgroundColor: disabled ? "#e9ecef" : null }} className="d-flex link-dark text-decoration-none form-select gap-2" data-bs-toggle="dropdown" >
+                <a disabled={disabled} href="#" style={{ backgroundColor: disabled ? "#e9ecef" : null, whiteSpace: 'nowrap' }} className="d-flex link-dark text-decoration-none form-select gap-2" data-bs-toggle="dropdown" >
                     <shown_element.output_element />
                 </a>
-                <div className="dropdown-menu pt-0 w-100" data-popper-placement="bottom-start">
+                <div className="dropdown-menu pt-0" style={{ minWidth: '100%' }} data-popper-placement="bottom-start">
                     <div className="p-2 mb-2 bg-light border-bottom rounded-top">
                         <input
                             disabled={disabled}

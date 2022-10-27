@@ -1,6 +1,7 @@
 import React from "react"
 
 import SideBar from 'app/views/components/SideBar'
+import UpdatePasswordScreen from 'app/views/screens/accounts_menu/UpdatePassword.screen'
 
 class ExampleElement extends React.Component {
     render() {
@@ -44,7 +45,7 @@ export const accounts_menu = {
                 {
                     title: 'Change Password',
                     path: '/settings/change-password',
-                    element: (props) => <ExampleElement {...props} />,
+                    element: (props) => <UpdatePasswordScreen {...props} />,
                 },
                 {
                     title: 'Email addresses',

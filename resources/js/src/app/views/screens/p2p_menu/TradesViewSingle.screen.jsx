@@ -106,13 +106,12 @@ class TradesViewSingleScreen extends React.Component {
                     if (trade.completion_review_on_trade_creator.comment)
                         this.handleInputChange('peer_review_comment', trade.completion_review_on_trade_creator.comment)
                 }
-                this.setState({ focused_trade_loaded: true })
+                this.setState({ focused_trade_loaded: true, btn_refreshing_messages_working: false })
             })
             .catch(e => {
                 _Notification.flash({ message: e.message, duration: 5000 });
                 if (e.request && e.request._status == 404) { this.setState({ single_item_not_found: true }) }
             })
-            .finally(() => _Session.refresh())
     }
 
     render() {
@@ -538,7 +537,14 @@ class TradesViewSingleScreen extends React.Component {
                                             <img src={require("app/assets/img/user_avatar/" + (window.padUserAvatarImageId(message.creator_avatar_image_id ?? '0')) + ".png").default} alt="User avater image" width="32" height="32" className="bd-placeholder-img flex-shrink-0 mx-2 my-1 rounded" />
                                         </div>
                                     })}
+
+                                    <div className="d-flex justify-content-center">
+                                        <button className="btn btn-success btn-sm mb-1" disabled={this.state.btn_refreshing_messages_working} type="button" onClick={() => { this.setState({ btn_refreshing_messages_working: true }); this.componentDidMount(); }} >
+                                            {this.state.btn_refreshing_messages_working ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 18, height: 18 }}></div> : <>Refresh messages</>}
+                                        </button>
+                                    </div>
                                 </div>
+
                                 <div className="card-footer">
                                     {this.state.errors.length !== 0 && <div className="mb-2">
                                         {this.state.errors.map((error, key) => (

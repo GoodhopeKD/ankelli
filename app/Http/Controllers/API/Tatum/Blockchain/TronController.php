@@ -185,7 +185,7 @@ class TronController extends Controller
                 "x-api-key: ".env('TATUM_'.env('BC_ENV').'_API_KEY'),
             ],
             CURLOPT_POSTFIELDS => json_encode($payload),
-            CURLOPT_URL => "https://api-eu1.tatum.io/v3/tron/transaction",
+            CURLOPT_URL => "https://api-eu1.tatum.io/v3/tron/trc20/transaction",
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_CUSTOMREQUEST => "POST",
         ]);

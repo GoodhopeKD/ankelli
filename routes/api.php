@@ -63,6 +63,7 @@ Route::group(['middleware' => 'auth:api'], function () {
 
     // User authentication routes
     Route::post('accounts/auth/signout', '_UserController@signout')->name('accounts.auth.signout');
+    Route::post('accounts/auth/update-password', '_UserController@updatePassword')->name('accounts.auth.update-password');
 
     // User extension management routes
     Route::post('accounts/users/{uid}/admin_extension', '_AdminExtensionController@store')->name('accounts.users.add_admin_extension');
@@ -119,6 +120,7 @@ Route::group(['middleware' => 'auth:api'], function () {
     Route::apiResource('suppport/chats', '_ChatController')->parameter('chats', 'uid');
     Route::apiResource('p2p/offers', '_OfferController')->only(['store', 'update', 'destroy'])->parameter('offers', 'ref_code');
     Route::apiResource('p2p/trades', '_TradeController')->except(['destroy'])->parameter('trades', 'ref_code');
+    Route::get('funds/asset-wallets/{id}/refresh', '_AssetWalletController@refreshAssetValues');
     Route::apiResource('funds/asset-wallets', '_AssetWalletController')->only('store')->parameter('asset_wallets', 'id');
     Route::apiResource('funds/asset-wallet-addresses', '_AssetWalletAddressController')->only('index', 'store', 'show')->parameter('asset_wallet_addresses', 'id');
     Route::apiResource('content/messages', '_MessageController')->only(['index', 'store'])->parameter('messages', 'id');

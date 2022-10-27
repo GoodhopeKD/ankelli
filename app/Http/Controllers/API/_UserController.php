@@ -309,6 +309,45 @@ class _UserController extends Controller
         if ($request->expectsJson()) return response()->json((new _UserResource($element)));
     }
 
+    public function updatePassword(Request $request)
+    {
+        $validated_data = $request->validate([
+            'current_password' => ['required', 'string', 'between:8,32'],
+            'new_password' => ['required', 'string', 'between:8,32', 'confirmed'],
+        ]);
+
+        if ($validated_data['current_password'] === $validated_data['new_password']){
+            return abort(422, 'Current and new passwords should not be the same');
+        }
+
+        $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
+        $element = _User::where(['username' => $api_auth_user_username])->firstOrFail();
+        
+        if (!Hash::check($validated_data['current_password'], $element->makeVisible(['password'])->password)) {
+            return abort(422, 'Current password incorrect');
+        }
+
+        $validated_data['password'] = bcrypt($request->new_password);
+
+        // Handle _Log
+        $log_entry_update_result = [[
+            'field_name' => 'password',
+            'old_value' => null,
+            'new_value' => null,
+        ]];
+        (new _LogController)->store(new Request([
+            'action_note' => 'Updating of _User entry in database.',
+            'action_type' => 'entry_update',
+            'entry_table' => $element->getTable(),
+            'entry_uid' => $element->username,
+            'batch_code' => $request->batch_code,
+            'entry_update_result'=> $log_entry_update_result,
+        ]));
+        // End _Log Handling
+
+        $element->update($validated_data);
+    }
+
     /**
      * Store a newly created resource in storage.
      *

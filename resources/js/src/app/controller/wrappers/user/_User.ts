@@ -49,6 +49,12 @@ const signup_data = {
 	password_confirmation: '',
 }
 
+const update_password_data = {
+	current_password: '',
+	new_password: '',
+	new_password_confirmation: '',
+}
+
 const get_lost_username_data = {
 	receiving_addon_name: '' as 'email_address' | 'phone_no',
 	receiving_addon_value: '',
@@ -281,6 +287,19 @@ export default class _User extends _Wrapper_ implements Omit<typeof _UserRespObj
 				endpoint: 'accounts/auth/signout'
 			})
 	}
+
+	async updatePassword(data: typeof update_password_data) {
+		return await mainLaravelDBRestAPICallWrapper
+			.dispatch({
+				type: 'APP_BACKEND_API_CALL',
+				method: 'POST',
+				endpoint: 'accounts/auth/update-password',
+				data
+			})
+			.then((resp: any) => { return Promise.resolve(resp) })
+			.catch((e: any) => { return Promise.reject(e) })
+	}
+
 
 	static async getLostUsername(data: typeof get_lost_username_data) {
 		return await mainLaravelDBRestAPICallWrapper

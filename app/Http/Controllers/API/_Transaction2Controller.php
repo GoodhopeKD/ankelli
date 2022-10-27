@@ -332,16 +332,16 @@ class _Transaction2Controller extends Controller
             case 'USDT_TRON':
                 $tron_acct = (new Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => $focused_address->bc_address]))->getData();
                 $balance = 0;
-                if (count($tron_acct->trc20)) { foreach ($tron_acct->trc20 as $token) { if (isset($token->{env('TRON_USDT_TOKEN_ADDRESS')})) { $balance = $token->{env('TRON_USDT_TOKEN_ADDRESS')}/1000000; break; }}}
+                if (count($tron_acct->trc20)) { foreach ($tron_acct->trc20 as $token) { if (isset($token->{env('USDT_TRON_TOKEN_ADDRESS')})) { $balance = $token->{env('USDT_TRON_TOKEN_ADDRESS')}/1000000; break; }}}
                 if ($balance > 0) {
                     $feeLimit = $element->ttm_centralization_factor*0.002;
                     $transferrable = ($balance - $feeLimit);
                     $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\Blockchain\TronController)->TronTransferTrc20(new Request([
                         'from' => $focused_address->bc_address,
                         'to' => $reserves_address->bc_address,
-                        'tokenAddress' => env('TRON_USDT_TOKEN_ADDRESS'),
-                        'amount' => $transferrable.'', // in TRX
-                        'feeLimit' => $feeLimit.'', // in TRX
+                        'tokenAddress' => env('USDT_TRON_TOKEN_ADDRESS'),
+                        'amount' => $transferrable.'',
+                        'feeLimit' => $feeLimit.'',
                         'signatureId' => env('TATUM_KMS_TRON_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
                         'index' => $focused_address->xpub_derivation_key,
                     ]))->getData()->signatureId;
@@ -382,8 +382,11 @@ class _Transaction2Controller extends Controller
             'blockage_type_slug' => 'withdrawal_escrow',
         ]), _AssetWallet::firstWhere(['user_username' => $validated_data['sender_username'], 'asset_code' => $validated_data['asset_code']])->id)->getData()->id;
 
+        $element = (new _TransactionController)->store(new Request($validated_data))->getData();
+        unset($validated_data['ttm_amount_blockage_id']);
+
         $reserves_wallet = _AssetWallet::firstWhere(['user_username' => 'reserves', 'asset_code' => $validated_data['asset_code']]);
-        $reserves_addresses = _AssetWalletAddress::where(['user_username' => 'reserves', 'asset_code' => $validated_data['asset_code']])->inRandomOrder()->get();
+        $reserves_addresses = _AssetWalletAddress::where(['user_username' => 'reserves', 'asset_code' => $validated_data['asset_code']])->inRandomOrder()->get()->makeVisible(['xpub_derivation_key']);
 
         switch ($asset->chain) {
             case 'ETH':
@@ -401,6 +404,7 @@ class _Transaction2Controller extends Controller
                         $reserves_address = $reserves_addresses[0];
                     }
                     if ($reserves_address === null) {
+                        (new _TransactionController)->process_withdrawal_failed($element->ref_code, 'Traffic issues', 'aborted');
                         return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
                     }
                     $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request(array_filter([
@@ -408,7 +412,7 @@ class _Transaction2Controller extends Controller
                         'custodialAddress' => $reserves_address->bc_address,
                         'recipient' => $validated_data['recipient_bc_address'],
                         'contractType' => ($asset->code === 'USDT' ? 0 : 3),
-                        'tokenAddress' => ($asset->code === 'USDT' ? env('ETH_USDT_TOKEN_ADDRESS') : null),
+                        'tokenAddress' => ($asset->code === 'USDT' ? env('USDT_TOKEN_ADDRESS') : null),
                         'amount' => $validated_data['asset_value'].'',
                         'signatureId' => env('TATUM_KMS_ETH_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
                         'index' => 0,
@@ -424,6 +428,7 @@ class _Transaction2Controller extends Controller
                         }
                     }
                     if ($reserves_address === null) {
+                        (new _TransactionController)->process_withdrawal_failed($element->ref_code, 'Traffic issues', 'aborted');
                         return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
                     }
                     $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
@@ -448,13 +453,14 @@ class _Transaction2Controller extends Controller
                         } catch (\Throwable $th) {}
                         $balance = 0;
                         if ($asset->code === 'TRON') $balance = $tron_acct->balance/1000000;
-                        if ($asset->code === 'USDT_TRON' && count($tron_acct->trc20) && isset($tron_acct->trc20[env('TRON_USDT_TOKEN_ADDRESS')])) $balance = $tron_acct->trc20[env('TRON_USDT_TOKEN_ADDRESS')];
+                        if ($asset->code === 'USDT_TRON' && count($tron_acct->trc20)) { foreach ($tron_acct->trc20 as $token) { if (isset($token->{env('USDT_TRON_TOKEN_ADDRESS')})) { $balance = $token->{env('USDT_TRON_TOKEN_ADDRESS')}/1000000; break; }}}
                         if ($balance > $validated_data['asset_value']) {
                             $reserves_address = $_reserves_address;
                             break;
                         }
                     }
                     if ($reserves_address === null) {
+                        (new _TransactionController)->process_withdrawal_failed($element->ref_code, 'Traffic issues', 'aborted');
                         return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
                     }
                     $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request(array_filter([
@@ -463,7 +469,7 @@ class _Transaction2Controller extends Controller
                         'from' => $asset->gp_owner_bc_address,
                         'recipient' => $validated_data['recipient_bc_address'],
                         'contractType' => ($asset->code === 'USDT_TRON' ? 0 : 3),
-                        'tokenAddress' => ($asset->code === 'USDT_TRON' ? env('ETH_USDT_TOKEN_ADDRESS') : null),
+                        'tokenAddress' => ($asset->code === 'USDT_TRON' ? env('USDT_TRON_TOKEN_ADDRESS') : null),
                         'amount' => $validated_data['asset_value'].'',
                         'feeLimit' => round(pow((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => 'TRON', 'basePair' => 'USD']))->getData()->value, -1)),
                         'signatureId' => env('TATUM_KMS_TRON_'.env('BC_ENV').'_WALLET_SIGNATURE_ID'),
@@ -483,6 +489,7 @@ class _Transaction2Controller extends Controller
                         }
                     }
                     if ($reserves_address === null) {
+                        (new _TransactionController)->process_withdrawal_failed($element->ref_code, 'Traffic issues', 'aborted');
                         return abort(422, "We're currently experiencing traffic issues, please try again after a short while or contact support if the problem persists");
                     }
                     $validated_data['ttm_bc_txn_signature_id'] = (new Tatum\SmartContracts\GasPumpController)->TransferCustodialWallet(new Request([
@@ -500,7 +507,7 @@ class _Transaction2Controller extends Controller
                 break;
         }
 
-        $element = (new _TransactionController)->store(new Request($validated_data))->getData();
+        (new _TransactionController)->update(new Request($validated_data), $element->ref_code);
         return response()->json([ 'ref_code' => $element->ref_code ]);
     }
     

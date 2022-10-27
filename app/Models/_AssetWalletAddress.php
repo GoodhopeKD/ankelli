@@ -57,7 +57,7 @@ class _AssetWalletAddress extends Model
                     try {
                         $tron_acct = (new \App\Http\Controllers\API\Tatum\Blockchain\TronController)->TronGetAccount(new Request(['address' => $this->bc_address]))->getData();
                     } catch (\Throwable $th) {}
-                    if (count($tron_acct->trc20)) { foreach ($tron_acct->trc20 as $token) { if (isset($token->{env('TRON_USDT_TOKEN_ADDRESS')})) { $balance = $token->{env('TRON_USDT_TOKEN_ADDRESS')}/1000000; break; }}}
+                    if (count($tron_acct->trc20)) { foreach ($tron_acct->trc20 as $token) { if (isset($token->{env('USDT_TRON_TOKEN_ADDRESS')})) { $balance = $token->{env('USDT_TRON_TOKEN_ADDRESS')}/1000000; break; }}}
                     break;
             }
         }

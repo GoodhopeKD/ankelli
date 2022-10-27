@@ -254,15 +254,15 @@ class __AuxController extends Controller
     private $factory_assets = [
         
         // Testnet normal
-        //['chain' => 'TRON', 'code' => 'TRON', 'unit' => 'TRX', 'xpub' => 'xpub6DeqaexdQMHHYA4zrs6LeUE5A5UEbuhLUSxEchGvRia9VkmoPiAhc5mYd8PuC3A37N4AiVdS6NVozpUtACyJES6vsY4tN3ZWuovwLkMN97a'],
-        //['chain' => 'ETH', 'code' => 'ETH', 'unit' => 'ETH', 'xpub' => 'xpub6ERKWaEy6mLBzYWoo5P19QTexUufpijY5qod5xaH2ksiYtekeFYAoT3JoK87XKULgG7g3yvvxKwsGEVdkTqcC3BFjthMtJendsN1WH9nHoX'],
+        ['chain' => 'TRON', 'code' => 'TRON', 'unit' => 'TRX', 'xpub' => 'xpub6DeqaexdQMHHYA4zrs6LeUE5A5UEbuhLUSxEchGvRia9VkmoPiAhc5mYd8PuC3A37N4AiVdS6NVozpUtACyJES6vsY4tN3ZWuovwLkMN97a'],
+        ['chain' => 'ETH', 'code' => 'ETH', 'unit' => 'ETH', 'xpub' => 'xpub6ERKWaEy6mLBzYWoo5P19QTexUufpijY5qod5xaH2ksiYtekeFYAoT3JoK87XKULgG7g3yvvxKwsGEVdkTqcC3BFjthMtJendsN1WH9nHoX'],
         
         // Testnet inflated
         //['chain' => 'TRON', 'code' => 'TRON', 'unit' => 'USDT', 'xpub' => 'xpub6DeqaexdQMHHYA4zrs6LeUE5A5UEbuhLUSxEchGvRia9VkmoPiAhc5mYd8PuC3A37N4AiVdS6NVozpUtACyJES6vsY4tN3ZWuovwLkMN97a'],
         //['chain' => 'ETH', 'code' => 'ETH', 'unit' => 'USDT', 'xpub' => 'xpub6ERKWaEy6mLBzYWoo5P19QTexUufpijY5qod5xaH2ksiYtekeFYAoT3JoK87XKULgG7g3yvvxKwsGEVdkTqcC3BFjthMtJendsN1WH9nHoX'],
 
         // Mainnet
-        ['chain' => 'TRON', 'code' => 'USDT_TRON', 'unit' => 'USDT', 'xpub' => 'xpub6FFGQ1GzANQv5mdUn2xm2JSfg7JMQeNZ2Qi1koYeYiZdawuAY8VVgChuoyeqLaN7nbsdrQ3e8NWz6CeNaWNZbbQnDrEcZQLeRvHvaLoaoci'],
+        //['chain' => 'TRON', 'code' => 'USDT_TRON', 'unit' => 'USDT', 'xpub' => 'xpub6FFGQ1GzANQv5mdUn2xm2JSfg7JMQeNZ2Qi1koYeYiZdawuAY8VVgChuoyeqLaN7nbsdrQ3e8NWz6CeNaWNZbbQnDrEcZQLeRvHvaLoaoci'],
         //['chain' => 'ETH', 'code' => 'USDT', 'unit' => 'USDT', 'xpub' => 'xpub6ERKWaEy6mLBzYWoo5P19QTexUufpijY5qod5xaH2ksiYtekeFYAoT3JoK87XKULgG7g3yvvxKwsGEVdkTqcC3BFjthMtJendsN1WH9nHoX'],
     ];
 
@@ -485,7 +485,7 @@ Handle all internal transactions normally but know that these values will be ref
         (new _UserController)->store(new Request([
             'username' => 'developer',
             'email_address' => 'developer.ankelli@gmail.com',
-            'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
+            'password' => '20Dn4$3De0s@', 'password_confirmation' => '20Dn4$3De0s@',
         ]));
         (new _UserGroupMembershipController)->store(new Request([
             'user_username' => 'developer',
@@ -504,7 +504,7 @@ Handle all internal transactions normally but know that these values will be ref
         (new _UserController)->store(new Request([
             'username' => 'sysadmin',
             'email_address' => 'sysadmin@ankelli.com',
-            'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
+            'password' => 'm9&S644xezfa', 'password_confirmation' => 'm9&S644xezfa',
         ]));
         (new _UserGroupMembershipController)->store(new Request([
             'user_username' => 'sysadmin',
@@ -531,7 +531,7 @@ Handle all internal transactions normally but know that these values will be ref
         (new _UserController)->store(new Request([
             'username' => 'busadmin',
             'email_address' => 'busadmin@ankelli.com',
-            'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
+            'password' => 'aC0q78&DEHh@', 'password_confirmation' => 'aC0q78&DEHh@',
         ]));
         (new _UserGroupMembershipController)->store(new Request([
             'user_username' => 'busadmin',
@@ -571,7 +571,7 @@ Handle all internal transactions normally but know that these values will be ref
         (new _UserController)->store(new Request([
             'username' => 'busops',
             'email_address' => 'busops@ankelli.com',
-            'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
+            'password' => '85lD1Rs%nwxb', 'password_confirmation' => '85lD1Rs%nwxb',
         ]));
         foreach ($this->factory_assets as $factory_asset) {
             (new _AssetWalletController)->store(new Request([
@@ -608,7 +608,7 @@ Handle all internal transactions normally but know that these values will be ref
         // user:guddaz
         (new _UserController)->store(new Request([
             'username' => 'guddaz', 'email_address' => 'goodhopedhliwayo@gmail.com',
-            'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
+            'password' => 'd25I!fEAk7qx', 'password_confirmation' => 'd25I!fEAk7qx',
         ]));
         if (false) {
             foreach ($this->factory_assets as $factory_asset) {
@@ -633,8 +633,8 @@ Handle all internal transactions normally but know that these values will be ref
         
         // user:paywyze
         (new _UserController)->store(new Request([
-            'username' => 'paywyze', 'email_address' => 'paywyze@ankelli.com',
-            'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
+            'username' => 'paywyze', 'email_address' => 'lotto7@yahoo.com',
+            'password' => '2weNi10*Hul@', 'password_confirmation' => '2weNi10*Hul@',
         ]));
         foreach ($this->factory_assets as $factory_asset) {
             (new _AssetWalletController)->store(new Request([
@@ -659,23 +659,6 @@ Handle all internal transactions normally but know that these values will be ref
         (new _UserGroupMembershipController)->store(new Request([
             'user_username' => 'paywyze', 'user_group_slug' => 'business_administrators',
         ]));
-
-        // user:john
-        /*(new _UserController)->store(new Request([
-            'username' => 'john', 'email_address' => 'john@ankelli.com',
-            'password' => 'Def-Pass#123', 'password_confirmation' => 'Def-Pass#123',
-        ]));
-        foreach ($this->factory_assets as $factory_asset) {
-            (new _AssetWalletController)->store(new Request([
-                'asset_code' => $factory_asset['code'],
-                'asset_chain' => $factory_asset['chain'],
-                'user_username' => 'john',
-            ]));
-            (new _AssetWalletAddressController)->store(new Request([
-                'asset_code' => $factory_asset['code'],
-                'user_username' => 'john',
-            ]));
-        }*/
 
         if ($token_reg_changed) {
             (new _PrefItemController)->update(new Request([
@@ -738,7 +721,7 @@ Handle all internal transactions normally but know that these values will be ref
                 'asset_code' => $this->factory_assets[0]['code'],
                 'asset_value' => $internalisation[1],
             ]));
-            sleep(3);
+            sleep(2);
         }
 
         // Deposit token transactioins,
@@ -761,7 +744,7 @@ Handle all internal transactions normally but know that these values will be ref
             ],[],[],['HTTP_accept'=>'application/json']))->getData();
             session()->put('api_auth_user_username', $deposit_tokener[0]);
             (new _DepositTokenController)->use($deposit_token->token, $this->factory_assets[0]['code']);
-            sleep(3);
+            sleep(2);
         }
         
 
@@ -780,38 +763,37 @@ Handle all internal transactions normally but know that these values will be ref
             'pymt_method_slug' => 'mukuru',
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'guddaz');
-        $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 100, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Kudakwashe Magadze', 'phone_no' => '+263 7658 357' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 100, 'sender_password' => 'd25I!fEAk7qx', 'pymt_details' => [ 'fullname' => 'Kudakwashe Magadze', 'phone_no' => '+263 7658 357' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
         (new _MessageController)->store(new Request([
             'parent_table' => '__trades',
             'parent_uid' => $trade->ref_code,
             'body' => "I'm sending the cash in a couple of minutes."
         ]));
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
-        session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update(new Request([ 'pymt_declared' => true, ]), $trade->ref_code);
-        sleep(3);
+        sleep(2);
         (new _MessageController)->store(new Request([
             'parent_table' => '__trades',
             'parent_uid' => $trade->ref_code,
             'body' => "I've sent the cash.\nPlease confirm receiving it."
         ]));
-        sleep(3);
-        session()->put('api_auth_user_username', $trade->offer_creator_username);
+        sleep(2);
+        session()->put('api_auth_user_username', $trade->creator_username);
         (new _MessageController)->store(new Request([
             'parent_table' => '__trades',
             'parent_uid' => $trade->ref_code,
             'body' => "I've collected the money."
         ]));
-        sleep(3);
+        sleep(2);
         (new _MessageController)->store(new Request([
             'parent_table' => '__trades',
             'parent_uid' => $trade->ref_code,
             'body' => "Pleasure doing business with you."
         ]));
-        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123' ]), $trade->ref_code);
-        sleep(3);
+        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'd25I!fEAk7qx' ]), $trade->ref_code);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
@@ -821,7 +803,7 @@ Handle all internal transactions normally but know that these values will be ref
             'rating' => 5,
             'comment' => 'Quick trade. Buyer was very responsive.'
         ]));
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
@@ -831,7 +813,7 @@ Handle all internal transactions normally but know that these values will be ref
             'rating' => 5,
             'comment' => 'Seller ensured a fast trade.',
         ]));
-        sleep(3);
+        sleep(2);
 
         session()->put('api_auth_user_username', 'guddaz');
         $offer = (new _OfferController)->store(Request::create('','',[
@@ -865,24 +847,22 @@ Handle all internal transactions normally but know that these values will be ref
             'pymt_method_slug' => 'world_remit',
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'paywyze');
-        $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 100, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Kudakwashe Magadze', 'phone_no' => '+263 765 357' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(3);
+        $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 100, 'sender_password' => '2weNi10*Hul@', 'pymt_details' => [ 'fullname' => 'Kudakwashe Magadze', 'phone_no' => '+263 765 357' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
-        session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update(new Request([ 'pymt_declared' => true, ]), $trade->ref_code);
-        session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
-        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
-        (new _ReviewController)->store(new Request([ 
+        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => '2weNi10*Hul@']), $trade->ref_code);
+        sleep(2);
+        (new _ReviewController)->store(new Request([
             'parent_table' => '__users',
             'parent_uid' => $trade->offer_creator_username,
             'pivot_parent_table' => '__trades',
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
@@ -891,7 +871,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 5,
         ]));
-        sleep(3);
+        sleep(2);
 
 
         // Offer -> trade -> transaction
@@ -909,16 +889,14 @@ Handle all internal transactions normally but know that these values will be ref
             'pymt_method_slug' => 'paypal',
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'paywyze');
-        $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 150, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Tawanda Chakatsva', 'email_address' => 'tawanda@example.com' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(3);
+        $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 150, 'sender_password' => '2weNi10*Hul@', 'pymt_details' => [ 'fullname' => 'Tawanda Chakatsva', 'email_address' => 'tawanda@example.com' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
-        session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update(new Request([ 'pymt_declared' => true, ]), $trade->ref_code);
-        session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
-        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
+        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => '2weNi10*Hul@']), $trade->ref_code);
+        sleep(2);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
             'parent_uid' => $trade->offer_creator_username,
@@ -926,7 +904,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
@@ -935,7 +913,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 3,
         ]));
-        sleep(3);
+        sleep(2);
 
 
         // Offer -> trade -> transaction
@@ -953,16 +931,14 @@ Handle all internal transactions normally but know that these values will be ref
             'pymt_method_slug' => 'skrill',
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'paywyze');
-        $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 600, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Mulenga Mwamba', 'email_address' => 'mulenga@example.com' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(3);
+        $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 600, 'sender_password' => '2weNi10*Hul@', 'pymt_details' => [ 'fullname' => 'Mulenga Mwamba', 'email_address' => 'mulenga@example.com' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
-        session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update(new Request([ 'pymt_declared' => true, ]), $trade->ref_code);
-        session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
-        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
+        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => '2weNi10*Hul@']), $trade->ref_code);
+        sleep(2);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
             'parent_uid' => $trade->offer_creator_username,
@@ -970,7 +946,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 5,
         ]));
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
@@ -979,7 +955,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(3);
+        sleep(2);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'clarence');
@@ -998,15 +974,13 @@ Handle all internal transactions normally but know that these values will be ref
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'ross');
         $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 200, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Mulenga Mwamba', 'phone_no' => 'mulenga@example.com', ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
-        session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update(new Request([ 'pymt_declared' => true, ]), $trade->ref_code);
-        session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
-        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
+        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
+        sleep(2);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
             'parent_uid' => $trade->offer_creator_username,
@@ -1014,7 +988,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 5,
         ]));
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
@@ -1023,7 +997,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 3,
         ]));
-        sleep(3);
+        sleep(2);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'paywyze');
@@ -1042,15 +1016,13 @@ Handle all internal transactions normally but know that these values will be ref
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'keith');
         $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 3000, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Mulenga Mwamba', 'phone_no' => 'mulenga@example.com', ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
-        session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update(new Request([ 'pymt_declared' => true, ]), $trade->ref_code);
-        session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
-        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
+        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
+        sleep(2);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
             'parent_uid' => $trade->offer_creator_username,
@@ -1058,7 +1030,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 5,
         ]));
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
@@ -1067,7 +1039,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 5,
         ]));
-        sleep(3);
+        sleep(2);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'peter');
@@ -1085,15 +1057,13 @@ Handle all internal transactions normally but know that these values will be ref
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'keith');
         $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 250, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Tadiwa Magodi', 'account_no' => '506788965445' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
-        session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update(new Request([ 'pymt_declared' => true, ]), $trade->ref_code);
-        session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
-        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
+        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
+        sleep(2);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
             'parent_uid' => $trade->offer_creator_username,
@@ -1101,7 +1071,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 3,
         ]));
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
@@ -1110,7 +1080,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(3);
+        sleep(2);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'flint');
@@ -1128,15 +1098,13 @@ Handle all internal transactions normally but know that these values will be ref
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'keith');
         $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 2500, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'William Mbeki', 'account_no' => '6507890898', ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
-        session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update(new Request([ 'pymt_declared' => true, ]), $trade->ref_code);
-        session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
-        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
+        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
+        sleep(2);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
             'parent_uid' => $trade->offer_creator_username,
@@ -1144,7 +1112,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
@@ -1153,7 +1121,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(3);
+        sleep(2);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'paywyze');
@@ -1171,15 +1139,13 @@ Handle all internal transactions normally but know that these values will be ref
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'jimmy');
         $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 3000, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'William Mbeki', 'account_no' => '6507890898' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
-        session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update(new Request([ 'pymt_declared' => true, ]), $trade->ref_code);
-        session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
-        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
+        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
+        sleep(2);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
             'parent_uid' => $trade->offer_creator_username,
@@ -1187,7 +1153,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 5,
         ]));
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
@@ -1196,7 +1162,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(3);
+        sleep(2);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'raymond');
@@ -1214,15 +1180,13 @@ Handle all internal transactions normally but know that these values will be ref
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'jimmy');
         $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 200, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Panashe Gabvu', 'phone_no' => '+78 568 6503', ], ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
-        session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update(new Request([ 'pymt_declared' => true, ]), $trade->ref_code);
-        session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
-        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
+        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
+        sleep(2);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
             'parent_uid' => $trade->offer_creator_username,
@@ -1230,7 +1194,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
@@ -1239,7 +1203,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 3,
         ]));
-        sleep(3);
+        sleep(2);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'nassim');
@@ -1257,15 +1221,13 @@ Handle all internal transactions normally but know that these values will be ref
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'jimmy');
         $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 35000, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'account_holder_name' => 'Djenna Moulad', 'account_no' => '22657899', 'account_key' => '67', ], ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
-        session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update(new Request([ 'pymt_declared' => true, ]), $trade->ref_code);
-        session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
-        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
+        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
+        sleep(2);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
             'parent_uid' => $trade->offer_creator_username,
@@ -1273,7 +1235,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 5,
         ]));
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
@@ -1282,7 +1244,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 3,
         ]));
-        sleep(3);
+        sleep(2);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'guddaz');
@@ -1301,15 +1263,13 @@ Handle all internal transactions normally but know that these values will be ref
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'flint');
         $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 150, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Tamari Karongo', 'address' => 'Opposite OK Marondera', 'phone_no' => '+263 7658 357' ], ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
-        session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update(new Request([ 'pymt_declared' => true, ]), $trade->ref_code);
-        session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
-        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
+        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
+        sleep(2);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
             'parent_uid' => $trade->offer_creator_username,
@@ -1317,7 +1277,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 3,
         ]));
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
@@ -1326,20 +1286,18 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(3);
+        sleep(2);
 
         // Trade -> transaction
         session()->put('api_auth_user_username', 'keith');
         $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 50, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Samuel Kaviya', 'phone_no' => '+263 772 234 677' ], ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
-        session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update(new Request([ 'pymt_declared' => true, ]), $trade->ref_code);
-        session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
-        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
+        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
+        sleep(2);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
             'parent_uid' => $trade->offer_creator_username,
@@ -1347,7 +1305,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 3,
         ]));
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
@@ -1356,7 +1314,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(3);
+        sleep(2);
 
         // Offer -> trade -> transaction
         session()->put('api_auth_user_username', 'peter');
@@ -1374,15 +1332,13 @@ Handle all internal transactions normally but know that these values will be ref
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'flint');
         $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 36000, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'account_holder_name' => 'Timothy Tambo', 'account_number' => '22508678', 'account_key' => '87' ], ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
-        session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update(new Request([ 'pymt_declared' => true, ]), $trade->ref_code);
-        session()->put('api_auth_user_username', $trade->offer_creator_username);
-        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
-        sleep(3);
         session()->put('api_auth_user_username', $trade->creator_username);
+        (new _TradeController)->update(new Request([ 'pymt_confirmed' => true, 'sender_password' => 'Def-Pass#123']), $trade->ref_code);
+        sleep(2);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
             'parent_uid' => $trade->offer_creator_username,
@@ -1390,7 +1346,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 4,
         ]));
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _ReviewController)->store(new Request([ 
             'parent_table' => '__users',
@@ -1399,7 +1355,7 @@ Handle all internal transactions normally but know that these values will be ref
             'pivot_parent_uid' => $trade->ref_code,
             'rating' => 3,
         ]));
-        sleep(3);
+        sleep(2);
 
         // Offer -> trade
         session()->put('api_auth_user_username', 'raymond');
@@ -1416,13 +1372,13 @@ Handle all internal transactions normally but know that these values will be ref
             'pymt_method_slug' => 'mukuru',
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'guddaz');
-        $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 100, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Kudakwashe Magadze', 'phone_no' => '+263 765 357' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(3);
+        $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 100, 'sender_password' => 'd25I!fEAk7qx', 'pymt_details' => [ 'fullname' => 'Kudakwashe Magadze', 'phone_no' => '+263 765 357' ] ],[],[],['HTTP_accept'=>'application/json']))->getData();
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
-        sleep(3);
+        sleep(2);
         (new _TradeController)->update(new Request([ '_status' => 'cancelled', ]), $trade->ref_code);
-        sleep(3);
+        sleep(2);
 
         // Offer -> trade
         session()->put('api_auth_user_username', 'guddaz');
@@ -1441,12 +1397,12 @@ Handle all internal transactions normally but know that these values will be ref
         ],[],[],['HTTP_accept'=>'application/json']))->getData();
         session()->put('api_auth_user_username', 'flint');
         $trade = (new _TradeController)->store(Request::create('','',[ 'offer_ref_code' => $offer->ref_code, 'currency_amount' => 200, 'sender_password' => 'Def-Pass#123', 'pymt_details' => [ 'fullname' => 'Tamari Karongo', 'phone_no' => '+263 7658 357' ], ],[],[],['HTTP_accept'=>'application/json']))->getData();
-        sleep(3);
+        sleep(2);
         session()->put('api_auth_user_username', $trade->offer_creator_username);
         (new _TradeController)->show($trade->ref_code);
         session()->put('api_auth_user_username', $trade->creator_username);
         (new _TradeController)->update(new Request([ 'pymt_declared' => true, ]), $trade->ref_code);
-        sleep(3);
+        sleep(2);
 
         if ($token_reg_changed) {
             (new _PrefItemController)->update(new Request([

@@ -74,4 +74,15 @@ export default class _AssetWallet extends _Wrapper_ implements Omit<typeof _Asse
             .then((resp: any) => { return Promise.resolve(resp) })
             .catch((e: any) => { return Promise.reject(e) })
     }
+
+    async refreshAssetValues() {
+        return await mainLaravelDBRestAPICallWrapper
+            .dispatch({
+                type: 'APP_BACKEND_API_CALL',
+                method: 'GET',
+                endpoint: 'funds/asset-wallets/' + this.id + '/refresh',
+            })
+            .then((resp: any) => { return Promise.resolve(resp) })
+            .catch((e: any) => { return Promise.reject(e) })
+    }
 }

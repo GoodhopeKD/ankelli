@@ -14,6 +14,7 @@ class CryptoAssetWalletsScreen extends React.Component {
     }
 
     state = {
+        btns_refresh_account_working: {},
         input: _.cloneDeep(this.default_input),
         errors: [],
     }
@@ -79,7 +80,7 @@ class CryptoAssetWalletsScreen extends React.Component {
                     </div>
                     <div className="col-lg-10">
                         <h4>My crypto wallets</h4>
-                        
+
                         <div className="table-responsive mb-3">
                             <table className="table table-sm mb-0">
                                 <thead>
@@ -87,6 +88,7 @@ class CryptoAssetWalletsScreen extends React.Component {
                                         <th scope="col">Crypto Asset</th>
                                         <th scope="col">Usable Balance</th>
                                         <th scope="col">Total Balance</th>
+                                        <th scope="col">Refresh</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -96,6 +98,16 @@ class CryptoAssetWalletsScreen extends React.Component {
                                             <td className="align-middle">{asset.name}</td>
                                             <td className="align-middle">{asset_wallet.usable_balance_asset_value} {asset.unit}</td>
                                             <td className="align-middle">{asset_wallet.total_balance_asset_value} {asset.unit}</td>
+                                            <td className="align-middle">
+                                                <button className="btn btn-sm btn-success" disabled={this.state.btns_refresh_account_working[asset.code]} type='button'
+                                                    onClick={() => {
+                                                        this.setState({ btns_refresh_account_working: { [asset.code]: true } })
+                                                        asset_wallet.refreshAssetValues().then(() => { this.setState({ btns_refresh_account_working: {} }); _Session.refresh() })
+                                                    }}
+                                                >
+                                                    {this.state.btns_refresh_account_working[asset.code] ? <div className="spinner-border spinner-border-sm text-light" style={{ width: 18, height: 18 }}></div> : <span>Refresh</span>}
+                                                </button>
+                                            </td>
                                         </tr>
                                     })}
                                 </tbody>
@@ -104,7 +116,7 @@ class CryptoAssetWalletsScreen extends React.Component {
 
                         <div className="d-flex gap-2" >
                             <div>
-                                <button type="button" className='btn btn-success' data-bs-toggle="modal" data-bs-target="#add_new_wallet_modal">Add</button>
+                                <button type="button" className='btn btn-primary' data-bs-toggle="modal" data-bs-target="#add_new_wallet_modal">Add</button>
 
                                 <div className="modal fade" id="add_new_wallet_modal" tabIndex="-1" >
                                     <div className="modal-dialog modal-dialog-centered">

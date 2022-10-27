@@ -86,6 +86,20 @@ class _AssetController extends Controller
             $validated_data['usd_asset_exchange_rate'] = 1/((new Tatum\Utils\ExchangeRateController)->getExchangeRate(new Request(['currency' => $validated_data['code'], 'basePair' => 'USD']))->getData()->value);
         }
 
+        if (!isset($validated_data['usd_asset_exchange_rate'])) {
+            switch ($validated_data['chain']) {
+                case 'ETH':
+                    $validated_data['usd_asset_exchange_rate'] = 0.00074;
+                    break;
+                case 'MATIC':
+                    $validated_data['usd_asset_exchange_rate'] = 100;
+                    break;
+                case 'TRON':
+                    $validated_data['usd_asset_exchange_rate'] = 15.6;
+                    break;
+            }
+        }
+
         $element = _Asset::create($validated_data);
         
         // Handle _Log

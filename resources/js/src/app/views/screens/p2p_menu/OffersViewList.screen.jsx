@@ -169,7 +169,7 @@ class OffersViewListScreen extends React.Component {
                 {(this.props.path == '/p2p/offers' || this.props.path == '/') && <>
                     <div className="row">
                         {(this.props.sysconfig_params.offer_to_buy_enabled && this.props.sysconfig_params.offer_to_sell_enabled) &&
-                            <div className="col">
+                            <div className="col mb-3">
                                 <label htmlFor="input_offer_to" className="form-label">I wish to</label>
                                 <select className="form-select" id="input_offer_to" value={this.state.input.offer_to} onChange={elem => this.handleInputChange('offer_to', elem.target.value, true)} >
                                     <option value="buy">Sell</option>
@@ -178,7 +178,7 @@ class OffersViewListScreen extends React.Component {
                             </div>
                         }
 
-                        <div className="col">
+                        <div className="col mb-3">
                             <label htmlFor="input_country_name" className="form-label">Country</label>
                             <CustomSelect
                                 id="input_country_name"
@@ -189,7 +189,7 @@ class OffersViewListScreen extends React.Component {
                             />
                         </div>
 
-                        <div className="col">
+                        <div className="col mb-3">
                             <label htmlFor="input_pymt_method_slug" className="form-label">Pay via</label>
                             <CustomSelect
                                 id="input_pymt_method_slug"
@@ -200,7 +200,7 @@ class OffersViewListScreen extends React.Component {
                             />
                         </div>
 
-                        <div className="col">
+                        <div className="col mb-3">
                             <label htmlFor="input_asset_code" className="form-label">Asset</label>
                             <CustomSelect
                                 id="input_asset_code"
@@ -211,7 +211,7 @@ class OffersViewListScreen extends React.Component {
                             />
                         </div>
 
-                        <div className="col">
+                        <div className="col mb-3">
                             <label htmlFor="input_currency_code" className="form-label">Currency</label>
                             <CustomSelect
                                 id="input_currency_code"
@@ -228,7 +228,7 @@ class OffersViewListScreen extends React.Component {
 
                         <button
                             onClick={() => { if (this.state.page_select.page !== 1) { this.setState({ page_select: { page: 1 } }, () => { this.should_load_items = true; this.populateScreenWithItems() }) } else { this.populateScreenWithItems() } }}
-                            className="btn btn-outline-danger mt-3"
+                            className="btn btn-outline-danger"
                         >
                             Find offers
                         </button>
@@ -236,7 +236,7 @@ class OffersViewListScreen extends React.Component {
                             onClick={() => this.setState({
                                 input: _.cloneDeep(this.default_input)
                             }, () => this.should_load_items = true)}
-                            className="btn btn-outline-danger mt-3"
+                            className="btn btn-outline-danger"
                         >
                             Reset Filters
                         </button>
@@ -370,12 +370,12 @@ class OffersViewListScreen extends React.Component {
                             <div className="d-flex gap-1">
                                 <label htmlFor="input_per_page" className="align-self-center">Items</label>
                                 <select className="form-select" id="input_per_page" value={this.state.per_page} onChange={element => this.setState({ per_page: parseInt(element.target.value) }, () => { this.should_load_items = true; this.populateScreenWithItems() })} >
-                                    {[5, 10, 25, 50, 100].map((per_page, index) => <option key={index} value={per_page} >{per_page}</option>)}
+                                    {[10, 25, 50].map((per_page, index) => <option key={index} value={per_page} >{per_page}</option>)}
                                 </select>
                             </div>
                         </div>
 
-                        <div>
+                        {pagination_pages.length > 1 && <div>
                             <nav>
                                 <ul className="pagination">
                                     <li className={"page-item" + ((this.state._collecion.meta.current_page == 1 || !this.state.list_loaded) ? ' disabled' : '')}>
@@ -387,7 +387,7 @@ class OffersViewListScreen extends React.Component {
                                     </li>
                                 </ul>
                             </nav>
-                        </div>
+                        </div>}
 
                     </div>
                 </div>

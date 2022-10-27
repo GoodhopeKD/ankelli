@@ -209,7 +209,7 @@ return new class extends Migration
             [
                 'key_name' => 'Default Selected Crypto Asset',
                 'key_slug' => 'default_crypto_asset_code',
-                'value' => 'USDT_TRON',
+                'value' => 'TRON',
                 'value_type' => 'enum:crypto_asset_codes',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
@@ -227,7 +227,7 @@ return new class extends Migration
             [
                 'key_name' => 'Use tatum crypto asset engine API',
                 'key_slug' => 'use_ttm_api',
-                'value' => true,
+                'value' => false,
                 'value_type' => 'boolean',
                 'parent_table' => '__users',
                 'parent_uid' => 'system',
