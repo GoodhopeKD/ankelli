@@ -16,7 +16,7 @@ export const _EmailAddressRespObj = {
     user_username: undefined as undefined | null | string,
     email_address: undefined as undefined | null | string,
     receive_notifications: undefined as undefined | null | boolean,
-    receive_promos_email_inbox: undefined as undefined | null | boolean,
+    receive_promos: undefined as undefined | null | boolean,
 
     created_datetime: undefined as undefined | null | string,
     verified_datetime: undefined as undefined | null | string,
@@ -30,7 +30,7 @@ export default class _EmailAddress extends _Wrapper_ implements Omit<typeof _Ema
     user_username: string | null = null
     email_address: string | null = null
     receive_notifications: boolean | null = null
-    receive_promos_email_inbox: boolean | null = null
+    receive_promos: boolean | null = null
 
     created_datetime: _DateTime | null = null
     updated_datetime: _DateTime | null = null

@@ -254,15 +254,15 @@ class __AuxController extends Controller
     private $factory_assets = [
         
         // Testnet normal
-        ['chain' => 'TRON', 'code' => 'TRON', 'unit' => 'TRX', 'xpub' => 'xpub6DeqaexdQMHHYA4zrs6LeUE5A5UEbuhLUSxEchGvRia9VkmoPiAhc5mYd8PuC3A37N4AiVdS6NVozpUtACyJES6vsY4tN3ZWuovwLkMN97a'],
-        ['chain' => 'ETH', 'code' => 'ETH', 'unit' => 'ETH', 'xpub' => 'xpub6ERKWaEy6mLBzYWoo5P19QTexUufpijY5qod5xaH2ksiYtekeFYAoT3JoK87XKULgG7g3yvvxKwsGEVdkTqcC3BFjthMtJendsN1WH9nHoX'],
+        //['chain' => 'TRON', 'code' => 'TRON', 'unit' => 'TRX', 'xpub' => 'xpub6DeqaexdQMHHYA4zrs6LeUE5A5UEbuhLUSxEchGvRia9VkmoPiAhc5mYd8PuC3A37N4AiVdS6NVozpUtACyJES6vsY4tN3ZWuovwLkMN97a'],
+        //['chain' => 'ETH', 'code' => 'ETH', 'unit' => 'ETH', 'xpub' => 'xpub6ERKWaEy6mLBzYWoo5P19QTexUufpijY5qod5xaH2ksiYtekeFYAoT3JoK87XKULgG7g3yvvxKwsGEVdkTqcC3BFjthMtJendsN1WH9nHoX'],
         
         // Testnet inflated
         //['chain' => 'TRON', 'code' => 'TRON', 'unit' => 'USDT', 'xpub' => 'xpub6DeqaexdQMHHYA4zrs6LeUE5A5UEbuhLUSxEchGvRia9VkmoPiAhc5mYd8PuC3A37N4AiVdS6NVozpUtACyJES6vsY4tN3ZWuovwLkMN97a'],
         //['chain' => 'ETH', 'code' => 'ETH', 'unit' => 'USDT', 'xpub' => 'xpub6ERKWaEy6mLBzYWoo5P19QTexUufpijY5qod5xaH2ksiYtekeFYAoT3JoK87XKULgG7g3yvvxKwsGEVdkTqcC3BFjthMtJendsN1WH9nHoX'],
 
         // Mainnet
-        //['chain' => 'TRON', 'code' => 'USDT_TRON', 'unit' => 'USDT', 'xpub' => 'xpub6FFGQ1GzANQv5mdUn2xm2JSfg7JMQeNZ2Qi1koYeYiZdawuAY8VVgChuoyeqLaN7nbsdrQ3e8NWz6CeNaWNZbbQnDrEcZQLeRvHvaLoaoci'],
+        ['chain' => 'TRON', 'code' => 'USDT_TRON', 'unit' => 'USDT', 'xpub' => 'xpub6FFGQ1GzANQv5mdUn2xm2JSfg7JMQeNZ2Qi1koYeYiZdawuAY8VVgChuoyeqLaN7nbsdrQ3e8NWz6CeNaWNZbbQnDrEcZQLeRvHvaLoaoci'],
         //['chain' => 'ETH', 'code' => 'USDT', 'unit' => 'USDT', 'xpub' => 'xpub6ERKWaEy6mLBzYWoo5P19QTexUufpijY5qod5xaH2ksiYtekeFYAoT3JoK87XKULgG7g3yvvxKwsGEVdkTqcC3BFjthMtJendsN1WH9nHoX'],
     ];
 
@@ -480,7 +480,6 @@ Handle all internal transactions normally but know that these values will be ref
             ]), $token_reg_enabled_pref_item->id);
             $token_reg_changed = true;
         }
-        
         // user:developer
         (new _UserController)->store(new Request([
             'username' => 'developer',

@@ -4,8 +4,12 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+//use Mail;
+use Illuminate\Support\Facades\Mail;
 
 use App\Models\_Notification;
+use App\Models\_User;
+use App\Models\_PrefItem;
 use App\Http\Resources\_NotificationResource;
 
 class _NotificationController extends Controller
@@ -46,11 +50,24 @@ class _NotificationController extends Controller
         $validated_data = $request->validate([
             'user_username' => ['required', 'string', 'exists:__users,username'],
             'content' => ['required', 'array'],
+            'content.title' => ['required', 'string'],
+            'content.subtitle' => ['sometimes', 'string'],
+            'content.body' => ['required', 'string'],
         ]);
         // Create uid
         $validated_data['id'] = random_int(100000, 199999).strtoupper(substr(md5(microtime()),rand(0,9),7));
 
         $element = _Notification::create($validated_data);
+
+        $email_address = _User::firstWhere(['username' => $validated_data['user_username']])->email_address;
+
+        if (!_PrefItem::where(['parent_table' => '__email_addresses', 'parent_uid' => $email_address, 'key_slug' => 'receive_notifications', 'value' => 0])->exists()){
+            Mail::send('mail', $validated_data, function($message) use($email_address, $validated_data) {
+                $message->to($email_address, $validated_data['user_username'])->subject($validated_data['content']['title']);
+                $message->from('noreply@ankelli.com', 'Ankelli platform');
+            });
+        }
+
         // Handle _Log
         (new _LogController)->store(new Request([
             'action_note' => 'Addition of _Notification entry to database.',

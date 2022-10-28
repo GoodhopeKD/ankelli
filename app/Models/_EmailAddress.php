@@ -47,12 +47,12 @@ class _EmailAddress extends Model
 
     public function receive_notifications_f()
     {
-        return !($this->pref_items()->where('key', 'receive_notifications')->exists() && $this->pref_items()->where('key', 'receive_notifications')->first()['value'] === 'no');
+        return !($this->pref_items()->where('key', 'receive_notifications')->exists() && $this->pref_items()->where('key', 'receive_notifications')->first()['value'] == 0);
     }
     
-    public function receive_promos_email_inbox_f()
+    public function receive_promos_f()
     {
-        return !($this->pref_items()->where('key', 'receive_promos_email_inbox')->exists() && $this->pref_items()->where('key', 'receive_promos_email_inbox')->first()['value'] === 'no');
+        return !($this->pref_items()->where('key', 'receive_promos')->exists() && $this->pref_items()->where('key', 'receive_promos')->first()['value'] == 0);
     }
 
     public function is_user_primary_f()

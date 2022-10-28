@@ -301,6 +301,9 @@ class _TradeController extends Controller
 
         $api_auth_user_username = session()->get('api_auth_user_username', auth('api')->user() ? auth('api')->user()->username : null);
         $validated_data['updater_username'] = $api_auth_user_username;
+
+        $seller_username = $element->was_offer_to == 'buy' ? $element->creator_username : $element->offer_creator_username;
+        $buyer_username = $element->was_offer_to == 'sell' ? $element->creator_username : $element->offer_creator_username;
         
         if (isset($validated_data['pymt_declared']) && $validated_data['pymt_declared'] == true) {
             $validated_data['pymt_declared_datetime'] = now()->toDateTimeString();
@@ -311,10 +314,15 @@ class _TradeController extends Controller
                 'body' => 'Asset buyer just declared their payment.'
             ]));
             session()->put('api_auth_user_username', $api_auth_user_username);
+            (new _NotificationController)->store(new Request([
+                'user_username' => $seller_username,
+                'content' => [
+                    'title' => 'Payment for trade declared',
+                    'subtitle' => 'Payment for trade '.$element->ref_code.' has been declared',
+                    'body' => 'The asset buyer for trade '.$element->ref_code.' has declared making payment',
+                ],
+            ]));
         }
-
-        $seller_username = $element->was_offer_to == 'buy' ? $element->creator_username : $element->offer_creator_username;
-        $buyer_username = $element->was_offer_to == 'sell' ? $element->creator_username : $element->offer_creator_username;
 
         if (isset($validated_data['_status']) && $validated_data['_status'] === 'flagged') {
             $validated_data['flag_raiser_username'] = $validated_data['updater_username'];
